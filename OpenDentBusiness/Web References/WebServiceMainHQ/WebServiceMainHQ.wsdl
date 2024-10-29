@@ -2,6 +2,20 @@
 <wsdl:definitions xmlns:tm="http://microsoft.com/wsdl/mime/textMatching/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:http="http://schemas.xmlsoap.org/wsdl/http/" xmlns:tns="https://www.opendental.com/OpenDentalWebServiceHQ/" xmlns:mime="http://schemas.xmlsoap.org/wsdl/mime/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" targetNamespace="https://www.opendental.com/OpenDentalWebServiceHQ/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
   <wsdl:types>
     <s:schema elementFormDefault="qualified" targetNamespace="https://www.opendental.com/OpenDentalWebServiceHQ/">
+      <s:element name="CheckFHIRAPIKey">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="officeData" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="CheckFHIRAPIKeyResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="CheckFHIRAPIKeyResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
       <s:element name="GenerateFHIRAPIKey">
         <s:complexType>
           <s:sequence>
@@ -910,6 +924,20 @@
           </s:sequence>
         </s:complexType>
       </s:element>
+      <s:element name="GetCareCreditBatchTimes">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="officeData" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
+      <s:element name="GetCareCreditBatchTimesResponse">
+        <s:complexType>
+          <s:sequence>
+            <s:element minOccurs="0" maxOccurs="1" name="GetCareCreditBatchTimesResult" type="s:string" />
+          </s:sequence>
+        </s:complexType>
+      </s:element>
       <s:element name="ManageAdvertisingPostcardsAccount">
         <s:complexType>
           <s:sequence>
@@ -1331,23 +1359,15 @@
           </s:sequence>
         </s:complexType>
       </s:element>
-      <s:element name="CheckFHIRAPIKey">
-        <s:complexType>
-          <s:sequence>
-            <s:element minOccurs="0" maxOccurs="1" name="officeData" type="s:string" />
-          </s:sequence>
-        </s:complexType>
-      </s:element>
-      <s:element name="CheckFHIRAPIKeyResponse">
-        <s:complexType>
-          <s:sequence>
-            <s:element minOccurs="0" maxOccurs="1" name="CheckFHIRAPIKeyResult" type="s:string" />
-          </s:sequence>
-        </s:complexType>
-      </s:element>
       <s:element name="string" nillable="true" type="s:string" />
     </s:schema>
   </wsdl:types>
+  <wsdl:message name="CheckFHIRAPIKeySoapIn">
+    <wsdl:part name="parameters" element="tns:CheckFHIRAPIKey" />
+  </wsdl:message>
+  <wsdl:message name="CheckFHIRAPIKeySoapOut">
+    <wsdl:part name="parameters" element="tns:CheckFHIRAPIKeyResponse" />
+  </wsdl:message>
   <wsdl:message name="GenerateFHIRAPIKeySoapIn">
     <wsdl:part name="parameters" element="tns:GenerateFHIRAPIKey" />
   </wsdl:message>
@@ -1738,6 +1758,12 @@
   <wsdl:message name="GetAdvertisingPostcardsAccountsSoapOut">
     <wsdl:part name="parameters" element="tns:GetAdvertisingPostcardsAccountsResponse" />
   </wsdl:message>
+  <wsdl:message name="GetCareCreditBatchTimesSoapIn">
+    <wsdl:part name="parameters" element="tns:GetCareCreditBatchTimes" />
+  </wsdl:message>
+  <wsdl:message name="GetCareCreditBatchTimesSoapOut">
+    <wsdl:part name="parameters" element="tns:GetCareCreditBatchTimesResponse" />
+  </wsdl:message>
   <wsdl:message name="ManageAdvertisingPostcardsAccountSoapIn">
     <wsdl:part name="parameters" element="tns:ManageAdvertisingPostcardsAccount" />
   </wsdl:message>
@@ -1918,11 +1944,11 @@
   <wsdl:message name="EnableAdditionalFeaturesSoapOut">
     <wsdl:part name="parameters" element="tns:EnableAdditionalFeaturesResponse" />
   </wsdl:message>
-  <wsdl:message name="CheckFHIRAPIKeySoapIn">
-    <wsdl:part name="parameters" element="tns:CheckFHIRAPIKey" />
+  <wsdl:message name="CheckFHIRAPIKeyHttpPostIn">
+    <wsdl:part name="officeData" type="s:string" />
   </wsdl:message>
-  <wsdl:message name="CheckFHIRAPIKeySoapOut">
-    <wsdl:part name="parameters" element="tns:CheckFHIRAPIKeyResponse" />
+  <wsdl:message name="CheckFHIRAPIKeyHttpPostOut">
+    <wsdl:part name="Body" element="tns:string" />
   </wsdl:message>
   <wsdl:message name="GenerateFHIRAPIKeyHttpPostIn">
     <wsdl:part name="officeData" type="s:string" />
@@ -2316,6 +2342,12 @@
   <wsdl:message name="GetAdvertisingPostcardsAccountsHttpPostOut">
     <wsdl:part name="Body" element="tns:string" />
   </wsdl:message>
+  <wsdl:message name="GetCareCreditBatchTimesHttpPostIn">
+    <wsdl:part name="officeData" type="s:string" />
+  </wsdl:message>
+  <wsdl:message name="GetCareCreditBatchTimesHttpPostOut">
+    <wsdl:part name="Body" element="tns:string" />
+  </wsdl:message>
   <wsdl:message name="ManageAdvertisingPostcardsAccountHttpPostIn">
     <wsdl:part name="officeData" type="s:string" />
   </wsdl:message>
@@ -2499,13 +2531,11 @@
   <wsdl:message name="EnableAdditionalFeaturesHttpPostOut">
     <wsdl:part name="Body" element="tns:string" />
   </wsdl:message>
-  <wsdl:message name="CheckFHIRAPIKeyHttpPostIn">
-    <wsdl:part name="officeData" type="s:string" />
-  </wsdl:message>
-  <wsdl:message name="CheckFHIRAPIKeyHttpPostOut">
-    <wsdl:part name="Body" element="tns:string" />
-  </wsdl:message>
   <wsdl:portType name="WebServiceMainHQSoap">
+    <wsdl:operation name="CheckFHIRAPIKey">
+      <wsdl:input message="tns:CheckFHIRAPIKeySoapIn" />
+      <wsdl:output message="tns:CheckFHIRAPIKeySoapOut" />
+    </wsdl:operation>
     <wsdl:operation name="GenerateFHIRAPIKey">
       <wsdl:input message="tns:GenerateFHIRAPIKeySoapIn" />
       <wsdl:output message="tns:GenerateFHIRAPIKeySoapOut" />
@@ -2766,6 +2796,10 @@
       <wsdl:input message="tns:GetAdvertisingPostcardsAccountsSoapIn" />
       <wsdl:output message="tns:GetAdvertisingPostcardsAccountsSoapOut" />
     </wsdl:operation>
+    <wsdl:operation name="GetCareCreditBatchTimes">
+      <wsdl:input message="tns:GetCareCreditBatchTimesSoapIn" />
+      <wsdl:output message="tns:GetCareCreditBatchTimesSoapOut" />
+    </wsdl:operation>
     <wsdl:operation name="ManageAdvertisingPostcardsAccount">
       <wsdl:input message="tns:ManageAdvertisingPostcardsAccountSoapIn" />
       <wsdl:output message="tns:ManageAdvertisingPostcardsAccountSoapOut" />
@@ -2886,12 +2920,12 @@
       <wsdl:input message="tns:EnableAdditionalFeaturesSoapIn" />
       <wsdl:output message="tns:EnableAdditionalFeaturesSoapOut" />
     </wsdl:operation>
-    <wsdl:operation name="CheckFHIRAPIKey">
-      <wsdl:input message="tns:CheckFHIRAPIKeySoapIn" />
-      <wsdl:output message="tns:CheckFHIRAPIKeySoapOut" />
-    </wsdl:operation>
   </wsdl:portType>
   <wsdl:portType name="WebServiceMainHQHttpPost">
+    <wsdl:operation name="CheckFHIRAPIKey">
+      <wsdl:input message="tns:CheckFHIRAPIKeyHttpPostIn" />
+      <wsdl:output message="tns:CheckFHIRAPIKeyHttpPostOut" />
+    </wsdl:operation>
     <wsdl:operation name="GenerateFHIRAPIKey">
       <wsdl:input message="tns:GenerateFHIRAPIKeyHttpPostIn" />
       <wsdl:output message="tns:GenerateFHIRAPIKeyHttpPostOut" />
@@ -3152,6 +3186,10 @@
       <wsdl:input message="tns:GetAdvertisingPostcardsAccountsHttpPostIn" />
       <wsdl:output message="tns:GetAdvertisingPostcardsAccountsHttpPostOut" />
     </wsdl:operation>
+    <wsdl:operation name="GetCareCreditBatchTimes">
+      <wsdl:input message="tns:GetCareCreditBatchTimesHttpPostIn" />
+      <wsdl:output message="tns:GetCareCreditBatchTimesHttpPostOut" />
+    </wsdl:operation>
     <wsdl:operation name="ManageAdvertisingPostcardsAccount">
       <wsdl:input message="tns:ManageAdvertisingPostcardsAccountHttpPostIn" />
       <wsdl:output message="tns:ManageAdvertisingPostcardsAccountHttpPostOut" />
@@ -3272,13 +3310,18 @@
       <wsdl:input message="tns:EnableAdditionalFeaturesHttpPostIn" />
       <wsdl:output message="tns:EnableAdditionalFeaturesHttpPostOut" />
     </wsdl:operation>
-    <wsdl:operation name="CheckFHIRAPIKey">
-      <wsdl:input message="tns:CheckFHIRAPIKeyHttpPostIn" />
-      <wsdl:output message="tns:CheckFHIRAPIKeyHttpPostOut" />
-    </wsdl:operation>
   </wsdl:portType>
   <wsdl:binding name="WebServiceMainHQSoap" type="tns:WebServiceMainHQSoap">
     <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="CheckFHIRAPIKey">
+      <soap:operation soapAction="https://www.opendental.com/OpenDentalWebServiceHQ/CheckFHIRAPIKey" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
     <wsdl:operation name="GenerateFHIRAPIKey">
       <soap:operation soapAction="https://www.opendental.com/OpenDentalWebServiceHQ/GenerateFHIRAPIKey" style="document" />
       <wsdl:input>
@@ -3864,6 +3907,15 @@
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
+    <wsdl:operation name="GetCareCreditBatchTimes">
+      <soap:operation soapAction="https://www.opendental.com/OpenDentalWebServiceHQ/GetCareCreditBatchTimes" style="document" />
+      <wsdl:input>
+        <soap:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
     <wsdl:operation name="ManageAdvertisingPostcardsAccount">
       <soap:operation soapAction="https://www.opendental.com/OpenDentalWebServiceHQ/ManageAdvertisingPostcardsAccount" style="document" />
       <wsdl:input>
@@ -4134,18 +4186,18 @@
         <soap:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
-    <wsdl:operation name="CheckFHIRAPIKey">
-      <soap:operation soapAction="https://www.opendental.com/OpenDentalWebServiceHQ/CheckFHIRAPIKey" style="document" />
-      <wsdl:input>
-        <soap:body use="literal" />
-      </wsdl:input>
-      <wsdl:output>
-        <soap:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
   </wsdl:binding>
   <wsdl:binding name="WebServiceMainHQSoap12" type="tns:WebServiceMainHQSoap">
     <soap12:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <wsdl:operation name="CheckFHIRAPIKey">
+      <soap12:operation soapAction="https://www.opendental.com/OpenDentalWebServiceHQ/CheckFHIRAPIKey" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
     <wsdl:operation name="GenerateFHIRAPIKey">
       <soap12:operation soapAction="https://www.opendental.com/OpenDentalWebServiceHQ/GenerateFHIRAPIKey" style="document" />
       <wsdl:input>
@@ -4731,6 +4783,15 @@
         <soap12:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
+    <wsdl:operation name="GetCareCreditBatchTimes">
+      <soap12:operation soapAction="https://www.opendental.com/OpenDentalWebServiceHQ/GetCareCreditBatchTimes" style="document" />
+      <wsdl:input>
+        <soap12:body use="literal" />
+      </wsdl:input>
+      <wsdl:output>
+        <soap12:body use="literal" />
+      </wsdl:output>
+    </wsdl:operation>
     <wsdl:operation name="ManageAdvertisingPostcardsAccount">
       <soap12:operation soapAction="https://www.opendental.com/OpenDentalWebServiceHQ/ManageAdvertisingPostcardsAccount" style="document" />
       <wsdl:input>
@@ -5001,18 +5062,18 @@
         <soap12:body use="literal" />
       </wsdl:output>
     </wsdl:operation>
-    <wsdl:operation name="CheckFHIRAPIKey">
-      <soap12:operation soapAction="https://www.opendental.com/OpenDentalWebServiceHQ/CheckFHIRAPIKey" style="document" />
-      <wsdl:input>
-        <soap12:body use="literal" />
-      </wsdl:input>
-      <wsdl:output>
-        <soap12:body use="literal" />
-      </wsdl:output>
-    </wsdl:operation>
   </wsdl:binding>
   <wsdl:binding name="WebServiceMainHQHttpPost" type="tns:WebServiceMainHQHttpPost">
     <http:binding verb="POST" />
+    <wsdl:operation name="CheckFHIRAPIKey">
+      <http:operation location="/CheckFHIRAPIKey" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
     <wsdl:operation name="GenerateFHIRAPIKey">
       <http:operation location="/GenerateFHIRAPIKey" />
       <wsdl:input>
@@ -5598,6 +5659,15 @@
         <mime:mimeXml part="Body" />
       </wsdl:output>
     </wsdl:operation>
+    <wsdl:operation name="GetCareCreditBatchTimes">
+      <http:operation location="/GetCareCreditBatchTimes" />
+      <wsdl:input>
+        <mime:content type="application/x-www-form-urlencoded" />
+      </wsdl:input>
+      <wsdl:output>
+        <mime:mimeXml part="Body" />
+      </wsdl:output>
+    </wsdl:operation>
     <wsdl:operation name="ManageAdvertisingPostcardsAccount">
       <http:operation location="/ManageAdvertisingPostcardsAccount" />
       <wsdl:input>
@@ -5861,15 +5931,6 @@
     </wsdl:operation>
     <wsdl:operation name="EnableAdditionalFeatures">
       <http:operation location="/EnableAdditionalFeatures" />
-      <wsdl:input>
-        <mime:content type="application/x-www-form-urlencoded" />
-      </wsdl:input>
-      <wsdl:output>
-        <mime:mimeXml part="Body" />
-      </wsdl:output>
-    </wsdl:operation>
-    <wsdl:operation name="CheckFHIRAPIKey">
-      <http:operation location="/CheckFHIRAPIKey" />
       <wsdl:input>
         <mime:content type="application/x-www-form-urlencoded" />
       </wsdl:input>

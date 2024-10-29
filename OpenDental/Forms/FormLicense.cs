@@ -9,17 +9,23 @@ namespace OpenDental{
 	/// <summary></summary>
 	public partial class FormLicense : FormODBase {
 
-		///<summary></summary>
-		public FormLicense() {
+		private string _selectedLicense;
+
+		///<summary>If selectedLicense is null, then OpenDentalLicense will be the selected license by default. To ensure correct selection, use Properties.Resources.LicenseName to set selectedLicense value.</summary>
+		public FormLicense(string selectedLicense=null) {
 			InitializeComponent();
 			InitializeLayoutManager();
 			Lan.F(this);
+			_selectedLicense=Properties.Resources.OpenDentalLicense;
+			if(!String.IsNullOrWhiteSpace(selectedLicense)){
+				_selectedLicense=selectedLicense;
+			}
 		}
 
 		private void FormLicense_Load(object sender,EventArgs e) {
 			FillListBoxLicense();
 			for(int i = 0; i < listBoxLicense.Items.Count; i++) {
-				if((string)listBoxLicense.Items.GetObjectAt(i)==Properties.Resources.OpenDentalLicense) {
+				if((string)listBoxLicense.Items.GetObjectAt(i)==_selectedLicense) {
 					listBoxLicense.SetSelected(i,true);
 				}
 			}
@@ -28,6 +34,7 @@ namespace OpenDental{
 		///<summary>Fills the listbox with licenses and the license text as a tag. New Licenses needed to be added in FormRegistrationKey.cs as well.</summary>
 		private void FillListBoxLicense() {
 			listBoxLicense.Items.Add("OpenDental",Properties.Resources.OpenDentalLicense);
+			listBoxLicense.Items.Add("OpenDental API End User",Properties.Resources.OpenDentalApiEndUserLicense);
 			listBoxLicense.Items.Add("AForge",Properties.Resources.AForge);
 			listBoxLicense.Items.Add("Angular",Properties.Resources.Angular);
 			listBoxLicense.Items.Add("Bouncy Castle",Properties.Resources.BouncyCastle);

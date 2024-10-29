@@ -208,25 +208,25 @@ namespace OpenDental {
 			if(_docNumSelected>0) {
 				Document document=Documents.GetByNum(_docNumSelected);
 				fileName=document.FileName;
+				if(fileName.EndsWith(".pdf")) {
+					MessageBox.Show(this,"PDF attachments are not supported.");
+					return false;
+				}
+				if(!fileName.ToLower().EndsWith(".bmp")
+					&& !fileName.ToLower().EndsWith(".gif")
+					&& !fileName.ToLower().EndsWith(".jpeg")
+					&& !fileName.ToLower().EndsWith(".png")
+					&& !fileName.ToLower().EndsWith(".tiff")
+					&& !fileName.ToLower().EndsWith(".jpg")
+					&& !fileName.ToLower().EndsWith(".tif"))
+				{
+					MsgBox.Show(this,"The selected file type is invalid. Valid file types include BMP, GIF, JPEG, PNG, TIFF, TIF, and JPG.");
+					return false;
+				}
 				bitmap=ImageHelper.GetBitmapOfDocumentFromDb(_docNumSelected);
 			}
 			else {
 				bitmap=MountHelper.GetBitmapOfMountFromDb(_mountNumSelected);
-			}
-			if(fileName.EndsWith(".pdf")) {
-				MessageBox.Show(this,"PDF attachments are not supported.");
-				return false;
-			}
-			if(!fileName.ToLower().EndsWith(".bmp")
-				&& !fileName.ToLower().EndsWith(".gif")
-				&& !fileName.ToLower().EndsWith(".jpeg")
-				&& !fileName.ToLower().EndsWith(".png")
-				&& !fileName.ToLower().EndsWith(".tiff")
-				&& !fileName.ToLower().EndsWith(".jpg")
-				&& !fileName.ToLower().EndsWith(".tif"))
-			{
-				MsgBox.Show(this,"The selected file type is invalid. Valid file types include BMP, GIF, JPEG, PNG, TIFF, TIF, and JPG.");
-				return false;
 			}
 			if(string.IsNullOrWhiteSpace(textFileName.Text)) {
 				MsgBox.Show(this,"Enter the filename for this attachment.");

@@ -225,20 +225,27 @@ Like in that form, edits to the fields do not get saved to the db as they are ed
 			if(ctrlEFormFill.ListEFormFields[idx].FieldType==EnumEFormFieldType.MedicationList){
 				FrmEFormMedicationListEdit frmEFormMedicationListEdit=new FrmEFormMedicationListEdit();
 				frmEFormMedicationListEdit.EFormFieldCur=ctrlEFormFill.ListEFormFields[idx];
-				frmEFormMedicationListEdit._listEFormFields=ctrlEFormFill.ListEFormFields;
-				frmEFormMedicationListEdit.EFormDefCur=EFormDefCur;
+				frmEFormMedicationListEdit.ListEFormFields=ctrlEFormFill.ListEFormFields;
+				if(comboLanguage.SelectedIndex>0) {
+					frmEFormMedicationListEdit.LanguageShowing=comboLanguage.SelectedItem.ToString();
+				}
 				frmEFormMedicationListEdit.ShowDialog();
+				_isChangedLanCache|=frmEFormMedicationListEdit.IsChangedLanCache;
 				if(frmEFormMedicationListEdit.IsDialogCancel){
 					return;
 				}
-				if(frmEFormMedicationListEdit.EFormFieldCur==null){
+				if(ctrlEFormFill.ListEFormFields[idx].IsDeleted){
+					if(ctrlEFormFill.ListEFormFields[idx].IsNew){//the field was added in this session previously
+						EFormFieldDefs.Delete(ctrlEFormFill.ListEFormFields[idx].EFormFieldDefNum);//also deletes languagepats.
+					}
+					else{
+						ctrlEFormFill.ListEFormFieldDefNumsToDelete.Add(ctrlEFormFill.ListEFormFields[idx].EFormFieldDefNum);//these will get deleted when user clicks Save
+					}
 					ctrlEFormFill.ListEFormFields.RemoveAt(idx);
-					ctrlEFormFill.RefreshLayout();
-					return;
 				}
+				ctrlEFormFill.RefreshLayout();
+				return;
 			}
-			ctrlEFormFill.RefreshLayout();
-			return;
 		}
 
 		private void FrmEFormDefEdit_FormClosed(object sender,EventArgs e) {
@@ -492,25 +499,35 @@ Like in that form, edits to the fields do not get saved to the db as they are ed
 		}
 
 		private void butMedicationList_Click(object sender,EventArgs e) {
+			//See comments in butTextField_Click.
+			EFormFieldDef eFormFieldDef=new EFormFieldDef();
+			EFormFieldDefs.Insert(eFormFieldDef);
+			EFormField eFormField=EFormFields.FromDef(eFormFieldDef);
 			FrmEFormMedicationListEdit frmEFormMedicationListEdit=new FrmEFormMedicationListEdit();
-			EFormField eFormField=new EFormField();
 			eFormField.IsNew=true;
 			eFormField.FontScale=100;
 			eFormField.FieldType=EnumEFormFieldType.MedicationList;
 			EFormMedListLayout eFormMedListLayout=new EFormMedListLayout();
 			eFormField.ValueLabel=JsonConvert.SerializeObject(eFormMedListLayout);
 			frmEFormMedicationListEdit.EFormFieldCur=eFormField;
-			frmEFormMedicationListEdit._listEFormFields=ctrlEFormFill.ListEFormFields;
-			frmEFormMedicationListEdit.EFormDefCur=EFormDefCur;
+			frmEFormMedicationListEdit.ListEFormFields=ctrlEFormFill.ListEFormFields;
+			int idxNew=ctrlEFormFill.GetSelectedIndex();
+			if(idxNew==-1){
+				idxNew=EFormFields.GetLastIdxThisPage(ctrlEFormFill.ListEFormFields,ctrlEFormFill.GetPageShowing());
+			}
+			ctrlEFormFill.ListEFormFields.Insert(idxNew,eFormField);
+			if(comboLanguage.SelectedIndex>0) {
+				frmEFormMedicationListEdit.LanguageShowing=comboLanguage.SelectedItem.ToString();
+			}
 			frmEFormMedicationListEdit.ShowDialog();
-			if(frmEFormMedicationListEdit.IsDialogCancel){
+			_isChangedLanCache|=frmEFormMedicationListEdit.IsChangedLanCache;
+			if(frmEFormMedicationListEdit.IsDialogCancel || eFormField.IsDeleted){
+				EFormFieldDefs.Delete(eFormField.EFormFieldDefNum);
+				ctrlEFormFill.ListEFormFields.Remove(eFormField);
 				return;
 			}
-			if(frmEFormMedicationListEdit.EFormFieldCur==null){
-				//they clicked Delete for some reason, which is the same as cancel.
-				return;
-			}
-			AddNewField(eFormField);//This will refresh the layout and set a selected field.
+			ctrlEFormFill.RefreshLayout();
+			ctrlEFormFill.SetSelected(idxNew);
 		}
 
 		private void butPageBreak_Click(object sender,EventArgs e) {
@@ -518,11 +535,19 @@ Like in that form, edits to the fields do not get saved to the db as they are ed
 				MsgBox.Show(this,"Cannot add a page break before adding fields first.");
 				return;
 			}
-			EFormField eFormField =new EFormField();
+			EFormFieldDef eFormFieldDef=new EFormFieldDef();
+			EFormFieldDefs.Insert(eFormFieldDef);
+			EFormField eFormField=EFormFields.FromDef(eFormFieldDef);
 			eFormField.IsNew=true;
 			eFormField.FontScale=100;
 			eFormField.FieldType=EnumEFormFieldType.PageBreak;
-			AddNewField(eFormField);//This will refresh the layout and set a selected field.
+			int idxNew=ctrlEFormFill.GetSelectedIndex();
+			if(idxNew==-1){
+				idxNew=EFormFields.GetLastIdxThisPage(ctrlEFormFill.ListEFormFields,ctrlEFormFill.GetPageShowing());
+			}
+			ctrlEFormFill.ListEFormFields.Insert(idxNew,eFormField);
+			ctrlEFormFill.RefreshLayout();
+			ctrlEFormFill.SetSelected(idxNew);
 		}
 		#endregion Methods - private Event Handlers, Add buttons
 
@@ -728,39 +753,6 @@ Like in that form, edits to the fields do not get saved to the db as they are ed
 		#endregion Methods - public
 
 		#region Methods - private
-		private void AddNewField(EFormField eFormField) {
-			//This is getting deprecated. Fields will be added prior to showing their dialog.
-			if(ctrlEFormFill.ListEFormFields.Count==0) {//This handles when the form is empty and adding the first field.
-				ctrlEFormFill.ListEFormFields.Add(eFormField);
-				ctrlEFormFill.RefreshLayout();
-				return;
-			}
-			int idx=ctrlEFormFill.GetSelectedIndex();
-			int pageShowing=ctrlEFormFill.GetPageShowing();//Will never be 0 because 1-based.
-			if(idx>=0 && ctrlEFormFill.ListEFormFields[idx].Page!=pageShowing){//idx may be -1 before hitting this line if no index is selected when adding new field.
-				idx=-1;//we don't want to insert at that idx because it's on another page.
-			}
-			if(idx==-1){
-				//Set the idx value to the end of the current page showing.
-				int numberOfPageBreaks=0;
-				for(int i=0;i<ctrlEFormFill.ListEFormFields.Count;i++) {
-					if(ctrlEFormFill.ListEFormFields[i].FieldType==EnumEFormFieldType.PageBreak) {
-						numberOfPageBreaks++;
-					}
-					if(numberOfPageBreaks==pageShowing) {
-						idx=i;//the page break at the bottom of the page we are on.
-						break;
-					}
-				}
-				if(idx==-1) {//Still -1. This is because we are looking at the last page.
-					idx=ctrlEFormFill.ListEFormFields.Count-1;
-				}
-			}
-			ctrlEFormFill.ListEFormFields.Insert(idx,eFormField);
-			ctrlEFormFill.RefreshLayout();
-			ctrlEFormFill.SetSelected(idx);
-		}
-
 		private void SetCtrlWidth(){
 			//Notice that there is no code at all which changes the width of this form.
 			//This section runs when user changes max width in properties or resizes window manually.

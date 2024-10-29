@@ -4,6 +4,7 @@ using System.Data;
 using System.Drawing;
 using System.Drawing.Printing;
 using System.IO;
+using System.ServiceProcess;
 using System.Windows.Forms;
 using CodeBase;
 using OpenDental.UI;
@@ -143,6 +144,10 @@ namespace OpenDental {
 
 		///<summary>Whenever we are printing we should eventually go through this method.</summary>
 		public static bool TryPrint(ODprintout printout,bool isRemotePrint=false,long printerNumOverride=0) {
+			if(!printout.HasValidSettings()) {
+				MsgBox.Show(printout.SettingsErrorCode.GetDescription());
+				return false;
+			}
 			if(!TrySetPrinter(printout,isRemotePrint:isRemotePrint,printerNumOverride:printerNumOverride)) {
 				return false;
 			}
@@ -205,6 +210,13 @@ namespace OpenDental {
 		private static bool SetPrinter(PrinterSettings printerSettings,PrintSituation printSituation,long patNum,string auditDescription,bool isRemotePrint,long printerNumOverride=0) {
 			if(!HasComputerTable) {
 				return true;//Kickout so it doesn't break when looking for a Computer table
+			}
+			//checking spooler service prevents this method from crashing.
+			//But there are also additional more rigorous checks over in ODprintout.HasValidSettings that will happen later.
+			ServiceController serviceController = new ServiceController("Spooler");
+			if(serviceController.Status!=ServiceControllerStatus.Running) {
+				MsgBox.Show("Please start the Printer Spooler service to proceed with printing.");
+				return false;
 			}
 			//If an override is passed in we should try to absolutely honor that override, or fail.
 			if(printerNumOverride!=0){
@@ -346,6 +358,10 @@ namespace OpenDental {
 			if(PrintPreviewControlOverride!=null) {
 				return IsControlPreviewOverrideValid(printout);
 			}
+			if(!printout.HasValidSettings()) {
+				MsgBox.Show(printout.SettingsErrorCode.GetDescription());
+				return false;
+			}
 			FormRpPrintPreview formRpPrintPreview=new FormRpPrintPreview(printout);
 			formRpPrintPreview.ShowDialog();
 			formRpPrintPreview.BringToFront();
@@ -354,6 +370,10 @@ namespace OpenDental {
 		
 		///<summary>Launches FormPrintPreview for the given printDoc.  Returns true if dialog result was OK; Otherwise false.</returns>
 		private static bool PreviewClassic(ODprintout printout) {
+			if(!printout.HasValidSettings()) {
+				MsgBox.Show(printout.SettingsErrorCode.GetDescription());
+				return false;
+			}
 			if(PrintPreviewControlOverride!=null) {
 				return IsControlPreviewOverrideValid(printout);
 			}
@@ -384,5 +404,18 @@ namespace OpenDental {
 				marginsDefault.Right=marginsHard.Right;
 			}
 		}
+
+		///<summary> Call whenever checking printDocument.DefaultPageSettings.PrintableArea.
+		///Also call before calling ODPrintout.Print()
+		///</summary>
+		public static bool HasValidSettings() {
+			ODprintout odPrintout=new ODprintout();
+			if(!odPrintout.HasValidSettings()) {
+				MsgBox.Show(odPrintout.SettingsErrorCode.GetDescription());
+				return false;
+			}
+			return true;
+		}
+
 	}
 }

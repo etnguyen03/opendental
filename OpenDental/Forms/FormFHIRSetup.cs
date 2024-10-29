@@ -153,5 +153,9 @@ namespace OpenDental {
 			Close();
 		}
 
+		private void butViewLicense_Click(object sender,EventArgs e) {
+			using FormLicense formLicense=new FormLicense(Properties.Resources.OpenDentalApiEndUserLicense);
+			formLicense.ShowDialog();
+		}
 	}
 }

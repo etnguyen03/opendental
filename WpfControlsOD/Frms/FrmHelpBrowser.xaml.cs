@@ -56,6 +56,7 @@ End of Checklist================================================================
 
 	public partial class FrmHelpBrowser:FrmODBase {
 		private static string _stableVersion;
+		private bool _hasInitialized=false;
 
 		///<summary>If enableUI is set to false, then it just shows them the Help Feature page and doesn't let them click.</summary>
 		public void EnableUI(bool enableUI) {
@@ -146,13 +147,16 @@ End of Checklist================================================================
 				return;
 			}
 			ToggleFaqPanel(false);
-			try {
-				await webView2.Init();
-			}
-			catch(Exception ex) {
-				FriendlyException.Show("Error loading window. Run in x86 for debug.",ex);
-				Close();
-				return;
+			if(!_hasInitialized) {
+				try {
+					await webView2.Init();
+					_hasInitialized=true;
+				}
+				catch(Exception ex) {
+					FriendlyException.Show("Error loading window. Run in x86 for debug.",ex);
+					Close();
+					return;
+				}
 			}
 			webView2.Navigate(ManualUrlToFaqUrl(url));
 		}

@@ -44,24 +44,36 @@ You must implement Alt key for the Access Key on the button.
 				return;
 			}
 			//Create and checkout local branch based on master then push to remote.
-			try {
+			UI.ProgressWin progressWin=new UI.ProgressWin();
+			progressWin.StartingMessage="Checking for clean working tree...";
+			progressWin.ActionMain=() => {
 				//All of the git methods can throw exceptions
 				if(!git.IsCleanWorkingTree()) {
-					MsgBox.Show(this,"There are changes in your working tree. Commit or stash them before continuing.");
-					return;
+					string message=Lang.g(this,"There are changes in your working tree. Commit or stash them before continuing.");
+					throw new ODException(message);
 				}
+				ODEvent.Fire(ODEventType.ProgressBar,"Checking that branch doesn't already exist in remote...");
 				if(git.RemoteBranchExists(BranchName)) {
 					string message=Lang.g(this,"The branch origin/")+BranchName+" "+Lang.g(this,"already exists.");
-					MsgBox.Show(message);
-					return;
+					throw new ODException(message);
 				}
+				ODEvent.Fire(ODEventType.ProgressBar,"Checking out branch 'master'");
 				git.Checkout("master");
+				ODEvent.Fire(ODEventType.ProgressBar,"Pulling 'master'");
 				git.Pull();
+				ODEvent.Fire(ODEventType.ProgressBar,"Creating and checking out branch '"+BranchName+"'");
 				git.CreateLocalBranchAndCheckout(BranchName);
+				ODEvent.Fire(ODEventType.ProgressBar,"Pushing branch '"+BranchName+"' to remote");
 				git.PushToRemote();
+			};
+			try {
+				progressWin.ShowDialog();
 			}
-			catch(ODException ex) {//Let the engineer handle any git errors
+			catch(Exception ex) {//Let the engineer handle any git errors
 				MsgBox.Show(ex.Message);
+				return;
+			}
+			if(progressWin.IsCancelled) {
 				return;
 			}
 			IsDialogOK=true;

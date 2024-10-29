@@ -7,6 +7,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
+using Newtonsoft.Json;
 
 namespace OpenDentBusiness{
 	///<summary></summary>
@@ -121,6 +122,10 @@ namespace OpenDentBusiness{
 						}
 					}
 				}
+				//Validating Medications
+				if(listEFormFields[i].FieldType==EnumEFormFieldType.MedicationList){
+
+				}
 				//Validating State Field
 				if(!ValidateStateField(eForm)) {
 					eFormValidation.ErrorMsg="The State field must be exactly two characters in length.";
@@ -151,7 +156,7 @@ namespace OpenDentBusiness{
 		}
 
 		///<summary>This is not called from OD proper. Required fields are only enforced in eClipboard. Returns an object that stores the error message and the page number that the problem field is located on. Use the page number to go directly to the problem field. If the return object has an empty error message, everything passed validation.</summary>
-		public static EFormValidation ValidateRequired(EForm eForm){
+		public static EFormValidation ValidateRequired(EForm eForm,bool isMedNoneChecked){
 			EFormValidation eFormValidation=new EFormValidation();
 			List<EFormField> listEFormFields=eForm.ListEFormFields;
 			int pageNum=1;
@@ -159,6 +164,16 @@ namespace OpenDentBusiness{
 				if(listEFormFields[i].FieldType==EnumEFormFieldType.PageBreak) {
 					pageNum++;
 					continue;
+				}
+				if(listEFormFields[i].FieldType==EnumEFormFieldType.MedicationList
+					&& listEFormFields[i].IsRequired)
+				{
+					List<EFormMed> listEFormMeds=JsonConvert.DeserializeObject<List<EFormMed>>(listEFormFields[i].ValueString);
+					if(listEFormMeds.Count==0 && !isMedNoneChecked){
+						eFormValidation.ErrorMsg="Medication List is a required field";
+						eFormValidation.PageNum=pageNum;
+						return eFormValidation;
+					}
 				}
 				if(listEFormFields[i].DbLink!="allergiesNone" && listEFormFields[i].DbLink!="problemsNone") {
 					//This is for all the other fields. This does work with radiobuttons, for example
@@ -242,25 +257,39 @@ namespace OpenDentBusiness{
 			Meth.NoCheckMiddleTierRole();
 			for(int i=0;i<eForm.ListEFormFields.Count;i++){
 				if(eForm.ListEFormFields[i].FieldType==EnumEFormFieldType.RadioButtons){
-					//Language translations are stored as comma delimited string like this: "label,button1,button2"
+					//Language translations are stored as pipe delimited string like this: "label|button1|button2"
 					//Our setup window, FrmEFormDefEdit, rigorously ensures that the number of items in the translation exactly matches label+buttons.
 					//List<string> listEnglishs=
-					int numRadioBtns=eForm.ListEFormFields[i].PickListVis.Split(',').ToList().Count();
-					string strLabels=eForm.ListEFormFields[i].ValueLabel+","+eForm.ListEFormFields[i].PickListVis;
+					int numRadioBtns=eForm.ListEFormFields[i].PickListVis.Split('|').ToList().Count();
+					string strLabels=eForm.ListEFormFields[i].ValueLabel+"|"+eForm.ListEFormFields[i].PickListVis;
 					string strTranslations=LanguagePats.TranslateEFormField(eForm.ListEFormFields[i].EFormFieldDefNum,langDisplay:"",strLabels,langIso3:langIso3);
-					List<string> listTranslations=strTranslations.Split(',').ToList();//Ex: [label,button1,button2]
-					//int numTranslations=strTranslations.Split(',').ToList().Count()-1;
+					List<string> listTranslations=strTranslations.Split('|').ToList();//Ex: [label,button1,button2]
+					//int numTranslations=strTranslations.Split('|').ToList().Count()-1;
 					if(listTranslations.Count-1!=numRadioBtns){//subtract 1 because of the label at idx 0.
 						continue;//should never happen
 					}
 					eForm.ListEFormFields[i].ValueLabel=listTranslations[0];
 					listTranslations.RemoveAt(0);
-					eForm.ListEFormFields[i].PickListVis=string.Join(",",listTranslations);
+					eForm.ListEFormFields[i].PickListVis=string.Join("|",listTranslations);
+					continue;
+				}
+				if(eForm.ListEFormFields[i].FieldType==EnumEFormFieldType.MedicationList){
+					//Language translations are stored as pipe delimited string.
+					EFormMedListLayout eFormMedListLayout=JsonConvert.DeserializeObject<EFormMedListLayout>(eForm.ListEFormFields[i].ValueLabel);
+					string strEnglish=eFormMedListLayout.Title+"|"+eFormMedListLayout.HeaderCol1+"|"+eFormMedListLayout.HeaderCol2+"|Delete|Add|None";
+					string strTranslations=LanguagePats.TranslateEFormField(eForm.ListEFormFields[i].EFormFieldDefNum,langDisplay:"",strEnglish,langIso3:langIso3);
+					List<string> listTranslations=strTranslations.Split('|').ToList();
+					eFormMedListLayout.Title=listTranslations[0];
+					eFormMedListLayout.HeaderCol1=listTranslations[1];
+					eFormMedListLayout.HeaderCol2=listTranslations[2];
+					eFormMedListLayout.StrDelete=listTranslations[3];
+					eFormMedListLayout.StrAdd=listTranslations[4];
+					eFormMedListLayout.StrNone=listTranslations[5];
+					eForm.ListEFormFields[i].ValueLabel=JsonConvert.SerializeObject(eFormMedListLayout);
 					continue;
 				}
 				//checkbox,date,label,sigbox,textbox:
 				eForm.ListEFormFields[i].ValueLabel=LanguagePats.TranslateEFormField(eForm.ListEFormFields[i].EFormFieldDefNum,langDisplay:"",eForm.ListEFormFields[i].ValueLabel,langIso3:langIso3);
-				//still todo: medlist
 			}
 		}
 

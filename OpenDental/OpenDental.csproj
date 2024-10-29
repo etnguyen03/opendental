@@ -10448,6 +10448,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\opendentalapienduserlicense.txt" />
     <Resource Include="Resources\bola_get.png" />
     <Resource Include="Resources\bola_launch.png" />
     <None Include="Resources\payconnect-btn-26.png" />

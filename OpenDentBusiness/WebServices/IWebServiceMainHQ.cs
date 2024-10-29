@@ -101,5 +101,6 @@ namespace OpenDentBusiness {
 		string MsgToPaySend(string officeData);
 		string ProcessUSPSAddressValidationRequest(string payload);
 		string GetMsgToPayShortUrl(string officeData);
+		string GetCareCreditBatchTimes(string officeData);
 	}
 }

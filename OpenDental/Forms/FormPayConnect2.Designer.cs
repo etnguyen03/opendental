@@ -107,7 +107,6 @@ namespace OpenDental{
 			this.radioSale.TabStop = true;
 			this.radioSale.Text = "Sale";
 			this.radioSale.UseVisualStyleBackColor = true;
-			this.radioSale.CheckedChanged += new System.EventHandler(this.radioSale_CheckedChanged);
 			// 
 			// radioRefund
 			// 

@@ -1247,7 +1247,7 @@ namespace OpenDentBusiness {
 		}
 
 		///<summary>Parses a raw email into a usable object.</summary>
-		private static Health.Direct.Agent.IncomingMessage RawEmailToIncomingMessage(string strRawEmailIn,EmailAddress emailAddressInbox) {
+		public static Health.Direct.Agent.IncomingMessage RawEmailToIncomingMessage(string strRawEmailIn,EmailAddress emailAddressInbox) {
 			Meth.NoCheckMiddleTierRole();
 			Health.Direct.Agent.IncomingMessage incomingMessage=null;
 			string lastErrorMsg="";

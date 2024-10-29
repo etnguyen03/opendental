@@ -9076,6 +9076,9 @@ namespace OpenDental {
 				totalPages:0
 			);
 			_countPages=0;
+			if(!PrinterL.HasValidSettings()) {
+				return;
+			}
 			printoutCounting.PrintDoc.PrintController=new PreviewPrintController();//dummy to ignore actual printing commands
 			printoutCounting.PrintDoc.PrintPage+=(sender,e) => _countPages++;//second event handler that also fires
 			printoutCounting.PrintDoc.Print();

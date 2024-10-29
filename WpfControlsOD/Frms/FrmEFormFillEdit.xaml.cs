@@ -278,6 +278,18 @@ namespace OpenDental {
 			_wasUnchanged=false;
 			_wasSaved=false;
 			ctrlEFormFill.FillFieldsFromControls();
+			if(ODBuild.IsDebug() && Environment.MachineName.ToLower()=="jordanhome"){
+				//This is how we test required fields in OD proper.
+				//There are certainly other ways of doing it.
+				//Med list was tricky because that checkbox is not actually present in the filled field.
+				EFormValidation eFormValidationR=EForms.ValidateRequired(EFormCur,ctrlEFormFill.GetMedListIsNoneChecked());
+				if(eFormValidationR.ErrorMsg!="") {
+					ctrlEFormFill.SetVisibilities(eFormValidationR.PageNum);
+					MsgBox.Show(eFormValidationR.ErrorMsg);
+					_wasError=true;
+					return;
+				}
+			}
 			//Next line no longer enforces required fields. That should only be done in eClipboard, not OD proper.
 			EFormValidation eFormValidation = EForms.Validate(EFormCur,_maskedSSNOld);
 			if(eFormValidation.ErrorMsg!="") {

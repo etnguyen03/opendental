@@ -3056,30 +3056,11 @@ namespace OpenDental{
 					TopazWrapper.SetTopazCompressionMode(_sigBoxTopaz,0);
 					TopazWrapper.SetTopazEncryptionMode(_sigBoxTopaz,0);
 					TopazWrapper.SetTopazKeyString(_sigBoxTopaz,"0000000000000000");//Clear out the key string
-					string keystring=GetHashString(GetDocumentShowing(0));
-					TopazWrapper.SetTopazAutoKeyData(_sigBoxTopaz,keystring);
-					TopazWrapper.SetTopazEncryptionMode(_sigBoxTopaz,2);//high encryption
-					TopazWrapper.SetTopazCompressionMode(_sigBoxTopaz,2);//high compression
-					TopazWrapper.SetTopazSigString(_sigBoxTopaz,GetDocumentShowing(0).Signature);
-					_sigBoxTopaz.Refresh();
-					//If sig is not showing, then setting the Key String to the hashed data. This is the way we used to handle signatures.
+					string keystring=ImageStore.GetHashString(GetDocumentShowing(0),_patFolder);
+					TryDecryptionForTopaz(keystring);
 					if(TopazWrapper.GetTopazNumberOfTabletPoints(_sigBoxTopaz)==0) {
-						TopazWrapper.SetTopazKeyString(_sigBoxTopaz,"0000000000000000");//Clear out the key string
-						TopazWrapper.SetTopazKeyString(_sigBoxTopaz,keystring);
-						TopazWrapper.SetTopazSigString(_sigBoxTopaz,GetDocumentShowing(0).Signature);
-					}
-					//If sig is not showing, then try encryption mode 3 for signatures signed with old SigPlusNet.dll.
-					if(TopazWrapper.GetTopazNumberOfTabletPoints(_sigBoxTopaz)==0) {
-						TopazWrapper.SetTopazEncryptionMode(_sigBoxTopaz,3);//Unknown mode (told to use via TopazSystems)
-						TopazWrapper.SetTopazSigString(_sigBoxTopaz,GetDocumentShowing(0).Signature);
-					}
-					//If sig not showing, then try the ANSI paradigm.
-					if(TopazWrapper.GetTopazNumberOfTabletPoints(_sigBoxTopaz)==0) {
-						TopazWrapper.FillSignatureANSI(_sigBoxTopaz,keystring,GetDocumentShowing(0).Signature,SignatureBoxWrapper.SigMode.Document);
-					}
-					//Try reading in the signature using different encodings for keyData.
-					if(TopazWrapper.GetTopazNumberOfTabletPoints(_sigBoxTopaz)==0) {
-						TopazWrapper.FillSignatureEncodings(_sigBoxTopaz,keystring,GetDocumentShowing(0).Signature,SignatureBoxWrapper.SigMode.Document);
+						keystring=ImageStore.GetHashString(GetDocumentShowing(0),_patFolder,includeFileInHash:false);
+						TryDecryptionForTopaz(keystring);
 					}
 					if(TopazWrapper.GetTopazNumberOfTabletPoints(_sigBoxTopaz)==0) {
 						labelInvalidSig.Visible=true;
@@ -3092,13 +3073,46 @@ namespace OpenDental{
 					sigBox.Visible=true;
 					_sigBoxTopaz.Visible=false;
 					sigBox.ClearTablet();
-					sigBox.SetKeyString(GetHashString(GetDocumentShowing(0)));
+					sigBox.SetKeyString(ImageStore.GetHashString(GetDocumentShowing(0),_patFolder));
 					sigBox.SetSigString(GetDocumentShowing(0).Signature);
+					//If sig is not showing, then try using hash without raw file data included.
+					if(sigBox.NumberOfTabletPoints()==0) {
+						sigBox.SetKeyString(ImageStore.GetHashString(GetDocumentShowing(0),_patFolder,includeFileInHash:false));
+						sigBox.SetSigString(GetDocumentShowing(0).Signature);
+					}
 					if(sigBox.NumberOfTabletPoints()==0) {
 						labelInvalidSig.Visible=true;
 					}
 					sigBox.SetTabletState(0);//not accepting input.
 				}
+			}
+		}
+
+		///<summary>Only called by FillSignature.</summary>
+		private void TryDecryptionForTopaz(string keystring) {
+			TopazWrapper.SetTopazAutoKeyData(_sigBoxTopaz,keystring);
+			TopazWrapper.SetTopazEncryptionMode(_sigBoxTopaz,2);//high encryption
+			TopazWrapper.SetTopazCompressionMode(_sigBoxTopaz,2);//high compression
+			TopazWrapper.SetTopazSigString(_sigBoxTopaz,GetDocumentShowing(0).Signature);
+			_sigBoxTopaz.Refresh();
+			//If sig is not showing, then setting the Key String to the hashed data. This is the way we used to handle signatures.
+			if(TopazWrapper.GetTopazNumberOfTabletPoints(_sigBoxTopaz)==0) {
+				TopazWrapper.SetTopazKeyString(_sigBoxTopaz,"0000000000000000");//Clear out the key string
+				TopazWrapper.SetTopazKeyString(_sigBoxTopaz,keystring);
+				TopazWrapper.SetTopazSigString(_sigBoxTopaz,GetDocumentShowing(0).Signature);
+			}
+			//If sig is not showing, then try encryption mode 3 for signatures signed with old SigPlusNet.dll.
+			if(TopazWrapper.GetTopazNumberOfTabletPoints(_sigBoxTopaz)==0) {
+				TopazWrapper.SetTopazEncryptionMode(_sigBoxTopaz,3);//Unknown mode (told to use via TopazSystems)
+				TopazWrapper.SetTopazSigString(_sigBoxTopaz,GetDocumentShowing(0).Signature);
+			}
+			//If sig not showing, then try the ANSI paradigm.
+			if(TopazWrapper.GetTopazNumberOfTabletPoints(_sigBoxTopaz)==0) {
+				TopazWrapper.FillSignatureANSI(_sigBoxTopaz,keystring,GetDocumentShowing(0).Signature,SignatureBoxWrapper.SigMode.Document);
+			}
+			//Try reading in the signature using different encodings for keyData.
+			if(TopazWrapper.GetTopazNumberOfTabletPoints(_sigBoxTopaz)==0) {
+				TopazWrapper.FillSignatureEncodings(_sigBoxTopaz,keystring,GetDocumentShowing(0).Signature,SignatureBoxWrapper.SigMode.Document);
 			}
 		}
 
@@ -3132,10 +3146,6 @@ namespace OpenDental{
 				return null;
 			}
 			return controlImageDisplay.GetDocumentShowing(idx);
-		}
-
-		private string GetHashString(Document doc) {
-			return ImageStore.GetHashString(doc,_patFolder);
 		}
 
 		/// <summary>Returns null if no ControlImageDisplay is currently selected.</summary>

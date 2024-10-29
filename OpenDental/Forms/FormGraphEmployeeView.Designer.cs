@@ -41,7 +41,7 @@
             | System.Windows.Forms.AnchorStyles.Left)));
 			this.listBoxEmployees.Location = new System.Drawing.Point(13, 62);
 			this.listBoxEmployees.Name = "listBoxEmployees";
-			this.listBoxEmployees.Size = new System.Drawing.Size(142, 862);
+			this.listBoxEmployees.Size = new System.Drawing.Size(142, 595);
 			this.listBoxEmployees.TabIndex = 4;
 			// 
 			// label14
@@ -65,7 +65,7 @@
 			// butPaste
 			// 
 			this.butPaste.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-			this.butPaste.Location = new System.Drawing.Point(246, 931);
+			this.butPaste.Location = new System.Drawing.Point(246, 664);
 			this.butPaste.Name = "butPaste";
 			this.butPaste.Size = new System.Drawing.Size(75, 24);
 			this.butPaste.TabIndex = 10;
@@ -76,7 +76,7 @@
 			// butCopy
 			// 
 			this.butCopy.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-			this.butCopy.Location = new System.Drawing.Point(164, 931);
+			this.butCopy.Location = new System.Drawing.Point(164, 664);
 			this.butCopy.Name = "butCopy";
 			this.butCopy.Size = new System.Drawing.Size(75, 24);
 			this.butCopy.TabIndex = 9;
@@ -88,6 +88,7 @@
 			// 
 			this.odDatePickerTo.AdjustCalendarLocation = new System.Drawing.Point(23, 0);
 			this.odDatePickerTo.BackColor = System.Drawing.Color.Transparent;
+			this.odDatePickerTo.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
 			this.odDatePickerTo.Location = new System.Drawing.Point(-11, 36);
 			this.odDatePickerTo.Name = "odDatePickerTo";
 			this.odDatePickerTo.Size = new System.Drawing.Size(169, 23);
@@ -97,6 +98,7 @@
 			// 
 			this.odDatePickerFrom.AdjustCalendarLocation = new System.Drawing.Point(23, 0);
 			this.odDatePickerFrom.BackColor = System.Drawing.Color.Transparent;
+			this.odDatePickerFrom.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
 			this.odDatePickerFrom.Location = new System.Drawing.Point(-11, 13);
 			this.odDatePickerFrom.Name = "odDatePickerFrom";
 			this.odDatePickerFrom.Size = new System.Drawing.Size(169, 23);
@@ -110,14 +112,14 @@
 			this.gridMain.Location = new System.Drawing.Point(164, 13);
 			this.gridMain.Name = "gridMain";
 			this.gridMain.SelectionMode = OpenDental.UI.GridSelectionMode.MultiExtended;
-			this.gridMain.Size = new System.Drawing.Size(1035, 911);
+			this.gridMain.Size = new System.Drawing.Size(1035, 644);
 			this.gridMain.TabIndex = 3;
 			this.gridMain.CellDoubleClick += new OpenDental.UI.ODGridClickEventHandler(this.GridMain_CellDoubleClick);
 			// 
 			// labelCopyPaste
 			// 
 			this.labelCopyPaste.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-			this.labelCopyPaste.Location = new System.Drawing.Point(328, 931);
+			this.labelCopyPaste.Location = new System.Drawing.Point(328, 664);
 			this.labelCopyPaste.Name = "labelCopyPaste";
 			this.labelCopyPaste.Size = new System.Drawing.Size(559, 23);
 			this.labelCopyPaste.TabIndex = 12;
@@ -127,7 +129,8 @@
 			// 
 			// butPrint
 			// 
-			this.butPrint.Location = new System.Drawing.Point(13, 931);
+			this.butPrint.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+			this.butPrint.Location = new System.Drawing.Point(13, 664);
 			this.butPrint.Name = "butPrint";
 			this.butPrint.Size = new System.Drawing.Size(75, 24);
 			this.butPrint.TabIndex = 13;
@@ -137,8 +140,7 @@
 			// 
 			// FormGraphEmployeeView
 			// 
-			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
-			this.ClientSize = new System.Drawing.Size(1213, 963);
+			this.ClientSize = new System.Drawing.Size(1213, 696);
 			this.Controls.Add(this.butPrint);
 			this.Controls.Add(this.labelCopyPaste);
 			this.Controls.Add(this.butPaste);
@@ -151,6 +153,7 @@
 			this.Controls.Add(this.gridMain);
 			this.Name = "FormGraphEmployeeView";
 			this.Text = "Employee Schedules";
+			this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
 			this.Load += new System.EventHandler(this.FormGraphEmployeeView_Load);
 			this.ResumeLayout(false);
 

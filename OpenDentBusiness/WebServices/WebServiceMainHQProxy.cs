@@ -1,14 +1,13 @@
-﻿using System;
+﻿using Bridges;
+using CodeBase;
+using Newtonsoft.Json;
+using ODCrypt;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml;
 using System.Xml.Serialization;
 using WebServiceSerializer;
-using CodeBase;
-using OpenDentBusiness.WebTypes;
-using ODCrypt;
-using Newtonsoft.Json;
-using Bridges;
 
 namespace OpenDentBusiness {
 	/// <summary>Per Sam - This class is usually used for web service calls dealing with billing, account management, and synch.</summary>
@@ -19,7 +18,7 @@ namespace OpenDentBusiness {
 			set;
 		}
 		
-		///<summary>Get an instance of the WebServicesHQ web service which includes the URL (pulled from PrefC). 
+		///<summary>Get an instance of the WebServicesHQ web service which includes the URL (pulled from PrefC).
 		///Optionally, you can provide the URL. This option should only be used by web apps which don't want to cause a call to PrefC.
 		///Currently, OpenDentalREST and WebHostSynch hard-code the URL.</summary>
 		public static IWebServiceMainHQ GetWebServiceMainHQInstance(string webServiceHqUrl="") {
@@ -34,12 +33,12 @@ namespace OpenDentBusiness {
 			}
 			else {
 				service=new WebServiceMainHQReal();
-				if(ODBuild.IsDebug()) {					
+				if(ODBuild.IsDebug()) {
 					((WebServiceMainHQReal)service).Timeout=(int)TimeSpan.FromMinutes(60).TotalMilliseconds;
 				}
 			}
 			//This check MUST stay here, because some applications calling this method do not have database access and cannot update preference cache.
-			if(string.IsNullOrEmpty(webServiceHqUrl)) { //Default to the production URL.				
+			if(string.IsNullOrEmpty(webServiceHqUrl)) { //Default to the production URL.
 				service.Url=PrefC.GetString(PrefName.WebServiceHQServerURL);
 			}
 			else { //URL was provided so use that.
@@ -56,7 +55,7 @@ namespace OpenDentBusiness {
 			return service;
 		}
 
-		///<summary>Prior to 17.4 the user had the choice to install the eConnector but leave it disabled. 
+		///<summary>Prior to 17.4 the user had the choice to install the eConnector but leave it disabled.
 		///As of 17.4 installing gives implied conset to also enable the servcie for communicating.</summary>
 		public static ListenerServiceType SetEConnectorOn() {
 			return WebSerializer.DeserializePrimitiveOrThrow<ListenerServiceType>(
@@ -249,7 +248,7 @@ namespace OpenDentBusiness {
 					isCacheInvalid|=Clinics.Update(clinicNew,clinicDb);
 					isSmsEnabled|=clinicSignup.IsEnabled;
 					isCacheInvalid|=ImportHQShortCodeSettings(clinicSignup);
-				}	
+				}
 				WebServiceMainHQProxy.EServiceSetup.SignupOut.SignupOutSms practiceSignup=
 					smsSignups.FirstOrDefault(x => x.ClinicNum==0)??new EServiceSetup.SignupOut.SignupOutSms();
 				//Must also import Short Code settings for the default clinic.
@@ -371,7 +370,7 @@ namespace OpenDentBusiness {
 				Signalods.Insert(new Signalod() { IType=InvalidType.ClinicPrefs });
 				ClinicPrefs.RefreshCache();
 			}
-			LogEServiceSetup(signupOut,oldSignupOut);			
+			LogEServiceSetup(signupOut,oldSignupOut);
 			return signupOut;
 		}
 
@@ -465,7 +464,7 @@ namespace OpenDentBusiness {
 				secret=WebSerializer.DeserializeTag<string>(result,"AccountSecret");
 			});
 			return UpdateHostedEmailCredentials(guid,secret,clinicNum);
-		}		
+		}
 
 		private static bool UpdateHostedEmailCredentials(string guid,string secret,long clinicNum) {
 			bool doRefreshCache=false;
@@ -1090,7 +1089,7 @@ namespace OpenDentBusiness {
 							IsPrimary=x.IsPrimary,
 						}).ToList();
 					}
-				}				
+				}
 			}
 
 			///<summary>Order matters for serialization. Do not change order.</summary>
@@ -1177,6 +1176,28 @@ namespace OpenDentBusiness {
 		public static string GetLatestCloudClientVersion() {
 			string result=GetWebServiceMainHQInstance().GetLatestCloudClientVersion();
 			return WebSerializer.DeserializePrimitive<string>(result);
+		}
+
+		///<summary>Returns a DateTime set by HQ or minval if we failed to retrieve the value.</summary>
+		public static DateTime GetCareCreditBatchProcessTime() {
+			string payload=PayloadHelper.CreatePayload("",eServiceCode.Undefined);//Undefined to only check if they were ever a customer. Doesn't require support
+			try {
+				return WebSerializer.DeserializeTag<DateTime>(GetWebServiceMainHQInstance().GetCareCreditBatchTimes(payload),"DateTimeBatchProcess");
+			}
+			catch {
+				return DateTime.MinValue;
+			}
+		}
+
+		///<summary>Returns a DateTime set by HQ or minval if we failed to retrieve the value.</summary>
+		public static DateTime GetCareCreditBatchPullbackTime() {
+			string payload=PayloadHelper.CreatePayload("",eServiceCode.Undefined);//Undefined to only check if they were ever a customer. Doesn't require support
+			try {
+				return WebSerializer.DeserializeTag<DateTime>(GetWebServiceMainHQInstance().GetCareCreditBatchTimes(payload),"DateTimeBatchPullback");
+			}
+			catch {
+				return DateTime.MinValue;
+			}
 		}
 
 		///<summary>WebServiceMainHQ.GenerateShortGUIDs returns a list of these.</summary>

@@ -141,6 +141,7 @@ How to use the TextRich control:
 			LostFocus+=This_LostFocus;
 			LostKeyboardFocus+=This_LostKeyboardFocus;
 			PreviewMouseLeftButtonDown+=This_PreviewMouseLeftButtonDown;
+			Unloaded+=TextRich_Unloaded;
 			bool isDesignMode=DesignerProperties.GetIsInDesignMode(this);
 			if(!isDesignMode && HunspellGlobal==null) {
 				if(ODBuild.IsDebug()) {
@@ -210,6 +211,11 @@ How to use the TextRich control:
 			_dispatcherTimer.Interval=TimeSpan.FromMilliseconds(500);
 			_dispatcherTimer.Tick+=_dispatcherTimer_Tick;
 			SetRedWavyUnderline();
+		}
+
+		private void TextRich_Unloaded(object sender,RoutedEventArgs e) {
+			contextMenu.Items.Clear();
+			contextMenu.Opened-=ContextMenu_Opened;
 		}
 		#endregion Constructor
 

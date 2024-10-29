@@ -964,7 +964,7 @@
 			// menuItemSendCareCreditCSS
 			// 
 			this.menuItemSendCareCreditCSS.Index = 5;
-			this.menuItemSendCareCreditCSS.Text = "Get Care Credit Self-Service Link";
+			this.menuItemSendCareCreditCSS.Text = "Get CareCredit Self-Service Link";
 			this.menuItemSendCareCreditCSS.Click += new System.EventHandler(this.menuItemSendCareCreditCSS_Click);
 			// 
 			// contextMenuPayPlan

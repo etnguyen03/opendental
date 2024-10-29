@@ -11697,12 +11697,17 @@ HAVING cnt>1";
 						emailMessageNew.RawEmailIn=emailMessageNew.RawEmailIn.Substring(0,emailMessageNew.RawEmailIn.Length-2);
 					}
 					//Remove characters which would not be valid in the database ex:Emojis.
-					//emailMessageNew has character which were stripped when inserted into the database (emailMessageOld).
+					//emailMessageNew has characters which were stripped when inserted into the database (emailMessageOld).
 					EmailMessage emailMessageNewCopy=emailMessageNew.Copy();
-					emailMessageNewCopy.Subject=SOut.StringParam(emailMessageNew.Subject);
+					EmailMessage emailMessageOldCopy=emailMessageOld.Copy();
+					Health.Direct.Agent.IncomingMessage inMsgNew=EmailMessages.RawEmailToIncomingMessage(emailMessageNewCopy.RawEmailIn,emailAddress);
+					Health.Direct.Agent.IncomingMessage inMsgOld=EmailMessages.RawEmailToIncomingMessage(emailMessageOld.RawEmailIn,emailAddress);
+					emailMessageNewCopy.Subject=inMsgNew.Message.SubjectValue;
 					emailMessageNewCopy.RawEmailIn=SOut.StringParam(emailMessageNew.RawEmailIn);
-					emailMessageNewCopy.BodyText=SOut.StringParam(emailMessageNew.BodyText);
-					if(Crud.EmailMessageCrud.UpdateComparison(emailMessageNewCopy,emailMessageOld)) {
+					emailMessageNewCopy.BodyText=inMsgNew.Message.Body.Text;
+					emailMessageOldCopy.Subject=inMsgOld.Message.SubjectValue;
+					emailMessageOldCopy.BodyText=inMsgOld.Message.Body.Text;
+					if(Crud.EmailMessageCrud.UpdateComparison(emailMessageNewCopy,emailMessageOldCopy)) {
 						countCleaned++;
 					}
 					else {//No changes.

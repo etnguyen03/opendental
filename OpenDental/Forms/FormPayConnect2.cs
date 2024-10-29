@@ -403,14 +403,16 @@ namespace OpenDental {
 			else {
 				webViewMain.Visible=true;
 				webBrowserMain.Visible=false;
-				try {
-					await webViewMain.Init();
-					webViewMain.CoreWebView2.WebMessageReceived+=GetTransactionResult;
-					await webViewMain.CoreWebView2.AddScriptToExecuteOnDocumentCreatedAsync("window.addEventListener(\'message\', e => { window.chrome.webview.postMessage(e.data); })");
-				}
-				catch(Exception ex) {
-					FriendlyException.Show("Error initializing window.",ex);
-					return;
+				if(!update) {
+					try {
+						await webViewMain.Init();
+						webViewMain.CoreWebView2.WebMessageReceived+=GetTransactionResult;
+						await webViewMain.CoreWebView2.AddScriptToExecuteOnDocumentCreatedAsync("window.addEventListener(\'message\', e => { window.chrome.webview.postMessage(e.data); })");
+					}
+					catch(Exception ex) {
+						FriendlyException.Show("Error initializing window.",ex);
+						return;
+					}
 				}
 				webViewMain.CoreWebView2.Navigate(url);
 				iframeOpen=true;
@@ -466,6 +468,7 @@ namespace OpenDental {
 				else {
 					_payConnect2Response=GetTransactionStatus(_clinicNum,response.Response.ReferenceId);
 				}
+				butRefresh.Enabled=false;
 			}
 		}
 		
@@ -484,6 +487,8 @@ namespace OpenDental {
 				comboTerminal.Enabled=true;
 				radioVoid.Enabled=false;
 				radioRefund.Enabled=false;
+				label1.Visible=false;
+				butRefresh.Enabled=false;
 			}
 			SetFormSizeToNormal();
 		}
@@ -494,6 +499,12 @@ namespace OpenDental {
 				comboTerminal.Enabled=false;
 				radioVoid.Enabled=true;
 				radioRefund.Enabled=true;
+				if(_creditCard==null && radioSale.Checked==true) {
+					SetUpIframe(GetAmountFieldAsCents());
+					butRefresh.Enabled=true;
+					label1.Visible=true;
+					butRefresh.Enabled=true;
+				}
 			}
 		}
 
@@ -502,11 +513,14 @@ namespace OpenDental {
 			if(radioSale.Checked && radioWebService.Checked && _creditCard==null) {
 				label1.Visible=true;
 				butRefresh.Enabled=true;
+				SetUpIframe(GetAmountFieldAsCents());
+				return;
 			}
 			else {
 				label1.Visible=false;
 				butRefresh.Enabled=false;
 			}
+			SetFormSizeToNormal();
 			if(radioVoid.Checked || radioRefund.Checked) {
 				checkSaveToken.Visible=false;
 				return;
@@ -536,14 +550,6 @@ namespace OpenDental {
 			DialogResult=DialogResult.OK;
 		}
 
-		private void radioSale_CheckedChanged(object sender,EventArgs e) {
-			if(radioSale.Checked && radioWebService.Checked && _creditCard==null) {
-				butRefresh.Enabled=true;
-				SetUpIframe(GetAmountFieldAsCents());
-				return;
-			}
-			SetFormSizeToNormal();
-		}
 
 		private void butRefresh_Click(object sender,EventArgs e) {
 			if(radioSale.Checked && radioWebService.Checked && _creditCard==null) {

@@ -101,7 +101,18 @@ Only supports a single selected index.
 			border.MouseLeave+=Item_MouseLeave;
 			border.MouseLeftButtonDown+=Item_MouseLeftButtonDown;
 			border.MouseMove+=Item_MouseMove;
+			border.Unloaded+=Border_Unloaded;
 			wrapPanel.Children.Add(border);
+		}
+
+		private void Border_Unloaded(object sender, RoutedEventArgs e) {
+			Border border=(Border)sender;
+			if(border.Child is System.Windows.Controls.Grid grid) {
+				Image image=grid.Children.OfType<Image>().FirstOrDefault();
+				if(image!=null) {
+					image.Source=null;
+				}
+			}
 		}
 		#endregion Methods - Public
 

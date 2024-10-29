@@ -144,6 +144,15 @@ How to use the CheckBox control:
 			}
 		}
 
+		///<summary>This is how you get rich text into a checkbox.</summary>
+		[Browsable(false)]
+		public InlineCollection Inlines {
+			get{
+				return textBlock.Inlines;
+			}
+			//no setter
+		}
+
 		[Category("OD")]
 		[DefaultValue(true)]
 		public new bool IsEnabled{

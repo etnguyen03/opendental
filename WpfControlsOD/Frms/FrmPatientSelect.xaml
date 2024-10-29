@@ -9,7 +9,7 @@
              Width="944" Height="696" 
              Text="Select Patient" MinMaxBoxes="False" >
     <Grid Background="#FFFCFDFE" >
-        <ui:Label x:Name="labelMatchingRecords" HorizontalAlignment="Right" Width="196" VerticalAlignment="Bottom" Height="17" Margin="0,0,74,72" Text="0 Records Displayed" HAlign="Center" VAlign="Center" />
+        <ui:Label x:Name="labelMatchingRecords" HorizontalAlignment="Right" Width="196" VerticalAlignment="Bottom" Height="17" Margin="0,0,74,65" Text="0 Records Displayed" HAlign="Center" VAlign="Center" />
         <ui:Button x:Name="butOK" HorizontalAlignment="Right" Width="76" VerticalAlignment="Bottom" Height="26" Margin="0,0,10,7" Text="_OK" Click="butOK_Click" />
         <ui:Grid x:Name="gridMain" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="3,2,276,7" ArrowsWhenNoFocus="True" HScrollVisible="True" Title="Select Patient" TranslationName="FormPatientSelect" WrapText="False" />
         <ui:GroupBox x:Name="groupBox1" HorizontalAlignment="Right" Width="262" Height="61" Margin="0,502,10,0" TabIndexOD="1" Text="Search" >

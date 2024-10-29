@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <?xml-stylesheet type="text/xsl" href="UnitTestsDocumentation.xsl"?>
-<members version="22.3.0.0">
+<members version="24.3.10.0">
     <UnitTest Name="Procedures_ComputeEstimates_Allowed1Allowed2">
         <TestNum>1</TestNum>
         <VersionAdded>7.1</VersionAdded>
@@ -957,12 +957,80 @@ If instead the preference was off for this unit test, then Writeoff2 would have 
     <UnitTest Name="PaymentEdit_ConstructAndLinkChargeCredits_DynamicPayPlanInterestCharge">
         <TestNum>113</TestNum>
         <VersionAdded>21.2.27</VersionAdded>
-        <Description>When a user creates a Dynamic Payment Plan, with attached production, payments can be made Explicitly or Implicitly linked to either one or both. In the event that the user wishes to create offsetting payments that do not Explicitly link to production, we want to be certain the Dynamic Payment Plan is not overpaid. We also do not want to allow money to be taken directly from production. If a user creates a Dynamic Payment Plan for Patient Joe, giving the plan a 5 APR and a Procedure with a total cost of $100, they may choose to pay the first payment's principal first using the following Paysplits:<table><thead><tr><td><strong>Patient</strong></td><td><strong>PayPlan</strong></td><td><strong>Procedure</strong></td><td><strong>Amt Paid</strong></td><td><strong>PayPlanChargeType</strong></td><td><strong>Notes</strong></td></tr></thead><tbody><tr><td>Joe</td><td>X</td><td>X</td><td>99.58</td><td>Principal</td><td>Payment on Payplan</td></tr><tr><td>Joe</td><td>X</td><td>X</td><td>99.58</td><td>Unknown</td><td>Income Transfer on Payplan with Procedure attached</td></tr><tr><td>Joe</td><td>X</td><td></td><td>-99.58</td><td>Unknown</td><td>Income Transfer on Payplan without Procedure attached</td></tr></tbody></table>This can cause the Dynamic Payment Plan to be considered overpaid since we are Explicitly adding money to it and the attached production but Implicitly removing money from the plan itself. OpenDental should see these splits and calculate that two of them are intended offsets which should net to 0. The resulting Account Entries should look like:<table><thead><tr><td><strong>Patient</strong></td><td><strong>PayPlan</strong></td><td><strong>Procedure</strong></td><td><strong>AmtEnd</strong></td><td><strong>AmtPrincipal</strong></td><td><strong>AmtInterest</strong></td><td><strong>Type</strong></td></tr></thead><tbody><tr><td>Joe</td><td></td><td>X</td><td>0</td><td>0</td><td>0</td><td>Procedure</td></tr><tr><td>Joe</td><td>X</td><td>X</td><td>0</td><td>99.58</td><td>0</td><td>Principal</td></tr><tr><td>Joe</td><td>X</td><td></td><td>0.42</td><td>0</td><td>0.42</td><td>Interest</td></tr></tbody></table></Description>
-    </UnitTest>
-    <UnitTest Name="PaymentEdit_BalanceAndIncomeTransfer_DynamicPayPlanInterestCharge">
-        <TestNum>113</TestNum>
-        <VersionAdded>21.2.27</VersionAdded>
-        <Description>When a user creates a Dynamic Payment Plan, with attached production, payments can be made Explicitly or Implicitly linked to either one or both. In the event that the user wishes to create offsetting payments that do not Explicitly link to production, we want to be certain the Dynamic Payment Plan is not overpaid. We also do not want to allow money to be taken directly from production. If a user creates a Dynamic Payment Plan for Patient Joe, giving the plan a 5 APR and a Procedure with a total cost of $100, they may choose to pay the first payment's principal first using the following Paysplits:<table><thead><tr><td><strong>Patient</strong></td><td><strong>PayPlan</strong></td><td><strong>Procedure</strong></td><td><strong>Amt Paid</strong></td><td><strong>PayPlanChargeType</strong></td><td><strong>Notes</strong></td></tr></thead><tbody><tr><td>Joe</td><td>X</td><td>X</td><td>99.58</td><td>Principal</td><td>Payment on Payplan</td></tr><tr><td>Joe</td><td>X</td><td>X</td><td>99.58</td><td>Unknown</td><td>Income Transfer on Payplan with Procedure attached</td></tr><tr><td>Joe</td><td>X</td><td></td><td>-99.58</td><td>Unknown</td><td>Income Transfer on Payplan without Procedure attached</td></tr></tbody></table>This can cause the Dynamic Payment Plan to be considered overpaid since we are Explicitly adding money to it and the attached production but Implicitly removing money from the plan itself. OpenDental should see these splits and calculate that two of them are intended offsets which should net to 0. The resulting Account Entries should look like:<table><thead><tr><td><strong>Patient</strong></td><td><strong>PayPlan</strong></td><td><strong>Procedure</strong></td><td><strong>Amt</strong></td><td><strong>Note</strong></td></tr></thead><tbody><tr><td>Joe</td><td>X</td><td>X</td><td>-99.58</td><td>Remove Payment from Proc/Plan</td></tr><tr><td>Joe</td><td></td><td></td><td>99.58</td><td>Given to Unearned</td></tr><tr><td>Joe</td><td>X</td><td></td><td>99.58</td><td>Paid to Plan</td></tr><tr><td>Joe</td><td></td><td></td><td>99.58</td><td>Removed from Unearned</td></tr></tbody></table></Description>
+        <Description>When a user creates a Dynamic Payment Plan, with attached production, payments can be made Explicitly or Implicitly linked to either one or both. In the event that the user wishes to create offsetting payments that do not Explicitly link to production, we want to be certain the Dynamic Payment Plan is not overpaid. We also do not want to allow money to be taken directly from production. If a user creates a Dynamic Payment Plan for Patient Joe, giving the plan a 5 APR and a Procedure with a total cost of $100, they may choose to pay the first payment's principal first using the following Paysplits:<br/>
+<table>
+	<tr>
+		<td><b>Patient</b></td>
+		<td><b>PayPlan</b></td>
+		<td><b>Procedure</b></td>
+		<td><b>Amt Paid</b></td>
+		<td><b>PayPlanChargeType</b></td>
+		<td><b>Notes</b></td>
+	</tr>
+	<tr>
+		<td>Joe</td>
+		<td>X</td>
+		<td>X</td>
+		<td>99.58</td>
+		<td>Principal</td>
+		<td>Payment on Payplan</td>
+	</tr>
+	<tr>
+		<td>Joe</td>
+		<td>X</td>
+		<td>X</td>
+		<td>99.58</td>
+		<td>Unknown</td>
+		<td>Income Transfer on Payplan with Procedure attached</td>
+	</tr>
+	<tr>
+		<td>Joe</td>
+		<td>X</td>
+		<td></td>
+		<td>-99.58</td>
+		<td>Unknown</td>
+		<td>Income Transfer on Payplan without Procedure attached</td>
+	</tr>
+</table>
+This can cause the Dynamic Payment Plan to be considered overpaid since we are Explicitly adding money to it and the attached production but Implicitly removing money from the plan itself. OpenDental should see these splits and calculate that two of them are intended offsets which should net to 0. The resulting Account Entries should look like:<br/>
+<table>
+	<tr>
+		<td><b>Patient</b></td>
+		<td><b>PayPlan</b></td>
+		<td><b>Procedure</b></td>
+		<td><b>AmtEnd</b></td>
+		<td><b>AmtPrincipal</b></td>
+		<td><b>AmtInterest</b></td>
+		<td><b>Type</b></td>
+	</tr>
+	<tr>
+		<td>Joe</td>
+		<td></td>
+		<td>X</td>
+		<td>0</td>
+		<td>0</td>
+		<td>0</td>
+		<td>Procedure</td>
+	</tr>
+	<tr>
+		<td>Joe</td>
+		<td>X</td>
+		<td>X</td>
+		<td>0</td>
+		<td>99.58</td>
+		<td>0</td>
+		<td>Principal</td>
+	</tr>
+	<tr>
+		<td>Joe</td>
+		<td>X</td>
+		<td></td>
+		<td>0.42</td>
+		<td>0</td>
+		<td>0.42</td>
+		<td>Interest</td>
+	</tr>
+</table></Description>
     </UnitTest>
     <UnitTest Name="PaymentEdit_ConstructAndLinkChargeCredits_OffsettingUnattachedAdjustments">
         <TestNum>114</TestNum>
@@ -1029,6 +1097,41 @@ If instead the preference was off for this unit test, then Writeoff2 would have 
     <td>$19.00</td>
     <td>$20.00</td>
     <td>$71.00</td>
+  </tr>
+  <tr>
+    <td>3</td>
+    <td>$110.00</td>
+    <td>$0.00</td>
+    <td>$0.00</td>
+    <td>$110.00</td>
+  </tr>
+</table></Description>
+    </UnitTest>
+    <UnitTest Name="InsPlans_ComputeEstimates_ZeroWriteoffOverAnnualMaxPlanLevelWhenDeductibleEqualsProcFeeAllowedAndAnnualMaxMet">
+        <TestNum>116</TestNum>
+        <VersionAdded>22.3</VersionAdded>
+        <Description>Patient has one insurance plan, PPO, subscriber self. Global preference to zero out write-offs when annual max is entirely exceeded is set to false, plan override is set to true. Benefits include annual max of 90, crowns 100%. Three procedures are treatment planned: all crowns for $110, the second procedure causes the account to go over the annual max, and the third will then completely exceed the annual max resulting in a $0 writeoff. Also there is a deductible that will completely cover the first procedure. That procedure must not zero out the write-off.<br/>
+<table>
+  <tr>
+    <td><b>Procedure</b></td>
+    <td><b>Fee</b></td>
+    <td><b>Ins Pay Est.</b></td>
+    <td><b>Write-off</b></td>
+    <td><b>Pat portion</b></td>
+  </tr>
+  <tr>
+    <td>1</td>
+    <td>$110.00</td>
+    <td>$0</td>
+    <td>$20.00</td>
+    <td>$90.00</td>
+  </tr>
+  <tr>
+    <td>2</td>
+    <td>$110.00</td>
+    <td>$90</td>
+    <td>$20</td>
+    <td>$0</td>
   </tr>
   <tr>
     <td>3</td>
@@ -1293,6 +1396,874 @@ If instead the preference was off for this unit test, then Writeoff2 would have 
     <td>$0.00</td>
     <td>$20.00</td>
     <td>$90.00</td>
+  </tr>
+</table></Description>
+    </UnitTest>
+    <UnitTest Name="RpOutstandingIns_ZeroClaim_SentClaim2ClaimProcsNotRecievedNoPayment">
+        <TestNum>124</TestNum>
+        <VersionAdded>22.3</VersionAdded>
+        <Description>Creates a claim with two ClaimProcs attached. One of the ClaimProcs has a Status of 'Not Received'. The other has a Status of 'Preauth'. Neither ClaimProc has a ClaimPayment attached. The Claim is cleared by setting it's Status to 'Received' and it's DateReceived to today. Each ClaimProc has it's Writeoff, InsPayAmt, and InsPayEst set to 0 if it's Status is 'PreAuth' or 'Not Received' and it has no ClaimPayment attached.</Description>
+    </UnitTest>
+    <UnitTest Name="RpOutstandingIns_ZeroClaim_SentClaim2ClaimProcsNotRecieved1Payment">
+        <TestNum>125</TestNum>
+        <VersionAdded>22.3</VersionAdded>
+        <Description>Creates a claim with two ClaimProcs attached. One of the ClaimProcs has a Status of 'Not Received' and the other has a Status of 'Preauth'. One of the ClaimProcs has a ClaimPayment attached, the other does not. The Claim is cleared by setting it's Status to 'Received' and it's DateReceived to today. Each ClaimProc has it's Writeoff, InsPayAmt, and InsPayEst set to 0 if it's Status is 'PreAuth' or 'Not Received' and it has no ClaimPayment attached.</Description>
+    </UnitTest>
+    <UnitTest Name="RpOutstandingIns_ZeroClaim_SentClaim2ClaimProcs1NotReceived1ReceivedNoPayment">
+        <TestNum>126</TestNum>
+        <VersionAdded>22.2</VersionAdded>
+        <Description>Creates a claim with two ClaimProcs attached. One of the ClaimProcs has a Status of 'Not Received' and the other has a Status of 'Preauth'. One of the ClaimProcs has a ClaimPayment attached, the other does not. The Claim is cleared by setting it's Status to 'Received' and it's DateReceived to today. Each ClaimProc has it's Writeoff, InsPayAmt, and InsPayEst set to 0 if it's Status is 'PreAuth' or 'Not Received' and it has no ClaimPayment attached.</Description>
+    </UnitTest>
+    <UnitTest Name="RpOutstandingIns_ZeroClaim_CanadaSentClaim1LabFeeNoPayment">
+        <TestNum>127</TestNum>
+        <VersionAdded>22.2</VersionAdded>
+        <Description>Creates a canadian claim with two ClaimProcs attached. One on the ClaimProcs is a lab proc and the other is the LabProcs' parent. Both the ClaimProcs have a status of 'Not Received'. The Claim is cleared by setting it's Status to 'Received' and it's DateReceived to today. Each ClaimProc has it's Writeoff, InsPayAmt, and InsPayEst set to 0 if it's Status is 'PreAuth' or 'Not Received' and it has no ClaimPayment attached.</Description>
+    </UnitTest>
+    <UnitTest Name="ApptSearch_GetSearchResults_DefaultProvNoSched_ProvTime_OneOp">
+        <TestNum>128</TestNum>
+        <VersionAdded>22.2</VersionAdded>
+        <Description>Searches for available time slots in one operatory for one provider. There are two total operatories in the practice. The provider is the default provider for one operatory and the other operatory is not assigned to anyone. The provider is scheduled 8am-4pm for the next 10 days. There is an appointment in the provider's operatory for tomorrow from 8am-9am with provider time 8am-8:30am. The preference for 'Appointment Search Behavior' is set to ProviderTime search logic. The first available time slot for tomorrow should be 8:30am. Since there are no preexisting appointments on subsequent days, the remaining 9 openings should all be 8am on their respective days.</Description>
+    </UnitTest>
+    <UnitTest Name="ApptSearch_GetSearchResults_DefaultProvNoSched_ProvTime_TwoOps">
+        <TestNum>129</TestNum>
+        <VersionAdded>22.2</VersionAdded>
+        <Description>Searches for available time slots in 2 operatories for 1 provider. There are three total operatories in the practice. The provider is the default provider for two operatories and the third operatory is not assigned to anyone. The provider is scheduled 8am-4pm for the next 10 days. There is an appointment in the provider's operatory for tomorrow from 8am-9am with provider time 8am-8:30am. The preference for 'Appointment Search Behavior' is set to ProviderTime search logic. The first available time slot for tomorrow should be 8:30am. Since there are no preexisting appointments on subsequent days, the remaining 9 openings should all be 8am on their respective days.</Description>
+    </UnitTest>
+    <UnitTest Name="ApptSearch_GetSearchResults_SchedProvNoDefault_ProvTime_OneOp">
+        <TestNum>130</TestNum>
+        <VersionAdded>22.2</VersionAdded>
+        <Description>Searches for available time slots in one operatory for one provider. There are two total operatories in the practice. The provider is not the default provider for the operatory either operatory. One operatory is instead assigned to the provider in the provider's schedule, while the other operatory is not assigned to anyone. The provider is scheduled 8am-4pm for the next 10 days. There is an appointment in the provider's operatory for tomorrow from 8am-9am with provider time 8am-8:30am. The preference for 'Appointment Search Behavior' is set to ProviderTime search logic. The first available time slot for tomorrow should be 8:30am. Since there are no preexisting appointments on subsequent days, the remaining 9 openings should all be 8am on their respective days.</Description>
+    </UnitTest>
+    <UnitTest Name="ApptSearch_GetSearchResults_SchedProvNoDefault_ProvTime_TwoOps">
+        <TestNum>131</TestNum>
+        <VersionAdded>22.2</VersionAdded>
+        <Description>Searches for available time slots in two operatories (B and C) for one provider A. There are three total operatories in the practice. Provider A is not the default provider for either operatory. Both A and B operatories are assigned to the provider in their schedule while the third operatory, D, is not assigned to anyone. The provider is scheduled 8am-4pm for the next 10 days. There is an appointment in operatory A for tomorrow from 8am-9am with provider time 8am-8:30am. The preference for 'Appointment Search Behavior' is set to ProviderTime search logic. The first available time slot for tomorrow should be 8:30am. Since there are no preexisting appointments on subsequent days, the remaining 9 openings should all be 8am on their respective days.</Description>
+    </UnitTest>
+    <UnitTest Name="ApptSearch_GetSearchResults_DefaultProvNoSched_ProvTimeOp_OneOp">
+        <TestNum>132</TestNum>
+        <VersionAdded>22.2</VersionAdded>
+        <Description>Searches for available time slots in one operatory for one provider. There are two total operatories in the practice. The provider is the default provider for one operatory and the other operatory is not assigned to anyone. The provider is scheduled 8am-4pm for the next 10 days. There is an appointment in the provider's operatory for tomorrow from 8am-9am with provider time 8am-8:30am. The preference for 'Appointment Search Behavior' is set to ProviderTimeOperatory search logic. The first available time slot for tomorrow should be 9am. Since there are no preexisting appointments on subsequent days, the remaining 9 openings should all be 8am on their respective days.</Description>
+    </UnitTest>
+    <UnitTest Name="ApptSearch_GetSearchResults_DefaultProvNoSched_ProvTimeOp_TwoOps">
+        <TestNum>133</TestNum>
+        <VersionAdded>22.2</VersionAdded>
+        <Description>Searches for available time slots in 2 operatories for 1 provider. There are three total operatories in the practice. The provider is the default provider for two operatories and the third operatory is not assigned to anyone. The provider is scheduled 8am-4pm for the next 10 days. There is an appointment in the provider's operatory for tomorrow from 8am-9am with provider time 8am-8:30am. The preference for 'Appointment Search Behavior' is set to ProviderTimeOperatory search logic. The first available time slot for tomorrow should be 8:30am. Since there are no preexisting appointments on subsequent days, the remaining 9 openings should all be 8am on their respective days.</Description>
+    </UnitTest>
+    <UnitTest Name="ApptSearch_GetSearchResults_SchedProvNoDefault_ProvTimeOp_OneOp">
+        <TestNum>134</TestNum>
+        <VersionAdded>22.2</VersionAdded>
+        <Description>Searches for available time slots in one operatory for one provider. There are two total operatories in the practice. The provider is not the default provider for the operatory either operatory. One operatory is instead assigned to the provider in the provider's schedule, while the other operatory is not assigned to anyone. The provider is scheduled 8am-4pm for the next 10 days. There is an appointment in the provider's operatory for tomorrow from 8am-9am with provider time 8am-8:30am. The preference for 'Appointment Search Behavior' is set to ProviderTimeOperatory search logic. The first available time slot for tomorrow should be 9am. Since there are no preexisting appointments on subsequent days, the remaining 9 openings should all be 8am on their respective days.</Description>
+    </UnitTest>
+    <UnitTest Name="ApptSearch_GetSearchResults_SchedProvNoDefault_ProvTimeOp_TwoOps">
+        <TestNum>135</TestNum>
+        <VersionAdded>22.2</VersionAdded>
+        <Description>Searches for available time slots in two operatories (B and C) for one provider A. There are three total operatories in the practice. Provider A is not the default provider for either operatory. Both A and B operatories are assigned to the provider in their schedule while the third operatory, D, is not assigned to anyone. The provider is scheduled 8am-4pm for the next 10 days. There is an appointment in operatory A for tomorrow from 8am-9am with provider time 8am-8:30am. The preference for 'Appointment Search Behavior' is set to ProviderTimeOperatory search logic. The first available time slot for tomorrow should be 8:30am. Since there are no preexisting appointments on subsequent days, the remaining 9 openings should all be 8am on their respective days.</Description>
+    </UnitTest>
+    <UnitTest Name="ApptSearch_GetSearchResults_DefaultProvNoSched_ProvTimeOp_OneOp_Only">
+        <TestNum>136</TestNum>
+        <VersionAdded>22.2</VersionAdded>
+        <Description>Searches for available time slots in 1 operatory for 1 provider. The operatory is the only operatory in the practice. The provider is the default provider for the operatory. The provider is scheduled 8am-4pm for the next 10 days. There is an appointment in the provider's operatory for tomorrow from 8am-9am with provider time 8am-8:30am. The preference for 'Appointment Search Behavior' is set to ProviderTimeOperatory search logic. The first available time slot for tomorrow should be 9am. Since there are no preexisting appointments on subsequent days, the remaining 9 openings should all be 8am on their respective days.</Description>
+    </UnitTest>
+    <UnitTest Name="Procedures_ComputeEstimates_FrequencyLimitation_Ignore_NoBillIns">
+        <TestNum>137</TestNum>
+        <Description>Makes sure that if two claimprocs are created for the same frequency limitation group and one is marked NoBillIns, the other claimproc estimate is unaffected.</Description>
+    </UnitTest>
+    <UnitTest Name="ProcMultiVisit_UpdateGroupForProc_UpdatedClaimDates">
+        <TestNum>138</TestNum>
+        <VersionAdded>22.2</VersionAdded>
+        <Description>Patient has a Tp'd for a multiple visit group with two procedures, D2750 and N4118. They have their own insurance where they are the subscriber. Then create a claim for D2750 which should have the status 'Hold for In Process' until N4118 is completed. Ensure the claim date is set to the first procedure's date. Then complete N4118 which should update the claim's dates of service accordingly, and have the status 'Waiting to Send'.</Description>
+    </UnitTest>
+    <UnitTest Name="ProcMultiVisit_UpdateGroupForProc_UpdateClaimNotPreAuth">
+        <TestNum>139</TestNum>
+        <VersionAdded>22.2</VersionAdded>
+        <Description>Patient has a Tp'd for a multiple visit group with two procedures, D2750 and N4118. They have their own insurance where they are the subscriber. D2750 is first attached to a PreAuth claim. Receive that PreAuth and complete D2750. The PreAuth should still be received. Afterwards create a claim for D2750 which should have the status 'Hold for In Process' until N4118 is completed. The PreAuth claim should not have it's status updated since that claim was already marked 'Received'. Next complete N4118. The PreAuth should still be received, and the other claim should be 'Waiting to send' now.</Description>
+    </UnitTest>
+    <UnitTest Name="Procedures_HasMetFrequencyLimitation_1DenturePerArchPer5Yrs">
+        <TestNum>140</TestNum>
+        <VersionAdded>23.3.1</VersionAdded>
+        <Description>Ins specifies one denture or partial per [arch] every 5 years. Patient had a partial with teeth 7,8,9,10 three years ago. Estimate for new upper denture should be $0. Est for new lower denture: $1000.</Description>
+    </UnitTest>
+    <UnitTest Name="Procedures_HasMetFrequencyLimitation_1CrownPerTthPer5Yrs">
+        <TestNum>141</TestNum>
+        <VersionAdded>23.3.1</VersionAdded>
+        <Description>Ins specifies one crown per [tooth] each 5 years. Patient had a crown on #14 three years ago.  Estimate for new crown on #14 should be $0. Estimate for new crown on #15 should be $800.</Description>
+    </UnitTest>
+    <UnitTest Name="Procedures_HasNotMetFrequencyLimitation_1CrownPerTthPer5Yrs">
+        <TestNum>142</TestNum>
+        <VersionAdded>23.3.1</VersionAdded>
+        <Description>Ins specifies one crown per [tooth] each 5 years. Patient had a crown on #14 six years ago.  Estimate for new crown on #14 should be $800.</Description>
+    </UnitTest>
+    <UnitTest Name="Procedures_HasMetFrequencyLimitation_1CompPerTthPer5Yrs">
+        <TestNum>143</TestNum>
+        <VersionAdded>23.3.1</VersionAdded>
+        <Description>Ins specifies one composite filling per [tooth] every 5 years. Pt had a comp filling on #29 three years ago. Estimate for comp filling on #29 should be $0. For #30, it should be $300.</Description>
+    </UnitTest>
+    <UnitTest Name="Procedures_HasMetFrequencyLimitation_3FillingsPerMouthPerYr">
+        <TestNum>144</TestNum>
+        <VersionAdded>23.3.1</VersionAdded>
+        <Description>Ins specifies limit of three fillings per year [mouth].  Patient had two fillings three months ago, Estimate for two or more fillings should cover one but no more in the year.</Description>
+    </UnitTest>
+    <UnitTest Name="Procedures_HasMetFrequencyLimitation_1CompPerTthPer5Years_3FillingsPerMouthPerYr">
+        <TestNum>145</TestNum>
+        <VersionAdded>23.3.1</VersionAdded>
+        <Description>Ins specifies one composite filling per [tooth] every 5 years and a limit of three fillings per year [mouth]. Patient had a composite filling on #29 three years ago and composite fillings on #2 and #3 three months ago. Estimate for compostive filling on #29 should be $0. Patient needs composite fillings on #30 and #31. For #30 it should be $300. For #31 should be $0.</Description>
+    </UnitTest>
+    <UnitTest Name="Procedures_HasMetFrequencyLimitation_ExamsGrouped">
+        <TestNum>146</TestNum>
+        <VersionAdded>23.3.1</VersionAdded>
+        <Description>Exams and limited exams are covered as a group, one per year [mouth]. An exam was performed 3 months ago an covered at $150. A limited exam today should be $0.</Description>
+    </UnitTest>
+    <UnitTest Name="Procedures_HasMetFrequencyLimitation_ExamsSeparate">
+        <TestNum>147</TestNum>
+        <VersionAdded>23.3.1</VersionAdded>
+        <Description>Exams and limited exams are covered separately, one per year [mouth]. An exam was performed 3 months ago an covered at $150. A limited exam today should be $120.</Description>
+    </UnitTest>
+    <UnitTest Name="Benefits_GetDeductibleByCode_DeductLessThanGeneral">
+        <TestNum>148</TestNum>
+        <VersionAdded>17.2.34</VersionAdded>
+        <Description>A customer has an insurance plan with 100% coverage for Diagnostic work and 50% coverage for crowns. They also have a $50 general deductible and a $50 deductible on D0220. They undergo a D0220 with a $30 fee, and a D2750 with a $100 fee. Their deductible should cover the D0220, and the remaining deductible estimate for the D2750 should be $20.</Description>
+    </UnitTest>
+    <UnitTest Name="Benefits_UnderAgeWithLifetimeMax">
+        <TestNum>149</TestNum>
+        <VersionAdded>17.3.67</VersionAdded>
+        <Description>A patient is 13 years old. Their insurance covers 50% of Ortho fees within the age limit of 18. They also have an ortho lifetime max of $1000. They undergo a D8090 with a $3000 fee. Their insurance estimate should be $1000.</Description>
+    </UnitTest>
+    <UnitTest Name="Benefits_OverAgeWithLifetimeMax">
+        <TestNum>150</TestNum>
+        <VersionAdded>17.3.67</VersionAdded>
+        <Description>A patient is 20 years old. Their insurance covers 50% of Ortho fees within the age limit of 18. They also have an ortho lifetime max of $1000. They undergo a D8090 with a $3000 fee. Their insurance estimate should be $0.</Description>
+    </UnitTest>
+    <UnitTest Name="Benefits_BitewingFrequency">
+        <TestNum>151</TestNum>
+        <VersionAdded>18.2</VersionAdded>
+        <Description>A patient's insurance covers 100% of diagnostic fees, and have a frequency limitation of 1 D0274 procedure per calendar year. Within the same year, they undergo two D0274 procedures, each with a $100 fee. Their insurance estimate for the first procedure should be $100. The insurance estimate for the second procedure should be $0. <br/>
+Within that same year, they undergo a D0272 procedure with a $100 fee. No limit has been established for this code, so the procedure's insurance estimate should be $100.</Description>
+    </UnitTest>
+    <UnitTest Name="Benefits_CancerScreeningFrequency">
+        <TestNum>152</TestNum>
+        <VersionAdded>18.2</VersionAdded>
+        <Description>A patient's insurance covers 100% of diagnostic fees, and has a limits the frequency of D0431 procedures to 1 per calendar year. They undergo a D0431 procedure with a $100 fee. The insurance estimate for this procedure should be $100. <br/>
+Within the same year, they undergo a D0431 again with the same $100 fee. This time, the insurance estimate for the procedure should be $0.</Description>
+    </UnitTest>
+    <UnitTest Name="Benefits_CrownsFrequency">
+        <TestNum>153</TestNum>
+        <VersionAdded>18.2</VersionAdded>
+        <Description>A patient's insurance covers 100% of Crown procedure fees, with a frequency limitation of 1 D2740 per calendar year. They undergo two D2740 procedures, each with a $100 fee. The insurance estimate for the first procedure should be $100. The insurance estimate for the second procedure should be $0.</Description>
+    </UnitTest>
+    <UnitTest Name="Benefits_SRPFrequency">
+        <TestNum>154</TestNum>
+        <VersionAdded>18.2</VersionAdded>
+        <Description>A patient's insurance covers 100% of Periodontic fees, with a limit of one D4341 procedure per year. They undergo a D4341 procedure with a $100 fee. The insurance estimate for this procedure should be $100.<br/>
+Within the same year, the patient undergoes another D4341 procedure. This time, the procedure's insurance estimate should be $0.</Description>
+    </UnitTest>
+    <UnitTest Name="Benefits_SealantAgeLimit">
+        <TestNum>155</TestNum>
+        <VersionAdded>18.2</VersionAdded>
+        <Description>A clinic's Sealant codegroup contains codes D1351 and D1206. Their patient is 13 years old. The patient's insurance covers 100% of their routine preventative procedure costs with an Age Limit of 12 years for procedures under the Sealant codegroup. The patient undergoes a D1206 procedure, with a $100 fee. Their insurance estimate for the procedure should be $0.</Description>
+    </UnitTest>
+    <UnitTest Name="Benefits_SealantAgeLimit_PatInAgeRangeHasCoverage">
+        <TestNum>156</TestNum>
+        <VersionAdded>24.1</VersionAdded>
+        <Description>A clinic's Sealant codegroup contains codes D1351 and D1206. Their patient is 10 years old. The patient's insurance covers 100% of their routine preventative procedure costs with an Age Limit of 12 years for procedures under the Sealant codegroup. The patient undergoes a D1351 procedure, with a $100 fee. Their insurance estimate for the procedure should be $100.</Description>
+    </UnitTest>
+    <UnitTest Name="Benefits_BitewingFrequencyCanada">
+        <TestNum>157</TestNum>
+        <VersionAdded>18.2</VersionAdded>
+        <Description>A Canadian clinic has a patient whose insurance covers 100% of their diagnostic fees, with frequency limit of one 02144 procedure per calendar year. The patient undergoes two 02144 procedures within the same year, each with a fee of $100. The insurance estimate for the first procedure should be $100. The insurance estimate for the second procedure should be $0. <br/>
+Within the same year, the patient undergoes a 02143 procedure with a $100 fee. Because no limit was established for this procedure, their insurance estimate should be $100.</Description>
+    </UnitTest>
+    <UnitTest Name="Benefits_BitewingFrequencyPastYear">
+        <TestNum>158</TestNum>
+        <VersionAdded>18.3.52</VersionAdded>
+        <Description>A patient's insurance covers 100% of their diagnostic fees with a frequency limit of one D0272 procedure every 12 months. On 07/15/2018, the patient undergoes a D0272 procedure with a $100 fee. Their insurance estimate for this procedure should be $100. <br/>
+Seven months later, on 02/15/2019, the patient undergoes another D0272 procedure. The insurance estimate for this procedure should be $0.</Description>
+    </UnitTest>
+    <UnitTest Name="Benefits_TwoReceivedClaimProcsForSameClaim_FrequencyNotMet">
+        <TestNum>159</TestNum>
+        <VersionAdded>18.3.52</VersionAdded>
+        <Description>A patient's insurance covers 100% of diagnostic fees, with a limit of two D0274 procedures per calendar year. On October 1st, 2018 the patient undergoes a D0274 procedure with a $100 fee. The insurance makes payments in two checks. The first check is received and entered properly. For the second check, a user error occurs and the payment is entered as a second received claimproc. <br/>
+On October 31st, 2018 the patient returns for another D0274 procedure with a fee of $100. The insurance estimate should still be $100. Entering a payment as a second claimproc should not count against frequency limitations.</Description>
+    </UnitTest>
+    <UnitTest Name="Benefits_ServiceYear_FrequencyMet">
+        <TestNum>160</TestNum>
+        <VersionAdded>18.3.43</VersionAdded>
+        <Description>A patient's insurance covers 100% of their diagnostic fees. They have a limit of two D0274 procedures every service year, with the service year starting in April. On June 1st, the patient undergoes a D0274 procedure with a $100 fee. The insurance estimate for this procedure should be $100. On July 1st, the patient undergoes another D0274 procedure with a $100 fee. The insurance estimate for this procedure should also be $100. <br/>
+In January of the next year, the patient undergoes a third D0274 procedure with a $100 fee. The insurance estimate for this final procedure should be $0.</Description>
+    </UnitTest>
+    <UnitTest Name="Benefits_ServiceYear_FrequencyMet_SameClaim">
+        <TestNum>161</TestNum>
+        <VersionAdded>21.3.39</VersionAdded>
+        <Description>A patient's insurance covers 100% of their diagnostic fees. They have a limit of two D0274 procedures per service year, with the service year starting in April. On June 1st, the patient undergoes a D0274 procedure with a fee of $100. The insurance estimate for this procedure should be $100.<br/>
+The following January, the patient undergoes two more D0274 procedures, each having a $100 fee. These procedures end up on the same claim. The first procedure on the claim should have an insurance estimate of $100. The second procedure on the claim should have an insurance estimate of $0.</Description>
+    </UnitTest>
+    <UnitTest Name="Benefits_ServiceYear_FrequencyMet_RefreshAsOfDate">
+        <TestNum>162</TestNum>
+        <VersionAdded>18.4.48</VersionAdded>
+        <Description>A patient's insurance covers 100% of diagnostic fees. They are limited to one D0274 procedure every service year, with the service year starting in June. The patient undergoes a D0274 procedure on July 1st, with a fee of $100. The insurance estimate for this procedure should be $100. The patient then undergoes another D0274 on July 25th, with a fee of $100. The insurance estimate for this procedure should be $0. A user changes the second procedure's date to be within the next service year. The procedure's insurance estimate should update to $100.</Description>
+    </UnitTest>
+    <UnitTest Name="Benefits_GetDeductibleByCode_ExcludedDeductible">
+        <TestNum>163</TestNum>
+        <VersionAdded>19.1.24</VersionAdded>
+        <Description>A patient's insurance covers 60% of crown fees and has a $50 general deductible. The patient undergoes a D2740 procedure with a $1000 fee. The deductible for this procedure should be $50. A user adds an exclusion for crowns. Now the deductible for this procedure should be $0.</Description>
+    </UnitTest>
+    <UnitTest Name="Benefits_GetDeductibleByCode_InsuranceAdjustmentDeductibleApplyToCodeSpecificDeductibles">
+        <TestNum>164</TestNum>
+        <VersionAdded>19.1.21</VersionAdded>
+        <Description>A patient's insurance includes a $50 general deductible, a $0 diagnostic deductible, and a $50 diagnostic x ray deductible. The patient undergoes a D1110 procedure with a fee of $100, and a D0270 procedure with a fee of $1100. An adjustment is added to cover the $50 general deductible. The general deductible and the x ray deductible should both be $0.</Description>
+    </UnitTest>
+    <UnitTest Name="Benefits_InLast12Months_FrequencyMetBasic">
+        <TestNum>165</TestNum>
+        <VersionAdded>19.1</VersionAdded>
+        <Description>A patient's insurance covers 100% of their diagnostic fees. The patient is limited to two D0274 procedures every 12 months. The patient undergoes a D0274 procedure on October 28th and December 28th of 2018. These procedures each had a fee of $100. Then, on May 1st of 2019, the patient comes back for another D0274 procedure. The insurance estimate for this third procedure should be $0.</Description>
+    </UnitTest>
+    <UnitTest Name="Benefits_InLast12Months_FrequencyNotMetBasic">
+        <TestNum>166</TestNum>
+        <VersionAdded>19.1</VersionAdded>
+        <Description>A patient's insurance covers 100% of diagnostic fees. The patient is limited to two D0274 procedures every 12 months. The patient undergoes a D0274 procedure on October 1st and October 2nd of 2018. A year later, on October 1st 2019, the patient undergoes another D0274 procedure with a $100 fee. The insurance estimate for this procedure should be $100. </Description>
+    </UnitTest>
+    <UnitTest Name="Benefits_InLast12Months_FrequencyMetWithTwoProcsInLast12Months">
+        <TestNum>167</TestNum>
+        <VersionAdded>19.1</VersionAdded>
+        <Description>A patient's insurance covers 100% of diagnostic fees. The patient is limited to two D0274 procedures every 12 months. The patient goes in for a D0274 procedure on October 1st and 2nd of 2018, each procedure having a fee of $100. They go in for a third D0274 procedure on October 3rd 2018, with a $100 fee. The insurance estimate for the third procedure should be $0. On October 1st 2019, the patient goes back in for another D0274 procedure with a $100 fee. The insurance estimate for this procedure should be $100. A procedure that was not covered by insurance should not count against a limit.</Description>
+    </UnitTest>
+    <UnitTest Name="Benefits_InsHistBitewingFrequency">
+        <TestNum>168</TestNum>
+        <VersionAdded>18.4</VersionAdded>
+        <Description>A patient's insurance covers 100% of diagnostic fees. The patient is limited to one D0272 procedure per calendar year. The patient underwent a D0272 procedure at an outside clinic. Within the same year, the patient undergoes a D0272 at the user's clinic, with a fee of $100. The insurance estimate for this procedure should be $0. Outside visits should count towards limits.</Description>
+    </UnitTest>
+    <UnitTest Name="Benefits_ProcedureCodeWaitingPerdiodOverride">
+        <TestNum>169</TestNum>
+        <VersionAdded>21.2.25</VersionAdded>
+        <Description>A patient has waiting periods on their insurance. There is a category-specific waiting period of two months for Routine Preventative procedures, and a code-specific waiting period of 0 months for D1351 procedures. The patient undergoes a D1351 procedure, which is within the category-specific waiting period but outside the code-specific waiting period. The category-specific waiting period should not take precedent over the code-specific waiting period. The patient should not be considered in a waiting period. </Description>
+    </UnitTest>
+    <UnitTest Name="PayPlanEdit_CreateTransferForDynamicPaymentPlans_PlanOverPaymentStaysWithCurrentFamilyMember">
+        <TestNum>170</TestNum>
+        <VersionAdded>24.2</VersionAdded>
+        <Description>Patient 2 is in a family with Patient 1 who is the Guarantor. Patient 2 creates a Dynamic Payment Plan with a completed procedure for $150 and a Down Payment of $10. Patient 2 then makes a payment of $30. Increase the Principle Split to be an overpayment of $20. Create the transfer for the Dynamic Payment Plan. This should only have Payment Splits for Patient 2 and not Patient 1.</Description>
+    </UnitTest>
+    <UnitTest Name="Procedures_ComputeEstimates_MultiVisitGroupProcedureSkipsSyncingClaimDateWhenInProcess">
+        <TestNum>171</TestNum>
+        <VersionAdded>24.2</VersionAdded>
+        <Description>Procedures grouped for multiple visits in prior year. Complete D2750 for $100, Tp'd D6242 for $50. Computing estimate for D6242 is calculated for current benefit year.</Description>
+    </UnitTest>
+    <UnitTest Name="PayPlansDynamic_GetCompletedAmount_PayPlanLinksWithAmountOverride">
+        <TestNum>172</TestNum>
+        <VersionAdded>24.3</VersionAdded>
+        <Description>Dynamic Payment Plan (TP Await Complete) with one procedure, one $78 D1110. Has an amount override of $78. <br/>
+Add a procedure adjustment for $30 on the same D1110. <br/>
+Dynamic payment plan final total should be $78.00.<br/>
+		</Description>
+    </UnitTest>
+    <UnitTest Name="ChartModules_GetProcDescriptPlanned_CompleteApptAttachedPlannedApptHasProcsAllPlannedApptProcsComplete">
+        <TestNum>173</TestNum>
+        <VersionAdded>24.1.62</VersionAdded>
+        <Description>A patient has a planned appointment with a D0170 procedure and a D0274 procedure.  There is also an attached appointment to this planned appointment.  The attached appointment is set to complete, and both procedures on the planned appointment are set complete as well.  The 'ProcDescript' for the planned appointment should be '(Completed) ReEval, bitewings - four radiographic images'.</Description>
+    </UnitTest>
+    <UnitTest Name="ChartModules_GetProcDescriptPlanned_CompleteApptAttachedPlannedApptHasProcsSomePlannedApptProcsComplete">
+        <TestNum>174</TestNum>
+        <VersionAdded>24.1.62</VersionAdded>
+        <Description>A patient has a planned appointment with a D0170 procedure and a D0274 procedure.  There is also an attached appointment to this planned appointment.  The attached appointment is set to complete.  The D0170 procedure is set complete, but the D0274 procedure is incomplete.  The 'ProcDescript' for the planned appointment should be '(Completed) ReEval, bitewings - four radiographic images'.</Description>
+    </UnitTest>
+    <UnitTest Name="ChartModules_GetProcDescriptPlanned_CompleteApptAttachedPlannedApptHasProcsNoPlannedApptProcsComplete">
+        <TestNum>175</TestNum>
+        <VersionAdded>24.1.62</VersionAdded>
+        <Description>A patient has a planned appointment with a D0170 procedure and a D0274 procedure.  There is also an attached appointment to this planned appointment.  The attached appointment is set to complete.  The D0170 procedure and the D0274 procedure are both incomplete.  The 'ProcDescript' for the planned appointment should be '(Completed) ReEval, bitewings - four radiographic images'.</Description>
+    </UnitTest>
+    <UnitTest Name="ChartModules_GetProcDescriptPlanned_CompleteApptAttachedPlannedApptHasNoProcs">
+        <TestNum>176</TestNum>
+        <VersionAdded>24.1.62</VersionAdded>
+        <Description>A patient has a planned appointment with no procedures attached.  There is also an attached appointment to this planned appointment.  The attached appointment is set to complete.  The 'ProcDescript' for the planned appointment should be '(Completed) ReEval, bitewings - four radiographic images'.</Description>
+    </UnitTest>
+    <UnitTest Name="GetChartModules_GetProcDescriptPlanned_UncompleteApptAttachedPlannedApptHasProcsAllPlannedApptProcsComplete">
+        <TestNum>177</TestNum>
+        <VersionAdded>24.1.62</VersionAdded>
+        <Description>A patient has a planned appointment with a D0170 procedure and a D0274 procedure.  There is also an attached appointment to this planned appointment.  The attached appointment is still incomplete.  The D0170 procedure and the D0274 procedure are both set complete.  The 'ProcDescript' for the planned appointment should be '(Completed) ReEval, bitewings - four radiographic images'.</Description>
+    </UnitTest>
+    <UnitTest Name="ChartModules_GetProcDescriptPlanned_UncompleteApptAttachedPlannedApptHasProcsSomePlannedApptProcsComplete">
+        <TestNum>178</TestNum>
+        <VersionAdded>24.1.62</VersionAdded>
+        <Description>A patient has a planned appointment with a D0170 procedure and a D0274 procedure.  There is also an attached appointment to this planned appointment.  The attached appointment is incomplete.  The D0170 procedure is set complete, but the D0274 procedure is incomplete.  The 'ProcDescript' for the planned appointment should be '(Some Procs Complete) ReEval, bitewings - four radiographic images'.</Description>
+    </UnitTest>
+    <UnitTest Name="ChartModules_GetProcDescriptPlanned_UncompleteApptAttachedPlannedApptHasProcsNoPlannedApptProcsComplete">
+        <TestNum>179</TestNum>
+        <VersionAdded>24.1.62</VersionAdded>
+        <Description>A patient has a planned appointment with a D0170 procedure and a D0274 procedure.  There is also an attached appointment to this planned appointment.  The attached appointment is incomplete.  The D0170 procedure and the D0274 procedure are both incomplete.  The 'ProcDescript' for the planned appointment should be 'ReEval, bitewings - four radiographic images'.</Description>
+    </UnitTest>
+    <UnitTest Name="ChartModules_GetProcDescriptPlanned_UncompleteApptAttachedPlannedApptHasNoProcs">
+        <TestNum>180</TestNum>
+        <VersionAdded>24.1.62</VersionAdded>
+        <Description>A patient has a planned appointment with no procedures.  There is also an attached appointment to this planned appointment.  The attached appointment is incomplete.  The 'ProcDescript' for the planned appointment should be ''.</Description>
+    </UnitTest>
+    <UnitTest Name="ChartModules_GetProcDescriptPlanned_NoApptAttachedPlannedApptHasProcsAllPlannedApptProcsComplete">
+        <TestNum>181</TestNum>
+        <VersionAdded>24.1.62</VersionAdded>
+        <Description>A patient has a planned appointment with a D0170 procedure and a D0274 procedure.  There is no attached appointment to this planned appointment.  Both of the procedures are set complete.  The 'ProcDescript' for the planned appointment should be '(Completed) ReEval, bitewings - four radiographic images'.</Description>
+    </UnitTest>
+    <UnitTest Name="ChartModules_GetProcDescriptPlanned_NoApptAttachedPlannedApptHasProcsSomePlannedApptProcsComplete">
+        <TestNum>182</TestNum>
+        <VersionAdded>24.1.62</VersionAdded>
+        <Description>A patient has a planned appointment with a D0170 procedure and a D0274 procedure.  There is no attached appointment to this planned appointment.  The D0170 procedure is set complete, but the D0274 procedure is stil incomplete.  The 'ProcDescript' for the planned appointment should be '(Some Procs Complete) ReEval, bitewings - four radiographic images'.</Description>
+    </UnitTest>
+    <UnitTest Name="ChartModules_GetProcDescriptPlanned_NoApptAttachedPlannedApptHasProcsNoPlannedApptProcsComplete">
+        <TestNum>183</TestNum>
+        <VersionAdded>24.1.62</VersionAdded>
+        <Description>A patient has a planned appointment with a D0170 procedure and a D0274 procedure.  There is no attached appointment to this planned appointment.  Both of the procedures are stil incomplete.  The 'ProcDescript' for the planned appointment should be 'ReEval, bitewings - four radiographic images'.</Description>
+    </UnitTest>
+    <UnitTest Name="ChartModules_GetProcDescriptPlanned_NoApptAttachedPlannedApptHasNoProcs">
+        <TestNum>184</TestNum>
+        <VersionAdded>24.1.62</VersionAdded>
+        <Description>A patient has a planned appointment with no procedures.  There is no attached appointment to this planned appointment.  The 'ProcDescript' for the planned appointment should be ''.</Description>
+    </UnitTest>
+    <UnitTest Name="Benefits_AgeLimits_CodeGroupOverlap">
+        <TestNum>185</TestNum>
+        <VersionAdded>24.1</VersionAdded>
+        <Description>A procedure exists with an ADA code of D1201, and is part of the Sealant codegroup.<br/>
+		Another procedure exists with an ADA code of D1201.1, and is not part of the Sealant codegroup.<br/>
+		A patient with insurance has an age limit of 14 years for the Sealant codegroup.<br/>
+		The procedure that is not part of the Sealants codegroup should not have its insurance estimates<br/>
+		affected by the patient's Sealant age limit.</Description>
+    </UnitTest>
+    <UnitTest Name="ClaimProcs_ComputeBaseEst_MedicaidCOB">
+        <TestNum>186</TestNum>
+        <VersionAdded>24.1</VersionAdded>
+        <Description>The patient has three insurance plans. The primary and secondary are PPO percentage plans with a 40% coverage for procedure D6110 and a carrier allowed amount of $500 each. The tertiary is a category percentage plan with 40% coverage for D6110 and SecondaryMedicaid COB. The subscriber is self for all plans. One procedure, D6110, with a fee of $1000, is treatment planned. When opening the Procedure Info window, the insurance estimates and payments grid should reflect the following:<br/>
+<table>
+	<tr>
+		<td><b>Pri/Sec</b></td>
+		<td><b>Ins Est</b></td>
+		<td><b>Write-off</b></td>
+	</tr>
+	<tr>
+		<td>Pri</td>
+		<td>200.00</td>
+		<td>500.00</td>
+	</tr>
+	<tr>
+		<td>Sec</td>
+		<td>200.00</td>
+		<td>0.00</td>
+	</tr>
+	<tr>
+		<td></td>
+		<td>100.00</td>
+		<td></td>
+	</tr>
+</table></Description>
+    </UnitTest>
+    <UnitTest Name="PaymentEdit_BalanceAndIncomeTransfer_DynamicPayPlanInterestCharge">
+        <TestNum>187</TestNum>
+        <VersionAdded>21.2.27</VersionAdded>
+        <Description>When a user creates a Dynamic Payment Plan, with attached production, payments can be made Explicitly or Implicitly linked to either one or both. In the event that the user wishes to create offsetting payments that do not Explicitly link to production, we want to be certain the Dynamic Payment Plan is not overpaid. We also do not want to allow money to be taken directly from production. If a user creates a Dynamic Payment Plan for Patient Joe, giving the plan a 5 APR and a Procedure with a total cost of $100, they may choose to pay the first payment's principal first using the following Paysplits:<br/>
+<table>
+	<tr>
+		<td><b>Patient</b></td>
+		<td><b>PayPlan</b></td>
+		<td><b>Procedure</b></td>
+		<td><b>Amt Paid</b></td>
+		<td><b>PayPlanChargeType</b></td>
+		<td><b>Notes</b></td>
+	</tr>
+	<tr>
+		<td>Joe</td>
+		<td>X</td>
+		<td>X</td>
+		<td>99.58</td>
+		<td>Principal</td>
+		<td>Payment on Payplan</td>
+	</tr>
+	<tr>
+		<td>Joe</td>
+		<td>X</td>
+		<td>X</td>
+		<td>99.58</td>
+		<td>Unknown</td>
+		<td>Income Transfer on Payplan with Procedure attached</td>
+	</tr>
+	<tr>
+		<td>Joe</td>
+		<td>X</td>
+		<td></td>
+		<td>-99.58</td>
+		<td>Unknown</td>
+		<td>Income Transfer on Payplan without Procedure attached</td>
+	</tr>
+</table>
+This can cause the Dynamic Payment Plan to be considered overpaid since we are Explicitly adding money to it and the attached production but Implicitly removing money from the plan itself. OpenDental should see these splits and calculate that two of them are intended offsets which should net to 0. The resulting Account Entries should look like:<br/>
+<table>
+	<tr>
+		<td><b>Patient</b></td>
+		<td><b>PayPlan</b></td>
+		<td><b>Procedure</b></td>
+		<td><b>Amt</b></td>
+		<td><b>Note</b></td>
+	</tr>
+	<tr>
+		<td>Joe</td>
+		<td>X</td>
+		<td>X</td>
+		<td>-99.58</td>
+		<td>Remove Payment from Proc/Plan</td>
+	</tr>
+	<tr>
+		<td>Joe</td>
+		<td></td>
+		<td></td>
+		<td>99.58</td>
+		<td>Given to Unearned</td>
+	</tr>
+	<tr>
+		<td>Joe</td>
+		<td>X</td>
+		<td></td>
+		<td>99.58</td>
+		<td>Paid to Plan</td>
+	</tr>
+	<tr>
+		<td>Joe</td>
+		<td></td>
+		<td></td>
+		<td>99.58</td>
+		<td>Removed from Unearned</td>
+	</tr>
+</table></Description>
+    </UnitTest>
+    <UnitTest Name="ClockEvents_GetTimeCardManage_SingleWeekRatesOneTwoThreeWithOT">
+        <TestNum>188</TestNum>
+        <VersionAdded>24.3</VersionAdded>
+        <Description>Overtime hours should be paid at rates that depend on the ratio of hours worked within each rate.
+<table>
+  <tr>
+    <td colspan="3">Hours Worked</td>
+    <td colspan="2"></td>
+    <td colspan="6">Hours Paid</td>
+  </tr>
+  <tr>
+    <td style="padding:5px;">Rate 1</td>
+    <td style="padding:5px;">Rate 2</td>
+    <td style="padding:5px;">Rate 3</td>
+    <td style="padding:5px;">OT</td>
+    <td style="padding:5px;">Total</td>
+    <td style="padding:5px;">Rate 1</td>
+    <td style="padding:5px;">Rate 1 OT</td>
+    <td style="padding:5px;">Rate 2</td>
+    <td style="padding:5px;">Rate 2 OT</td>
+    <td style="padding:5px;">Rate 3</td>
+    <td style="padding:5px;">Rate 3 OT</td>
+  </tr>
+  <tr>
+    <td>40</td>
+    <td>5</td>
+    <td>16</td>
+    <td>21</td>
+    <td>61</td>
+    <td>26.23</td>
+    <td>13.77</td>
+    <td>3.28</td>
+    <td>1.72</td>
+    <td>10.49</td>
+    <td>5.51</td>
+  </tr>
+</table></Description>
+    </UnitTest>
+    <UnitTest Name="ClockEvents_GetTimeCardManage_TwoWeeksBothRatesOneTwoThreeWithOT">
+        <TestNum>189</TestNum>
+        <VersionAdded>24.3</VersionAdded>
+        <Description>Overtime hours should be paid at rates that depend on the ratio of hours worked within each rate. Each week within a pay period should calculate overtime ratios independently.
+<table>
+  <tr>
+    <td colspan="3">Hours Worked</td>
+    <td colspan="2"></td>
+    <td colspan="6">Hours Paid</td>
+  </tr>
+  <tr>
+    <td style="padding:5px;">Rate 1</td>
+    <td style="padding:5px;">Rate 2</td>
+    <td style="padding:5px;">Rate 3</td>
+    <td style="padding:5px;">OT</td>
+    <td style="padding:5px;">Total</td>
+    <td style="padding:5px;">Rate 1</td>
+    <td style="padding:5px;">Rate 1 OT</td>
+    <td style="padding:5px;">Rate 2</td>
+    <td style="padding:5px;">Rate 2 OT</td>
+    <td style="padding:5px;">Rate 3</td>
+    <td style="padding:5px;">Rate 3 OT</td>
+  </tr>
+  <tr>
+    <td>40</td>
+    <td>5</td>
+    <td>16</td>
+    <td>21</td>
+    <td>61</td>
+    <td>26.23</td>
+    <td>13.77</td>
+    <td>3.28</td>
+    <td>1.72</td>
+    <td>10.49</td>
+    <td>5.51</td>
+  </tr>
+  <tr>
+    <td>16</td>
+    <td>25</td>
+    <td>20</td>
+    <td>21</td>
+    <td>61</td>
+    <td>10.49</td>
+    <td>5.51</td>
+    <td>16.39</td>
+    <td>8.61</td>
+    <td>13.11</td>
+    <td>6.89</td>
+  </tr>
+  <tr>
+    <td colspan="11"><b>Pay Period Totals</b></td>
+  </tr>
+  <tr>
+    <td>56</td>
+    <td>30</td>
+    <td>36</td>
+    <td>42</td>
+    <td>122</td>
+    <td>36.72</td>
+    <td>19.28</td>
+    <td>19.67</td>
+    <td>10.33</td>
+    <td>23.61</td>
+    <td>12.39</td>
+  </tr>
+</table></Description>
+    </UnitTest>
+    <UnitTest Name="ClockEvents_GetTimeCardManage_TwoWeeksFirstRatesOneTwoThreeNoOTSecondRatesOneWithOT">
+        <TestNum>190</TestNum>
+        <VersionAdded>24.3</VersionAdded>
+        <Description>A pay period should only pay overtime rates for hours worked during each week. The hours worked at different rates in other weeks should be ignored when calculating overtime ratios.
+<table>
+  <tr>
+    <td colspan="3">Hours Worked</td>
+    <td colspan="2"></td>
+    <td colspan="6">Hours Paid</td>
+  </tr>
+  <tr>
+    <td style="padding:5px;">Rate 1</td>
+    <td style="padding:5px;">Rate 2</td>
+    <td style="padding:5px;">Rate 3</td>
+    <td style="padding:5px;">OT</td>
+    <td style="padding:5px;">Total</td>
+    <td style="padding:5px;">Rate 1</td>
+    <td style="padding:5px;">Rate 1 OT</td>
+    <td style="padding:5px;">Rate 2</td>
+    <td style="padding:5px;">Rate 2 OT</td>
+    <td style="padding:5px;">Rate 3</td>
+    <td style="padding:5px;">Rate 3 OT</td>
+  </tr>
+  <tr>
+    <td>1</td>
+    <td>10</td>
+    <td>29</td>
+    <td>0</td>
+    <td>40</td>
+    <td>1</td>
+    <td>0</td>
+    <td>10</td>
+    <td>0</td>
+    <td>29</td>
+    <td>0</td>
+  </tr>
+  <tr>
+    <td>80</td>
+    <td>0</td>
+    <td>0</td>
+    <td>40</td>
+    <td>80</td>
+    <td>40</td>
+    <td>40</td>
+    <td>0</td>
+    <td>0</td>
+    <td>0</td>
+    <td>0</td>
+  </tr>
+  <tr>
+    <td colspan="11"><b>Pay Period Totals</b></td>
+  </tr>
+  <tr>
+    <td>81</td>
+    <td>10</td>
+    <td>29</td>
+    <td>40</td>
+    <td>120</td>
+    <td>41</td>
+    <td>40</td>
+    <td>10</td>
+    <td>0</td>
+    <td>29</td>
+    <td>0</td>
+  </tr>
+</table></Description>
+    </UnitTest>
+    <UnitTest Name="ClockEvents_GetTimeCardManage_TwoWeeksFirstRatesThreeWithOTSecondRatesOneNoOT">
+        <TestNum>191</TestNum>
+        <VersionAdded>24.3</VersionAdded>
+        <Description>A pay period should only pay overtime rates for hours worked during each week. The hours worked at different rates in other weeks should be ignored when calculating overtime ratios.
+<table>
+  <tr>
+    <td colspan="3">Hours Worked</td>
+    <td colspan="2"></td>
+    <td colspan="6">Hours Paid</td>
+  </tr>
+  <tr>
+    <td style="padding:5px;">Rate 1</td>
+    <td style="padding:5px;">Rate 2</td>
+    <td style="padding:5px;">Rate 3</td>
+    <td style="padding:5px;">OT</td>
+    <td style="padding:5px;">Total</td>
+    <td style="padding:5px;">Rate 1</td>
+    <td style="padding:5px;">Rate 1 OT</td>
+    <td style="padding:5px;">Rate 2</td>
+    <td style="padding:5px;">Rate 2 OT</td>
+    <td style="padding:5px;">Rate 3</td>
+    <td style="padding:5px;">Rate 3 OT</td>
+  </tr>
+  <tr>
+    <td>0</td>
+    <td>0</td>
+    <td>46</td>
+    <td>6</td>
+    <td>46</td>
+    <td>0</td>
+    <td>0</td>
+    <td>0</td>
+    <td>0</td>
+    <td>40</td>
+    <td>6</td>
+  </tr>
+  <tr>
+    <td>40</td>
+    <td>0</td>
+    <td>0</td>
+    <td>0</td>
+    <td>40</td>
+    <td>40</td>
+    <td>0</td>
+    <td>0</td>
+    <td>0</td>
+    <td>0</td>
+    <td>0</td>
+  </tr>
+    <tr>
+      <td colspan="11"><b>Pay Period Totals</b></td>
+    </tr>
+  <tr>
+    <td>40</td>
+    <td>0</td>
+    <td>46</td>
+    <td>6</td>
+    <td>86</td>
+    <td>40</td>
+    <td>0</td>
+    <td>0</td>
+    <td>0</td>
+    <td>40</td>
+    <td>6</td>
+  </tr>
+</table></Description>
+    </UnitTest>
+    <UnitTest Name="ClockEvents_GetTimeCardManage_TwoWeeksFirstRatesTwoThreeWithOTSecondRatesOneWithOT">
+        <TestNum>192</TestNum>
+        <VersionAdded>24.3</VersionAdded>
+        <Description>A pay period should only pay overtime rates for hours worked during each week. The hours worked at different rates in other weeks should be ignored when calculating overtime ratios.
+<table>
+  <tr>
+    <td colspan="3">Hours Worked</td>
+    <td colspan="2"></td>
+    <td colspan="6">Hours Paid</td>
+  </tr>
+  <tr>
+    <td style="padding:5px;">Rate 1</td>
+    <td style="padding:5px;">Rate 2</td>
+    <td style="padding:5px;">Rate 3</td>
+    <td style="padding:5px;">OT</td>
+    <td style="padding:5px;">Total</td>
+    <td style="padding:5px;">Rate 1</td>
+    <td style="padding:5px;">Rate 1 OT</td>
+    <td style="padding:5px;">Rate 2</td>
+    <td style="padding:5px;">Rate 2 OT</td>
+    <td style="padding:5px;">Rate 3</td>
+    <td style="padding:5px;">Rate 3 OT</td>
+  </tr>
+  <tr>
+    <td>0</td>
+    <td>40</td>
+    <td>30</td>
+    <td>30</td>
+    <td>70</td>
+    <td>0</td>
+    <td>0</td>
+    <td>22.86</td>
+    <td>17.14</td>
+    <td>17.14</td>
+    <td>12.86</td>
+  </tr>
+  <tr>
+    <td>60</td>
+    <td>0</td>
+    <td>0</td>
+    <td>20</td>
+    <td>60</td>
+    <td>40</td>
+    <td>20</td>
+    <td>0</td>
+    <td>0</td>
+    <td>0</td>
+    <td>0</td>
+  </tr>
+  <tr>
+    <td colspan="11"><b>Pay Period Totals</b></td>
+  </tr>
+  <tr>
+    <td>60</td>
+    <td>40</td>
+    <td>30</td>
+    <td>50</td>
+    <td>130</td>
+    <td>40</td>
+    <td>20</td>
+    <td>22.86</td>
+    <td>17.14</td>
+    <td>17.14</td>
+    <td>12.86</td>
+  </tr>
+</table></Description>
+    </UnitTest>
+    <UnitTest Name="ClockEvents_GetTimeCardManage_TwoWeeksFirstRatesOneTwoThreeWithOTSecondRatesOneWithOT">
+        <TestNum>193</TestNum>
+        <VersionAdded>24.3</VersionAdded>
+        <Description>A pay period should only pay overtime rates for hours worked during each week. The hours worked at different rates in other weeks should be ignored when calculating overtime ratios.
+<table>
+  <tr>
+    <td colspan="3">Hours Worked</td>
+    <td colspan="2"></td>
+    <td colspan="6">Hours Paid</td>
+  </tr>
+  <tr>
+    <td style="padding:5px;">Rate 1</td>
+    <td style="padding:5px;">Rate 2</td>
+    <td style="padding:5px;">Rate 3</td>
+    <td style="padding:5px;">OT</td>
+    <td style="padding:5px;">Total</td>
+    <td style="padding:5px;">Rate 1</td>
+    <td style="padding:5px;">Rate 1 OT</td>
+    <td style="padding:5px;">Rate 2</td>
+    <td style="padding:5px;">Rate 2 OT</td>
+    <td style="padding:5px;">Rate 3</td>
+    <td style="padding:5px;">Rate 3 OT</td>
+  </tr>
+  <tr>
+    <td>5</td>
+    <td>25</td>
+    <td>25</td>
+    <td>15</td>
+    <td>55</td>
+    <td>3.64</td>
+    <td>1.36</td>
+    <td>18.18</td>
+    <td>6.82</td>
+    <td>18.18</td>
+    <td>6.82</td>
+  </tr>
+  <tr>
+    <td>50</td>
+    <td>0</td>
+    <td>0</td>
+    <td>10</td>
+    <td>50</td>
+    <td>40</td>
+    <td>10</td>
+    <td>0</td>
+    <td>0</td>
+    <td>0</td>
+    <td>0</td>
+  </tr>
+  <tr>
+    <td colspan="11"><b>Pay Period Totals</b></td>
+  </tr>
+  <tr>
+    <td>55</td>
+    <td>25</td>
+    <td>25</td>
+    <td>25</td>
+    <td>105</td>
+    <td>43.64</td>
+    <td>11.36</td>
+    <td>18.18</td>
+    <td>6.82</td>
+    <td>18.18</td>
+    <td>6.82</td>
+  </tr>
+</table></Description>
+    </UnitTest>
+    <UnitTest Name="ClockEvents_GetTimeCardManage_TwoWeeksFirstRatesOneTwoThreeWithOTSecondRatesOneNoOT">
+        <TestNum>194</TestNum>
+        <VersionAdded>24.3</VersionAdded>
+        <Description>A pay period should only pay overtime rates for hours worked during each week. The hours worked at different rates in other weeks should be ignored when calculating overtime ratios.
+<table>
+  <tr>
+    <td colspan="3">Hours Worked</td>
+    <td colspan="2"></td>
+    <td colspan="6">Hours Paid</td>
+  </tr>
+  <tr>
+    <td style="padding:5px;">Rate 1</td>
+    <td style="padding:5px;">Rate 2</td>
+    <td style="padding:5px;">Rate 3</td>
+    <td style="padding:5px;">OT</td>
+    <td style="padding:5px;">Total</td>
+    <td style="padding:5px;">Rate 1</td>
+    <td style="padding:5px;">Rate 1 OT</td>
+    <td style="padding:5px;">Rate 2</td>
+    <td style="padding:5px;">Rate 2 OT</td>
+    <td style="padding:5px;">Rate 3</td>
+    <td style="padding:5px;">Rate 3 OT</td>
+  </tr>
+  <tr>
+    <td>20</td>
+    <td>20</td>
+    <td>20</td>
+    <td>20</td>
+    <td>60</td>
+    <td>13.33</td>
+    <td>6.67</td>
+    <td>13.33</td>
+    <td>6.67</td>
+    <td>13.33</td>
+    <td>6.67</td>
+  </tr>
+  <tr>
+    <td>40</td>
+    <td>0</td>
+    <td>0</td>
+    <td>0</td>
+    <td>40</td>
+    <td>40</td>
+    <td>0</td>
+    <td>0</td>
+    <td>0</td>
+    <td>0</td>
+    <td>0</td>
+  </tr>
+  <tr>
+    <td colspan="11"><b>Pay Period Totals</b></td>
+  </tr>
+  <tr>
+    <td>60</td>
+    <td>20</td>
+    <td>20</td>
+    <td>20</td>
+    <td>100</td>
+    <td>53.33</td>
+    <td>6.67</td>
+    <td>13.33</td>
+    <td>6.67</td>
+    <td>13.33</td>
+    <td>6.67</td>
   </tr>
 </table></Description>
     </UnitTest>

@@ -718,6 +718,7 @@ namespace OpenDentBusiness{
 			table.Columns.Add("patientName");
 			table.Columns.Add("patientNameF");
 			table.Columns.Add("patientNamePref");
+			table.Columns.Add("patientWard");
 			table.Columns.Add("PatNum");
 			table.Columns.Add("patNum");
 			table.Columns.Add("GuarNum");
@@ -753,7 +754,7 @@ namespace OpenDentBusiness{
 			}
 			//QUERY 1: tableRaw: joins appointment, patient=======================================================================================================
 			string command="SELECT DISTINCT patient.Address patAddress1,patient.Address2 patAddress2,patient.AddrNote patAddrNote,"
-				+"patient.ApptModNote patApptModNote,appointment.AppointmentTypeNum,appointment.AptDateTime apptAptDateTime,appointment.DateTimeArrived apptAptDateTimeArrived,appointment.AptNum apptAptNum,"
+				+"patient.ApptModNote patApptModNote,appointment.AppointmentTypeNum,appointment.AptDateTime apptAptDateTime,appointment.DateTimeArrived apptAptDateTimeArrived,appointment.AptNum apptAptNum, patient.Ward patientWard,"
 				+"appointment.AptStatus apptAptStatus,appointment.Priority,appointment.Assistant apptAssistant,"
 				+"patient.BillingType patBillingType,patient.BirthDate patBirthDate,patient.DateTimeDeceased patDateTimeDeceased,"
 				+"appointment.InsPlan1,appointment.InsPlan2,appointment.ClinicNum,"
@@ -1293,6 +1294,7 @@ namespace OpenDentBusiness{
 				}
 				dataRow["patientNameF"]+=tableRaw.Rows[d]["patFName"].ToString();
 				dataRow["patientNamePref"]+=tableRaw.Rows[d]["patPreferred"].ToString();
+				dataRow["patientWard"]+=tableRaw.Rows[d]["patientWard"].ToString();
 				dataRow["PatNum"]=tableRaw.Rows[d]["apptPatNum"].ToString();
 				dataRow["patNum"]="PatNum: "+tableRaw.Rows[d]["apptPatNum"].ToString();
 				dataRow["GuarNum"]=tableRaw.Rows[d]["patGuarantor"].ToString();

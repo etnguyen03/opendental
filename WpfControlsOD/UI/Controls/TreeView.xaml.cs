@@ -178,6 +178,23 @@ How to use the TreeView control:
 			textBlock.VerticalAlignment=VerticalAlignment.Center;
 			grid.Children.Add(textBlock);
 			System.Windows.Controls.Grid.SetColumn(textBlock,1);
+			Unloaded+=TreeViewItem_Unloaded;
+		}
+
+		private void TreeViewItem_Unloaded(object sender,RoutedEventArgs e) {
+			System.Windows.Controls.Grid grid=Header as System.Windows.Controls.Grid;
+			if(grid is null) {
+				return;
+			}
+			System.Windows.Controls.Grid imageGrid=grid.Children[0] as System.Windows.Controls.Grid;
+			if(imageGrid is null) {
+				return;
+			}
+			for(int i=0;i<imageGrid.Children.Count;i++) {
+				if(imageGrid.Children[i] is Image image) {
+					image.Source=null;
+				}
+			}
 		}
 
 		public EnumIcons Icon{

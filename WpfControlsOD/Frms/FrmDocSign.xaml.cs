@@ -47,6 +47,11 @@ namespace OpenDental {
 			signatureBoxWrapper.SignatureMode=UI.SignatureBoxWrapper.SigMode.Document;
 			string keyData=ImageStore.GetHashString(_document,_patFolderName);
 			signatureBoxWrapper.FillSignature(_document.SigIsTopaz,keyData,_document.Signature);
+			//If sig is not showing, then try using hash without raw file data included.
+			if(signatureBoxWrapper.GetNumberOfTabletPoints(_document.SigIsTopaz)==0) {
+				keyData=ImageStore.GetHashString(_document,_patFolderName,includeFileInHash:false);
+				signatureBoxWrapper.FillSignature(_document.SigIsTopaz,keyData,_document.Signature);
+			}
 			_isStartingUp=false;
 		}
 

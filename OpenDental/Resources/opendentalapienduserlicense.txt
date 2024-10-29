@@ -1,0 +1,24 @@
+Open Dental API End User License Agreement
+
+This End User License Agreement is a legal agreement (“Agreement”) between Open Dental Software, Inc., (“Open Dental”) and you, the end user (“the User”), governing the installation and use of the Open Dental API Service, “the Service”.   “Open Dental API Service” or “Service” in this agreement refers to any use of the Open Dental API or the Open Dental API keys.  Open Dental Software is required to be installed and functional on a secure server in order for the Service to function. “Third Parties” are companies that are generally distinct from the User, (but may be the User in cases where the User asks for or purchases the Service), that provide additional software and/or services to the User.  The Service is separately licensed to Third Parties by Open Dental. The Service allows these Third Parties to access, use, and transmit data from or to the User’s Open Dental database, collectively (“Data”).
+
+“API Keys” are created by these Third Parties.  The use of the API keys and Service is through license to both those Third Parties and to Users that are health care providers and staff who have purchased Open Dental Software.  To enable the Service, the User must obtain the API Key from the Third Party and enter that key into the Open Dental Software settings as described in the Open Dental Software Manual.
+
+“Specific Usage” is hereby defined as any and all Data interaction by Third Parties including, but not limited to:
+	1. what the purpose of the Third Party application or service is
+	2. what User managed records or types of records are accessed, altered, or inserted
+	3. when User managed records are accessed, altered, or inserted
+	4. what, how, when, and by whom data is retained, transmitted, used, shared, or sold
+
+Although Open Dental licenses the Service to the Third Party as well as to the User, the Specific Usage is and must be governed by distinct agreement(s) between the Third Party and User, as well as applicable law and regulation.  The use of Protected Health Information and other data in the Open Dental database is or may be governed by multiple laws at local and national levels.  These laws may specify requirements for how and when data is collected, retained and/or shared.  Open Dental has no control over how this data is used once it is accessed through the Service.
+
+For purposes of health data sharing through the API, Open Dental is a business associate of neither the User nor the Third Party.  The Service specifically allows the Third Party, not Open Dental, to securely pull data from and push data to the User’s patient health records and other data in the Open Dental database.  The User must take specific action and care to ensure that the data is being accessed and used in accordance with their contracts with the Third Party(s) and in accordance with the law.
+
+These API keys may continue to function for former customers of Open Dental Software Inc. as a courtesy to Users and Third Parties even after Open Dental support is ended for a particular user.  The Service may be terminated by the Third Party, Open Dental or the User at any time for any reason.  The User may terminate the Service by disabling the Open Dental API Key(s) in the User Interface as described in the User Manual or by contacting the Third Party or Open Dental directly.
+
+The End User portion of the Service is part of the User’s Open Dental Software system and is further governed by that system’s Terms and Conditions.
+
+This software remains the property of Open Dental Software and this license to install and use the Open Dental API is a service that may be terminated at any time at the sole discretion of Open Dental Software Inc.  Usage is limited to the specific clinics for which the Service has been contracted and paid.
+
+THIS SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NONINFRINGEMENT. IN NO EVENT SHALL OPEN DENTAL SOFTWARE, INC. OR THE COPYRIGHT HOLDER BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, LOSS OF DATA, BUSINESS INTERRUPTION, OR LOSS OF PROFITS) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF WE HAVE BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.  SOME JURISDICTIONS DO NOT ALLOW THE EXCLUSION OR LIMITATION OF LIABILITY FOR CONSEQUENTIAL OR INCIDENTAL DAMAGES, SO SOME OF THE ABOVE LIMITATIONS MAY NOT APPLY.  IN ANY EVENT, THE USER AGREES THAT OPEN DENTAL SOFTWARE, INC’S ENTIRE LIABILITY FOR DAMAGES HEREUNDER SHALL IN NO EVENT EXCEED THE PURCHASE PRICE PAID TO OPEN DENTAL SOFTWARE, INC.
+

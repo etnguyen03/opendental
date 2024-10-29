@@ -9,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
@@ -86,8 +87,18 @@ adjustment.ObjNum=listObj.GetSelectedKey<ObjType>(x=>x.ObjNum);
 			Items=new ListBoxItemCollection(this);
 			IsEnabledChanged+=ListBox_IsEnabledChanged;
 			PreviewKeyDown+=ListBox_PreviewKeyDown;
+			Unloaded+=ListBox_Unloaded;
 		}
-		
+
+		private void ListBox_Unloaded(object sender, RoutedEventArgs e) {
+			if(scrollViewer.Template!=null) {
+				ScrollBar scrollBarVertical=(ScrollBar)scrollViewer.Template.FindName("PART_VerticalScrollBar",scrollViewer);
+				if(scrollBarVertical!=null) {
+					scrollBarVertical.Template=null;
+				}
+			}
+		}
+
 		#endregion Constructor
 
 		#region Events - Public Raise

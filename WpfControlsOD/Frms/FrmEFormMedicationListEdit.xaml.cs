@@ -17,11 +17,13 @@ namespace OpenDental {
 	public partial class FrmEFormMedicationListEdit : FrmODBase {
 		///<summary>This is the object being edited.</summary>
 		public EFormField EFormFieldCur;
-		///<summary>We need access to a few other fields of the EFormDef.</summary>
-		public EFormDef EFormDefCur;
 		///<summary>All the siblings</summary>
-		public List<EFormField> _listEFormFields;
+		public List<EFormField> ListEFormFields;
 		private EFormMedListLayout _eFormMedListLayout;
+		///<summary>Set this before opening this window. It's the current language being used in the parent form. Format is the text that's showing in the comboBox. Will be empty string if languages are not set up in pref LanguagesUsedByPatients or if the default language is being used in the parent FrmEFormDefs.</summary>
+		public string LanguageShowing="";
+		///<summary>We don't fire off a signal to update the language cache on other computers until we hit Save in the form window. So each edit window has this variable to keep track of whether there are any new translations. This bubbles up to the parent.</summary>
+		public bool IsChangedLanCache;
 
 		///<summary></summary>
 		public FrmEFormMedicationListEdit() {
@@ -39,6 +41,21 @@ namespace OpenDental {
 		private void FrmEFormsMedicationListEdit_Load(object sender, EventArgs e) {
 			Lang.F(this);
 			_eFormMedListLayout=JsonConvert.DeserializeObject<EFormMedListLayout>(EFormFieldCur.ValueLabel);
+			if(LanguageShowing==""){
+				groupLanguage.Visible=false;
+			}
+			else{
+				textLanguage.Text=LanguageShowing;
+				string strEnglish=_eFormMedListLayout.Title+"|"+_eFormMedListLayout.HeaderCol1+"|"+_eFormMedListLayout.HeaderCol2+"|Delete|Add|None";
+				string strTranslations=LanguagePats.TranslateEFormField(EFormFieldCur.EFormFieldDefNum,LanguageShowing,strEnglish);
+				List<string> listTranslations=strTranslations.Split('|').ToList();
+				textTitleTranslated.Text=listTranslations[0];
+				textHeaderCol1Translated.Text=listTranslations[1];
+				textHeaderCol2Translated.Text=listTranslations[2];
+				textDeleteTranslated.Text=listTranslations[3];
+				textAddTranslated.Text=listTranslations[4];
+				textNoneTranslated.Text=listTranslations[5];
+			}
 			textTitle.Text=_eFormMedListLayout.Title;
 			textHeaderCol1.Text=_eFormMedListLayout.HeaderCol1;
 			textHeaderCol2.Text=_eFormMedListLayout.HeaderCol2;
@@ -64,7 +81,7 @@ namespace OpenDental {
 				textSpaceBelow.Text=EFormFieldCur.SpaceBelow.ToString();
 			}
 			textCondParent.Text=EFormFieldCur.ConditionalParent;
-			textCondValue.Text=EFormL.ConvertCondDbToVis(_listEFormFields,EFormFieldCur.ConditionalParent,EFormFieldCur.ConditionalValue);
+			textCondValue.Text=EFormL.ConvertCondDbToVis(ListEFormFields,EFormFieldCur.ConditionalParent,EFormFieldCur.ConditionalValue);
 		}
 
 		private void CheckAdvanced_Click(object sender,EventArgs e) {
@@ -128,8 +145,8 @@ namespace OpenDental {
 		}
 		private void butPickParent_Click(object sender,EventArgs e) {
 			FrmEFormFieldPicker frmEFormFieldPicker=new FrmEFormFieldPicker();
-			frmEFormFieldPicker.ListEFormFields=_listEFormFields;
-			int idx=_listEFormFields.IndexOf(EFormFieldCur);
+			frmEFormFieldPicker.ListEFormFields=ListEFormFields;
+			int idx=ListEFormFields.IndexOf(EFormFieldCur);
 			frmEFormFieldPicker.ListSelectedIndices.Add(idx);//Prevents self selection as parent
 			frmEFormFieldPicker.ShowDialog();
 			if(frmEFormFieldPicker.IsDialogCancel){
@@ -139,10 +156,20 @@ namespace OpenDental {
 		}
 
 		private void butPickValue_Click(object sender,EventArgs e) {
-			textCondValue.Text=EFormL.PickCondValues(_listEFormFields,textCondParent.Text,textCondValue.Text);
+			textCondValue.Text=EFormL.PickCondValues(ListEFormFields,textCondParent.Text,textCondValue.Text);
 		}
 
 		private void butSave_Click(object sender, EventArgs e) {
+			if(textTitleTranslated.Text.Contains("|")
+				|| textHeaderCol1Translated.Text.Contains("|")
+				|| textHeaderCol2Translated.Text.Contains("|")
+				|| textDeleteTranslated.Text.Contains("|")
+				|| textAddTranslated.Text.Contains("|")
+				|| textNoneTranslated.Text.Contains("|"))
+			{
+				MsgBox.Show("Translations cannot contain |.");
+				return;
+			}
 			if(!textVIntWidthCol1.IsValid()
 				|| !textVIntWidthCol2.IsValid()
 				|| !textVIntFontScale.IsValid()) 
@@ -165,6 +192,12 @@ namespace OpenDental {
 				}
 			}
 			//end of validation
+			string strTranslations=textTitleTranslated.Text+"|"+textHeaderCol1Translated.Text+"|"+textHeaderCol2Translated.Text
+				+"|"+textDeleteTranslated.Text+"|"+textAddTranslated.Text+"|"+textNoneTranslated.Text;
+			IsChangedLanCache=LanguagePats.SaveTranslationEFormField(EFormFieldCur.EFormFieldDefNum,LanguageShowing,strTranslations);
+			if(IsChangedLanCache){
+				LanguagePats.RefreshCache();
+			}
 			_eFormMedListLayout.Title=textTitle.Text;
 			_eFormMedListLayout.HeaderCol1=textHeaderCol1.Text;
 			_eFormMedListLayout.HeaderCol2=textHeaderCol2.Text;
@@ -189,7 +222,7 @@ namespace OpenDental {
 			EFormFieldCur.FontScale=textVIntFontScale.Value;
 			EFormFieldCur.SpaceBelow=spaceBelow;
 			EFormFieldCur.ConditionalParent=textCondParent.Text;
-			EFormFieldCur.ConditionalValue=EFormL.ConvertCondVisToDb(_listEFormFields,textCondParent.Text,textCondValue.Text);
+			EFormFieldCur.ConditionalValue=EFormL.ConvertCondVisToDb(ListEFormFields,textCondParent.Text,textCondValue.Text);
 			//not saved to db here. That happens when clicking Save in parent window.
 			IsDialogOK=true;
 		}

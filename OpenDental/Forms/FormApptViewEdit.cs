@@ -636,7 +636,7 @@ namespace OpenDental{
 
 		private void butDelete_Click(object sender, System.EventArgs e) {
 			//this does mess up the item orders a little, but missing numbers don't actually hurt anything.
-			if(MessageBox.Show(Lan.g(this,"Delete this category?"),"",MessageBoxButtons.OKCancel)
+			if(MessageBox.Show(Lan.g(this,"Delete this view?"),"",MessageBoxButtons.OKCancel)
 				!=DialogResult.OK){
 				return;
 			}

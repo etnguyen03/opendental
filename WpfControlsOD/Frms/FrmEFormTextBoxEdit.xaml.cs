@@ -56,6 +56,7 @@ namespace OpenDental {
 				comboDbLink.SelectedIndex=idxSelect;
 			}
 			checkIsRequired.Checked=EFormFieldCur.IsRequired;
+			//groupLayout start
 			checkBorder.Checked=EFormFieldCur.Border==EnumEFormBorder.ThreeD;
 			textVIntWidth.Value=EFormFieldCur.Width;
 			checkIsWidthPercentage.Checked=EFormFieldCur.IsWidthPercentage;
@@ -97,6 +98,7 @@ namespace OpenDental {
 				textSpaceToRight.Text=EFormFieldCur.SpaceToRight.ToString();
 			}
 			checkIsTextWrap.Checked=EFormFieldCur.IsTextWrap;
+			//groupLayout end
 			textVIntFontScale.Value=EFormFieldCur.FontScale;
 			textReportableName.Text=EFormFieldCur.ReportableName;
 			checkIsLocked.Checked=EFormFieldCur.IsLocked;
@@ -248,6 +250,7 @@ namespace OpenDental {
 				EFormFieldCur.DbLink=comboDbLink.GetSelected<string>();
 			}
 			EFormFieldCur.IsRequired=checkIsRequired.Checked==true;
+			//groupLayout start
 			if(checkBorder.Checked==true){
 				EFormFieldCur.Border=EnumEFormBorder.ThreeD;
 			}
@@ -271,6 +274,7 @@ namespace OpenDental {
 			EFormFieldCur.SpaceBelow=spaceBelow;
 			EFormFieldCur.SpaceToRight=spaceToRight;
 			EFormFieldCur.IsTextWrap=checkIsTextWrap.Checked==true;
+			//groupLayout end
 			EFormFieldCur.FontScale=textVIntFontScale.Value;
 			EFormFieldCur.ReportableName=textReportableName.Text;
 			EFormFieldCur.IsLocked=checkIsLocked.Checked==true;

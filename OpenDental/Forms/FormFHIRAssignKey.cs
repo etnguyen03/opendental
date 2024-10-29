@@ -26,6 +26,12 @@ namespace OpenDental {
 				MsgBox.Show(this,"Please enter an API key.");
 				return;
 			}
+			//Display license and require acceptance or kick out if user declines
+			FrmLicenseAccept frmLicenseAccept=new FrmLicenseAccept(Properties.Resources.OpenDentalApiEndUserLicense, "Open Dental API End User License");
+			if(!frmLicenseAccept.ShowDialog()) {
+				MsgBox.Show(this, "You must accept the terms to add an API key.");
+				return;
+			}
 			string officeData=PayloadHelper.CreatePayload(PayloadHelper.CreatePayloadContent(textKey.Text,"APIKey"),eServiceCode.FHIR);
 			string result;
 			Cursor=Cursors.WaitCursor;
@@ -38,6 +44,7 @@ namespace OpenDental {
 				Cursor=Cursors.Default;
 				return;
 			}
+			SecurityLogs.MakeLogEntry(EnumPermType.Setup, 0, "New API key "+textKey.Text+" added by "+Security.CurUser.UserName);
 			string message=WebSerializer.DeserializeTag<string>(result,"Response");
 			MsgBox.Show(this,message);
 			DialogResult=DialogResult.OK;

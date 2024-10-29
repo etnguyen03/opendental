@@ -138,6 +138,7 @@ namespace OpenDentBusiness {
 		PatientNamePref,
 		PatNum,
 		PatNumAndName,
+		PatientWard,
 		PremedFlag,
 		Procs,
 		ProcsColored,

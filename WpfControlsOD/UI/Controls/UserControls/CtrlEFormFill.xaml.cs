@@ -325,8 +325,8 @@ namespace OpenDental {
 				}
 				if(ListEFormFields[i].FieldType==EnumEFormFieldType.CheckBox){
 					Border borderBox=ListEFormFields[i].TagOD as Border;
-					CheckBox checkBox=borderBox.Child as CheckBox;
-					if(checkBox.IsChecked==true) {
+					WpfControls.UI.CheckBox checkBox=borderBox.Child as WpfControls.UI.CheckBox;
+					if(checkBox.Checked==true) {
 						ListEFormFields[i].ValueString="X";
 						continue;
 					}
@@ -425,6 +425,20 @@ namespace OpenDental {
 				signature+=signatureBoxWrapper.GetSignature(keyData);
 				ListEFormFields[i].ValueString=signature;
 			}
+		}
+
+		public bool GetMedListIsNoneChecked(){
+			for(int i=0;i<ListEFormFields.Count;i++){
+				if(ListEFormFields[i].FieldType!=EnumEFormFieldType.MedicationList){
+					continue;
+				}
+				Border borderBox=ListEFormFields[i].TagOD as Border;
+				StackPanel stackPanelVert=borderBox.Child as StackPanel;
+				StackPanel stackPanelFooter=stackPanelVert.Children[2] as StackPanel;
+				WpfControls.UI.CheckBox checkBoxNone=stackPanelFooter.Children[1] as WpfControls.UI.CheckBox;
+				return checkBoxNone.Checked==true;
+			}
+			return false;//no med list present
 		}
 
 		///<summary>Will never be 0 because 1-based.</summary>
@@ -1602,6 +1616,8 @@ namespace OpenDental {
 			buttonDelete.Click+=ButtonDelete_Click;
 			Grid.SetRow(buttonDelete,idx);
 			Grid.SetColumn(buttonDelete,2);
+			ClearSignatures();
+			SetMedListNoneVis(stackPanelVert);
 		}
 
 		private void ButtonDelete_Click(object sender,EventArgs e) {
@@ -1611,6 +1627,7 @@ namespace OpenDental {
 			WpfControls.UI.Button button=sender as WpfControls.UI.Button;
 			int row=Grid.GetRow(button);
 			Grid gridMeds=button.Parent as Grid;
+			StackPanel stackPanelVert=gridMeds.Parent as StackPanel;
 			for(int c=gridMeds.Children.Count-1;c>=0;c--){//go backward so that removals work properly
 				if(gridMeds.Children[c] is WpfControls.UI.TextBox textBox){
 					if(Grid.GetRow(textBox)<row){
@@ -1636,6 +1653,8 @@ namespace OpenDental {
 				}
 			}
 			gridMeds.RowDefinitions.RemoveAt(gridMeds.RowDefinitions.Count-1);
+			ClearSignatures();
+			SetMedListNoneVis(stackPanelVert);
 		}
 		#endregion Methods - Event Handlers - Med List
 
@@ -1679,35 +1698,45 @@ namespace OpenDental {
 
 		#region Methods - private
 		private void AddCheckBox(Border borderBox,EFormField eFormField){
-			CheckBox checkBox=new CheckBox();
-			checkBox.VerticalAlignment=VerticalAlignment.Bottom;
+			WpfControls.UI.CheckBox checkBox=new WpfControls.UI.CheckBox();
+			checkBox.VerticalAlignment=VerticalAlignment.Stretch;
 			borderBox.Child=checkBox;
 			checkBox.Width=EFormFields.CalcFieldWidth(eFormField,ListEFormFields,stackPanel.ActualWidth,SpaceToRightEachField);
 			StackPanel stackPanelLabel=new StackPanel();
 			stackPanelLabel.Orientation=Orientation.Horizontal;
-			//WPF label is always to the right of the checkbox. We would use our UI.Checkbox if we want to give users a choice.
+			//WPF label is always to the right of the checkbox for now.
 			checkBox.VerticalContentAlignment=VerticalAlignment.Center;
-			checkBox.Margin=new Thickness(0,top:2,0,0);
-			checkBox.FontSize=FontSize*eFormField.FontScale/100;
-			checkBox.IsChecked=eFormField.ValueString=="X";
-			Label label=new Label();
-			label.FontSize=FontSize*eFormField.FontScale/100;
-			label.Padding=new Thickness(0);//default is 5
-			if(IsSetupMode){
-				label.Content=LanguagePats.TranslateEFormField(eFormField.EFormFieldDefNum,LanguageShowing,eFormField.ValueLabel);
+			if(eFormField.Border==EnumEFormBorder.ThreeD){
+				//Extra vertical padding inside border boxes
+				checkBox.Margin=new Thickness(0,top:7,0,bottom:4);
 			}
 			else{
-				label.Content=eFormField.ValueLabel;
+				checkBox.Margin=new Thickness(0,top:2,0,0);
 			}
-			stackPanelLabel.Children.Add(label);
+			checkBox.FontSize=FontSize*eFormField.FontScale/100;
+			checkBox.Checked=eFormField.ValueString=="X";
+			checkBox.FontSize=FontSize*eFormField.FontScale/100;
+			checkBox.Inlines.Clear();
+			Run runMainPlain;
+			if(IsSetupMode){
+				runMainPlain=new Run(LanguagePats.TranslateEFormField(eFormField.EFormFieldDefNum,LanguageShowing,eFormField.ValueLabel));
+			}
+			else{
+				runMainPlain=new Run(eFormField.ValueLabel);
+			}
+			if(ShowLabelsBold){
+				checkBox.FontSize=FontSize*eFormField.FontScale*_scaleFontLabel/100;
+				runMainPlain.FontWeight=FontWeights.Medium;
+			}
+			else{
+				checkBox.FontSize=FontSize*eFormField.FontScale/100;
+			}
+			checkBox.Inlines.Add(runMainPlain);
 			if(eFormField.IsRequired) {
-				Label labelRequired=new Label();
-				labelRequired.FontSize=FontSize*eFormField.FontScale/100;
-				labelRequired.Padding=new Thickness(0);
-				labelRequired.Content=" *";
-				labelRequired.Foreground=Brushes.Red;
-				labelRequired.FontWeight=FontWeights.Bold;
-				stackPanelLabel.Children.Add(labelRequired);
+				Run runStar=new Run(" *");
+				runStar.FontWeight=FontWeights.Bold;
+				runStar.Foreground=Brushes.Red;
+				checkBox.Inlines.Add(runStar);
 			}
 			bool isConditionalParent=false;
 			if(IsSetupMode
@@ -1717,29 +1746,24 @@ namespace OpenDental {
 				isConditionalParent=true;
 			}
 			if(isConditionalParent) {
-				Label labelCondParent = new Label();
-				stackPanelLabel.Children.Add(labelCondParent);
-				labelCondParent.FontSize=FontSize*eFormField.FontScale/100;
-				labelCondParent.Padding=new Thickness(5,0,0,0);//default is 5
-				labelCondParent.Content="(CND)";
-				labelCondParent.Foreground=Brushes.Red;
+				//yes, we let them include both parent and child in case a field is both.
+				Run runCondit=new Run(" (CND)");
+				runCondit.Foreground=Brushes.Red;
+				checkBox.Inlines.Add(runCondit);
 			}
 			bool isConditionalChild=false;
 			if(IsSetupMode
 				&& eFormField.ConditionalParent!=""
-				&& ListEFormFields.Exists(x => x.ValueLabel==eFormField.ConditionalParent)) {
+				&& ListEFormFields.Exists(x=>x.ValueLabel==eFormField.ConditionalParent))
+			{
 				isConditionalChild=true;
 			}
-			if(isConditionalChild) {
+			if(isConditionalChild){
 				//yes, we let them include both parent and child in case a field is both.
-				Label labelCondChild = new Label();
-				stackPanelLabel.Children.Add(labelCondChild);
-				labelCondChild.FontSize=FontSize*eFormField.FontScale/100;
-				labelCondChild.Padding=new Thickness(5,0,0,0);//default is 5
-				labelCondChild.Content="(cnd)";
-				labelCondChild.Foreground=Brushes.Red;
+				Run runCondit=new Run(" (cnd)");
+				runCondit.Foreground=Brushes.Red;
+				checkBox.Inlines.Add(runCondit);
 			}
-			checkBox.Content=stackPanelLabel;
 			checkBox.Click+=(sender,e)=> {
 				FillFieldsFromControls(eFormField);
 				SetVisibilities(_pageShowing,forceRefresh:true);
@@ -1759,7 +1783,13 @@ namespace OpenDental {
 			label.HorizontalAlignment=HorizontalAlignment.Stretch;
 			label.VerticalAlignment=VerticalAlignment.Stretch;
 			label.VAlign=VerticalAlignment.Bottom;
-			label.Margin=new Thickness(0,0,0,bottom:1);
+			if(eFormField.Border==EnumEFormBorder.ThreeD){
+				//Extra vertical padding inside border boxes between label and textbox
+				label.Margin=new Thickness(0,0,0,bottom:3);
+			}
+			else{
+				label.Margin=new Thickness(0,0,0,bottom:2);
+			}
 			Run runMainPlain;
 			if(IsSetupMode){
 				runMainPlain=new Run(LanguagePats.TranslateEFormField(eFormField.EFormFieldDefNum,LanguageShowing,eFormField.ValueLabel));
@@ -1825,10 +1855,6 @@ namespace OpenDental {
 			stackPanel2.Children.Add(textVDate);
 		}
 
-		private void TextVDate_LostFocus(object sender,RoutedEventArgs e) {
-			throw new NotImplementedException();
-		}
-
 		private void AddLabel(Border borderBox,EFormField eFormField){
 			WpfControls.UI.TextRich textRich=new WpfControls.UI.TextRich();
 			textRich.SpellCheckIsEnabled=false;
@@ -1884,6 +1910,21 @@ namespace OpenDental {
 			//So instead, we will dynamically alter the children and row defs of the grid.
 			//For Add, grid gets another row at the end.
 			//For Delete, the row objects get deleted, then following rows get moved up, and finally, grid loses row at end.
+			EFormMedListLayout eFormMedListLayout=JsonConvert.DeserializeObject<EFormMedListLayout>(eFormField.ValueLabel);
+			if(IsSetupMode){
+				string strLabels=eFormMedListLayout.Title+"|"+eFormMedListLayout.HeaderCol1+"|"+eFormMedListLayout.HeaderCol2+"|Delete|Add|None";
+				string strTranslations=LanguagePats.TranslateEFormField(eFormField.EFormFieldDefNum,LanguageShowing,strLabels);
+				List<string> listTranslations=strTranslations.Split('|').ToList();
+				eFormMedListLayout.Title=listTranslations[0];
+				eFormMedListLayout.HeaderCol1=listTranslations[1];
+				eFormMedListLayout.HeaderCol2=listTranslations[2];
+				eFormMedListLayout.StrDelete=listTranslations[3];
+				eFormMedListLayout.StrAdd=listTranslations[4];
+				eFormMedListLayout.StrNone=listTranslations[5];
+			}
+			else{
+				//already translated when the form was created
+			}
 			StackPanel stackPanelVert=new StackPanel();
 			borderBox.Child=stackPanelVert;
 			double spaceRight=PrefC.GetInt(PrefName.EformsSpaceToRightEachField);
@@ -1897,7 +1938,6 @@ namespace OpenDental {
 			}
 			//stackPanelVert is always full widthAvail. But the grid columns resize.
 			stackPanelVert.Width=widthAvail;
-			EFormMedListLayout eFormMedListLayout=JsonConvert.DeserializeObject<EFormMedListLayout>(eFormField.ValueLabel);
 			List<EFormMed> listEFormMeds=new List<EFormMed>();
 			if(!String.IsNullOrEmpty(eFormField.ValueString)){
 				listEFormMeds=JsonConvert.DeserializeObject<List<EFormMed>>(eFormField.ValueString);
@@ -2064,7 +2104,7 @@ namespace OpenDental {
 				Grid.SetColumn(textBoxFreq,1);
 				WpfControls.UI.Button buttonDelete=new WpfControls.UI.Button();
 				gridMeds.Children.Add(buttonDelete);
-				buttonDelete.Text="Delete";
+				buttonDelete.Text=eFormMedListLayout.StrDelete;
 				buttonDelete.Width=widthCol3;
 				buttonDelete.Height=heightRow;
 				buttonDelete.FontSize=fontSize;
@@ -2078,17 +2118,18 @@ namespace OpenDental {
 			stackPanelVert.Children.Add(stackPanelFooter);
 			WpfControls.UI.Button buttonAdd=new WpfControls.UI.Button();
 			stackPanelFooter.Children.Add(buttonAdd);
-			buttonAdd.Text="Add";
-			buttonAdd.Width=40*eFormField.FontScale/100;
+			buttonAdd.Text=eFormMedListLayout.StrAdd;
+			//buttonAdd.Width=40*eFormField.FontScale/100;//make it auto width?
 			buttonAdd.Height=heightRow;
 			buttonAdd.FontSize=fontSize;
 			buttonAdd.Click+=ButtonAdd_Click;
 			WpfControls.UI.CheckBox checkBoxNone=new WpfControls.UI.CheckBox();
 			stackPanelFooter.Children.Add(checkBoxNone);
-			checkBoxNone.Text="None";
+			checkBoxNone.Text=eFormMedListLayout.StrNone;
 			checkBoxNone.Margin=new Thickness(left:15,0,0,0);
 			checkBoxNone.Height=heightRow;
 			checkBoxNone.FontSize=fontSize;
+			SetMedListNoneVis(stackPanelVert);
 		}
 
 		private void AddPageBreak(Border borderBox,EFormField eFormField) {
@@ -2153,7 +2194,11 @@ namespace OpenDental {
 			}
 			StackPanel stackPanelRadio=new StackPanel();
 			//stackPanelRadio is our main stackPanel
-			//It has two children: stackPanelLabel and wrapPanelRadio
+			if(eFormField.Border==EnumEFormBorder.ThreeD){
+				//Extra vertical padding inside border boxes
+				stackPanelRadio.Margin=new Thickness(0,top:4,0,bottom:4);
+			}
+			//It has two children: label and wrapPanelRadio
 			if(eFormField.LabelAlign==EnumEFormLabelAlign.TopLeft){
 				stackPanelRadio.Orientation=Orientation.Vertical;
 			}
@@ -2164,34 +2209,45 @@ namespace OpenDental {
 			}
 			borderBox.Child=stackPanelRadio;
 			stackPanelRadio.Width=EFormFields.CalcFieldWidth(eFormField,ListEFormFields,stackPanel.ActualWidth,SpaceToRightEachField);
-			StackPanel stackPanelLabel=new StackPanel();
-			stackPanelLabel.Orientation=Orientation.Horizontal;
-			Label label = new Label();
+			WpfControls.UI.Label label=new WpfControls.UI.Label();
+			label.Inlines.Clear();
+			if(eFormField.ValueLabel==""){
+				label.Height=0;
+			}
+			label.HorizontalAlignment=HorizontalAlignment.Stretch;//these two lines are because we are using OD label
+			label.VerticalAlignment=VerticalAlignment.Stretch;
+			//label.Margin=new Thickness(0,0,0,bottom:2);
+			//These margins are all the same for 3D or not
+			if(eFormField.LabelAlign==EnumEFormLabelAlign.LeftLeft){
+				label.Margin=new Thickness(0,0,right:10,0);
+			}
+			if(eFormField.LabelAlign==EnumEFormLabelAlign.TopLeft){
+				label.Margin=new Thickness(0,0,0,bottom:3);
+			}
+			if(eFormField.LabelAlign==EnumEFormLabelAlign.Right){
+				label.Margin=new Thickness(0);
+			}
+			Run runMainPlain;
+			List<string> listTranslations=strTranslations.Split('|').ToList();//Ex: [label,button1,button2]
+			if(IsSetupMode){
+				runMainPlain=new Run(listTranslations[0]);
+			}
+			else{
+				runMainPlain=new Run(eFormField.ValueLabel);
+			}
 			if(ShowLabelsBold){
 				label.FontSize=FontSize*eFormField.FontScale*_scaleFontLabel/100;
-				label.FontWeight=FontWeights.Medium;//this is a very slightly bold: 500 vs 400 for Normal
+				runMainPlain.FontWeight=FontWeights.Medium;//this is a very slightly bold: 500 vs 400 for Normal
 			}
 			else{
 				label.FontSize=FontSize*eFormField.FontScale/100;
 			}
-			label.Padding=new Thickness(0,0,0,bottom:0);//default is 5
-			List<string> listTranslations=strTranslations.Split('|').ToList();//Ex: [label,button1,button2]
-			label.Content=listTranslations[0];
-			if(eFormField.LabelAlign==EnumEFormLabelAlign.LeftLeft){
-				stackPanelLabel.Margin=new Thickness(0,0,right:10,0);
-			}
-			else if(eFormField.LabelAlign==EnumEFormLabelAlign.TopLeft){
-				stackPanelLabel.Margin=new Thickness(0,0,0,bottom:2);
-			}
-			stackPanelLabel.Children.Add(label);
+			label.Inlines.Add(runMainPlain);
 			if(eFormField.IsRequired) {
-				Label labelRequired=new Label();
-				labelRequired.FontSize=FontSize*eFormField.FontScale/100;
-				labelRequired.Padding=new Thickness(0);
-				labelRequired.Content=" *";
-				labelRequired.FontWeight=FontWeights.Bold;
-				labelRequired.Foreground=Brushes.Red;
-				stackPanelLabel.Children.Add(labelRequired);
+				Run runStar=new Run(" *");
+				runStar.FontWeight=FontWeights.Bold;
+				runStar.Foreground=Brushes.Red;
+				label.Inlines.Add(runStar);
 			}
 			bool isConditionalParent=false;
 			if(IsSetupMode
@@ -2201,12 +2257,9 @@ namespace OpenDental {
 				isConditionalParent=true;
 			}
 			if(isConditionalParent){
-				Label labelCondParent = new Label();
-				stackPanelLabel.Children.Add(labelCondParent);
-				labelCondParent.FontSize=FontSize*eFormField.FontScale/100;
-				labelCondParent.Padding=new Thickness(5,0,0,0);//default is 5
-				labelCondParent.Content="(CND)";
-				labelCondParent.Foreground=Brushes.Red;
+				Run runConditP=new Run(" (CND)");
+				runConditP.Foreground=Brushes.Red;
+				label.Inlines.Add(runConditP);
 			}
 			bool isConditionalChild=false;
 			if(IsSetupMode
@@ -2217,22 +2270,15 @@ namespace OpenDental {
 			}
 			if(isConditionalChild){
 				//yes, we let them include both parent and child in case a field is both.
-				Label labelCondChild = new Label();
-				stackPanelLabel.Children.Add(labelCondChild);
-				labelCondChild.FontSize=FontSize*eFormField.FontScale/100;
-				labelCondChild.Padding=new Thickness(5,0,0,0);//default is 5
-				labelCondChild.Content="(cnd)";
-				labelCondChild.Foreground=Brushes.Red;
+				Run runCondit=new Run(" (cnd)");
+				runCondit.Foreground=Brushes.Red;
+				label.Inlines.Add(runCondit);
 			}
 			WrapPanel wrapPanelRadio=new WrapPanel();
 			if(eFormField.LabelAlign==EnumEFormLabelAlign.LeftLeft){
 				Graphics g=Graphics.MeasureBegin();
 				Font font=Font.ForWpf();
-				font.SizeDip=12*eFormField.FontScale/100;
-				//I'm a little unclear if this control is using 12 DIP and/or 12 point, especially for printing.
-				//12 DIP looks good on screen and is very close to our default 11.5 DIP.
-				//12 point is very typical for printing and I think it's our default for sheets.
-				//This will be clarified later
+				font.SizeDip=FontSize*eFormField.FontScale/100;
 				double wLabel=g.MeasureString(eFormField.ValueLabel,font,includePadding:false).Width;
 				wLabel+=10;//the right margin on these labels
 				if(eFormField.IsRequired) {
@@ -2249,12 +2295,21 @@ namespace OpenDental {
 				}
 				if(eFormField.WidthLabel>0){
 					wLabel=eFormField.WidthLabel;
-					
 				}
-				stackPanelLabel.Width=wLabel;//here just for debugging. Move up.
-				wrapPanelRadio.Width=stackPanelRadio.Width-wLabel;
-				//The math above has some sort of flaw.
-				//I'm getting a width that isn't wide enough, so too much margin on right.
+				//Most users will set a reasonable width on the label,
+				//so these are really edge cases or where user forgot.
+				if(stackPanelRadio.Width-wLabel<25){
+					//This number keeps the radiobutton circles showing no matter how narrow it gets.
+					//It also keeps widthWrapPanelRadio from going negative until we get ridiculously narrow.
+					wLabel=stackPanelRadio.Width-25;
+				}
+				if(wLabel<0){
+					//This wouldn't happen on a real device, but keeps our UI from crashing in setup mode when ridiculously narrow.
+					wLabel=0;
+				}
+				label.Width=wLabel;
+				double widthWrapPanelRadio=stackPanelRadio.Width-wLabel;
+				wrapPanelRadio.Width=widthWrapPanelRadio;
 			}
 			wrapPanelRadio.Orientation=Orientation.Horizontal;//radiobuttons go horizontal as much as possible.
 			List<string> listPickLang=new List<string>();
@@ -2294,12 +2349,21 @@ namespace OpenDental {
 			if(eFormField.LabelAlign==EnumEFormLabelAlign.TopLeft
 				|| eFormField.LabelAlign==EnumEFormLabelAlign.LeftLeft)
 			{
-				stackPanelRadio.Children.Add(stackPanelLabel);
+				stackPanelRadio.Children.Add(label);
 				stackPanelRadio.Children.Add(wrapPanelRadio);
 			}
 			if(eFormField.LabelAlign==EnumEFormLabelAlign.Right){
 				stackPanelRadio.Children.Add(wrapPanelRadio);
-				stackPanelRadio.Children.Add(stackPanelLabel);
+				stackPanelRadio.Children.Add(label);
+			}
+			if(eFormField.LabelAlign==EnumEFormLabelAlign.Right){
+				wrapPanelRadio.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
+				wrapPanelRadio.Arrange(new Rect(0, 0, wrapPanelRadio.DesiredSize.Width, wrapPanelRadio.DesiredSize.Height));
+				double widthLabel=stackPanelRadio.Width-wrapPanelRadio.ActualWidth;
+				if(widthLabel<0){
+					widthLabel=0;
+				}
+				label.Width=widthLabel;
 			}
 		}
 
@@ -2426,7 +2490,13 @@ namespace OpenDental {
 			label.HorizontalAlignment=HorizontalAlignment.Stretch;//these two lines are because we are using OD label
 			label.VerticalAlignment=VerticalAlignment.Stretch;
 			label.VAlign=VerticalAlignment.Bottom;//so that wrapping labels are aligned properly
-			label.Margin=new Thickness(0,0,0,bottom:1);
+			if(eFormField.Border==EnumEFormBorder.ThreeD){
+				//Extra vertical padding inside border boxes between label and textbox
+				label.Margin=new Thickness(0,0,0,bottom:3);
+			}
+			else{
+				label.Margin=new Thickness(0,0,0,bottom:2);
+			}
 			Run runMainPlain;
 			if(IsSetupMode){
 				runMainPlain=new Run(LanguagePats.TranslateEFormField(eFormField.EFormFieldDefNum,LanguageShowing,eFormField.ValueLabel));
@@ -2547,7 +2617,7 @@ namespace OpenDental {
 			return border;
 		}
 
-		///<summary>Loops through all fields and fixes invalid stacking. Used after a multi drag drop, when first loading to fix any prior db issues, and after editing each field because changing stacking in one field can affect stacking in other fields. Doesn't change orders of any fields.</summary>
+		///<summary>Loops through all fields and fixes invalid stacking, IsPercentage, and SpaceBelow. Used after a multi drag drop, when first loading to fix any prior db issues, and after editing each field because changing stacking in one field can affect stacking in other fields. Doesn't change orders of any fields.</summary>
 		private void FixAllStacking(){
 			for(int i=0;i<ListEFormFields.Count;i++){
 				if(!EFormFieldDefs.IsHorizStackableType(ListEFormFields[i].FieldType)){
@@ -2562,17 +2632,42 @@ namespace OpenDental {
 					ListEFormFields[i].IsHorizStacking=false;
 				}
 			}
-			//If a field is stacking or is before a stacking field, we used to give it a set width here.
-			//That was confusing users. Numbers would show up that they did not enter.
-			//New way of handling it:
-			//1. First, gracefully handle any that slip through the cracks. Treat empty as 100.
-			//2. Give user advice about how it works. Or maybe not.
-			//3. Only allowed blank when not stacked. Don't let them save any other value.
-			//4. Also warn them about the other blank fields when they close the field edit window.
-			//
-			//If a field is not stacking, we will leave it alone.
-			//It seems harmless to leave them at a fixed width..
-			//It gives users more control, and I can see how they would need to make some fields narrower.
+			for(int i=1;i<ListEFormFields.Count;i++){
+				List<EFormField> listEFormFieldsInStack=EFormFields.GetSiblingsInStack(ListEFormFields[i],ListEFormFields,ListEFormFields[i].IsHorizStacking,includeSelf:true);
+				if(listEFormFieldsInStack.Count==1){
+					continue;
+				}
+				int countPerc=listEFormFieldsInStack.Count(x=>x.IsWidthPercentage);
+				if(countPerc!=0 && countPerc!=listEFormFieldsInStack.Count){
+					//This means there's a mix rather than all of one kind.
+					//That's not allowed.
+					//Set IsWidthPercentage based on majority rule.
+					bool isWidthPerc=false;
+					if(countPerc >= listEFormFieldsInStack.Count-countPerc){
+						isWidthPerc=true;
+					}
+					for(int s=0;s<listEFormFieldsInStack.Count;s++){
+						listEFormFieldsInStack[s].IsWidthPercentage=isWidthPerc;
+					}
+				}
+				for(int s=0;s<listEFormFieldsInStack.Count;s++){
+					//Only the last field in an h-stack is allowed to have spacebelow set. Clear others.
+					if(s!=listEFormFieldsInStack.Count-1){//not last
+						listEFormFieldsInStack[s].SpaceBelow=-1;
+					}
+				}
+				//jump just past this h-stack
+				i+=listEFormFieldsInStack.Count-1;
+			}
+			//Blank widths----------------------------------------------------------------------------------------------------------------
+			//Blank widths are not allowed inside in an h-stack. Only if alone.
+			//But the problem is that we wouldn't know what to set it to.
+			//We tried arbitrary numbers like 100.
+			//We tried measuring width and guessing.
+			//But those are annoying to users because they can't understand where the number came from.
+			//So we decided to instead gacefully handle empty widths as best we can.
+			//We also give them the red exlamation inside the edit window to try to get them to fix the blanks.
+			//But there's nothing to fix here.
 		}
 
 		///<summary>Gets the index at the specified point. Returns -1 if no index can be selected at that point. Pass in the y pos relative to this control. It can fall outside the control when dragging.</summary>
@@ -2758,6 +2853,20 @@ namespace OpenDental {
 				SetConditFlagChildren(eFormFieldChild);
 				//If we're not hiding this field, we don't have to worry about hiding children recursively.
 				//The children will still get checked separately.
+			}
+		}
+
+		///<summary>Sets the visibility of the None checkbox in the med list. It should only show if list is empty,</summary>
+		private void SetMedListNoneVis(StackPanel stackPanelVert){
+			StackPanel stackPanelFooter=stackPanelVert.Children[2] as StackPanel;
+			Grid gridMeds=stackPanelVert.Children[1] as Grid;
+			int countMeds=gridMeds.RowDefinitions.Count-1;
+			WpfControls.UI.CheckBox checkBoxNone=stackPanelFooter.Children[1] as WpfControls.UI.CheckBox;
+			if(countMeds==0){
+				checkBoxNone.Visible=true;
+			}
+			else{
+				checkBoxNone.Visible=false;
 			}
 		}
 		#endregion Methods - private

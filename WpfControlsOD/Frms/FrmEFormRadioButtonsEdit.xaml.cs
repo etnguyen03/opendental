@@ -35,7 +35,9 @@ namespace OpenDental {
 			Load+=FrmEFormsRadioButtonsEdit_Load;
 			PreviewKeyDown+=FrmEFormRadioButtonsEdit_PreviewKeyDown;
 			comboDbLink.SelectionTrulyChanged+=ComboDbLink_SelectionTrulyChanged;
-			radioLabelTop.Click+=(sender,e)=>SetVisibilities();
+			radioLabelTop.Click+=(sender,e)=>SetLabelWidthVis();
+			radioLabelLeft.Click+=(sender,e)=>SetLabelWidthVis();
+			radioLabelRight.Click+=(sender,e)=>SetLabelWidthVis();
 			gridMain.CellTextChanged+=GridMain_CellTextChanged;
 			gridMain.CellSelectionCommitted+=GridMain_CellSelectionCommitted;
 			checkIsWidthPercentage.Click+=CheckIsWidthPercentage_Click;
@@ -75,7 +77,9 @@ namespace OpenDental {
 			else{
 				comboDbLink.SelectedItem=EFormFieldCur.DbLink;
 			}
+			SetVisAllerProb();
 			checkIsRequired.Checked=EFormFieldCur.IsRequired;
+			//groupLayout start
 			if(EFormFieldCur.LabelAlign==EnumEFormLabelAlign.TopLeft){
 				radioLabelTop.Checked=true;
 			}
@@ -85,28 +89,14 @@ namespace OpenDental {
 			if(EFormFieldCur.LabelAlign==EnumEFormLabelAlign.Right){
 				radioLabelRight.Checked=true;
 			}
-			SetVisibilities();
+			SetLabelWidthVis();
 			textVIntWidthLabel.Value=EFormFieldCur.WidthLabel;
 			checkBorder.Checked=EFormFieldCur.Border==EnumEFormBorder.ThreeD;
 			textVIntWidth.Value=EFormFieldCur.Width;
-			if(EFormFieldCur.IsWidthPercentage){
-				labelWidth.Text="Width%";
-				checkIsWidthPercentage.Checked=true;
-				textVIntMinWidth.Value=EFormFieldCur.MinWidth;
-			}
-			else{
-				labelMinWidth.Visible=false;
-				textVIntMinWidth.Visible=false;
-			}
-			List<EFormField> listEFormFieldsSiblings=EFormFields.GetSiblingsInStack(EFormFieldCur,ListEFormFields,checkIsHorizStacking.Checked==true);
-			//this is just for loading. It will recalc each time CheckIsHorizStacking_Click is raised.
-			//This is all siblings in a horizontal stack, not including the field passed in. If not in a h-stack, then this is an empty list.
-			//Even if the current field is not stacking, it can be part of a stack group if the next field is set as stacking.
-			//So this list gets recalculated each time the user checks or unchecks the stacking box.
-			if(listEFormFieldsSiblings.Count==0){
-				labelWidthIsPercentageNote.Visible=false;
-			}
+			checkIsWidthPercentage.Checked=EFormFieldCur.IsWidthPercentage;
+			textVIntMinWidth.Value=EFormFieldCur.MinWidth;//although it might get hidden
 			checkIsHorizStacking.Checked=EFormFieldCur.IsHorizStacking;
+			SetControlsForSituation();
 			bool isPreviousStackable=EFormFields.IsPreviousStackable(EFormFieldCur,ListEFormFields);
 			if(!isPreviousStackable){
 				labelStackable.Text="previous field is not stackable";
@@ -181,24 +171,13 @@ namespace OpenDental {
 			public string Lang;
 		}
 
-		///<summary>This sets visibilities for label position and allergies/problems.</summary>
-		private void SetVisibilities(){
-			if(radioLabelLeft.Checked==true){
-				labelWidthLabel.Visible=true;
-				textVIntWidthLabel.Visible=true;
-			}
-			else{
-				labelWidthLabel.Visible=false;
-				textVIntWidthLabel.Visible=false;
-				textVIntWidthLabel.Value=0;;
-			}
-			//Then allergies problems
+		///<summary>This sets visibilities for some allergie/problem controls.</summary>
+		private void SetVisAllerProb(){
 			if((string)comboDbLink.SelectedItem=="allergy:"){
 				labelAllergProb.Visible=true;
 				textMedAllerProb.Visible=true;
 				butChange.Visible=true;
 				labelAllergProb.Text="Allergy";
-				checkIsRequired.Visible=true;
 				return;
 			}
 			if((string)comboDbLink.SelectedItem=="problem:"){
@@ -206,7 +185,6 @@ namespace OpenDental {
 				textMedAllerProb.Visible=true;
 				butChange.Visible=true;
 				labelAllergProb.Text="Problem";
-				checkIsRequired.Visible=true;
 				return;
 			}
 			//all others:
@@ -214,7 +192,6 @@ namespace OpenDental {
 			textMedAllerProb.Visible=false;
 			butChange.Visible=false;
 			textMedAllerProb.Text="";
-			checkIsRequired.Visible=true;
 		}
 
 		private void FillGrid(){
@@ -286,7 +263,7 @@ namespace OpenDental {
 				formLauncher.ShowDialog();
 				if(formLauncher.IsDialogCancel){
 					textMedAllerProb.Text="";
-					SetVisibilities();
+					SetVisAllerProb();
 					textMedAllerProb.Focus();
 					return;
 				}
@@ -294,7 +271,7 @@ namespace OpenDental {
 				AllergyDef allergyDef=AllergyDefs.GetOne(allergyDefNumSelected);//from db
 				textMedAllerProb.Text=allergyDef.Description;
 				textLabel.Text=allergyDef.Description;
-				SetVisibilities();
+				SetVisAllerProb();
 				textMedAllerProb.Focus();
 				return;
 			}
@@ -304,14 +281,14 @@ namespace OpenDental {
 				formLauncher.ShowDialog();
 				if(formLauncher.IsDialogCancel){
 					textMedAllerProb.Text="";
-					SetVisibilities();
+					SetVisAllerProb();
 					textMedAllerProb.Focus();
 					return;
 				}
 				DiseaseDef diseaseDef=formLauncher.GetField<List<DiseaseDef>>("ListDiseaseDefsSelected")[0];
 				textMedAllerProb.Text=diseaseDef.DiseaseName;
 				textLabel.Text=diseaseDef.DiseaseName;
-				SetVisibilities();
+				SetVisAllerProb();
 				textMedAllerProb.Focus();
 				return;
 			}
@@ -319,20 +296,71 @@ namespace OpenDental {
 			if(textLabel.Text==""){
 				textLabel.Text=(string)comboDbLink.SelectedItem;
 			}
-			SetVisibilities();
+			SetVisAllerProb();
+		}
+
+		private void butChange_Click(object sender,EventArgs e) {
+			if((string)comboDbLink.SelectedItem=="allergy:"){
+				FormLauncher formLauncher=new FormLauncher(EnumFormName.FormAllergySetup);
+				formLauncher.SetField("IsSelectionMode",true);
+				formLauncher.ShowDialog();
+				if(formLauncher.IsDialogCancel){
+					textMedAllerProb.Text="";
+					SetVisAllerProb();
+					textMedAllerProb.Focus();
+					return;
+				}
+				long allergyDefNumSelected=formLauncher.GetField<long>("AllergyDefNumSelected");
+				AllergyDef allergyDef=AllergyDefs.GetOne(allergyDefNumSelected);
+				textMedAllerProb.Text=allergyDef.Description;
+				textLabel.Text=allergyDef.Description;
+				SetVisAllerProb();
+				textMedAllerProb.Focus();
+				return;
+			}
+			if((string)comboDbLink.SelectedItem=="problem:"){
+				FormLauncher formLauncher=new FormLauncher(EnumFormName.FormDiseaseDefs);
+				formLauncher.SetField("IsSelectionMode",true);
+				formLauncher.ShowDialog();
+				if(formLauncher.IsDialogCancel){
+					textMedAllerProb.Text="";
+					SetVisAllerProb();
+					textMedAllerProb.Focus();
+					return;
+				}
+				DiseaseDef diseaseDef=formLauncher.GetField<List<DiseaseDef>>("ListDiseaseDefsSelected")[0];
+				textMedAllerProb.Text=diseaseDef.DiseaseName;
+				textLabel.Text=diseaseDef.DiseaseName;
+				SetVisAllerProb();
+				textMedAllerProb.Focus();
+				return;
+			}
+			//all others
+			SetVisAllerProb();
 		}
 
 		private void CheckIsHorizStacking_Click(object sender,EventArgs e) {
-			List<EFormField> listEFormFieldsSiblings=EFormFields.GetSiblingsInStack(EFormFieldCur,ListEFormFields,checkIsHorizStacking.Checked==true);
-			if(listEFormFieldsSiblings.Count>0){
-				labelWidthIsPercentageNote.Visible=true;
-			}
-			else{
-				labelWidthIsPercentageNote.Visible=false;
-			}
+			SetControlsForSituation();
 		}
 
 		private void CheckIsWidthPercentage_Click(object sender,EventArgs e) {
+			SetControlsForSituation();
+		}
+
+		///<summary>When checkIsWidthPercentage or checkIsHorizStacking changes, this sets some other related visiblities and values.</summary>
+		private void SetControlsForSituation(){
+			List<EFormField> listEFormFieldsSiblings=EFormFields.GetSiblingsInStack(EFormFieldCur,ListEFormFields,checkIsHorizStacking.Checked==true);
+			if(listEFormFieldsSiblings.Count>0){//stacked
+				labelWidthIsPercentageNote.Visible=true;
+				labelWidthNote.Visible=false;
+				textVIntWidth.ShowZero=true;//this will give them error if blank
+			}
+			else{
+				labelWidthIsPercentageNote.Visible=false;
+				labelWidthNote.Visible=true;//leave blank for full width
+				textVIntWidth.ShowZero=false;
+			}
+			textVIntWidth.Validate();//in case we changed ShowZero. Shows the !
 			if(checkIsWidthPercentage.Checked==true){
 				labelWidth.Text="Width%";
 				labelMinWidth.Visible=true;
@@ -345,44 +373,16 @@ namespace OpenDental {
 			}
 		}
 
-		private void butChange_Click(object sender,EventArgs e) {
-			if((string)comboDbLink.SelectedItem=="allergy:"){
-				FormLauncher formLauncher=new FormLauncher(EnumFormName.FormAllergySetup);
-				formLauncher.SetField("IsSelectionMode",true);
-				formLauncher.ShowDialog();
-				if(formLauncher.IsDialogCancel){
-					textMedAllerProb.Text="";
-					SetVisibilities();
-					textMedAllerProb.Focus();
-					return;
-				}
-				long allergyDefNumSelected=formLauncher.GetField<long>("AllergyDefNumSelected");
-				AllergyDef allergyDef=AllergyDefs.GetOne(allergyDefNumSelected);
-				textMedAllerProb.Text=allergyDef.Description;
-				textLabel.Text=allergyDef.Description;
-				SetVisibilities();
-				textMedAllerProb.Focus();
-				return;
+		///<summary>This is called when user clicks on any of the three radiobuttons for label position, and also on load.</summary>
+		private void SetLabelWidthVis() {
+			if(radioLabelLeft.Checked==true){
+				labelWidthLabel.Visible=true;
+				textVIntWidthLabel.Visible=true;
 			}
-			if((string)comboDbLink.SelectedItem=="problem:"){
-				FormLauncher formLauncher=new FormLauncher(EnumFormName.FormDiseaseDefs);
-				formLauncher.SetField("IsSelectionMode",true);
-				formLauncher.ShowDialog();
-				if(formLauncher.IsDialogCancel){
-					textMedAllerProb.Text="";
-					SetVisibilities();
-					textMedAllerProb.Focus();
-					return;
-				}
-				DiseaseDef diseaseDef=formLauncher.GetField<List<DiseaseDef>>("ListDiseaseDefsSelected")[0];
-				textMedAllerProb.Text=diseaseDef.DiseaseName;
-				textLabel.Text=diseaseDef.DiseaseName;
-				SetVisibilities();
-				textMedAllerProb.Focus();
-				return;
+			else{
+				labelWidthLabel.Visible=false;
+				textVIntWidthLabel.Visible=false;
 			}
-			//all others
-			SetVisibilities();
 		}
 
 		private void ResetList(){
@@ -628,7 +628,7 @@ Any or all items are allowed to have no label by leaving that value in the first
 				}
 			}
 			//end of validation
-			string strTranslations=textLabelTranslated.Text+",";
+			string strTranslations=textLabelTranslated.Text+"|";
 			for(int i=0;i<_listVisDbLangs.Count;i++){
 				if(i>0){
 					strTranslations+="|";

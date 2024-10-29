@@ -2960,12 +2960,24 @@ namespace OpenDental{
 			if(XConnect.IsEnabled(clearinghouseClin)) {
 				XConnectWebResponse xConnectWebResponse=null;
 				try {
-					xConnectWebResponse=XConnect.ValidateClaim(_claim);
+					xConnectWebResponse=XConnect.ValidateClaim(_claim,doValidateForAttachment:true);
 					if((xConnectWebResponse?.response?.claimStatus?.message?.Length??0)>0) {//Errors will go in the messages array of the object
 						MessageBox.Show("XConnect Validation Failed: "+xConnectWebResponse.status.code+"\r\n"
 							+Lan.g(this,"Cannot send claim until missing/invalid data is fixed:")+"\r\n"
 							+string.Join("\r\n",xConnectWebResponse.response.claimStatus.message));
 						return;
+					}
+					for(int i=0;i<xConnectWebResponse.response.claimItems.Count();i++) {
+						XConnectClaimItemResponse xConnectClaimItemResponse=xConnectWebResponse.response.claimItems[i];
+						if(string.IsNullOrEmpty(xConnectClaimItemResponse.itemStatus.message)) {
+							continue;
+						}
+						if(!xConnectClaimItemResponse.itemStatus.message.ToLower().Contains("attachment")) {
+							continue;
+						}
+						//Response has an attachment needed message by this point
+						MsgBox.Show(this,"An attachment is required for this claim. Use the right click attachment workflow to add an attachment to this claim.");
+						break;
 					}
 				}
 				catch(Exception ex) {
@@ -4102,7 +4114,7 @@ namespace OpenDental{
 				if(XConnect.IsEnabled(clearinghouseClin)) {
 					XConnectWebResponse xConnectWebResponse=null;
 					try {
-						xConnectWebResponse=XConnect.ValidateClaim(_claim);
+						xConnectWebResponse=XConnect.ValidateClaim(_claim,doValidateForAttachment:true);
 						if((xConnectWebResponse?.response?.claimStatus?.message?.Length??0)>0) {//Errors will go in the messages array of the object
 							if(MessageBox.Show("XConnect Validation Failed: "+xConnectWebResponse.status.code+"\r\n"
 								+Lan.g(this,"Cannot send claim until missing/invalid data is fixed:")+"\r\n"
@@ -4113,6 +4125,18 @@ namespace OpenDental{
 								SaveCleanup();
 							}
 							return;
+						}
+						for(int i=0;i<xConnectWebResponse.response.claimItems.Count();i++) {
+							XConnectClaimItemResponse xConnectClaimItemResponse=xConnectWebResponse.response.claimItems[i];
+							if(string.IsNullOrEmpty(xConnectClaimItemResponse.itemStatus.message)) {
+								continue;
+							}
+							if(!xConnectClaimItemResponse.itemStatus.message.ToLower().Contains("attachment")) {
+								continue;
+							}
+							//Response has an attachment needed message by this point
+							MsgBox.Show(this,"An attachment is required for this claim. Use the right click attachment workflow to add an attachment to this claim.");
+							break;
 						}
 					}
 					catch(Exception ex) {

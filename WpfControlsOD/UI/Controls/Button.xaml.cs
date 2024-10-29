@@ -78,6 +78,11 @@ How to use the Button control:
 			//CommandBinding commandBinding = new CommandBinding(MyRoutedCommand,MyRoutedCommandExecuted,MyRoutedCommandCanExecute);
 			//CommandBindings.Add(commandBinding);
 			IsEnabledChanged+=Button_IsEnabledChanged;
+			Unloaded+=Button_Unloaded;
+		}
+
+		private void Button_Unloaded(object sender,RoutedEventArgs e) {
+			gridImage.Children.Clear();
 		}
 
 		[Category("OD")]

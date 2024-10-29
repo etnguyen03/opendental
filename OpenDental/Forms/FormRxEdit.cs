@@ -336,12 +336,6 @@ namespace OpenDental{
 
 		///<summary>Prints the prescription.  Returns true if printing was successful.  Otherwise; displays an error message and returns false.</summary>
 		private bool PrintRx(bool isInstructions) {
-			if(PrinterSettings.InstalledPrinters.Count==0) {
-				MsgBox.Show(this,"Error: No Printers Installed\r\n"+
-									"If you do have a printer installed, restarting the workstation may solve the problem."
-				);
-				return false;
-			}
 			if(!isInstructions) {
 				//only visible if sheet==null.
 				if(comboSendStatus.SelectedIndex==(int)RxSendStatus.InElectQueue

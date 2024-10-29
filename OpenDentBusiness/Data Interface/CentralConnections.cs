@@ -186,10 +186,10 @@ namespace OpenDentBusiness{
 				DataConnection dataConnection;
 				//use the one table that we know exists
 				if(centralConnection.MySqlUser=="") {
-					dataConnection=new DataConnection(centralConnection.ServerName,"mysql","root",centralConnection.MySqlPassword,databaseType);
+					dataConnection=new DataConnection(centralConnection.ServerName,"information_schema","root",centralConnection.MySqlPassword,databaseType);
 				}
 				else {
-					dataConnection=new DataConnection(centralConnection.ServerName,"mysql",centralConnection.MySqlUser,centralConnection.MySqlPassword
+					dataConnection=new DataConnection(centralConnection.ServerName,"information_schema",centralConnection.MySqlUser,centralConnection.MySqlPassword
 						,databaseType);
 				}
 				Logger.LogToPath("DataConnection",LogPath.Startup,LogPhase.End);

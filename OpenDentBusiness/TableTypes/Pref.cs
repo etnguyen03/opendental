@@ -1066,6 +1066,8 @@ namespace OpenDentBusiness {
 		///<summary>definition.DefNum of category InsurancePaymentType. Zero by default. Used for claimpayments made from ERA ACH payments.</summary>
 		[PrefName(ValueType=PrefValueType.LONG)]
 		EraAchPaymentType,
+		///<summary>Boolean, true by default. When true, blocks user from entering ERA payments using By Total payments.</summary>
+		[PrefName(ValueType=PrefValueType.BOOL)]
 		EraAllowTotalPayments,
 		///<summary>Enum:EraAutomationMode. 1 by default. 0=UseGlobal(not used in the preference table), 1=ReviewAll, 2=SemiAutomatic.</summary>
 		[PrefName(ValueType=PrefValueType.ENUM)]

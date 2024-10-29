@@ -152,6 +152,12 @@ namespace OpenDentBusiness {
 		public string HeaderCol1="Medication";
 		///<summary>Defaults to 'Strength/Freq'</summary>
 		public string HeaderCol2="Strength/Freq";
+		///<summary>The text on the Delete buttons. Needed for language translation. Def always contains default value and this is ignored, but when a form is created, this gets translated.</summary>
+		public string StrDelete="Delete";
+			///<summary>The text on the Delete buttons. Needed for language translation.</summary>
+		public string StrAdd="Add";
+			///<summary>The text on the Delete buttons. Needed for language translation.</summary>
+		public string StrNone="None";
 		///<summary>If one of these is left blank, that column will fill remaining space. If both are left blank, they will split 50/50.</summary>
 		public int WidthCol1=0;
 		///<summary></summary>

@@ -386,6 +386,11 @@ namespace OpenDentBusiness {
 			}
 		}
 
+		/// <summary>Method retained for backwards compatibility across MiddleTier.</summary>
+		public static string GetMySqlVersion() {
+			return GetMySqlVersion(getRawVersion:false);
+		}
+
 		///<summary>Returns the major and minor version of MySQL for the current connection.  Returns a version of 0.0 if the MySQL version cannot be determined.</summary>
 		public static string GetMySqlVersion(bool getRawVersion=false) {
 			if(RemotingClient.MiddleTierRole==MiddleTierRole.ClientMT) {

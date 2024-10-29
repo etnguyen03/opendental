@@ -102,6 +102,7 @@ How to use the Label control:
 			}
 		}
 
+		///<summary>This is how you get rich text into a label.</summary>
 		[Browsable(false)]
 		public InlineCollection Inlines {
 			get{

@@ -1134,6 +1134,17 @@ namespace OpenDental.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Open Dental API End User License Agreement
+        ///
+        ///This End User License Agreement is a legal agreement (“Agreement”) between Open Dental Software, Inc., (“Open Dental”) and you, the end user (“the User”), governing the installation and use of the Open Dental API Service, “the Service”.   “Open Dental API Service” or “Service” in this agreement refers to any use of the Open Dental API or the Open Dental API keys.  Open Dental Software is required to be installed and functional on a secure server in order for the [rest of string was truncated]&quot;;.
+        /// </summary>
+        public static string OpenDentalApiEndUserLicense {
+            get {
+                return ResourceManager.GetString("OpenDentalApiEndUserLicense", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Open Dental, Copyright 2003-2024, Jordan S. Sparks, DMD.
         ///
         ///Open Dental Software, Inc distributes and supports this software through authorized purchase.  A Registration Key is provided to purchaser at time of sale and is valid for exactly one physical location where patients are treated.  Each separate physical location where patients are treated requires a separate purchase and Registration Key.  Mobile treatment units are each treated as one physical location.  Purchaser may install this software on any  [rest of string was truncated]&quot;;.
@@ -1322,7 +1333,8 @@ namespace OpenDental.Properties {
         ///    &lt;ControlName&gt;checkAutomateSalesTax&lt;/ControlName&gt;
         ///    &lt;ControlText&gt;Automate Sales Tax&lt;/ControlText&gt;
         ///    &lt;Details&gt;as procedures are completed, if the Procedure Code is marked &apos;Auto Tax&apos;, then add sales tax&lt;/Details&gt;
-        ///    &lt;WidthWindow&gt;0&lt;/WidthWindow [rest of string was truncated]&quot;;.
+        ///    &lt;WidthWindow&gt;0&lt;/WidthWindow&gt;
+        ///    &lt;H [rest of string was truncated]&quot;;.
         /// </summary>
         public static string PrefInfos {
             get {

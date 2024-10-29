@@ -56,6 +56,10 @@ namespace OpenDentBusiness {
 		UtmNum,
 		///<summary>5 Web Form Sheet Number.</summary>
 		WebFormSheetID,
+		///<summary>6 SmsMtSent Number</summary>
+		SmsMtSentNum,
+		///<summary>7 SmsMtTerminated Number</summary>
+		SmsMtTerminatedNum,
 	}
 
 	///<summary>List of some possible eService Actions.</summary>

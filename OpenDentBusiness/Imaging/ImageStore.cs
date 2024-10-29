@@ -186,8 +186,19 @@ namespace OpenDentBusiness {
 			//it will refresh in FillDocList
 		}
 
-		public static string GetHashString(Document doc,string patFolder) {
-			//the key data is the bytes of the file, concatenated with the bytes of the note.
+		///<summary>includeFileInHash only applies to DataStorageTypes InDatabase and LocalAtoZ.</summary>
+		public static string GetHashString(Document doc,string patFolder,bool includeFileInHash=true) {
+			//There was a previous bug that existed for about 5 years.
+			//The bug was that the hash string result was not based on file bytes.
+			//File bytes was "0" with a the note still properly appended.
+			//If the file was subequently changed, the signature was not getting invalidated.
+			//Since this really never happens, nobody cared.
+			//But it was wrong. The signature must prove that the file didn't change.
+			//We can't go back and fix all those signatures, so we do here what we always do when there are bugs with sigs.
+			//We try it both ways.
+			//Run this method first with includeFileInHash set to true (the new correct way).
+			//If the signature decryption fails, then run this again with includeFileInHash false.
+			//This bug did not apply to CloudStorage, which always used the file and will continue to use the file.
 			byte[] textbytes;
 			byte[] filebytes=new byte[1];
 			if(PrefC.AtoZfolderUsed==DataStorageType.InDatabase){
@@ -199,6 +210,9 @@ namespace OpenDentBusiness {
 				}
 			}
 			else if(CloudStorage.IsCloudStorage) {
+				filebytes=GetBytes(doc,patFolder);
+			}
+			else if(includeFileInHash) {
 				filebytes=GetBytes(doc,patFolder);
 			}
 			if(doc.Note == null) {

@@ -67,6 +67,7 @@ namespace OpenDental {
 		///<summary>Only tracks the 15 synced prefs.</summary>
 		private bool _changed;
 		private FormWebBrowserPrefs formWebBrowserPrefs;
+		private List<TreeNodeAndControls> _listTreeNodeAndControls=new List<TreeNodeAndControls>();
 		#endregion Fields - Private
 
 		#region Fields - Public
@@ -150,6 +151,31 @@ namespace OpenDental {
 			using StreamReader streamReader = new StreamReader(memoryStream,Encoding.UTF8,true);
 			XmlSerializer xmlSerializer=new XmlSerializer(_listPrefInfs.GetType());
 			_listPrefInfs=(List<PrefInf>)xmlSerializer.Deserialize(streamReader);
+			//Create a master list of all treeNodes, their controls, and any associated preference information
+			TreeNodeAndControls treeNodeAndControls;
+			List<TreeNode> listTreeNodes=GetListNodesFlat();
+			for(int i=0;i<listTreeNodes.Count;i++) {
+				treeNodeAndControls=new TreeNodeAndControls();
+				treeNodeAndControls.Node=listTreeNodes[i];
+				List<Control> listControls=GetListControlsFlat((UserControl)treeNodeAndControls.Node.Tag);//Get all controls for said node
+				List<ControlAndPrefInfo> listControlAndPrefInfos=new List<ControlAndPrefInfo>();
+				ControlAndPrefInfo controlAndPref;
+				for(int c=0;c<listControls.Count;c++){
+					PrefInf prefInf=null;
+					if(listControls[c] is Label label){//If it's a label, assign any preference information
+						prefInf=GetPrefInf(label);
+					}
+					if(listControls[c] is UI.CheckBox checkBox){//If it's a checkbox, assign any preference information
+						prefInf=GetPrefInf(checkBox);
+					}
+					controlAndPref=new ControlAndPrefInfo();
+					controlAndPref.Control_=listControls[c];
+					controlAndPref.PrefInf_=prefInf;
+					listControlAndPrefInfos.Add(controlAndPref);
+				}
+				treeNodeAndControls.ListControlAndPrefInfos=listControlAndPrefInfos;
+				_listTreeNodeAndControls.Add(treeNodeAndControls);
+			}
 			List<Control> listControlsAll=GetListControlsFlat(this);
 			for(int i=0;i<listControlsAll.Count;i++){
 				//we only care about labels and checkboxes, but we add all of them to handle the mouse leaving the ones we care about
@@ -325,25 +351,23 @@ namespace OpenDental {
 
 		private void textSearch_TextChanged(object sender,EventArgs e) {
 			//loop through the different categories
-			List<TreeNode> listTreeNodes=GetListNodesFlat();
-			for(int i=0;i<listTreeNodes.Count;i++) {
+			for(int i=0;i<_listTreeNodeAndControls.Count;i++) {
 				bool isCategoryYellow=false;
-				if(textSearch.Text!="" && listTreeNodes[i].Text.ToLower().Contains(textSearch.Text.ToLower())){
+				if(textSearch.Text!="" && _listTreeNodeAndControls[i].Node.Text.ToLower().Contains(textSearch.Text.ToLower())){
 					isCategoryYellow=true;
 				}
-				UserControl userControl=(UserControl)listTreeNodes[i].Tag;
-				List<Control> listControls=GetListControlsFlat(userControl);
 				//labels
-				for(int c=0;c<listControls.Count;c++){
-					if(listControls[c] is Label label){
-						if(listControls[c].Visible==false){
+				for(int c=0;c<_listTreeNodeAndControls[i].ListControlAndPrefInfos.Count;c++){
+					ControlAndPrefInfo controlAndPref=_listTreeNodeAndControls[i].ListControlAndPrefInfos[c];
+					if(controlAndPref.Control_ is Label label){
+						if(controlAndPref.Control_.Visible==false){
 							continue;
 						}
 						if(textSearch.Text==""){
 							label.BackColor=Color.White;
 							continue;
 						}
-						PrefInf prefInf=GetPrefInf(label);
+						PrefInf prefInf=controlAndPref.PrefInf_;
 						if(label.Text.ToLower().Contains(textSearch.Text.ToLower())
 							|| (prefInf!=null && !prefInf.Details.IsNullOrEmpty() && prefInf.Details.ToLower().Contains(textSearch.Text.ToLower())))
 						{
@@ -356,16 +380,17 @@ namespace OpenDental {
 					}
 				}
 				//checkboxes
-				for(int c=0;c<listControls.Count;c++){
-					if(listControls[c] is UI.CheckBox checkBox){
-						if(listControls[c].Visible==false){
+				for(int c=0;c<_listTreeNodeAndControls[i].ListControlAndPrefInfos.Count;c++){
+					ControlAndPrefInfo controlAndPref=_listTreeNodeAndControls[i].ListControlAndPrefInfos[c];
+					if(controlAndPref.Control_ is UI.CheckBox checkBox){
+						if(controlAndPref.Control_.Visible==false){
 							continue;
 						}
 						if(textSearch.Text==""){
 							checkBox.BackColor=Color.White;
 							continue;
 						}
-						PrefInf prefInf=GetPrefInf(checkBox);
+						PrefInf prefInf=controlAndPref.PrefInf_;
 						if(checkBox.Text.ToLower().Contains(textSearch.Text.ToLower()) 
 							|| (prefInf!=null && !prefInf.Details.IsNullOrEmpty() && prefInf.Details.ToLower().Contains(textSearch.Text.ToLower())))
 						{
@@ -378,9 +403,10 @@ namespace OpenDental {
 					}
 				}
 				//groupboxes
-				for(int c=0;c<listControls.Count;c++){
-					if(listControls[c] is UI.GroupBox groupBox){
-						if(listControls[c].Visible==false){
+				for(int c=0;c<_listTreeNodeAndControls[i].ListControlAndPrefInfos.Count;c++){
+					ControlAndPrefInfo controlAndPref=_listTreeNodeAndControls[i].ListControlAndPrefInfos[c];
+					if(controlAndPref.Control_ is UI.GroupBox groupBox){
+						if(controlAndPref.Control_.Visible==false){
 							continue;
 						}
 						if(textSearch.Text==""){
@@ -397,10 +423,10 @@ namespace OpenDental {
 					}
 				}
 				if(isCategoryYellow){
-					listTreeNodes[i].BackColor=Color.FromArgb(255, 255, 192);
+					_listTreeNodeAndControls[i].Node.BackColor=Color.FromArgb(255, 255, 192);
 				}
 				else{
-					listTreeNodes[i].BackColor=Color.Empty;
+					_listTreeNodeAndControls[i].Node.BackColor=Color.Empty;
 				}
 			}
 		}
@@ -909,4 +935,14 @@ namespace OpenDental {
 public class PrefValSync{
 	public PrefName PrefName_;
 	public string PrefVal;
+}
+
+public class TreeNodeAndControls {
+	public TreeNode Node;
+	public List<ControlAndPrefInfo> ListControlAndPrefInfos;
+}
+
+public class ControlAndPrefInfo {
+	public Control Control_;
+	public PrefInf PrefInf_;
 }

@@ -317,6 +317,9 @@
     <Compile Include="Frms\FrmEFormImportRuleEdit.xaml.cs">
       <DependentUpon>FrmEFormImportRuleEdit.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Frms\FrmLicenseAccept.xaml.cs">
+      <DependentUpon>FrmLicenseAccept.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Frms\Frm_BasicTemplate.xaml.cs">
       <DependentUpon>Frm_BasicTemplate.xaml</DependentUpon>
     </Compile>
@@ -917,6 +920,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Frms\FrmEFormImportRuleEdit.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Frms\FrmLicenseAccept.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

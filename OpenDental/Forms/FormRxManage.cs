@@ -111,12 +111,6 @@ namespace OpenDental {
 				messageSkipped="The following prescription(s) were not printed because they do not have a provider: \r\n" + messageSkipped;
 				MessageBox.Show(messageSkipped);
 			}
-			if(PrinterSettings.InstalledPrinters.Count==0) {
-				MsgBox.Show(this,"Error: No Printers Installed\r\n"+
-									"If you do have a printer installed, restarting the workstation may solve the problem."
-				);
-				return;
-			}
 			if(listRxPats.Count==1) {//old way of printing one rx
 				//This logic is an exact copy of FormRxEdit.butPrint_Click()'s logic.  If this is updated, that method needs to be updated as well.
 				sheetDef=SheetDefs.GetSheetsDefault(SheetTypeEnum.Rx,Clinics.ClinicNum);

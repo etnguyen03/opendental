@@ -107,6 +107,11 @@ namespace OpenDentBusiness{
 			Crud.ReplicationServerCrud.Delete(replicationServerNum);
 		}
 		
+		/// <summary>Method retained for backwards compatibility across MiddleTier.</summary>
+		public static long GetServer_id() {
+			return GetServerId();
+		}
+
 		/// <summary>The first time this is accessed, the value is obtained using a query.  Will be 0 unless a server id was set in my.ini.</summary>
 		public static long GetServerId() {
 			Meth.NoCheckMiddleTierRole();

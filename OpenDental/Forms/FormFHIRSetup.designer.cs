@@ -34,6 +34,7 @@ namespace OpenDental{
 			this.textSubInterval = new OpenDental.ValidDouble();
 			this.label1 = new System.Windows.Forms.Label();
 			this.comboPayType = new OpenDental.UI.ComboBox();
+			this.butViewLicense = new OpenDental.UI.Button();
 			this.SuspendLayout();
 			// 
 			// butSave
@@ -85,7 +86,7 @@ namespace OpenDental{
 			this.butGenerateKey.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
 			this.butGenerateKey.Location = new System.Drawing.Point(12, 461);
 			this.butGenerateKey.Name = "butGenerateKey";
-			this.butGenerateKey.Size = new System.Drawing.Size(79, 24);
+			this.butGenerateKey.Size = new System.Drawing.Size(85, 24);
 			this.butGenerateKey.TabIndex = 8;
 			this.butGenerateKey.Text = "&Add Key";
 			this.butGenerateKey.Click += new System.EventHandler(this.butAddKey_Click);
@@ -133,9 +134,20 @@ namespace OpenDental{
 			this.comboPayType.Size = new System.Drawing.Size(136, 21);
 			this.comboPayType.TabIndex = 62;
 			// 
+			// butViewLicense
+			// 
+			this.butViewLicense.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+			this.butViewLicense.Location = new System.Drawing.Point(103, 461);
+			this.butViewLicense.Name = "butViewLicense";
+			this.butViewLicense.Size = new System.Drawing.Size(85, 24);
+			this.butViewLicense.TabIndex = 64;
+			this.butViewLicense.Text = "View License";
+			this.butViewLicense.Click += new System.EventHandler(this.butViewLicense_Click);
+			// 
 			// FormFHIRSetup
 			// 
 			this.ClientSize = new System.Drawing.Size(781, 513);
+			this.Controls.Add(this.butViewLicense);
 			this.Controls.Add(this.label1);
 			this.Controls.Add(this.comboPayType);
 			this.Controls.Add(this.textSubInterval);
@@ -166,5 +178,6 @@ namespace OpenDental{
 		private ValidDouble textSubInterval;
 		private System.Windows.Forms.Label label1;
 		private UI.ComboBox comboPayType;
+		private UI.Button butViewLicense;
 	}
 }

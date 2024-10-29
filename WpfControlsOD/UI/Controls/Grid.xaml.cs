@@ -150,6 +150,12 @@ using WpfControls.UI;
 			Loaded+=Grid_Loaded;
 			MouseWheel+=Grid_MouseWheel;
 			PreviewKeyDown+=Grid_PreviewKeyDown;
+			Unloaded+=Grid_Unloaded;
+		}
+
+		private void Grid_Unloaded(object sender,RoutedEventArgs e) {
+			scrollH.Template=null;
+			scrollV.Template=null;
 		}
 		#endregion Constructor
 

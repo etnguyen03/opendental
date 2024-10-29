@@ -1142,6 +1142,9 @@ namespace OpenDental {
 			PrintDocument printDocument=new PrintDocument();
 			printDocument.PrintPage += new PrintPageEventHandler(this.pd_PrintPage);
 			printDocument.DefaultPageSettings.Margins=new Margins(25,25,40,40);
+			if(!PrinterL.HasValidSettings()) {
+				return;
+			}
 			if(printDocument.DefaultPageSettings.PrintableArea.Height==0) {
 				printDocument.DefaultPageSettings.PaperSize=new PaperSize("default",850,1100);
 			}

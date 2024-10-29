@@ -71,6 +71,14 @@ Rename VisDb to VisDbLang and add a third field.
 Add another column to the grid if this is not default language.
 They are allowed to change both the English and foreign translations in that grid at any time.
 
+Font size
+This is discussed in a few different places:
+EFormField.FontScale discusses how we use default sizes as 100% and then scale from there.
+EFormField.ValueLabel discusses conversion of font sizes in FlowDocuments.
+EFormField.Width discusses how the size of other elements relates to font sizes.
+It's worth mentioning that Sheets use 12 point font by default, which is bigger than the WinForms UI font of 8.25.
+This is done for printing reasons. eForms don't generally print, so we care more about UI fonts.
+Our 11.5 default WPF font is quite a bit smaller than the 12 point font used in Sheets.
 */
 
 	///<summary>EForms are a way for patients to fill out forms. This is similar to sheets, but optimized for dynamic layout instead of fixed layout. The office sets up templates, EFormDefs, which get copied to EForms. Since this is a template EForm, it does not link to a patient. It can be freely changed without affecting any EForms. We also supply internal EFormDefs, which are hard coded as XML rather than being in any office database.</summary>

@@ -17,7 +17,7 @@
 		<ui:GroupBox Height="175" Margin="25,410,0,0" Width="454" Text="Layout" >
 			<ui:CheckBox x:Name="checkBorder" Height="20" Margin="4,17,0,0" Width="129" Text="Show Border Box" CheckAlign="MiddleRight"/>
 			<ui:Label x:Name="labelWidth" Width="60" Height="18" Margin="59,38,0,0" Text="Width" HAlign="Right" VAlign="Center" />
-			<ui:Label Height="18" Margin="178,38,0,0" Text="leave blank for full width" VAlign="Center" Width="193" />
+			<ui:Label x:Name="labelWidthNote" Height="18" Margin="178,38,0,0" Text="leave blank for full width" VAlign="Center" Width="193" />
 			<ui:TextVInt x:Name="textVIntWidth" Width="54" Height="20" Margin="120,38,0,0" ShowZero="False"/>
 			<ui:CheckBox x:Name="checkIsWidthPercentage" Height="20" Margin="4,59,0,0" Width="129" Text="Width Is Percentage" CheckAlign="MiddleRight"/>
 			<ui:Label x:Name="labelWidthIsPercentageNote" Height="18" Margin="138,60,0,0" Text="this applies to all fields in a horizontal stack" VAlign="Center" Width="266" />
@@ -33,9 +33,9 @@
 			<ui:Label x:Name="labelSpaceToRightDefault" Height="18" Margin="178,147,0,0" Text="leave blank to use the default value of" VAlign="Center" Width="265" />
 		</ui:GroupBox>
 		<ui:GroupBox Height="80" Margin="25,592,0,0" Width="454" Text="Conditional Logic. This field will show...">
-			<ui:Label Width="128" Height="18" Margin="30,27,0,0" Text="... if the parent field" HAlign="Right" VAlign="Center" />
+			<ui:Label Width="128" Height="18" Margin="32,27,0,0" Text="... if the parent field" HAlign="Right" VAlign="Center" />
 			<ui:TextBox x:Name="textCondParent" Width="213" Height="20" Margin="159,25,0,0"/>
-			<ui:Label Width="143" Height="18" Margin="15,51,0,0" Text="... has the following value" HAlign="Right" VAlign="Center" />
+			<ui:Label Width="158" Height="18" Margin="3,51,0,0" Text="... has the following value(s)" HAlign="Right" VAlign="Center" />
 			<ui:TextBox x:Name="textCondValue" Width="213" Height="20" Margin="159,50,0,0"/>
 			<ui:Button x:Name="butPickParent" Width="66" Height="24" Margin="379,22,0,0" Text="Pick" Click="butPickParent_Click"/>
 			<ui:Button x:Name="butPickValue" Width="66" Height="24" Margin="379,48,0,0" Text="Pick" Click="butPickValue_Click" />

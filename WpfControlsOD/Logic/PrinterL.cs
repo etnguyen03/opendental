@@ -12,6 +12,7 @@ using OpenDentBusiness;
 using OpenDental.Drawing;
 using CodeBase;//for PrintoutErrorCode
 using System.IO;
+using System.ServiceProcess;
 
 namespace WpfControls {
 //Jordan is the only one allowed to edit this file.
@@ -112,6 +113,10 @@ then change:
 		private static bool PreviewClassic(Printout printout) {
 //todo: build robust margin functionality
 			//MakeMarginsFitWithinHardMargins(printout.PrintDoc);
+			if(!printout.HasValidSettings()) {
+				ShowError(printout);
+				return false;
+			}
 			FrmPrintPreview frmPrintPreview=new FrmPrintPreview();
 			CreateFixedDocument(printout);
 			frmPrintPreview.FixedDocumentCur=printout.FixedDocument_;
@@ -120,6 +125,13 @@ then change:
 		}
 
 		private static bool SetPrinter(PrinterSettings printerSettings,PrintSituation printSituation,long patNum,string auditDescription) {
+			//checking spooler service prevents this method from crashing.
+			//But there are also additional more rigorous checks over in printout.HasValidSettings that will happen later.
+			ServiceController serviceController=new ServiceController("Spooler");
+			if(serviceController.Status!=ServiceControllerStatus.Running) {
+				MsgBox.Show("Please start the Printer Spooler service to proceed with printing.");
+				return false;
+			}
 			#region 1 - Set default printer if available from this computer.
 			//printerSettings will always be new when this function is called.
 			//Get the name of the Windows default printer.
@@ -201,6 +213,10 @@ then change:
 
 		///<summary>Whenever we are printing we should eventually go through this method.</summary>
 		public static bool TryPrint(Printout printout) {
+			if(!printout.HasValidSettings()) {
+				ShowError(printout);
+				return false;
+			}
 			if(!TrySetPrinter(printout)) {
 				return false;
 			}
@@ -210,7 +226,7 @@ then change:
 			return true;
 		}
 
-		///<summary>Attempts to print if in RELEASE mode or if in DEBUG mode will open ODprintout in FormPrintPreview. Returns true if succesfully printed, or if preview is shown and OK is clicked.</summary>
+		///<summary>Attempts to print if in RELEASE mode or if in DEBUG mode will open printout in FormPrintPreview. Returns true if succesfully printed, or if preview is shown and OK is clicked.</summary>
 		public static bool TryPrintOrDebugClassicPreview(Printout printout){
 			if(ODBuild.IsDebug() || printout.IsForcedPreview) {
 				return PreviewClassic(printout);
@@ -231,5 +247,18 @@ then change:
 //todo:
 			//return SetPrinter(printout.PrintDoc.PrinterSettings,printout.Situation,printout.AuditPatNum,printout.AuditDescription);
 		}
+
+		///<summary> Call whenever checking printDocument.DefaultPageSettings.PrintableArea.
+		///Also call before calling Printout.Print()
+		///</summary>
+		public static bool HasValidSettings() {
+			Printout printout=new Printout();
+			if(!printout.HasValidSettings()) {
+				MsgBox.Show(printout.SettingsErrorCode.GetDescription());
+				return false;
+			}
+			return true;
+		}
+
 	}
 }
