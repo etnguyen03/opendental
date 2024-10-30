@@ -7307,6 +7307,8 @@
         <EnumValue name="SheetNum">3 Sheet Number.</EnumValue>
         <EnumValue name="UtmNum">4 Utm Number.</EnumValue>
         <EnumValue name="WebFormSheetID">5 Web Form Sheet Number.</EnumValue>
+        <EnumValue name="SmsMtSentNum">6 SmsMtSent Number</EnumValue>
+        <EnumValue name="SmsMtTerminatedNum">7 SmsMtTerminated Number</EnumValue>
       </Enumeration>
     </column>
     <column order="6" name="LogGuid" type="varchar(36)">
@@ -8387,6 +8389,7 @@
         <EnumValue name="BadgeIdEdit">255 - Allow users to edit BadgeIds in the userod table.</EnumValue>
         <EnumValue name="ChildDaycareEdit">256 - Internal Child Daycare only. Allow users to make changes to the daycare. Only userd at HQ.</EnumValue>
         <EnumValue name="PerioEditCopy">257 - Allow users to copy perio charts in the Perio Chart window.</EnumValue>
+        <EnumValue name="LicenseAccept">258 - For audit trail only. Logs when a license is accepted by a user.</EnumValue>
       </Enumeration>
     </column>
     <column order="5" name="FKey" type="bigint(20)">
@@ -15869,6 +15872,7 @@
         <EnumValue name="BadgeIdEdit">255 - Allow users to edit BadgeIds in the userod table.</EnumValue>
         <EnumValue name="ChildDaycareEdit">256 - Internal Child Daycare only. Allow users to make changes to the daycare. Only userd at HQ.</EnumValue>
         <EnumValue name="PerioEditCopy">257 - Allow users to copy perio charts in the Perio Chart window.</EnumValue>
+        <EnumValue name="LicenseAccept">258 - For audit trail only. Logs when a license is accepted by a user.</EnumValue>
       </Enumeration>
     </column>
     <column order="2" name="UserNum" type="bigint(20)" fk="userod">

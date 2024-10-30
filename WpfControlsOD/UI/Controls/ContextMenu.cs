@@ -19,6 +19,7 @@ namespace WpfControls.UI {
 			}
 			frameworkElementParent.PreviewKeyDown+=frameworkElementParent_PreviewKeyDown;
 			PreviewKeyDown+=frameworkElementParent_PreviewKeyDown;//both are needed
+			frameworkElementParent.Unloaded+=(sender,e)=>ClearMenuItemsClickEvent();
 		}
 		#endregion Constructor
 
@@ -27,7 +28,7 @@ namespace WpfControls.UI {
 			Items.Add(menuItem);
 		}
 
-		public void Add(string text,EventHandler click,object tag=null){
+		public void Add(string text,RoutedEventHandler click,object tag=null){
 			MenuItem menuItem=new MenuItem(text,click);
 			menuItem.Tag=tag;
 			Items.Add(menuItem);
@@ -38,6 +39,14 @@ namespace WpfControls.UI {
 			System.Windows.Controls.Separator separator=new System.Windows.Controls.Separator();
 			Items.Add(separator);
 			return separator;
+		}
+
+		public void ClearMenuItemsClickEvent(){
+			for(int i=0;i<Items.Count;i++) {
+				if(Items[i] is MenuItem menuItem) {
+					menuItem.ClearClickEvent();
+				}
+			}
 		}
 
 		public List<MenuItem> GetMenuItems(){

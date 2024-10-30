@@ -84,12 +84,22 @@ namespace OpenDentBusiness {
 			processStartInfo.RedirectStandardOutput=true;
 			processStartInfo.RedirectStandardError=true;
 			processStartInfo.CreateNoWindow=true;
+			StringBuilder stringBuilderOutput=new StringBuilder();
+			StringBuilder stringBuilderError=new StringBuilder();
 			using (Process process=new Process()) {
 				process.StartInfo=processStartInfo;
+				//Add event handlers for handling the redirected output and error stream asynchronously
+				//These events fire everytime Git writes data to the redirected streams
+				process.OutputDataReceived+=(sender, args) => stringBuilderOutput.AppendLine(args.Data);
+				process.ErrorDataReceived+=(sender, args) => stringBuilderError.AppendLine(args.Data);
 				process.Start();
-				process.WaitForExit();
-				gitResult.Output=process.StandardOutput.ReadToEnd();
-				gitResult.Error=process.StandardError.ReadToEnd();
+				process.BeginOutputReadLine();//Start asynchronously reading the redirected standard output
+				process.BeginErrorReadLine();//Start asynchronously reading the redirected standard error
+				process.WaitForExit();//wait for the process to exit indefinitely
+				process.CancelOutputRead();//Stop asynchronously reading the standard output
+				process.CancelErrorRead();//Stop asynchronously reading the standard error
+				gitResult.Output=stringBuilderOutput.ToString();
+				gitResult.Error=stringBuilderError.ToString();
 				gitResult.ExitCode=process.ExitCode;
 			}
 			return gitResult;

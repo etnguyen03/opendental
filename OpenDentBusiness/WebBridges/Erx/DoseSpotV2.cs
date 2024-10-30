@@ -1711,10 +1711,13 @@ namespace OpenDentBusiness {
 			//If DoseSpot version is V1 and the migration request hasn't been made
 			if(programPropertyDoseSpotApiVersion.PropertyValue!="2" && programPropertyDoseSpotMigrationRequest.PropertyValue!="1") {
 				string clientId="";
+				string medispanClientId="";
 				if(!ODBuild.IsDebug()) {
 					try {
 						clientId=WebServiceMainHQProxy.GetWebServiceMainHQInstance()
 						.BuildOAuthUrl(PrefC.GetString(PrefName.RegistrationKey),OAuthApplicationNames.DoseSpotClientID.ToString());
+						medispanClientId=WebServiceMainHQProxy.GetWebServiceMainHQInstance()
+						.BuildOAuthUrl(PrefC.GetString(PrefName.RegistrationKey),OAuthApplicationNames.MedispanClientID.ToString());
 					}
 					catch(Exception ex) {
 						ex.DoNothing();
@@ -1740,7 +1743,7 @@ namespace OpenDentBusiness {
 					}
 						List<string> listClinicIds=listClinicErxs.Select(x => x.ClinicId).ToList();
 					try{
-						DoseSpotREST.PostInitiateDrugDbMigration(token,listClinicIds,clientId);
+						DoseSpotREST.PostInitiateDrugDbMigration(token,listClinicIds,clientId,medispanClientId);
 					}
 					catch(Exception ex) {
 						ex.DoNothing();

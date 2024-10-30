@@ -138,6 +138,17 @@
       </Enumeration>
     </column>
   </table>
+  <table name="eservicelog">
+    <summary></summary>
+    <column order="5" name="KeyType" type="smallint(6)">
+      <summary>Enum:FKeyType</summary>
+      <Enumeration name="FKeyType">
+        <summary>Type associated with FKey value.</summary>
+        <EnumValue name="SmsMtSentNum">6 SmsMtSent Number</EnumValue>
+        <EnumValue name="SmsMtTerminatedNum">7 SmsMtTerminated Number</EnumValue>
+      </Enumeration>
+    </column>
+  </table>
   <table name="eserviceshortguid">
     <summary></summary>
     <column order="1" name="EServiceCode" type="varchar(255)">
@@ -155,6 +166,7 @@
       <Enumeration name="EnumPermType">
         <summary>A hard-coded list of permissions which may be granted to usergroups.</summary>
         <EnumValue name="PerioEditCopy">257 - Allow users to copy perio charts in the Perio Chart window.</EnumValue>
+        <EnumValue name="LicenseAccept">258 - For audit trail only. Logs when a license is accepted by a user.</EnumValue>
       </Enumeration>
     </column>
     <column order="4" name="PermType" type="smallint(6)">
@@ -162,6 +174,7 @@
       <Enumeration name="EnumPermType">
         <summary>A hard-coded list of permissions which may be granted to usergroups.</summary>
         <EnumValue name="PerioEditCopy">257 - Allow users to copy perio charts in the Perio Chart window.</EnumValue>
+        <EnumValue name="LicenseAccept">258 - For audit trail only. Logs when a license is accepted by a user.</EnumValue>
       </Enumeration>
     </column>
   </table>
@@ -253,6 +266,7 @@
       <Enumeration name="EnumPermType">
         <summary>A hard-coded list of permissions which may be granted to usergroups.</summary>
         <EnumValue name="PerioEditCopy">257 - Allow users to copy perio charts in the Perio Chart window.</EnumValue>
+        <EnumValue name="LicenseAccept">258 - For audit trail only. Logs when a license is accepted by a user.</EnumValue>
       </Enumeration>
     </column>
     <column order="1" name="PermType" type="smallint(6)">
@@ -260,6 +274,7 @@
       <Enumeration name="EnumPermType">
         <summary>A hard-coded list of permissions which may be granted to usergroups.</summary>
         <EnumValue name="PerioEditCopy">257 - Allow users to copy perio charts in the Perio Chart window.</EnumValue>
+        <EnumValue name="LicenseAccept">258 - For audit trail only. Logs when a license is accepted by a user.</EnumValue>
       </Enumeration>
     </column>
   </table>
@@ -545,6 +560,7 @@
         <EnumValue name="BadgeIdEdit">255 - Allow users to edit BadgeIds in the userod table.</EnumValue>
         <EnumValue name="ChildDaycareEdit">256 - Internal Child Daycare only. Allow users to make changes to the daycare. Only userd at HQ.</EnumValue>
         <EnumValue name="PerioEditCopy">257 - Allow users to copy perio charts in the Perio Chart window.</EnumValue>
+        <EnumValue name="LicenseAccept">258 - For audit trail only. Logs when a license is accepted by a user.</EnumValue>
       </Enumeration>
     </column>
   </table>
@@ -839,6 +855,7 @@
         <EnumValue name="BadgeIdEdit">255 - Allow users to edit BadgeIds in the userod table.</EnumValue>
         <EnumValue name="ChildDaycareEdit">256 - Internal Child Daycare only. Allow users to make changes to the daycare. Only userd at HQ.</EnumValue>
         <EnumValue name="PerioEditCopy">257 - Allow users to copy perio charts in the Perio Chart window.</EnumValue>
+        <EnumValue name="LicenseAccept">258 - For audit trail only. Logs when a license is accepted by a user.</EnumValue>
       </Enumeration>
     </column>
   </table>

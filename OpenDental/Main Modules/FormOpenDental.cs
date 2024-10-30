@@ -942,7 +942,9 @@ namespace OpenDental{
 				_menuItemReplication.Available=false;
 				_menuItemHL7.Available=false;
 				_menuItemEHR.Available=false;
-				_menuItemPrinter.Available=false;
+				if(ODBuild.IsThinfinity()) {
+					_menuItemPrinter.Available=false;
+				}
 				//If the office needs to reset their office passowrd, we will prompt them until they change it.
 				if(ODBuild.IsThinfinity() && PrefC.GetEnum<YN>(PrefName.CloudPasswordNeedsReset)!=YN.No) {
 					string message="You must reset the office password. ";

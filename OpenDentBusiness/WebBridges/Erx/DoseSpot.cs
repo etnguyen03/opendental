@@ -1630,7 +1630,7 @@ namespace OpenDentBusiness {
 		}
 
 		///<summary>POST initiates the drug db migration for the specified client and clinics. </summary>
-		public static void PostInitiateDrugDbMigration(string authToken,List<string> listClinicIDs,string clientId) {
+		public static void PostInitiateDrugDbMigration(string authToken,List<string> listClinicIDs,string clientId,string medispanClientId) {
 			//DoseSpot docs specifically request an Array of clinicIDs.
 			int[] arrayIds=new int[listClinicIDs.Count];
 			try {
@@ -1641,6 +1641,7 @@ namespace OpenDentBusiness {
 			}
 			string body=JsonConvert.SerializeObject(
 				new {
+					MedispanClientId=medispanClientId,
 					ClinicIDs=arrayIds
 				});
 			var resObj=Request(ApiRoute.PostInitiateDrugDbMigration,HttpMethod.Post,"Bearer "+authToken,body,new {

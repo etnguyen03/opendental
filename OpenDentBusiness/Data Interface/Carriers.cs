@@ -417,7 +417,7 @@ namespace OpenDentBusiness{
 			return $"{colVal} initialized with value '{carrierVal}'\r\n";
 		}
 
-		///<summary>Primarily used when user clicks OK from the InsPlan window.  Gets a carrierNum from the database based on the other supplied carrier
+		///<summary>Throws exception when in CA if carrier is not found. Primarily used when user clicks OK from the InsPlan window.  Gets a carrierNum from the database based on the other supplied carrier
 		///data.  Sets the CarrierNum accordingly. If there is no matching carrier, then a new carrier is created.  The end result is a valid carrierNum
 		///to use.</summary>
 		public static Carrier GetIdentical(Carrier carrier,Carrier carrierOld=null) {
@@ -464,8 +464,10 @@ namespace OpenDentBusiness{
 			//Security.CurUser.UserNum gets set on MT by the DtoProcessor so it matches the user from the client WS.
 			carrier.SecUserNumEntry=Security.CurUser.UserNum;
 			Insert(carrier,carrierOld); //insert function takes care of logging.
-			string message=GetSecurityLogMessage(carrier,carrierOld);
-			SecurityLogs.MakeLogEntry(EnumPermType.CarrierCreate,0,message);
+			if(carrierOld!=null){
+				string message=GetSecurityLogMessage(carrier,carrierOld);
+				SecurityLogs.MakeLogEntry(EnumPermType.CarrierCreate,0,message);
+			}
 			carrierRetVal.CarrierNum=carrier.CarrierNum;
 			return carrierRetVal;
 		}

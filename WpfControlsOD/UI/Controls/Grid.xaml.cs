@@ -152,11 +152,6 @@ using WpfControls.UI;
 			PreviewKeyDown+=Grid_PreviewKeyDown;
 			Unloaded+=Grid_Unloaded;
 		}
-
-		private void Grid_Unloaded(object sender,RoutedEventArgs e) {
-			scrollH.Template=null;
-			scrollV.Template=null;
-		}
 		#endregion Constructor
 
 		#region Events - raise
@@ -1136,6 +1131,16 @@ using WpfControls.UI;
 				}
 				frameworkElement=(FrameworkElement)frameworkElement.Parent;
 			}
+		}
+
+		private void Grid_Unloaded(object sender,RoutedEventArgs e) {
+			scrollH.Template=null;
+			scrollV.Template=null;
+			ContextMenu contextMenu=(ContextMenu)this.ContextMenu;
+			if(contextMenu!=null) {
+				contextMenu.ClearMenuItemsClickEvent();
+			}
+
 		}
 
 		private void textEdit_LostFocus(object sender,EventArgs e) {

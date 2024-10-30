@@ -49,11 +49,14 @@ How to use the TreeView control:
 			//Width=200;
 			//Height=400;
 			Items=new TreeViewItemCollection(this);
+			Unloaded+=TreeView_Unloaded;
 		}
 		#endregion Constructor
 
 		#region Events
-		
+		private void TreeView_Unloaded(object sender,RoutedEventArgs e) {
+			this.Content=null;
+		}
 		#endregion Events
 
 		#region Properties

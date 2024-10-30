@@ -81,10 +81,6 @@ How to use the Button control:
 			Unloaded+=Button_Unloaded;
 		}
 
-		private void Button_Unloaded(object sender,RoutedEventArgs e) {
-			gridImage.Children.Clear();
-		}
-
 		[Category("OD")]
 		public event EventHandler Click;
 
@@ -356,6 +352,14 @@ How to use the Button control:
 		private void Button_IsEnabledChanged(object sender,DependencyPropertyChangedEventArgs e) {
 			//This is nice because it gets hit when changing the property in the designer.
 			SetColors();
+		}
+
+		private void Button_Unloaded(object sender,RoutedEventArgs e) {
+			for(int i=0;i<gridImage.Children.Count;i++) {
+				if(gridImage.Children[i] is Image image) {
+					image.Source=null;
+				}
+			}
 		}
 
 		protected override void OnMouseDown(MouseButtonEventArgs e) {

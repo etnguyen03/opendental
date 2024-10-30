@@ -10,6 +10,7 @@ namespace WpfControls.UI {
 	public class MenuItem : System.Windows.Controls.MenuItem{
 		#region Fields
 		private string _shortcut="";
+		private RoutedEventHandler _click;
 		#endregion Fields
 
 		#region Constructors
@@ -22,12 +23,13 @@ namespace WpfControls.UI {
 			Header=text;
 		}
 
-		public MenuItem(string text,EventHandler click,string shortcut="",object tag=null){
+		public MenuItem(string text,RoutedEventHandler click,string shortcut="",object tag=null){
 			VerticalAlignment=VerticalAlignment.Stretch;
 			Header=text;
 			Shortcut=shortcut;
 			Tag=tag;
-			Click+=(sender,routedEventArgs)=>click?.Invoke(sender,new EventArgs());
+			_click=click;
+			Click+=(sender,routedEventArgs)=>_click?.Invoke(sender,new RoutedEventArgs());
 		}
 		#endregion Constructors
 
@@ -63,13 +65,20 @@ namespace WpfControls.UI {
 			Items.Add(menuItem);
 		}
 
-		public void Add(string text,EventHandler click){
+		public void Add(string text,RoutedEventHandler click){
 			MenuItem menuItem=new MenuItem(text,click);
 			Items.Add(menuItem);
 		}
 
 		public void AddSeparator(){
 			Items.Add(new System.Windows.Controls.Separator());
+		}
+
+		public void ClearClickEvent(){
+			if(_click!=null) {
+				Click-=_click;
+				_click=null;
+			}
 		}
 
 		public List<MenuItem> GetMenuItems(){

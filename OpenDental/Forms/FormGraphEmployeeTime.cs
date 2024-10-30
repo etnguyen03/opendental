@@ -64,6 +64,8 @@ namespace OpenDental
 			FillGrid();
 			Height=System.Windows.Forms.Screen.FromHandle(this.Handle).WorkingArea.Height;
 			Top=System.Windows.Forms.Screen.FromHandle(this.Handle).WorkingArea.Y;
+			Left=System.Windows.Forms.Screen.FromHandle(this.Handle).WorkingArea.Left;
+			Width=System.Windows.Forms.Screen.FromHandle(this.Handle).WorkingArea.Width;
 		}
 
 		#region Graph

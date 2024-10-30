@@ -21,8 +21,8 @@ namespace OpenDental.UI {
 		private float _zoomLocal=1;
 		///<summary>0=not accepting input. 1=accepting input.</summary>
 		private int tabletState;
-		///<summary>Collection of points that will be connected to draw the signature.  0,0 represents pen up.</summary>
-		private List<Point> listPoints;
+		///<summary>Collection of points that will be connected to draw the signature.  0,0 represents pen up. Also see _strDigitalSig for the alternate way of storing a string as a "digital sig".</summary>
+		private List<PointF> listPointFs;
 		//<summary>0=none, 1=lossless.  Always use 1.</summary>
 		//private int compressionMode;
 		//<summary>0=clear text. 1=40 bit DES.  2=higher security.</summary>
@@ -30,11 +30,13 @@ namespace OpenDental.UI {
 		///<summary>The hash of the document which will be used to encrypt the signature.</summary>
 		private byte[] hash;
 		private bool mouseIsDown;
+		///<summary>This is a string that looks something like this: Digitally Signed by Abbr - LName, FName (hidden)\r\nDate Signed: 10/29/2024 7:25 PM.  This string will get converted to bytes and then to a format that looks like a series of points. It's a bad strategy, but we are stuck with it. Every place where listPointFs is used, this might be used instead.</summary>
+		private string _strDigitalSig=null;
 
 		public SignatureBox() {
 			InitializeComponent();
 			DoubleBuffered=true;
-			listPoints=new List<Point>();
+			listPointFs=new List<PointF>();
 		}
 
 		///<summary>Defaults are 1,1.</summary>
@@ -53,8 +55,8 @@ namespace OpenDental.UI {
 		}
 
 		///<summary>Converts from scaled back to 96dpi.</summary>
-		private int Unscale(float valScreen){
-			int val96=(int)Math.Round(valScreen/(_scaleMS*_zoomLocal));//example 180/(1.5*1.2)=100
+		private float Unscale(float valScreen){
+			float val96=(float)(valScreen/(_scaleMS*_zoomLocal));//example 180/(1.5*1.2)=100
 			return val96;
 		}
 
@@ -70,12 +72,17 @@ namespace OpenDental.UI {
 
 		///<summary>Clears the display and the stored signature.</summary>
 		public void ClearTablet(){
-			listPoints=new List<Point>();
+			listPointFs=new List<PointF>();
+			_strDigitalSig=null;
 			Invalidate();
 		}
 
 		public int NumberOfTabletPoints(){
-			return listPoints.Count;
+			//this is only used to check for zero
+			if(_strDigitalSig!=null){
+				return 10;//arbitrary number bigger than zero
+			}
+			return listPointFs.Count;
 		}
 
 		/*
@@ -102,54 +109,96 @@ namespace OpenDental.UI {
 
 		///<summary>Encrypts signature text and returns a base 64 string so that it can go directly into the database.</summary>
 		public string GetSigString(){
-			if(listPoints.Count==0){
+			string rawString="";
+			if(_strDigitalSig!=null){
+				//These two points indicate that this is NOT a "Normal" signature.
+				rawString+=int.MinValue.ToString()+","+int.MinValue.ToString()+";";
+				rawString+=int.MinValue.ToString()+","+int.MinValue.ToString()+";";
+				byte[] byteArray = Encoding.UTF8.GetBytes(_strDigitalSig);
+				for(int i=0;i<byteArray.Length;i=i+2) {
+					rawString+=byteArray[i].ToString();//this is safe because the loop condition checks i<byteArray.Length
+					rawString+=",";
+					if(i>byteArray.Length-2){//there is no byte to use for "Y"
+						rawString+=int.MinValue.ToString();
+					}
+					else{
+						rawString+=byteArray[i+1].ToString();
+					}
+					if(i < byteArray.Length-2){//if not last iteration
+						rawString+=";";
+					}
+				}
+				return OpenDentBusiness.UI.SigBox.EncryptSigString(hash,rawString);
+			}
+			if(listPointFs.Count==0){
 				return "";
 			}
-			string rawString="";
-			for(int i=0;i<listPoints.Count;i++){
+			for(int i=0;i<listPointFs.Count;i++){
 				if(i>0){
 					rawString+=";";
 				}
-				rawString+=listPoints[i].X.ToString()+","+listPoints[i].Y.ToString();
+				rawString+=listPointFs[i].X.ToString("0.#");//Show to one decimal place. But 5.0395757 would show as 5, for example.
+				rawString+=",";
+				rawString+=listPointFs[i].Y.ToString("0.#");
 			}
 			return OpenDentBusiness.UI.SigBox.EncryptSigString(hash,rawString);
 		}
 
 		///<summary>Unencrypts the signature coming in from the database.  The key data etc needs to be set first before calling this function.</summary>
 		public void SetSigString(string sigString){
-			listPoints=new List<Point>();
+			listPointFs=new List<PointF>();
+			_strDigitalSig=null;
 			if(sigString==""){
 				return;
 			}
 			try{
 				//convert base64 string to bytes
-				byte[] encryptedBytes=Convert.FromBase64String(sigString);
+				byte[] byteArrayEncrypted=Convert.FromBase64String(sigString);
 				//create the streams
-				MemoryStream ms=new MemoryStream();
+				MemoryStream memoryStream=new MemoryStream();
 				//ms.Write(encryptedBytes,0,(int)encryptedBytes.Length);
 				//create a crypto stream
-				Rijndael crypt=Rijndael.Create();
-				crypt.KeySize=128;//16 bytes;
-				crypt.Key=hash;
-				crypt.IV=new byte[16];
-				CryptoStream cs=new CryptoStream(ms,crypt.CreateDecryptor(),CryptoStreamMode.Write);
-				cs.Write(encryptedBytes,0,encryptedBytes.Length);
-				cs.FlushFinalBlock();
-				byte[] sigBytes=new byte[ms.Length];
-				ms.Position=0;
-				ms.Read(sigBytes,0,(int)ms.Length);
-				cs.Dispose();
-				ms.Dispose();
+				Rijndael rijndael=Rijndael.Create();
+				rijndael.KeySize=128;//16 bytes;
+				rijndael.Key=hash;
+				rijndael.IV=new byte[16];
+				CryptoStream cryptoStream=new CryptoStream(memoryStream,rijndael.CreateDecryptor(),CryptoStreamMode.Write);
+				cryptoStream.Write(byteArrayEncrypted,0,byteArrayEncrypted.Length);
+				cryptoStream.FlushFinalBlock();
+				byte[] byteArray=new byte[memoryStream.Length];
+				memoryStream.Position=0;
+				memoryStream.Read(byteArray,0,(int)memoryStream.Length);
+				cryptoStream.Dispose();
+				memoryStream.Dispose();
 				//now convert the bytes into a string.
-				string rawString=Encoding.UTF8.GetString(sigBytes);
-				//convert the raw string into a series of points
-				string[] pointArray=rawString.Split(new char[] {';'});
-				Point pt;
-				string[] coords;
-				for(int i=0;i<pointArray.Length;i++){
-					coords=pointArray[i].Split(new char[] {','});
-					pt=new Point(Convert.ToInt32(coords[0]),Convert.ToInt32(coords[1]));
-					listPoints.Add(pt);
+				string rawString=Encoding.UTF8.GetString(byteArray);
+				string strDigitalSigPrefix="";
+				strDigitalSigPrefix+=int.MinValue.ToString()+","+int.MinValue.ToString()+";";
+				strDigitalSigPrefix+=int.MinValue.ToString()+","+int.MinValue.ToString()+";";
+				if(rawString.StartsWith(strDigitalSigPrefix)){
+					List<byte> listBytes=new List<byte>();
+					List<string> listStrPoints=rawString.Split(';').ToList();
+					for(int i=0;i<listStrPoints.Count;i++){
+						string[] coords=listStrPoints[i].Split(new char[] {','});
+						//We can't use floats here
+						Point point=new Point(Convert.ToInt32(coords[0]),Convert.ToInt32(coords[1]));
+						if(point.X>int.MinValue){
+							listBytes.Add((byte)point.X);
+						}
+						if(point.Y>int.MinValue){
+							listBytes.Add((byte)point.Y);
+						}
+					}
+					_strDigitalSig=Encoding.UTF8.GetString(listBytes.ToArray());
+				}
+				else{
+					//convert the raw string into a series of points
+					List<string> listStrPoints=rawString.Split(new char[] {';'}).ToList();
+					for(int i=0;i<listStrPoints.Count;i++){
+						string[] coords=listStrPoints[i].Split(new char[] {','});
+						PointF pointF=new PointF(Convert.ToSingle(coords[0]),Convert.ToSingle(coords[1]));
+						listPointFs.Add(pointF);
+					}
 				}
 				Invalidate();
 			}
@@ -161,60 +210,60 @@ namespace OpenDental.UI {
 
 		///<Summary>Also includes a surrounding box.</Summary>
 		public Image GetSigImage(bool includeBorder){
-			Image img=new Bitmap(Width,Height);
-			Graphics g=Graphics.FromImage(img);
+			Image image=new Bitmap(Width,Height);
+			Graphics g=Graphics.FromImage(image);
 			g.FillRectangle(Brushes.White,0,0,this.Width,this.Height);
-			Pen pen=new Pen(Color.Black,2f);
+			using Pen pen=new Pen(Color.Black,2f);
 			g.SmoothingMode=SmoothingMode.HighQuality;
 			if(IsDigitalSignature()) {
 				StringFormat stringFormat = StringFormat.GenericDefault;
 				stringFormat.Alignment=StringAlignment.Center;
-				g.DrawString(GetEncryptedString(),Font,Brushes.Black,Width/2,Height/2,stringFormat);
+				g.DrawString(_strDigitalSig,Font,Brushes.Black,Width/2,Height/2,stringFormat);
 				stringFormat?.Dispose();
 			}
 			else {
-				for(int i = 1;i<listPoints.Count;i++) {//skip the first point
-					if(listPoints[i-1].X==0 && listPoints[i-1].Y==0) {
+				for(int i=1;i<listPointFs.Count;i++) {//skip the first point
+					if(listPointFs[i-1].X==0 && listPointFs[i-1].Y==0) {
 						continue;
 					}
-					if(listPoints[i].X==0 && listPoints[i].Y==0) {
+					if(listPointFs[i].X==0 && listPointFs[i].Y==0) {
 						continue;
 					}
-					g.DrawLine(pen,listPoints[i-1],listPoints[i]);
+					g.DrawLine(pen,listPointFs[i-1],listPointFs[i]);
 				}
 			}
 			if(includeBorder){
 				g.DrawRectangle(Pens.Black,0,0,Width-1,Height-1);
 			}
 			g.Dispose();
-			return img;
+			return image;
 		}
 
-		public void SetPointList(List<Point> listPoints) {
-			this.listPoints=new List<Point>(listPoints);
+		public void SetPointList(List<PointF> listPointFs) {
+			this.listPointFs=new List<PointF>(listPointFs);
 			Invalidate();
 		}
 
-		///<summary>Used in the OC plugin to display sigs that aren't encrypted or hashed.  Format x1,y1;x2,y2;x3,y3.  0,0 indicates pen up and start of new segment path.</summary>
-		public void SetPointList(string pointString) {
-			listPoints=new List<Point>();
-			if(pointString==""){
-				return;
+		public string GetPointStringForWebTest() {
+			if(_strDigitalSig!=null){
+				return _strDigitalSig;
 			}
-			//convert the raw string into a series of points
-			string[] pointArray=pointString.Split(';');
-			Point pt;
-			string[] coords;
-			for(int i=0;i<pointArray.Length;i++){
-				coords=pointArray[i].Split(',');
-				pt=new Point(Convert.ToInt32(coords[0]),Convert.ToInt32(coords[1]));
-				listPoints.Add(pt);
+			//return string.Join(";",listPoints);
+			//The above probably won't work with floats.
+			//We want format like this:
+			//"{X=1,Y=1};{X=15,Y=15};{X=0,Y=0};{X=1,Y=15};{X=15,Y=1}"
+			string retVal="";
+			for(int i=0;i<listPointFs.Count;i++){
+				if(i>0){
+					retVal+=";";
+				}
+				retVal+="{";
+				retVal+="X="+listPointFs[i].X.ToString("f0");
+				retVal+=",";
+				retVal+="Y="+listPointFs[i].Y.ToString("f0");
+				retVal+="}";
 			}
-			Invalidate();
-		}
-
-		public string GetPointString() {
-			return string.Join(";",listPoints);
+			return retVal;
 		}
 
 		///<summary></summary>
@@ -232,33 +281,35 @@ namespace OpenDental.UI {
 				StringFormat stringFormat = new StringFormat(StringFormat.GenericDefault);
 				stringFormat.Alignment=StringAlignment.Center;
 				stringFormat.LineAlignment=StringAlignment.Center;
-				g.DrawString(GetEncryptedString(),Font,Brushes.Black,Width/2,Height/2,stringFormat);
+				g.DrawString(_strDigitalSig,Font,Brushes.Black,Width/2,Height/2,stringFormat);
 				stringFormat?.Dispose();
 				return;
 			}
-			for(int i = 1;i<listPoints.Count;i++) {//skip the first point
-				if(listPoints[i-1].X==0 && listPoints[i-1].Y==0) {
+			for(int i = 1;i<listPointFs.Count;i++) {//skip the first point
+				if(listPointFs[i-1].X==0 && listPointFs[i-1].Y==0) {
 					continue;
 				}
-				if(listPoints[i].X==0 && listPoints[i].Y==0) {
+				if(listPointFs[i].X==0 && listPointFs[i].Y==0) {
 					continue;
 				}
-				g.DrawLine(pen,ScaleF(listPoints[i-1].X),ScaleF(listPoints[i-1].Y),ScaleF(listPoints[i].X),ScaleF(listPoints[i].Y));
+				g.DrawLine(pen,ScaleF(listPointFs[i-1].X),ScaleF(listPointFs[i-1].Y),ScaleF(listPointFs[i].X),ScaleF(listPointFs[i].Y));
 			}
 		}
 
 		protected override void OnMouseDown(MouseEventArgs e) {
+			//mouse events won't get hit when _strDigitalSig is filled with text because control is disabled.
 			base.OnMouseDown(e);
 			if(tabletState==0){
 				return;
 			}
 			mouseIsDown=true;
-			Point point=new Point(Unscale(e.X),Unscale(e.Y));
-			listPoints.Add(point);
+			PointF pointF=new PointF(Unscale(e.X),Unscale(e.Y));
+			listPointFs.Add(pointF);
 			//Invalidate();
 		}
 
 		protected override void OnMouseMove(MouseEventArgs e) {
+			//mouse events won't get hit when _strDigitalSig is filled with text because control is disabled.
 			base.OnMouseMove(e);
 			if(tabletState==0) {
 				return;
@@ -266,31 +317,44 @@ namespace OpenDental.UI {
 			if(!mouseIsDown){
 				return;
 			}
-			listPoints.Add(new Point(Unscale(e.X),Unscale(e.Y)));
+			PointF pointF=new PointF(Unscale(e.X),Unscale(e.Y));
+			listPointFs.Add(pointF);
 			Invalidate();
 		}
 
 		protected override void OnMouseUp(MouseEventArgs e) {
+			//mouse events won't get hit when _strDigitalSig is filled with text because control is disabled.
 			base.OnMouseUp(e);
 			if(tabletState==0) {
 				return;
 			}
 			mouseIsDown=false;
-			listPoints.Add(new Point(0,0));
+			listPointFs.Add(new PointF(0,0));
 		}
 
+		public bool IsDigitalSignature(){
+			return _strDigitalSig!=null;
+		}
+
+		///<summary>This is used for when "digitally signing". A string is created describing who signed, and the string is passed in here. This method converts the bytes of the text into a format that looks like a series of points. This was not a good strategy, but we are stuck with it. It also prepends two points (4 numbers) that are all int.MinValue.</summary>
+		public void SetDigitalSig(string str){
+			_strDigitalSig=str;
+		}
+
+		/*
 		public string GetEncryptedString() {
 			if(!IsDigitalSignature()) {
 				return "";
 			}
 			try {
-				return Encoding.UTF8.GetString(listPoints.SelectMany(x => new[] { x.X,x.Y }).Where(x=>x>int.MinValue).Select(x=>(byte)x).ToArray());
+				return Encoding.UTF8.GetString(listPointFs.SelectMany(x => new[] { x.X,x.Y }).Where(x=>x>int.MinValue).Select(x=>(byte)x).ToArray());
 			}
 			catch(Exception ex) { ex.DoNothing(); }
 			return "";
 		}
 
-		public List<Point> EncryptString(string input) {
+		///<summary>This is used for when "digitally signing". A string is created describing who signed, and the string is passed in here. This method converts the bytes of the text into a format that looks like a series of points. This was not a good strategy, but we are stuck with it. It also prepends two points (4 numbers) that are all int.MinValue.</summary>
+		public List<PointF> EncryptString(string input) {
 			byte[] bytes = Encoding.UTF8.GetBytes(input);
 			List<Point> retVal = new List<Point>() {
 				//These two points indicate that this is NOT a "Normal" signature.
@@ -305,13 +369,13 @@ namespace OpenDental.UI {
 
 		/// <summary>A "digital" signature has the first two dummy points of int.min, followed by a user readable string.</summary>
 		public bool IsDigitalSignature() {
-			if(listPoints==null || listPoints.Count<2 || listPoints[0]!=listPoints[1] || listPoints[0].X!=int.MinValue || listPoints[0].Y!=int.MinValue) {
+			if(listPointFs==null || listPointFs.Count<2 || listPointFs[0]!=listPointFs[1] || listPointFs[0].X!=int.MinValue || listPointFs[0].Y!=int.MinValue) {
 				//The first two points MUST be Point(Int.MinValue,Int.MinValue), otherwise this is a "Normal" signature.
 				return false;
 			}
 			return true;
 		}
-
+		*/
 
 
 	}

@@ -79,6 +79,7 @@ private void MenuItem_Click(object sender,EventArgs e) {
 		public Menu(){
 			InitializeComponent();
 			Height=24;//user won't set vertical to stretch
+			Unloaded+=Menu_Unloaded;
 		}
 		#endregion Constructor
 
@@ -93,7 +94,7 @@ private void MenuItem_Click(object sender,EventArgs e) {
 			SetFrmParent();
 		}
 
-		public void Add(string text,EventHandler click){
+		public void Add(string text,RoutedEventHandler click){
 			MenuItem menuItem=new MenuItem(text,click);
 			menu.Items.Add(menuItem);
 			SetFrmParent();
@@ -153,6 +154,15 @@ private void MenuItem_Click(object sender,EventArgs e) {
 				listMenuItems.AddRange(listMenuItemsChildren);
 			}
 			return listMenuItems;
+		}
+
+		private void Menu_Unloaded(object sender,RoutedEventArgs e) {
+			this.Content=null;
+			for(int i=0;i<menu.Items.Count;i++) {
+				if(menu.Items[i] is MenuItem menuItem) {
+					menuItem.ClearClickEvent();
+				}
+			}
 		}
 
 		private void SetFrmParent(){

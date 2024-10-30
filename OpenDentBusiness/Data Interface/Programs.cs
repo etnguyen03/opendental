@@ -102,43 +102,37 @@ namespace OpenDentBusiness {
 		}
 		#endregion Cache Pattern
 
-		///<summary>Checks to see if we have disabled the current program at HQ. Handles null Sets and translates the out parameter where possible.</summary>
-		public static bool IsEnabledByHq(Program progCur,out string err) {
+		///<summary>Checks to see if we have disabled the current program at HQ. Handles null. Sets and translates the out parameter where possible.</summary>
+		public static bool IsEnabledByHq(Program program,out string err) {
+			Meth.NoCheckMiddleTierRole();
 			err="";
-			bool retVal=false;
-			if(progCur==null) {
+			if(program==null) {
 				err=Lans.g("Programs","The currently selected program could not be found.");
-				return retVal;
+				return false;
 			}
-			if(DoUseCacheValues(progCur)) {
-				retVal=!progCur.IsDisabledByHq;
-				err=progCur.CustErr;
-			}
-			else {
-				HqProgram prog=HqProgram.GetAll().First(x => x.ProgramNameAsString.Trim()==progCur.ProgName.Trim());
-				if(prog==null) {
-					retVal=false;
-					err=Lans.g("Programs","The currently selected program could not be found.");
+			if(DoUseCacheValues(program)) {
+				err=program.CustErr;
+				if(string.IsNullOrWhiteSpace(err)) {//if the CustErr wasn't set at HQ then we assume a customer is not able to use this program because they are not on support
+					err=Lans.g("Program","You must be on support to use this program.");
 				}
-				else {
-					retVal=prog.IsEnabled;
-					if(!retVal) {
-						err=prog.CustErr;
-					}
+				return !program.IsDisabledByHq;
+			}
+			HqProgram hqProgram=HqProgram.GetAll().FirstOrDefault(x => x.ProgramNameAsString.Trim()==program.ProgName.Trim());
+			if(hqProgram==null) {
+				err=Lans.g("Programs","The currently selected HQ program could not be found.");
+				return false;
+			}
+			if(!hqProgram.IsEnabled) {
+				err=hqProgram.CustErr;
+				//Delete all programs disabled by HQ
+				ProgramProperties.GetForProgram(program.ProgramNum).ForEach(x=>ProgramProperties.Delete(x));
+				Programs.Delete(program);
+				if(string.IsNullOrWhiteSpace(err)) {
+					err=Lans.g("Program",program.ProgName+" has been removed.");
 				}
+				return false;
 			}
-			//Delete all programs disabled by HQ
-			if(!retVal) {
-				List<ProgramProperty> listProgramProperties=ProgramProperties.GetForProgram(progCur.ProgramNum);
-				for(int i=0;i<listProgramProperties.Count;i++) {
-					ProgramProperties.Delete(listProgramProperties[i]);
-				}
-				Programs.Delete(progCur);
-			}
-			if(!retVal && string.IsNullOrWhiteSpace(err)) {//if the CustErr wasn't set at HQ then we assume a customer is not able to use this program because they are not on support
-				err=Lans.g("Program","You must be on support to use this program.");
-			}
-			return retVal;
+			return true;
 		}
 
 

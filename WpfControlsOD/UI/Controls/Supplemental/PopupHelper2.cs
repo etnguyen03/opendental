@@ -38,7 +38,7 @@ namespace WpfControls.UI {
 					.ToList();
 				for(int i=0;i<listStringMatches.Count;i++) {
 					string pageName=listStringMatches[i]; //To avoid lazy eval
-					EventHandler eventHandler=(s,eArg) => { OpenWikiPage(pageName); };
+					System.Windows.RoutedEventHandler eventHandler=(s,eArg) => { OpenWikiPage(pageName); };
 					listMenuItemsLinks.Add(new MenuItem("Wiki - "+listStringMatches[i],eventHandler,tag:"autolink"));
 				}
 			}
@@ -49,33 +49,33 @@ namespace WpfControls.UI {
 					title=title.Substring(0,24)+"...";
 				}
 				string strMatch=listStringMatches[i]; //To avoid lazy eval
-				EventHandler eventHandler=(s,eArg)=> { OpenWebPage(strMatch); };
+				System.Windows.RoutedEventHandler eventHandler=(s,eArg)=> { OpenWebPage(strMatch); };
 				listMenuItemsLinks.Add(new MenuItem("Web - "+title,eventHandler,tag:"autolink"));
 			}
 			listStringMatches=ODFileUtils.GetFilePathsFromText(contextMenuItemText);
 			for(int i=0;i<listStringMatches.Count;i++) {
 				string strMatch=listStringMatches[i]; //To avoid lazy eval
-				EventHandler eventHandler=(s,eArg) => { OpenUNCPath(strMatch); };
+				System.Windows.RoutedEventHandler eventHandler=(s,eArg) => { OpenUNCPath(strMatch); };
 				listMenuItemsLinks.Add(new MenuItem("File Explorer - "+listStringMatches[i],eventHandler,tag:"autolink"));
 			}
 			if(rightClickLinks) {
 				listNumMatches=GetPatNumsFromText(contextMenuItemText);
 				for(int i=0;i<listNumMatches.Count;i++) {
 					long patNum=listNumMatches[i];
-					EventHandler eventHandler=(s,eArg) => { OpenPatNum(patNum); };
+					System.Windows.RoutedEventHandler eventHandler=(s,eArg) => { OpenPatNum(patNum); };
 					listMenuItemsLinks.Add(new MenuItem("PatNum - "+listNumMatches[i],eventHandler,tag:"autolink"));
 				}
 				listNumMatches=GetTaskNumsFromText(contextMenuItemText);
 				for(int i=0;i<listNumMatches.Count;i++) {
 					long taskNum=listNumMatches[i];
-					EventHandler eventHandler=(s,eArg) => { OpenTaskNum(taskNum); };
+					System.Windows.RoutedEventHandler eventHandler=(s,eArg) => { OpenTaskNum(taskNum); };
 					listMenuItemsLinks.Add(new MenuItem("TaskNum - "+listNumMatches[i],eventHandler,tag:"autolink"));
 				}
 				if(PrefC.IsODHQ) {
 					listNumMatches=GetJobNumsFromText(contextMenuItemText);
 					for(int i = 0;i<listNumMatches.Count;i++) {
 						long jobNum = listNumMatches[i];
-						EventHandler eventHandler = (s,eArg) => { OpenJobNum(jobNum); };
+						System.Windows.RoutedEventHandler eventHandler = (s,eArg) => { OpenJobNum(jobNum); };
 						listMenuItemsLinks.Add(new MenuItem("JobNum - "+listNumMatches[i],eventHandler,tag:"autolink"));
 					}
 				}

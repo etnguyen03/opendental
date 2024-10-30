@@ -266,7 +266,7 @@ namespace OpenDental{
 					foreach(string fileName in listFiles) {
 						if(InvokeRequired) {
 							Invoke((Action)delegate () {
-								contextMenuForms.Add(Path.GetFileName(fileName),new EventHandler(menuForms_Click));
+								contextMenuForms.Add(Path.GetFileName(fileName),new System.Windows.RoutedEventHandler(menuForms_Click));
 							});
 						}
 					}
@@ -518,6 +518,9 @@ namespace OpenDental{
 			//So _listFormImageFloats remains valid and still has all the floaters in it, even when we are in the Chart module. 
 			//In CloseFloaters below, we close the floaters when changing patients.
 			_patNumLastSecurityLog=0;//Clear out the last pat num so that a security log gets entered that the module was "visited" or "refreshed".
+			if(ODBuild.IsThinfinity()) {
+				controlImageDock.ControlImageDisplay_?.ClearPDFBrowser();
+			}
 			Plugins.HookAddCode(this,"ContrImages.ModuleUnselected_end");
 		}
 
@@ -642,6 +645,10 @@ namespace OpenDental{
 			//Select the node always, but perform additional tasks when necessary (i.e. load an image, or mount).	
 			if(nodeTypeAndKey!=null && nodeTypeAndKey.NodeType!=EnumImageNodeType.None){	
 				imageSelector.SetSelected(nodeTypeAndKey.NodeType,nodeTypeAndKey.PriKey);//this is redundant when user is clicking, but harmless 
+			}
+			if(ODBuild.IsThinfinity()) {
+				//Clear the PDF browser in the existing docked ControlImageDisplay before a new one is created
+				controlImageDock.ControlImageDisplay_?.ClearPDFBrowser();
 			}
 			ControlImageDisplay controlImageDisplay=null;
 			if(controlImageDock.ControlImageDisplay_!=null && controlImageDock.ControlImageDisplay_.GetNodeTypeAndKey().IsMatching(nodeTypeAndKey) && !isChartModuleFloater) {//Ignore Image Module Dock if launching a floater in Chart Module

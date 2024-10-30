@@ -2109,7 +2109,14 @@ namespace OpenDental {
 			return true;
 		}
 
-		private void butLabel_Click(object sender,System.EventArgs e) {//TODO: Implement ODprintout pattern
+		private void butLabel_Click(object sender,System.EventArgs e) {
+			//TODO: Implement ODprintout pattern
+			//If the user doesn't have CarrierEdit then they could not have modified the carrier info fields, just use the existing carrier;
+			//Users without CarrierEdit should not call GetIdentical() because it can cause split carrier entries.
+			if(!Security.IsAuthorized(EnumPermType.CarrierEdit,suppressMessage:true)) {
+				LabelSingle.PrintCarrier(_carrier.CarrierNum);//,pd.PrinterSettings.PrinterName);
+				return;
+			}
 			Carrier carrier=new Carrier();
 			carrier.CarrierName=textCarrier.Text;
 			carrier.Phone=textPhone.Text;
@@ -3847,9 +3854,9 @@ namespace OpenDental {
 							+(string.IsNullOrEmpty(carrierNameOrig)?"blank":carrierNameOrig)+" "+Lan.g(this,"to")+" "
 							+(string.IsNullOrEmpty(carrierNameNew)?"blank":carrierNameNew),_insPlan.PlanNum,_insPlanOriginal.SecDateTEdit);
 					}
+					string message=GetSecurityLogMessage(carrierNew,carrierOrig);
+					SecurityLogs.MakeLogEntry(EnumPermType.CarrierEdit,0,message);
 				}
-				string message=GetSecurityLogMessage(carrierNew,carrierOrig);
-				SecurityLogs.MakeLogEntry(EnumPermType.CarrierEdit,0,message);
 			}
 			catch(Exception ex) {
 				MessageBox.Show(Lan.g(this,"Error Code 12")+".  "+Lan.g(this,"Please contact support")+"\r\n"+"\r\n"+ex.Message+"\r\n"+ex.StackTrace);

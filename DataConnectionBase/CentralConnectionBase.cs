@@ -88,5 +88,7 @@
 		HardwareMonitoring,
 		///<summary>Database for hosting secure email.</summary>
 		SecureEmail,
+		///<summary>Services HQ on read-only reporting server</summary>
+		ServicesHqReadOnly,
 	}
 }

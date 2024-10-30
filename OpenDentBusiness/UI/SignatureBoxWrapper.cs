@@ -495,7 +495,7 @@ In FormClosing:
 		}
 
 		public bool GetIsTypedFromWebForms() {
-			string pointString=signatureBox.GetPointString();
+			string pointString=signatureBox.GetPointStringForWebTest();
 			return pointString.Equals("{X=1,Y=1};{X=15,Y=15};{X=0,Y=0};{X=1,Y=15};{X=15,Y=1}"); //This is the exact point string we expect to get from a digital signature in webforms
 		}
 
@@ -683,8 +683,7 @@ In FormClosing:
 				digitalSignature= Lans.g(this,"Digitally signed by unknown user.");
 			}
 			digitalSignature+="\r\n"+Lans.g(this,"Date Signed")+": "+MiscData.GetNowDateTime().ToString();
-			List<Point> pList = signatureBox.EncryptString(digitalSignature);
-			signatureBox.SetPointList(pList);
+			signatureBox.SetDigitalSig(digitalSignature);
 			OnSignatureChanged();
 			signatureBox.Enabled=false;
 		}
