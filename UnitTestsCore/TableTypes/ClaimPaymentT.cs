@@ -67,6 +67,7 @@ namespace UnitTestsCore {
 		public static void AttachClaimPaymentToClaimProcs(List<ClaimProc> listClaimProcs, long claimPaymentNum) {
 			for(int i=0;i<listClaimProcs.Count;i++) {
 				listClaimProcs[i].ClaimPaymentNum=claimPaymentNum;
+				listClaimProcs[i].DateInsFinalized=DateTime.Now;
 				ClaimProcs.Update(listClaimProcs[i]);
 			}
 		}

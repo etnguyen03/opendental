@@ -29,7 +29,7 @@ namespace OpenDentBusiness{
 		public long ProcNum;
 		///<summary>.</summary>
 		public DateTime DateProcComplete;
-		///<summary>FK to provider.ProvNum.  Used when referring out a patient to track the referring provider for EHR meaningful use.</summary>
+		///<summary>FK to provider.ProvNum.  Used when referring out a patient to track the referring provider for EHR meaningful use.  Will be -1 when RefType is not set to RefTo.</summary>
 		public long ProvNum;
 		///<summary>The datetime this referral attachment was last edited.</summary>
 		[CrudColumn(SpecialType=CrudSpecialColType.TimeStamp)]

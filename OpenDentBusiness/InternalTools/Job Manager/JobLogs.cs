@@ -483,5 +483,99 @@ namespace OpenDentBusiness{
 			JobLogs.Insert(jobLog);
 			return true;
 		}
+
+		public static JobLog MakeLogEntryForUserRoleChange(Job jobNew,Job jobOld) {
+			if(jobNew==null || jobOld==null) {
+				return null;
+			}
+			JobLog jobLog=new JobLog() {
+				JobNum=jobNew.JobNum,
+				Title=jobNew.Title,
+				UserNumChanged=Security.CurUser.UserNum,
+				UserNumExpert=jobNew.UserNumExpert,
+				UserNumEngineer=jobNew.UserNumEngineer,
+				Description="",
+				TimeEstimate=TimeSpan.FromHours(jobNew.HoursEstimate)
+			};
+			List<string> logDescriptions=new List<string>();
+			if(jobNew.UserNumConcept!=jobOld.UserNumConcept) {
+				string nameFrom=GetUserRoleName(Userods.GetName(jobOld.UserNumConcept));
+				string nameTo=GetUserRoleName(Userods.GetName(jobNew.UserNumConcept));
+				logDescriptions.Add($"User Role 'Concept' changed from {nameFrom} to {nameTo}.");
+			}
+			if(jobNew.UserNumExpert!=jobOld.UserNumExpert) {
+				string nameFrom=GetUserRoleName(Userods.GetName(jobOld.UserNumExpert));
+				string nameTo=GetUserRoleName(Userods.GetName(jobNew.UserNumExpert));
+				logDescriptions.Add($"User Role 'Expert' changed from {nameFrom} to {nameTo}.");
+			}
+			if(jobNew.UserNumEngineer!=jobOld.UserNumEngineer) {
+				string nameFrom=GetUserRoleName(Userods.GetName(jobOld.UserNumEngineer));
+				string nameTo=GetUserRoleName(Userods.GetName(jobNew.UserNumEngineer));
+				logDescriptions.Add($"User Role 'Engineer' changed from {nameFrom} to {nameTo}.");
+			}
+			if(jobNew.UserNumApproverConcept!=jobOld.UserNumApproverConcept) {
+				string nameFrom=GetUserRoleName(Userods.GetName(jobOld.UserNumApproverConcept));
+				string nameTo=GetUserRoleName(Userods.GetName(jobNew.UserNumApproverConcept));
+				logDescriptions.Add($"User Role 'Approver Concept' changed from {nameFrom} to {nameTo}.");
+			}
+			if(jobNew.UserNumApproverJob!=jobOld.UserNumApproverJob) {
+				string nameFrom=GetUserRoleName(Userods.GetName(jobOld.UserNumApproverJob));
+				string nameTo=GetUserRoleName(Userods.GetName(jobNew.UserNumApproverJob));
+				logDescriptions.Add($"User Role 'Approver Job' changed from {nameFrom} to {nameTo}.");
+			}
+			if(jobNew.UserNumApproverChange!=jobOld.UserNumApproverChange) {
+				string nameFrom=GetUserRoleName(Userods.GetName(jobOld.UserNumApproverChange));
+				string nameTo=GetUserRoleName(Userods.GetName(jobNew.UserNumApproverChange));
+				logDescriptions.Add($"User Role 'Approver Change' changed from {nameFrom} to {nameTo}.");
+			}
+			if(jobNew.UserNumDocumenter!=jobOld.UserNumDocumenter) {
+				string nameFrom=GetUserRoleName(Userods.GetName(jobOld.UserNumDocumenter));
+				string nameTo=GetUserRoleName(Userods.GetName(jobNew.UserNumDocumenter));
+				logDescriptions.Add($"User Role 'Documenter' changed from {nameFrom} to {nameTo}.");
+			}
+			if(jobNew.UserNumCustContact!=jobOld.UserNumCustContact) {
+				string nameFrom=GetUserRoleName(Userods.GetName(jobOld.UserNumCustContact));
+				string nameTo=GetUserRoleName(Userods.GetName(jobNew.UserNumCustContact));
+				logDescriptions.Add($"User Role 'Customer Contact' changed from {nameFrom} to {nameTo}.");
+			}
+			if(jobNew.UserNumInfo!=jobOld.UserNumInfo) {
+				string nameFrom=GetUserRoleName(Userods.GetName(jobOld.UserNumInfo));
+				string nameTo=GetUserRoleName(Userods.GetName(jobNew.UserNumInfo));
+				logDescriptions.Add($"User Role 'Info' changed from {nameFrom} to {nameTo}.");
+			}
+			if(jobNew.UserNumQuoter!=jobOld.UserNumQuoter) {
+				string nameFrom=GetUserRoleName(Userods.GetName(jobOld.UserNumQuoter));
+				string nameTo=GetUserRoleName(Userods.GetName(jobNew.UserNumQuoter));
+				logDescriptions.Add($"User Role 'Quoter' changed from {nameFrom} to {nameTo}.");
+			}
+			if(jobNew.UserNumApproverQuote!=jobOld.UserNumApproverQuote) {
+				string nameFrom=GetUserRoleName(Userods.GetName(jobOld.UserNumApproverQuote));
+				string nameTo=GetUserRoleName(Userods.GetName(jobNew.UserNumApproverQuote));
+				logDescriptions.Add($"User Role 'Approver Quote' changed from {nameFrom} to {nameTo}.");
+			}
+			if(jobNew.UserNumCustQuote!=jobOld.UserNumCustQuote) {
+				string nameFrom=GetUserRoleName(Userods.GetName(jobOld.UserNumCustQuote));
+				string nameTo=GetUserRoleName(Userods.GetName(jobNew.UserNumCustQuote));
+				logDescriptions.Add($"User Role 'Customer Quote' changed from {nameFrom} to {nameTo}.");
+			}
+			if(jobNew.UserNumTester!=jobOld.UserNumTester) {
+				string nameFrom=GetUserRoleName(Userods.GetName(jobOld.UserNumTester));
+				string nameTo=GetUserRoleName(Userods.GetName(jobNew.UserNumTester));
+				logDescriptions.Add($"User Role 'Tester' changed from {nameFrom} to {nameTo}.");
+			}
+			jobLog.Description=string.Join("\r\n",logDescriptions);
+			if(string.IsNullOrEmpty(jobLog.Description)) {
+				return null;
+			}
+			JobLogs.Insert(jobLog);
+			return JobLogs.GetOne(jobLog.JobLogNum);//to get new timestamp.
+		}
+
+		private static string GetUserRoleName(string name) {
+			if(string.IsNullOrWhiteSpace(name)) {
+				name="Unassigned";
+			}
+			return name;
+		}
 	}
 }

@@ -6,12 +6,12 @@ using OpenDentBusiness;
 namespace UnitTestsCore {
 	public class EobAttachT {
 
-		public static EobAttach CreateEobAttach(DateTime dateTcreated,long cliamPaymentNum,string filmename,string rawBase64="") 
+		public static EobAttach CreateEobAttach(DateTime dateTCreated,long claimPaymentNum,string fileName,string rawBase64="") 
 		{
 			EobAttach eobAttach=new EobAttach();
-			eobAttach.DateTCreated=dateTcreated;
-			eobAttach.ClaimPaymentNum=cliamPaymentNum;
-			eobAttach.FileName=filmename;
+			eobAttach.DateTCreated=dateTCreated;
+			eobAttach.ClaimPaymentNum=claimPaymentNum;
+			eobAttach.FileName=fileName;
 			eobAttach.RawBase64=rawBase64;
 			EobAttaches.Insert(eobAttach);
 			return eobAttach;

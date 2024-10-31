@@ -74,15 +74,15 @@ namespace OpenDental{
 			comboInsPlanTypeWith.Items.Add(Lan.g(this,"none"),"none");//"none"
 			comboInsPlanTypeWith.Items.Add(Lan.g(this,"PPO Percentage"),"p");//"p"
 			comboInsPlanTypeWith.Items.Add(Lan.g(this,"Category Percentage"),"");//""
-			comboInsPlanTypeWith.Items.Add(Lan.g(this,"Capitation (HMO/DMO)"),"c");//"c"
-			comboInsPlanTypeWith.Items.Add(Lan.g(this,"Medicaid or Flat Copay"),"f");//"f"
+			//comboInsPlanTypeWith.Items.Add(Lan.g(this,"Capitation (HMO/DMO)"),"c");//"c"
+			//comboInsPlanTypeWith.Items.Add(Lan.g(this,"Medicaid or Flat Copay"),"f");//"f"
 			comboInsPlanTypeWith.SelectedIndex=0;
 			comboInsPlanType.Items.Clear();
 			comboInsPlanType.Items.Add(Lan.g(this,"none"),"none");//"none"
 			comboInsPlanType.Items.Add(Lan.g(this,"PPO Percentage"),"p");//"p"
 			comboInsPlanType.Items.Add(Lan.g(this,"Category Percentage"),"");//""
-			comboInsPlanType.Items.Add(Lan.g(this,"Capitation (HMO/DMO)"),"c");//"c"
-			comboInsPlanType.Items.Add(Lan.g(this,"Medicaid or Flat Copay"),"f");//"f"
+			//comboInsPlanType.Items.Add(Lan.g(this,"Capitation (HMO/DMO)"),"c");//"c"
+			//comboInsPlanType.Items.Add(Lan.g(this,"Medicaid or Flat Copay"),"f");//"f"
 			comboInsPlanType.SelectedIndex=0;
 		}
 
@@ -211,7 +211,7 @@ namespace OpenDental{
 			if(inputBoxPassword.IsDialogCancel) {
 				return false;
 			}
-			if(inputBoxPassword.StringResult!="fee") {
+			if(inputBoxPassword.StringResult!="fee101") {
 				MsgBox.Show(this,"Incorrect password.");
 				return false;
 			}
@@ -334,12 +334,24 @@ namespace OpenDental{
 			string newInsPlanType = comboInsPlanType.GetSelected<string>();
 			bool enableBlueBook=newInsPlanType=="" //new plan type is Cat%
 					&& PrefC.GetEnum<AllowedFeeSchedsAutomate>(PrefName.AllowedFeeSchedsAutomate)==AllowedFeeSchedsAutomate.BlueBook;
-			List<long> listInsPlanNumsToChange=gridMain.SelectedTags<InsPlanRow>().Where(x=>x.PlanType!=newInsPlanType).Select(x=>x.PlanNum).ToList();
-			InsPlans.ChangeInsPlanTypes(listInsPlanNumsToChange,newInsPlanType,enableBlueBook);
-			for(int i = 0;i<listInsPlanNumsToChange.Count;i++) {
-				List<Benefit> listBenefits=Benefits.GetForPlanOrPatPlan(listInsPlanNumsToChange[i],0);
-				listBenefits.Where(x=>x.Percent>0).ForEach(x=>Benefits.Delete(x));
+			List<InsPlanRow> listInsPlanRowsToChange=gridMain.SelectedTags<InsPlanRow>().FindAll(x=>x.PlanType!=newInsPlanType);
+			//If any plans are switching from percentage to flat copay, medicaid, or capitation, the % benefits to that plan are going
+			//to be removed. Require user to acknowledge this.
+			if(listInsPlanRowsToChange.Any(x=>x.PlanType.In("","p")) && newInsPlanType.In("f","c")) {
+				if(!MsgBox.Show(this,MsgBoxButtons.OKCancel,"Plans changing from cat% or ppo% to flat copay, medicaid, or capitation will lose all percentage benefits. Continue?")) {
+					return;
+				}
+				//User has consented to the potential removal of percent benefits in those plans.
+				for(int i=0;i<listInsPlanRowsToChange.Count;i++) {
+					if(listInsPlanRowsToChange[i].PlanType.In("f","c")) {
+						continue;
+					}
+					List<Benefit> listBenefits=Benefits.GetForPlanOrPatPlan(listInsPlanRowsToChange[i].PlanNum,0);
+					listBenefits.Where(x=>x.Percent>0).ForEach(x=>Benefits.Delete(x));
+				}
 			}
+			List<long> listInsPlanNumsToChange=listInsPlanRowsToChange.Select(x=>x.PlanNum).ToList();
+			InsPlans.ChangeInsPlanTypes(listInsPlanNumsToChange,newInsPlanType,enableBlueBook);
 			FillGrid();
 			comboInsPlanType.SelectedIndex=0;
 			Cursor=Cursors.Default;

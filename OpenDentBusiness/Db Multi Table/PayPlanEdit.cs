@@ -1976,6 +1976,10 @@ namespace OpenDentBusiness {
 			if(doCheckApr && !CompareDouble.IsZero(payPlanTerms.APR) && PrefC.GetBool(PrefName.PayPlanRequireLockForAPR) && !isLocked){
 				sb.AppendLine(Lans.g("FormPayPlanDynamic","Payment plans with APR must be locked. Remove the APR or check the box for FullLock."));
 			}
+			Action<string> actionNotAuthorized=(msg) => {
+				sb.AppendLine(Lans.g("FormPayPlanDynamic",msg));
+			};
+			Security.IsGlobalDateLock(EnumPermType.PayPlanEdit,payPlanTerms.DateAgreement,suppressMsgBox:true,actionNotAuthorized:actionNotAuthorized);
 			return sb.ToString();
 		}
 

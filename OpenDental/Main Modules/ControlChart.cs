@@ -3639,13 +3639,13 @@ namespace OpenDental {
 					Tool_CCD_Click();
 					break;
 				case "Consent":
-					Tool_Consent_Click();
+					Tool_Consent_Click(e.Button);
 					break;
 				case "Commlog"://only for eCW
 					Tool_Commlog_Click();
 					break;
 				case "ToothChart":
-					Tool_ToothChart_Click();
+					Tool_ToothChart_Click(e.Button);
 					break;
 				case "ExamSheet":
 					Tool_ExamSheet_Click();
@@ -8322,14 +8322,15 @@ namespace OpenDental {
 			}
 		}
 
-		private void Tool_Consent_Click() {
+		private void Tool_Consent_Click(ODToolBarButton odToolBarButton) {
 			if(IsPatientNull()) {
 				MsgBox.Show(this,"Please select a patient.");
 				return;
 			}
 			List<SheetDef> listSheetDefs=SheetDefs.GetCustomForType(SheetTypeEnum.Consent);
 			if(listSheetDefs.Count>0) {
-				MsgBox.Show(this,"Please use dropdown list.");
+				ContextMenu contextMenuConsent=odToolBarButton.DropDownMenu.GetContextMenu();
+				contextMenuConsent.Show(this,new Point(odToolBarButton.Bounds.X,odToolBarButton.Bounds.Y+odToolBarButton.Bounds.Height));
 				return;
 			}
 			SheetDef sheetDef=SheetsInternal.GetSheetDef(SheetInternalType.Consent);
@@ -9126,9 +9127,9 @@ namespace OpenDental {
 			SecurityLogs.MakeLogEntry(EnumPermType.RxCreate,Pd.PatNum,"Created prescription.");
 		}
 		
-		private void Tool_ToothChart_Click() {
-			MsgBox.Show(this,"Please use dropdown list.");
-			return;
+		private void Tool_ToothChart_Click(ODToolBarButton odToolBarButton) {
+			ContextMenu contextMenuConsent=odToolBarButton.DropDownMenu.GetContextMenu();
+			contextMenuConsent.Show(this,new Point(odToolBarButton.Bounds.X,odToolBarButton.Bounds.Y+odToolBarButton.Bounds.Height));
 		}
 
 		///<summary>Fails silently.</summary>

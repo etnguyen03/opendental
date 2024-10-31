@@ -166,7 +166,6 @@
       <Enumeration name="EnumPermType">
         <summary>A hard-coded list of permissions which may be granted to usergroups.</summary>
         <EnumValue name="PerioEditCopy">257 - Allow users to copy perio charts in the Perio Chart window.</EnumValue>
-        <EnumValue name="LicenseAccept">258 - For audit trail only. Logs when a license is accepted by a user.</EnumValue>
       </Enumeration>
     </column>
     <column order="4" name="PermType" type="smallint(6)">
@@ -174,7 +173,6 @@
       <Enumeration name="EnumPermType">
         <summary>A hard-coded list of permissions which may be granted to usergroups.</summary>
         <EnumValue name="PerioEditCopy">257 - Allow users to copy perio charts in the Perio Chart window.</EnumValue>
-        <EnumValue name="LicenseAccept">258 - For audit trail only. Logs when a license is accepted by a user.</EnumValue>
       </Enumeration>
     </column>
   </table>
@@ -266,7 +264,6 @@
       <Enumeration name="EnumPermType">
         <summary>A hard-coded list of permissions which may be granted to usergroups.</summary>
         <EnumValue name="PerioEditCopy">257 - Allow users to copy perio charts in the Perio Chart window.</EnumValue>
-        <EnumValue name="LicenseAccept">258 - For audit trail only. Logs when a license is accepted by a user.</EnumValue>
       </Enumeration>
     </column>
     <column order="1" name="PermType" type="smallint(6)">
@@ -274,7 +271,6 @@
       <Enumeration name="EnumPermType">
         <summary>A hard-coded list of permissions which may be granted to usergroups.</summary>
         <EnumValue name="PerioEditCopy">257 - Allow users to copy perio charts in the Perio Chart window.</EnumValue>
-        <EnumValue name="LicenseAccept">258 - For audit trail only. Logs when a license is accepted by a user.</EnumValue>
       </Enumeration>
     </column>
   </table>

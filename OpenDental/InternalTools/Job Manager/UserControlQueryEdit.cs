@@ -1179,6 +1179,22 @@ namespace OpenDental.InternalTools.Job_Manager {
 			return true;
 		}
 
+		private bool HasAnyUserRoleChanged(Job job,Job jobOld) {
+			return job.UserNumConcept!=jobOld.UserNumConcept ||
+				job.UserNumExpert!=jobOld.UserNumExpert ||
+				job.UserNumEngineer!=jobOld.UserNumEngineer ||
+				job.UserNumApproverConcept!=jobOld.UserNumApproverConcept ||
+				job.UserNumApproverJob!=jobOld.UserNumApproverJob ||
+				job.UserNumApproverChange!=jobOld.UserNumApproverChange ||
+				job.UserNumDocumenter!=jobOld.UserNumDocumenter ||
+				job.UserNumCustContact!=jobOld.UserNumCustContact ||
+				job.UserNumInfo!=jobOld.UserNumInfo ||
+				job.UserNumQuoter!=jobOld.UserNumQuoter ||
+				job.UserNumApproverQuote!=jobOld.UserNumApproverQuote ||
+				job.UserNumCustQuote!=jobOld.UserNumCustQuote ||
+				job.UserNumTester!=jobOld.UserNumTester;
+		}
+
 		///<summary>Job must have all in memory fields filled. Eg. Job.ListJobLinks, Job.ListJobNotes, etc. Also makes some of the JobLog entries.</summary>
 		private void SaveJob(Job job) {
 			_isLoading=true;
@@ -1210,6 +1226,9 @@ namespace OpenDental.InternalTools.Job_Manager {
 			JobLogs.MakeLogEntry(job,_jobOld);
 			if(job.PhaseCur!=_jobOld.PhaseCur) {
 				JobLogs.MakeLogEntryForPhase(job,_jobOld);
+			}
+			if(HasAnyUserRoleChanged(job,_jobOld)) {
+				JobLogs.MakeLogEntryForUserRoleChange(job,_jobOld);
 			}
 			Signalods.SetInvalid(InvalidType.Jobs,KeyType.Job,job.JobNum);
 			JobManagerCore.UpdateForSingleJob(job);

@@ -221,7 +221,7 @@
 			// labelFamFinancial
 			// 
 			this.labelFamFinancial.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.labelFamFinancial.Location = new System.Drawing.Point(6, 374);
+			this.labelFamFinancial.Location = new System.Drawing.Point(-1, 375);
 			this.labelFamFinancial.Name = "labelFamFinancial";
 			this.labelFamFinancial.Size = new System.Drawing.Size(170, 16);
 			this.labelFamFinancial.TabIndex = 9;
@@ -231,7 +231,7 @@
 			// labelUrgFinNote
 			// 
 			this.labelUrgFinNote.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.labelUrgFinNote.Location = new System.Drawing.Point(6, 0);
+			this.labelUrgFinNote.Location = new System.Drawing.Point(-1, 1);
 			this.labelUrgFinNote.Name = "labelUrgFinNote";
 			this.labelUrgFinNote.Size = new System.Drawing.Size(170, 17);
 			this.labelUrgFinNote.TabIndex = 10;
@@ -694,9 +694,9 @@
 			// gridAcctPat
 			// 
 			this.gridAcctPat.ColorSelectedRow = System.Drawing.Color.DarkSalmon;
-			this.gridAcctPat.Location = new System.Drawing.Point(6, 163);
+			this.gridAcctPat.Location = new System.Drawing.Point(0, 163);
 			this.gridAcctPat.Name = "gridAcctPat";
-			this.gridAcctPat.Size = new System.Drawing.Size(170, 180);
+			this.gridAcctPat.Size = new System.Drawing.Size(182, 180);
 			this.gridAcctPat.TabIndex = 72;
 			this.gridAcctPat.Title = "Select Patient";
 			this.gridAcctPat.TranslationName = "TableAccountPat";
@@ -721,11 +721,11 @@
 			this.textUrgFinNote.DetectUrls = false;
 			this.textUrgFinNote.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.textUrgFinNote.ForeColor = System.Drawing.Color.Red;
-			this.textUrgFinNote.Location = new System.Drawing.Point(6, 20);
+			this.textUrgFinNote.Location = new System.Drawing.Point(0, 20);
 			this.textUrgFinNote.Name = "textUrgFinNote";
 			this.textUrgFinNote.QuickPasteType = OpenDentBusiness.EnumQuickPasteType.FinancialNotes;
 			this.textUrgFinNote.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
-			this.textUrgFinNote.Size = new System.Drawing.Size(170, 80);
+			this.textUrgFinNote.Size = new System.Drawing.Size(182, 80);
 			this.textUrgFinNote.TabIndex = 11;
 			this.textUrgFinNote.Text = "";
 			this.textUrgFinNote.TextChanged += new System.EventHandler(this.textUrgFinNote_TextChanged);
@@ -748,11 +748,11 @@
 			this.textFinNote.BackColor = System.Drawing.SystemColors.Window;
 			this.textFinNote.DetectLinksEnabled = false;
 			this.textFinNote.DetectUrls = false;
-			this.textFinNote.Location = new System.Drawing.Point(6, 394);
+			this.textFinNote.Location = new System.Drawing.Point(0, 394);
 			this.textFinNote.Name = "textFinNote";
 			this.textFinNote.QuickPasteType = OpenDentBusiness.EnumQuickPasteType.FinancialNotes;
 			this.textFinNote.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
-			this.textFinNote.Size = new System.Drawing.Size(170, 110);
+			this.textFinNote.Size = new System.Drawing.Size(182, 110);
 			this.textFinNote.TabIndex = 70;
 			this.textFinNote.Text = "";
 			this.textFinNote.TextChanged += new System.EventHandler(this.textFinNote_TextChanged);

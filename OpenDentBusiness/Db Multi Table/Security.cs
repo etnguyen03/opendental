@@ -268,7 +268,7 @@ namespace OpenDentBusiness{
 			return false;		
 		}
 
-		///<summary>Surround with Try/Catch. Error messages will be thrown to caller.</summary>
+		///<summary>Checks the Global Lock Date or days based.</summary>
 		public static bool IsGlobalDateLock(EnumPermType perm,DateTime date,bool suppressMsgBox=false,long codeNum=0,double procFee=-1,long sheetDefNum=0,Action<string> actionNotAuthorized=null) {
 			if(!(new[] {
 				 EnumPermType.AdjustmentCreate

@@ -58,7 +58,9 @@ namespace OpenDental {
 			FillSheets();
 			comboProvNum.Items.Clear();
 			comboProvNum.Items.AddProvsFull(Providers.GetDeepCopy(isShort:true));
-			comboProvNum.SetSelectedProvNum(RefAttachCur.ProvNum);
+			if(RefAttachCur.ProvNum>=0) {
+				comboProvNum.SetSelectedProvNum(RefAttachCur.ProvNum);
+			}
 			if(RefAttachCur.RefType!=ReferralType.RefTo) {//prov is only visible for To
 				butNoneProv.Visible=false;
 				butPickProv.Visible=false;
