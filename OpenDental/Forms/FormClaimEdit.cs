@@ -2960,7 +2960,7 @@ namespace OpenDental{
 			if(XConnect.IsEnabled(clearinghouseClin)) {
 				XConnectWebResponse xConnectWebResponse=null;
 				try {
-					xConnectWebResponse=XConnect.ValidateClaim(_claim,doValidateForAttachment:true);
+					xConnectWebResponse=XConnect.ValidateClaim(_claim);
 					if((xConnectWebResponse?.response?.claimStatus?.message?.Length??0)>0) {//Errors will go in the messages array of the object
 						MessageBox.Show("XConnect Validation Failed: "+xConnectWebResponse.status.code+"\r\n"
 							+Lan.g(this,"Cannot send claim until missing/invalid data is fixed:")+"\r\n"
@@ -4114,7 +4114,7 @@ namespace OpenDental{
 				if(XConnect.IsEnabled(clearinghouseClin)) {
 					XConnectWebResponse xConnectWebResponse=null;
 					try {
-						xConnectWebResponse=XConnect.ValidateClaim(_claim,doValidateForAttachment:true);
+						xConnectWebResponse=XConnect.ValidateClaim(_claim);
 						if((xConnectWebResponse?.response?.claimStatus?.message?.Length??0)>0) {//Errors will go in the messages array of the object
 							if(MessageBox.Show("XConnect Validation Failed: "+xConnectWebResponse.status.code+"\r\n"
 								+Lan.g(this,"Cannot send claim until missing/invalid data is fixed:")+"\r\n"

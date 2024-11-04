@@ -13,6 +13,7 @@ using WpfControls.UI;
 
 namespace OpenDental {
 	public partial class FrmSheetPicker:FrmODBase {
+		///<summary>Set prior to opening. This gets all sheets of one type. But if the type is PatientForm, it also gets med hist and consent. If there are no custom sheets for each type, it shows the internal sheets.</summary>
 		public SheetTypeEnum SheetType;
 		///<summary>When set before opening the form, this list will be used to display to the user instead of querying for sheets of the same sheet type.</summary>
 		public List<SheetDef> ListSheetDefs;
@@ -20,10 +21,10 @@ namespace OpenDental {
 		public List<SheetDef> ListSheetDefsSelected;
 		//private bool showingInternalSheetDefs;
 		//private bool showingInternalMed;
-		///<summary>Stores the indices of the sheetDefs already added to SelectedSheetDefs.  Prevents adding the same one twice.  Only used with terminal.</summary>
+		///<summary>Stores the indices of the sheetDefs already added to SelectedSheetDefs.  Prevents adding the same one twice.  Only used with kiosk.</summary>
 		private List<int> _listIndexesAdded;
-		///<summary>On closing, this will be true if the ToTerminal button was used and if the selected sheets should be sent to a terminal.</summary>
-		public bool DoTerminalSend;
+		///<summary>On closing, this will be true if the ToKiosk button was used and if the selected sheets should be sent to a kiosk.</summary>
+		public bool DoKioskSend;
 		///<summary>It will always be hidden anyway if sheetType is not PatientForm.  So this is only useful if it is a PatientForm and you also want to hide the button.</summary>
 		public bool HideKioskButton;
 		public bool AllowMultiSelect;
@@ -31,14 +32,14 @@ namespace OpenDental {
 		public bool IsPreFill=false;
 		/// <summary>List of sheet def nums that will be excluded from the queried list on load.</summary>
 		public List<long> ListSheetDefNumsExclude;
+		///<summary></summary>
 		public bool IsWebForm;
 		/// <summary> Defaults to true. When true, user is required to make a selection to submit. When false, a None button appears which de-selects all items when clicked. </summary>
 		public bool RequireSelection=true;
 
-		public FrmSheetPicker(bool isWebForm = false):base() {
+		public FrmSheetPicker() {
 			InitializeComponent();
 			_listIndexesAdded=new List<int>();
-			IsWebForm = isWebForm;
 			Load+=FrmSheetPicker_Load;
 			listMain.MouseDoubleClick+=listMain_DoubleClick;
 			PreviewKeyDown+=FrmSheetPicker_PreviewKeyDown;
@@ -92,12 +93,12 @@ namespace OpenDental {
 			}
 			else {
 				labelSheetType.Text=Lans.g("enumSheetTypeEnum",SheetType.ToString());
-				butTerminal.Visible=false;
-				labelTerminal.Visible=false;
+				butKiosk.Visible=false;
+				labelKiosk.Visible=false;
 			}
 			if(HideKioskButton){
-				butTerminal.Visible=false;
-				labelTerminal.Visible=false;
+				butKiosk.Visible=false;
+				labelKiosk.Visible=false;
 			}
 			if(SheetType==SheetTypeEnum.PatientForm) {
 				ListSheetDefs=ListSheetDefs.OrderBy(x => x.Description).ToList();
@@ -135,11 +136,11 @@ namespace OpenDental {
 				SheetDefs.GetFieldsAndParameters(sheetDef);
 			}*/
 			ListSheetDefsSelected.Add(sheetDef);
-			DoTerminalSend=false;
+			DoKioskSend=false;
 			IsDialogOK=true;
 		}
 
-		private void butTerminal_Click(object sender,EventArgs e) {
+		private void butKiosk_Click(object sender,EventArgs e) {
 			//only visible when used from patient forms window.
 			if(listMain.SelectedIndices.Count==0) {
 				MsgBox.Show(this,"Please select at least one item first.");
@@ -161,7 +162,7 @@ namespace OpenDental {
 				}
 				ListSheetDefsSelected.Add(sheetDef);
 			}
-			DoTerminalSend=true;
+			DoKioskSend=true;
 			IsDialogOK=true;
 		}
 
@@ -218,7 +219,7 @@ namespace OpenDental {
 					ListSheetDefsSelected.Add(sheetDef);
 				}
 			}
-			DoTerminalSend=false;
+			DoKioskSend=false;
 			IsDialogOK=true;
 		}
 

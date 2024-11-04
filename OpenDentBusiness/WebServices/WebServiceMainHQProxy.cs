@@ -48,6 +48,9 @@ namespace OpenDentBusiness {
 				//Change arguments for debug only.
 				service.Url="http://localhost/OpenDentalWebServiceHQ/WebServiceMainHQ.asmx";//localhost
 				//service.Url="https://patientviewer.com:49997/OpenDentalWebServiceHQ/WebServiceMainHQ.asmx";//Live server
+				if(Environment.MachineName.ToLower()=="jordanhome"){
+					service.Url="https://patientviewer.com:49997/OpenDentalWebServiceHQ/WebServiceMainHQ.asmx";
+				}
 			}
 			if(ODBuild.IsUnitTest && service.Url.Contains("patientviewer.com")) {
 				throw new Exception("Unit test is not allowed to access live WSHQ! Maybe your unit test file is not inheriting TestBase. Ask me how I know...");

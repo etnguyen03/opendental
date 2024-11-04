@@ -24,8 +24,13 @@ namespace OpenDental{
 		/// </summary>
 		private void InitializeComponent() {
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormWebFormSetup));
-			this.colorDialog1 = new System.Windows.Forms.ColorDialog();
 			this.groupConstructURL = new OpenDental.UI.GroupBox();
+			this.label14 = new System.Windows.Forms.Label();
+			this.label13 = new System.Windows.Forms.Label();
+			this.label12 = new System.Windows.Forms.Label();
+			this.label11 = new System.Windows.Forms.Label();
+			this.label10 = new System.Windows.Forms.Label();
+			this.labelConstructInfo = new System.Windows.Forms.Label();
 			this.butCopyToClipboard = new OpenDental.UI.Button();
 			this.butNavigateTo = new OpenDental.UI.Button();
 			this.checkDisableTypedSig = new OpenDental.UI.CheckBox();
@@ -49,17 +54,32 @@ namespace OpenDental{
 			this.labelWebhostURL = new System.Windows.Forms.Label();
 			this.butUpdate = new OpenDental.UI.Button();
 			this.butSave = new OpenDental.UI.Button();
-			this.checkDisableWebFormSignatures = new OpenDental.UI.CheckBox();
-			this.groupBox1 = new OpenDental.UI.GroupBox();
+			this.checkDisableSigsPref = new OpenDental.UI.CheckBox();
+			this.groupPrefs = new OpenDental.UI.GroupBox();
+			this.label15 = new System.Windows.Forms.Label();
+			this.checkAutoFillNameBDPref = new OpenDental.UI.CheckBox();
+			this.label8 = new System.Windows.Forms.Label();
 			this.labelDateFormat = new System.Windows.Forms.Label();
 			this.comboDateFormat = new OpenDental.UI.ComboBox();
 			this.checkEnableAutoDownload = new OpenDental.UI.CheckBox();
+			this.label4 = new System.Windows.Forms.Label();
+			this.label5 = new System.Windows.Forms.Label();
+			this.label6 = new System.Windows.Forms.Label();
+			this.label7 = new System.Windows.Forms.Label();
+			this.label9 = new System.Windows.Forms.Label();
 			this.groupConstructURL.SuspendLayout();
-			this.groupBox1.SuspendLayout();
+			this.groupPrefs.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// groupConstructURL
 			// 
+			this.groupConstructURL.Controls.Add(this.label9);
+			this.groupConstructURL.Controls.Add(this.label14);
+			this.groupConstructURL.Controls.Add(this.label13);
+			this.groupConstructURL.Controls.Add(this.label12);
+			this.groupConstructURL.Controls.Add(this.label11);
+			this.groupConstructURL.Controls.Add(this.label10);
+			this.groupConstructURL.Controls.Add(this.labelConstructInfo);
 			this.groupConstructURL.Controls.Add(this.butCopyToClipboard);
 			this.groupConstructURL.Controls.Add(this.butNavigateTo);
 			this.groupConstructURL.Controls.Add(this.checkDisableTypedSig);
@@ -72,15 +92,68 @@ namespace OpenDental{
 			this.groupConstructURL.Controls.Add(this.label1);
 			this.groupConstructURL.Controls.Add(this.textRedirectURL);
 			this.groupConstructURL.Controls.Add(this.label3);
-			this.groupConstructURL.Location = new System.Drawing.Point(308, 176);
+			this.groupConstructURL.Location = new System.Drawing.Point(366, 224);
 			this.groupConstructURL.Name = "groupConstructURL";
-			this.groupConstructURL.Size = new System.Drawing.Size(615, 334);
+			this.groupConstructURL.Size = new System.Drawing.Size(764, 461);
 			this.groupConstructURL.TabIndex = 75;
 			this.groupConstructURL.Text = "Construct URL";
 			// 
+			// label14
+			// 
+			this.label14.Location = new System.Drawing.Point(260, 204);
+			this.label14.Name = "label14";
+			this.label14.Size = new System.Drawing.Size(79, 18);
+			this.label14.TabIndex = 88;
+			this.label14.Text = "(DTS=Y)";
+			this.label14.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			// 
+			// label13
+			// 
+			this.label13.Location = new System.Drawing.Point(261, 183);
+			this.label13.Name = "label13";
+			this.label13.Size = new System.Drawing.Size(337, 18);
+			this.label13.TabIndex = 87;
+			this.label13.Text = "from previous form (AFNAB=N if no). Only works with Next Forms";
+			this.label13.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			// 
+			// label12
+			// 
+			this.label12.Location = new System.Drawing.Point(124, 159);
+			this.label12.Name = "label12";
+			this.label12.Size = new System.Drawing.Size(117, 18);
+			this.label12.TabIndex = 86;
+			this.label12.Text = "Clinic (CID)";
+			this.label12.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			// 
+			// label11
+			// 
+			this.label11.Location = new System.Drawing.Point(241, 79);
+			this.label11.Name = "label11";
+			this.label11.Size = new System.Drawing.Size(444, 47);
+			this.label11.TabIndex = 85;
+			this.label11.Text = resources.GetString("label11.Text");
+			this.label11.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
+			// 
+			// label10
+			// 
+			this.label10.Location = new System.Drawing.Point(112, 262);
+			this.label10.Name = "label10";
+			this.label10.Size = new System.Drawing.Size(128, 18);
+			this.label10.TabIndex = 84;
+			this.label10.Text = "Redirect (ReturnURL)";
+			this.label10.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			// 
+			// labelConstructInfo
+			// 
+			this.labelConstructInfo.Location = new System.Drawing.Point(12, 33);
+			this.labelConstructInfo.Name = "labelConstructInfo";
+			this.labelConstructInfo.Size = new System.Drawing.Size(747, 47);
+			this.labelConstructInfo.TabIndex = 83;
+			this.labelConstructInfo.Text = resources.GetString("labelConstructInfo.Text");
+			// 
 			// butCopyToClipboard
 			// 
-			this.butCopyToClipboard.Location = new System.Drawing.Point(212, 304);
+			this.butCopyToClipboard.Location = new System.Drawing.Point(364, 431);
 			this.butCopyToClipboard.Name = "butCopyToClipboard";
 			this.butCopyToClipboard.Size = new System.Drawing.Size(115, 24);
 			this.butCopyToClipboard.TabIndex = 78;
@@ -89,7 +162,7 @@ namespace OpenDental{
 			// 
 			// butNavigateTo
 			// 
-			this.butNavigateTo.Location = new System.Drawing.Point(89, 304);
+			this.butNavigateTo.Location = new System.Drawing.Point(241, 431);
 			this.butNavigateTo.Name = "butNavigateTo";
 			this.butNavigateTo.Size = new System.Drawing.Size(117, 24);
 			this.butNavigateTo.TabIndex = 79;
@@ -98,25 +171,27 @@ namespace OpenDental{
 			// 
 			// checkDisableTypedSig
 			// 
-			this.checkDisableTypedSig.Location = new System.Drawing.Point(89, 137);
+			this.checkDisableTypedSig.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
+			this.checkDisableTypedSig.Location = new System.Drawing.Point(35, 205);
 			this.checkDisableTypedSig.Name = "checkDisableTypedSig";
-			this.checkDisableTypedSig.Size = new System.Drawing.Size(444, 18);
+			this.checkDisableTypedSig.Size = new System.Drawing.Size(220, 18);
 			this.checkDisableTypedSig.TabIndex = 44;
 			this.checkDisableTypedSig.Text = "Disable Typed Signature";
 			this.checkDisableTypedSig.CheckedChanged += new System.EventHandler(this.checkDisableTypedSig_CheckChanged);
 			// 
 			// checkAutoFillNameAndBirthdate
 			// 
-			this.checkAutoFillNameAndBirthdate.Location = new System.Drawing.Point(89, 113);
+			this.checkAutoFillNameAndBirthdate.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
+			this.checkAutoFillNameAndBirthdate.Location = new System.Drawing.Point(68, 183);
 			this.checkAutoFillNameAndBirthdate.Name = "checkAutoFillNameAndBirthdate";
-			this.checkAutoFillNameAndBirthdate.Size = new System.Drawing.Size(444, 18);
+			this.checkAutoFillNameAndBirthdate.Size = new System.Drawing.Size(187, 18);
 			this.checkAutoFillNameAndBirthdate.TabIndex = 43;
-			this.checkAutoFillNameAndBirthdate.Text = "Inherit (Auto Fill) Name and Birthdate from Previous Form";
+			this.checkAutoFillNameAndBirthdate.Text = "Auto Fill Name and Birthdate";
 			this.checkAutoFillNameAndBirthdate.CheckedChanged += new System.EventHandler(this.checkAutoFillNameAndBirthdate_CheckedChanged);
 			// 
 			// textURLs
 			// 
-			this.textURLs.Location = new System.Drawing.Point(89, 161);
+			this.textURLs.Location = new System.Drawing.Point(241, 288);
 			this.textURLs.MaxLength = 100000;
 			this.textURLs.Multiline = true;
 			this.textURLs.Name = "textURLs";
@@ -127,9 +202,9 @@ namespace OpenDental{
 			// 
 			// label2
 			// 
-			this.label2.Location = new System.Drawing.Point(9, 162);
+			this.label2.Location = new System.Drawing.Point(160, 289);
 			this.label2.Name = "label2";
-			this.label2.Size = new System.Drawing.Size(81, 17);
+			this.label2.Size = new System.Drawing.Size(81, 18);
 			this.label2.TabIndex = 41;
 			this.label2.Text = "URLs";
 			this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -138,7 +213,7 @@ namespace OpenDental{
 			// 
 			this.comboClinic.HqDescription = "None";
 			this.comboClinic.IncludeUnassigned = true;
-			this.comboClinic.Location = new System.Drawing.Point(52, 87);
+			this.comboClinic.Location = new System.Drawing.Point(204, 157);
 			this.comboClinic.Name = "comboClinic";
 			this.comboClinic.Size = new System.Drawing.Size(217, 21);
 			this.comboClinic.TabIndex = 38;
@@ -146,16 +221,16 @@ namespace OpenDental{
 			// 
 			// butNextForms
 			// 
-			this.butNextForms.Location = new System.Drawing.Point(539, 60);
+			this.butNextForms.Location = new System.Drawing.Point(689, 130);
 			this.butNextForms.Name = "butNextForms";
-			this.butNextForms.Size = new System.Drawing.Size(23, 20);
+			this.butNextForms.Size = new System.Drawing.Size(70, 20);
 			this.butNextForms.TabIndex = 19;
-			this.butNextForms.Text = "...";
+			this.butNextForms.Text = "Next Forms";
 			this.butNextForms.Click += new System.EventHandler(this.butNextForms_Click);
 			// 
 			// textNextForms
 			// 
-			this.textNextForms.Location = new System.Drawing.Point(89, 60);
+			this.textNextForms.Location = new System.Drawing.Point(241, 130);
 			this.textNextForms.MaxLength = 100;
 			this.textNextForms.Name = "textNextForms";
 			this.textNextForms.ReadOnly = true;
@@ -164,16 +239,16 @@ namespace OpenDental{
 			// 
 			// label1
 			// 
-			this.label1.Location = new System.Drawing.Point(6, 63);
+			this.label1.Location = new System.Drawing.Point(123, 131);
 			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(82, 14);
+			this.label1.Size = new System.Drawing.Size(117, 18);
 			this.label1.TabIndex = 5;
-			this.label1.Text = "Next Forms";
+			this.label1.Text = "Next Forms (NFID)";
 			this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			// 
 			// textRedirectURL
 			// 
-			this.textRedirectURL.Location = new System.Drawing.Point(89, 33);
+			this.textRedirectURL.Location = new System.Drawing.Point(241, 262);
 			this.textRedirectURL.MaxLength = 100;
 			this.textRedirectURL.Name = "textRedirectURL";
 			this.textRedirectURL.Size = new System.Drawing.Size(444, 20);
@@ -182,16 +257,18 @@ namespace OpenDental{
 			// 
 			// label3
 			// 
-			this.label3.Location = new System.Drawing.Point(6, 35);
+			this.label3.Location = new System.Drawing.Point(241, 225);
 			this.label3.Name = "label3";
-			this.label3.Size = new System.Drawing.Size(82, 14);
+			this.label3.Size = new System.Drawing.Size(507, 34);
 			this.label3.TabIndex = 2;
-			this.label3.Text = "Redirect URL";
-			this.label3.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			this.label3.Text = "When a patient completes their form, they can be automatically redirected back to" +
+    " the office website. Enter the full URL (Example: https://opendental.com) where " +
+    "patients should be redirected to.";
+			this.label3.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
 			// 
 			// butSavePrefs
 			// 
-			this.butSavePrefs.Location = new System.Drawing.Point(511, 87);
+			this.butSavePrefs.Location = new System.Drawing.Point(649, 160);
 			this.butSavePrefs.Name = "butSavePrefs";
 			this.butSavePrefs.Size = new System.Drawing.Size(75, 24);
 			this.butSavePrefs.TabIndex = 74;
@@ -200,7 +277,7 @@ namespace OpenDental{
 			// 
 			// butChange
 			// 
-			this.butChange.Location = new System.Drawing.Point(172, 69);
+			this.butChange.Location = new System.Drawing.Point(272, 91);
 			this.butChange.Name = "butChange";
 			this.butChange.Size = new System.Drawing.Size(75, 24);
 			this.butChange.TabIndex = 72;
@@ -211,18 +288,18 @@ namespace OpenDental{
 			// 
 			this.butDelete.Icon = OpenDental.UI.EnumIcons.DeleteX;
 			this.butDelete.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butDelete.Location = new System.Drawing.Point(218, 288);
+			this.butDelete.Location = new System.Drawing.Point(221, 427);
 			this.butDelete.Name = "butDelete";
 			this.butDelete.Size = new System.Drawing.Size(75, 24);
 			this.butDelete.TabIndex = 58;
-			this.butDelete.Text = "&Delete";
+			this.butDelete.Text = "Remove";
 			this.butDelete.Click += new System.EventHandler(this.butDelete_Click);
 			// 
 			// butWebformBorderColor
 			// 
 			this.butWebformBorderColor.BackColor = System.Drawing.Color.RoyalBlue;
 			this.butWebformBorderColor.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-			this.butWebformBorderColor.Location = new System.Drawing.Point(141, 69);
+			this.butWebformBorderColor.Location = new System.Drawing.Point(241, 91);
 			this.butWebformBorderColor.Name = "butWebformBorderColor";
 			this.butWebformBorderColor.Size = new System.Drawing.Size(24, 24);
 			this.butWebformBorderColor.TabIndex = 71;
@@ -233,7 +310,7 @@ namespace OpenDental{
 			// 
 			this.butAdd.Icon = OpenDental.UI.EnumIcons.Add;
 			this.butAdd.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butAdd.Location = new System.Drawing.Point(218, 203);
+			this.butAdd.Location = new System.Drawing.Point(221, 166);
 			this.butAdd.Name = "butAdd";
 			this.butAdd.Size = new System.Drawing.Size(75, 24);
 			this.butAdd.TabIndex = 57;
@@ -242,7 +319,7 @@ namespace OpenDental{
 			// 
 			// labelBorderColor
 			// 
-			this.labelBorderColor.Location = new System.Drawing.Point(29, 71);
+			this.labelBorderColor.Location = new System.Drawing.Point(129, 93);
 			this.labelBorderColor.Name = "labelBorderColor";
 			this.labelBorderColor.Size = new System.Drawing.Size(111, 19);
 			this.labelBorderColor.TabIndex = 48;
@@ -252,7 +329,7 @@ namespace OpenDental{
 			// gridMain
 			// 
 			this.gridMain.HasLinkDetect = false;
-			this.gridMain.Location = new System.Drawing.Point(12, 29);
+			this.gridMain.Location = new System.Drawing.Point(15, 79);
 			this.gridMain.Name = "gridMain";
 			this.gridMain.SelectionMode = OpenDental.UI.GridSelectionMode.MultiExtended;
 			this.gridMain.Size = new System.Drawing.Size(200, 480);
@@ -263,7 +340,7 @@ namespace OpenDental{
 			// 
 			// textboxWebHostAddress
 			// 
-			this.textboxWebHostAddress.Location = new System.Drawing.Point(141, 18);
+			this.textboxWebHostAddress.Location = new System.Drawing.Point(241, 40);
 			this.textboxWebHostAddress.Name = "textboxWebHostAddress";
 			this.textboxWebHostAddress.Size = new System.Drawing.Size(445, 20);
 			this.textboxWebHostAddress.TabIndex = 45;
@@ -271,7 +348,7 @@ namespace OpenDental{
 			// 
 			// labelWebhostURL
 			// 
-			this.labelWebhostURL.Location = new System.Drawing.Point(9, 18);
+			this.labelWebhostURL.Location = new System.Drawing.Point(109, 40);
 			this.labelWebhostURL.Name = "labelWebhostURL";
 			this.labelWebhostURL.Size = new System.Drawing.Size(131, 19);
 			this.labelWebhostURL.TabIndex = 46;
@@ -280,7 +357,7 @@ namespace OpenDental{
 			// 
 			// butUpdate
 			// 
-			this.butUpdate.Location = new System.Drawing.Point(218, 246);
+			this.butUpdate.Location = new System.Drawing.Point(221, 296);
 			this.butUpdate.Name = "butUpdate";
 			this.butUpdate.Size = new System.Drawing.Size(75, 24);
 			this.butUpdate.TabIndex = 76;
@@ -290,43 +367,77 @@ namespace OpenDental{
 			// butSave
 			// 
 			this.butSave.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.butSave.Location = new System.Drawing.Point(848, 522);
+			this.butSave.Location = new System.Drawing.Point(1144, 660);
 			this.butSave.Name = "butSave";
 			this.butSave.Size = new System.Drawing.Size(75, 24);
 			this.butSave.TabIndex = 77;
 			this.butSave.Text = "&Save";
 			this.butSave.Click += new System.EventHandler(this.butSave_Click);
 			// 
-			// checkDisableWebFormSignatures
+			// checkDisableSigsPref
 			// 
-			this.checkDisableWebFormSignatures.Location = new System.Drawing.Point(141, 99);
-			this.checkDisableWebFormSignatures.Name = "checkDisableWebFormSignatures";
-			this.checkDisableWebFormSignatures.Size = new System.Drawing.Size(250, 16);
-			this.checkDisableWebFormSignatures.TabIndex = 78;
-			this.checkDisableWebFormSignatures.Text = "Disable Web Form Signatures";
-			this.checkDisableWebFormSignatures.CheckedChanged += new System.EventHandler(this.checkDisableWebFormSignatures_CheckedChanged);
+			this.checkDisableSigsPref.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
+			this.checkDisableSigsPref.Location = new System.Drawing.Point(5, 120);
+			this.checkDisableSigsPref.Name = "checkDisableSigsPref";
+			this.checkDisableSigsPref.Size = new System.Drawing.Size(250, 16);
+			this.checkDisableSigsPref.TabIndex = 78;
+			this.checkDisableSigsPref.Text = "Disable Web Form Signatures";
+			this.checkDisableSigsPref.CheckedChanged += new System.EventHandler(this.checkDisableWebFormSignatures_CheckedChanged);
 			// 
-			// groupBox1
+			// groupPrefs
 			// 
-			this.groupBox1.Controls.Add(this.labelDateFormat);
-			this.groupBox1.Controls.Add(this.comboDateFormat);
-			this.groupBox1.Controls.Add(this.checkEnableAutoDownload);
-			this.groupBox1.Controls.Add(this.textboxWebHostAddress);
-			this.groupBox1.Controls.Add(this.butSavePrefs);
-			this.groupBox1.Controls.Add(this.labelBorderColor);
-			this.groupBox1.Controls.Add(this.checkDisableWebFormSignatures);
-			this.groupBox1.Controls.Add(this.butWebformBorderColor);
-			this.groupBox1.Controls.Add(this.butChange);
-			this.groupBox1.Controls.Add(this.labelWebhostURL);
-			this.groupBox1.Location = new System.Drawing.Point(308, 29);
-			this.groupBox1.Name = "groupBox1";
-			this.groupBox1.Size = new System.Drawing.Size(615, 141);
-			this.groupBox1.TabIndex = 79;
-			this.groupBox1.Text = "Preferences";
+			this.groupPrefs.Controls.Add(this.label15);
+			this.groupPrefs.Controls.Add(this.checkAutoFillNameBDPref);
+			this.groupPrefs.Controls.Add(this.label8);
+			this.groupPrefs.Controls.Add(this.labelDateFormat);
+			this.groupPrefs.Controls.Add(this.comboDateFormat);
+			this.groupPrefs.Controls.Add(this.checkEnableAutoDownload);
+			this.groupPrefs.Controls.Add(this.textboxWebHostAddress);
+			this.groupPrefs.Controls.Add(this.butSavePrefs);
+			this.groupPrefs.Controls.Add(this.labelBorderColor);
+			this.groupPrefs.Controls.Add(this.checkDisableSigsPref);
+			this.groupPrefs.Controls.Add(this.butWebformBorderColor);
+			this.groupPrefs.Controls.Add(this.butChange);
+			this.groupPrefs.Controls.Add(this.labelWebhostURL);
+			this.groupPrefs.Location = new System.Drawing.Point(366, 12);
+			this.groupPrefs.Name = "groupPrefs";
+			this.groupPrefs.Size = new System.Drawing.Size(764, 199);
+			this.groupPrefs.TabIndex = 79;
+			this.groupPrefs.Text = "Preferences";
+			// 
+			// label15
+			// 
+			this.label15.Location = new System.Drawing.Point(258, 158);
+			this.label15.Name = "label15";
+			this.label15.Size = new System.Drawing.Size(256, 34);
+			this.label15.TabIndex = 88;
+			this.label15.Text = "causes the Name and Birthdate box below in Construct URL to be checked by default" +
+    "";
+			this.label15.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			// 
+			// checkAutoFillNameBDPref
+			// 
+			this.checkAutoFillNameBDPref.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
+			this.checkAutoFillNameBDPref.Location = new System.Drawing.Point(68, 161);
+			this.checkAutoFillNameBDPref.Name = "checkAutoFillNameBDPref";
+			this.checkAutoFillNameBDPref.Size = new System.Drawing.Size(187, 18);
+			this.checkAutoFillNameBDPref.TabIndex = 83;
+			this.checkAutoFillNameBDPref.Text = "Auto Fill Name and Birthdate";
+			this.checkAutoFillNameBDPref.CheckedChanged += new System.EventHandler(this.checkAutoFillNameBDPref_CheckedChanged);
+			// 
+			// label8
+			// 
+			this.label8.Location = new System.Drawing.Point(240, 3);
+			this.label8.Name = "label8";
+			this.label8.Size = new System.Drawing.Size(448, 32);
+			this.label8.TabIndex = 82;
+			this.label8.Text = "Do not change this Address. It should be:\r\nhttps://opendentalsoft.com/WebHostSync" +
+    "h/SheetsSynch.asmx";
+			this.label8.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
 			// 
 			// labelDateFormat
 			// 
-			this.labelDateFormat.Location = new System.Drawing.Point(9, 43);
+			this.labelDateFormat.Location = new System.Drawing.Point(109, 65);
 			this.labelDateFormat.Name = "labelDateFormat";
 			this.labelDateFormat.Size = new System.Drawing.Size(131, 19);
 			this.labelDateFormat.TabIndex = 81;
@@ -335,7 +446,7 @@ namespace OpenDental{
 			// 
 			// comboDateFormat
 			// 
-			this.comboDateFormat.Location = new System.Drawing.Point(141, 43);
+			this.comboDateFormat.Location = new System.Drawing.Point(241, 65);
 			this.comboDateFormat.Name = "comboDateFormat";
 			this.comboDateFormat.Size = new System.Drawing.Size(180, 21);
 			this.comboDateFormat.TabIndex = 80;
@@ -343,17 +454,64 @@ namespace OpenDental{
 			// 
 			// checkEnableAutoDownload
 			// 
-			this.checkEnableAutoDownload.Location = new System.Drawing.Point(141, 119);
+			this.checkEnableAutoDownload.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
+			this.checkEnableAutoDownload.Location = new System.Drawing.Point(5, 140);
 			this.checkEnableAutoDownload.Name = "checkEnableAutoDownload";
 			this.checkEnableAutoDownload.Size = new System.Drawing.Size(250, 16);
 			this.checkEnableAutoDownload.TabIndex = 79;
 			this.checkEnableAutoDownload.Text = "Enable automatic download of web forms";
 			this.checkEnableAutoDownload.CheckedChanged += new System.EventHandler(this.checkDisableAutoDownload_CheckedChanged);
 			// 
+			// label4
+			// 
+			this.label4.Location = new System.Drawing.Point(12, 27);
+			this.label4.Name = "label4";
+			this.label4.Size = new System.Drawing.Size(268, 49);
+			this.label4.TabIndex = 80;
+			this.label4.Text = "This is a list of all Web Forms that have been uploaded to the web server and are" +
+    " currently available for patients to fill out";
+			// 
+			// label5
+			// 
+			this.label5.Location = new System.Drawing.Point(221, 197);
+			this.label5.Name = "label5";
+			this.label5.Size = new System.Drawing.Size(133, 63);
+			this.label5.TabIndex = 81;
+			this.label5.Text = "Only Patient Forms and Medical Histories can be added, not Consent forms";
+			// 
+			// label6
+			// 
+			this.label6.Location = new System.Drawing.Point(220, 324);
+			this.label6.Name = "label6";
+			this.label6.Size = new System.Drawing.Size(134, 63);
+			this.label6.TabIndex = 82;
+			this.label6.Text = "If changes were made to a form, this sends the updated version to the web server";
+			// 
+			// label7
+			// 
+			this.label7.Location = new System.Drawing.Point(219, 456);
+			this.label7.Name = "label7";
+			this.label7.Size = new System.Drawing.Size(135, 48);
+			this.label7.TabIndex = 83;
+			this.label7.Text = "Remove selected form from the web server";
+			// 
+			// label9
+			// 
+			this.label9.Location = new System.Drawing.Point(29, 336);
+			this.label9.Name = "label9";
+			this.label9.Size = new System.Drawing.Size(174, 79);
+			this.label9.TabIndex = 89;
+			this.label9.Text = "Additional parameters:\r\nDOID=Dental Office ID\r\nRKID=Registration Key ID\r\nWSDID=We" +
+    "bSheetDefID";
+			// 
 			// FormWebFormSetup
 			// 
-			this.ClientSize = new System.Drawing.Size(934, 558);
-			this.Controls.Add(this.groupBox1);
+			this.ClientSize = new System.Drawing.Size(1230, 696);
+			this.Controls.Add(this.label7);
+			this.Controls.Add(this.label6);
+			this.Controls.Add(this.label5);
+			this.Controls.Add(this.label4);
+			this.Controls.Add(this.groupPrefs);
 			this.Controls.Add(this.butSave);
 			this.Controls.Add(this.butUpdate);
 			this.Controls.Add(this.groupConstructURL);
@@ -367,8 +525,8 @@ namespace OpenDental{
 			this.Shown += new System.EventHandler(this.FormWebFormSetup_Shown);
 			this.groupConstructURL.ResumeLayout(false);
 			this.groupConstructURL.PerformLayout();
-			this.groupBox1.ResumeLayout(false);
-			this.groupBox1.PerformLayout();
+			this.groupPrefs.ResumeLayout(false);
+			this.groupPrefs.PerformLayout();
 			this.ResumeLayout(false);
 
 		}
@@ -378,7 +536,6 @@ namespace OpenDental{
 		private System.Windows.Forms.Label labelWebhostURL;
 		private System.Windows.Forms.Label labelBorderColor;
 		private System.Windows.Forms.Button butWebformBorderColor;
-		private System.Windows.Forms.ColorDialog colorDialog1;
 		private OpenDental.UI.Button butChange;
 		private OpenDental.UI.GridOD gridMain;
 		private OpenDental.UI.Button butDelete;
@@ -399,10 +556,24 @@ namespace OpenDental{
 		private OpenDental.UI.CheckBox checkDisableTypedSig;
 		private UI.Button butCopyToClipboard;
 		private UI.Button butNavigateTo;
-		private OpenDental.UI.CheckBox checkDisableWebFormSignatures;
-		private OpenDental.UI.GroupBox groupBox1;
+		private OpenDental.UI.CheckBox checkDisableSigsPref;
+		private OpenDental.UI.GroupBox groupPrefs;
 		private OpenDental.UI.CheckBox checkEnableAutoDownload;
 		private UI.ComboBox comboDateFormat;
 		private System.Windows.Forms.Label labelDateFormat;
+		private System.Windows.Forms.Label label4;
+		private System.Windows.Forms.Label label5;
+		private System.Windows.Forms.Label label6;
+		private System.Windows.Forms.Label label7;
+		private System.Windows.Forms.Label label8;
+		private System.Windows.Forms.Label label10;
+		private System.Windows.Forms.Label labelConstructInfo;
+		private System.Windows.Forms.Label label11;
+		private System.Windows.Forms.Label label12;
+		private System.Windows.Forms.Label label14;
+		private System.Windows.Forms.Label label13;
+		private UI.CheckBox checkAutoFillNameBDPref;
+		private System.Windows.Forms.Label label15;
+		private System.Windows.Forms.Label label9;
 	}
 }

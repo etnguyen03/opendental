@@ -470,6 +470,9 @@ namespace OpenDental {
 
 		private void butSave_Click(object sender,EventArgs e) {
 			//PumpGridIntoTable();
+			gridMain.Focus();
+			//If Alt-S was used, text might have been entered into the current cell,
+			//so this triggers CellLeave which saves that text to datatable.
 			for(int h=0;h<gridMain.Columns.Count;h++) {//loops through every header in the main grid
 				string s=gridMain.Columns[h].Heading.ToString();
 				s=s.Replace("&","&amp;");

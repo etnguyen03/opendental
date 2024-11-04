@@ -665,6 +665,9 @@ namespace OpenDentBusiness{
 				//case Permissions.BadgeIdEdit
 				case EnumPermType.ChildDaycareEdit:
 				case EnumPermType.PerioEditCopy:
+				//case EnumPermType.LicenseAccept:
+				//case EnumPermType.EFormEdit:
+				case EnumPermType.EFormDelete:
 				return false;//Does not have audit Trail if uncommented.
 			}
 			if(!PrefC.IsODHQ && enumPermType.In(
@@ -733,6 +736,7 @@ namespace OpenDentBusiness{
 				|| enumPermType==EnumPermType.ClaimSentEdit
 				|| enumPermType==EnumPermType.CommlogEdit
 				|| enumPermType==EnumPermType.DepositSlips//prevents backdating
+				|| enumPermType==EnumPermType.EFormEdit
 				|| enumPermType==EnumPermType.EquipmentDelete
 				|| enumPermType==EnumPermType.ImageDelete
 				|| enumPermType==EnumPermType.InsPayEdit

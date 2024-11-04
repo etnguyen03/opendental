@@ -626,7 +626,3 @@ RunReport(listClinicNums,stringDisplayClinics);
 	}
 }
 
-/*todo: 
-Add default sizes for all controls and explanation of how that works in FrmODBase
-*/
-

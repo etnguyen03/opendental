@@ -811,6 +811,12 @@ namespace OpenDentBusiness{
 		///<summary>258 - For audit trail only. Logs when a license is accepted by a user.</summary>
 		[Description("License Accept")]
 		LicenseAccept,
+		///<summary>259 - Uses date restrictions but no global lock date. Also used in audit trail to log importing.</summary>
+		[Description("eForm Edit")]
+		EFormEdit,
+		///<summary>260 - Allows deleting eForms when they're attached to patients. No date restrictions.</summary>
+		[Description("eForm Delete")]
+		EFormDelete,
 	}
 }
 

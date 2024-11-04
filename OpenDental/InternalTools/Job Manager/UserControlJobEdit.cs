@@ -820,7 +820,7 @@ namespace OpenDental.InternalTools.Job_Manager {
 			grid.Columns.Add(new GridColumn(Lan.g(this,"Note"),400));
 			grid.ListGridRows.Clear();
 			GridRow row;
-			listJobNotes=listJobNotes.OrderBy(x => x.DateTimeNote).ToList();
+			listJobNotes=listJobNotes.OrderByDescending(x => x.DateTimeNote).ToList();
 			foreach(JobNote jobNote in listJobNotes) {
 				row=new GridRow();
 				row.Cells.Add(jobNote.DateTimeNote.ToShortDateString()+" "+jobNote.DateTimeNote.ToShortTimeString());

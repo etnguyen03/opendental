@@ -311,7 +311,7 @@ Like in that form, edits to the fields do not get saved to the db as they are ed
 			//If they click delete at that time, then we must handle that properly by completely deleting it instead of just marking it for later deletion.
 			eFormField.FontScale=100;
 			eFormField.FieldType=EnumEFormFieldType.TextField;
-			eFormField.Border=EnumEFormBorder.ThreeD;
+			eFormField.Border=GetMajorityBorderType();
 			frmEFormTextBoxEdit.EFormFieldCur=eFormField;
 			frmEFormTextBoxEdit.EFormDefCur=EFormDefCur;
 			frmEFormTextBoxEdit.ListEFormFields=ctrlEFormFill.ListEFormFields;
@@ -349,6 +349,7 @@ Like in that form, edits to the fields do not get saved to the db as they are ed
 			eFormField.IsNew=true;
 			eFormField.FontScale=100;
 			eFormField.FieldType=EnumEFormFieldType.Label;
+			eFormField.Border=GetMajorityBorderType();
 			frmEFormLabelEdit.EFormFieldCur=eFormField;
 			frmEFormLabelEdit.ListEFormFields=ctrlEFormFill.ListEFormFields;
 			frmEFormLabelEdit.EFormDefCur=EFormDefCur;
@@ -380,7 +381,7 @@ Like in that form, edits to the fields do not get saved to the db as they are ed
 			eFormField.IsNew=true;
 			eFormField.FontScale=100;
 			eFormField.FieldType=EnumEFormFieldType.DateField;
-			eFormField.Border=EnumEFormBorder.ThreeD;
+			eFormField.Border=GetMajorityBorderType();
 			frmEFormDateFieldEdit.EFormFieldCur=eFormField;
 			frmEFormDateFieldEdit.ListEFormFields=ctrlEFormFill.ListEFormFields;
 			frmEFormDateFieldEdit.EFormDefCur=EFormDefCur;
@@ -412,6 +413,7 @@ Like in that form, edits to the fields do not get saved to the db as they are ed
 			eFormField.IsNew=true;
 			eFormField.FontScale=100;
 			eFormField.FieldType=EnumEFormFieldType.CheckBox;
+			eFormField.Border=GetMajorityBorderType();
 			frmEFormCheckBoxEdit.EFormFieldCur=eFormField;
 			frmEFormCheckBoxEdit.ListEFormFields=ctrlEFormFill.ListEFormFields;
 			frmEFormCheckBoxEdit.EFormDefCur=EFormDefCur;
@@ -443,7 +445,7 @@ Like in that form, edits to the fields do not get saved to the db as they are ed
 			eFormField.IsNew=true;
 			eFormField.FontScale=100;
 			eFormField.FieldType=EnumEFormFieldType.RadioButtons;
-			eFormField.Border=EnumEFormBorder.ThreeD;
+			eFormField.Border=GetMajorityBorderType();
 			frmEFormRadioButtonsEdit.EFormFieldCur=eFormField;
 			frmEFormRadioButtonsEdit.EFormDefCur=EFormDefCur;
 			frmEFormRadioButtonsEdit.ListEFormFields=ctrlEFormFill.ListEFormFields;
@@ -475,6 +477,7 @@ Like in that form, edits to the fields do not get saved to the db as they are ed
 			eFormField.IsNew=true;
 			eFormField.FontScale=100;
 			eFormField.FieldType=EnumEFormFieldType.SigBox;
+			eFormField.Border=EnumEFormBorder.None;//GetMajorityBorderType(); no. Nobody wants this
 			eFormField.ValueLabel="Signature";
 			frmEFormSigBoxEdit.EFormFieldCur=eFormField;
 			frmEFormSigBoxEdit.ListEFormFields=ctrlEFormFill.ListEFormFields;
@@ -507,6 +510,7 @@ Like in that form, edits to the fields do not get saved to the db as they are ed
 			eFormField.IsNew=true;
 			eFormField.FontScale=100;
 			eFormField.FieldType=EnumEFormFieldType.MedicationList;
+			eFormField.Border=EnumEFormBorder.None;//GetMajorityBorderType(); no. Nobody wants this
 			EFormMedListLayout eFormMedListLayout=new EFormMedListLayout();
 			eFormField.ValueLabel=JsonConvert.SerializeObject(eFormMedListLayout);
 			frmEFormMedicationListEdit.EFormFieldCur=eFormField;
@@ -753,6 +757,27 @@ Like in that form, edits to the fields do not get saved to the db as they are ed
 		#endregion Methods - public
 
 		#region Methods - private
+		///<summary>Returns the border type that the majority of fields already use.</summary>
+		private EnumEFormBorder GetMajorityBorderType(){
+			int count3D=0;
+			int countNon=0;
+			for(int i=0;i<ctrlEFormFill.ListEFormFields.Count;i++){
+				if(ctrlEFormFill.ListEFormFields[i].FieldType==EnumEFormFieldType.PageBreak){
+					continue;
+				}
+				if(ctrlEFormFill.ListEFormFields[i].Border==EnumEFormBorder.None){
+					countNon++;
+				}
+				else{
+					count3D++;
+				}
+			}
+			if(count3D>countNon){
+				return EnumEFormBorder.ThreeD;
+			}
+			return EnumEFormBorder.None;
+		}
+
 		private void SetCtrlWidth(){
 			//Notice that there is no code at all which changes the width of this form.
 			//This section runs when user changes max width in properties or resizes window manually.

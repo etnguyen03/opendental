@@ -256,6 +256,10 @@ namespace OpenDental {
 				node.Nodes.Add(node2);
 					node3=SetNode(EnumPermType.SheetDelete);
 					node2.Nodes.Add(node3);
+				node2=SetNode(EnumPermType.EFormEdit);
+				node.Nodes.Add(node2);
+					node3=SetNode(EnumPermType.EFormDelete);
+					node2.Nodes.Add(node3);
 				node2=SetNode(EnumPermType.TaskEdit);
 				node.Nodes.Add(node2);
 				node2=SetNode(EnumPermType.TaskNoteEdit);

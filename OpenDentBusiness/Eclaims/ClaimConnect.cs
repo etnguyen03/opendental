@@ -1259,11 +1259,11 @@ namespace OpenDentBusiness.Eclaims {
 		}
 
 		///<summary>Throws Exceptions. Returns an error message if validation failed. Otherwise returns an empty string.</summary>
-		public static XConnectWebResponse ValidateClaim(Claim claim,bool doValidateForAttachment=false) {
+		public static XConnectWebResponse ValidateClaim(Claim claim) {
 			XConnectValidateClaim xConnectValidateClaim=new XConnectValidateClaim();
 			XConnect.SetData(claim);
 			xConnectValidateClaim.claim=XConnectClaim.FromClaim(claim);
-			xConnectValidateClaim.validateForAttachment=doValidateForAttachment;
+			xConnectValidateClaim.validateForAttachment=true;
 			if(xConnectValidateClaim.claim.patient.sequenceCode=="") {
 				throw new ODException("XConnect validation only accepts Primary, Secondary and Tertiary claims.");
 			}

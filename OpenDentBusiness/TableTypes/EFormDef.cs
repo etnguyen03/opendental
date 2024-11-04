@@ -127,17 +127,13 @@ Flex has multiple videos on how they do their setup. Here's one:
 https://www.youtube.com/watch?v=4V-wbDuVtFg 
 Ours are similar.
 
-Jordan:
-So something about when a user tries to set a stacked field to be full width. Right now we silently set a width. Probably a msgbox instead.
-
 Enhance FormWebForms to include eForms. I don't think eForms get retrieved, but do they still show on that form?
 	For sheets, they show if DateTimeSheet is within search range and IsWebForm is true.
-	We could just mirror that for eForms. Or IsWebForm probably doesn't even matter.
+	eForms uses Status instead of IsWebForm
 	For eForms, DateTimeShown is the field that is analagous to DateTimeSheet. 
 	Both are the dates that show at the lower left of the fill window,
 	and both are the dates used for showing in commlog and also indicate when they were filled out.
 (done) Slight enhancements to FormPatientPickWebForm for wording
-and .IsWebForm
 WebForms_Preference.ColorBorder
 Background color
 Permission to edit complete EForm, use Sheet permission?

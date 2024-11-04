@@ -34,14 +34,15 @@ namespace OpenDentBusiness.WebTypes.WebForms {
 		}
 
 		///<summary>Makes a web request to get Web Forms preferences for the dental office.</summary>
-		public static bool TryGetPreference(out WebForms_Preference pref,string regKey=null) {
-			pref=new WebForms_Preference();
+		public static bool TryGetPreference(out WebForms_Preference _webForms_Preference,string regKey=null) {
+			_webForms_Preference=new WebForms_Preference();
 			if(string.IsNullOrEmpty(regKey)) {
 				regKey=PrefC.GetString(PrefName.RegistrationKey);
 			}
 			try {
 				string payload=PayloadHelper.CreatePayloadWebHostSynch(regKey,new PayloadItem(regKey,"RegKey"));
-				pref=WebSerializer.DeserializeTag<WebForms_Preference>(SheetsSynchProxy.GetWebServiceInstance().GetPreferences(payload),"Success");
+
+				_webForms_Preference=WebSerializer.DeserializeTag<WebForms_Preference>(SheetsSynchProxy.GetWebServiceInstance().GetPreferences(payload),"Success");
 			}
 			catch (Exception ex) {
 				ex.DoNothing();

@@ -299,12 +299,14 @@ Here is the desired behavior:
 				EventFillTree?.Invoke(this,false);
 				ClearObjects();
 				SelectTreeNode2(null);
+				ThumbnailRefresh();
 				panelMain.Invalidate();
 			}
 			if(IsMountItemSelected()){
 				//need to review with more situations.  What if item isn't filled yet?
 				_documentArrayShowing[_idxSelectedInMount]=null;
 				_bitmapArrayShowing[_idxSelectedInMount]=null;
+				ThumbnailRefresh();
 				panelMain.Invalidate();
 			}
 		}
@@ -1880,6 +1882,7 @@ Here is the desired behavior:
 			}
 			if(dbNameOrUri==dbNameOrUriCopied && nodeTypeAndKey!=null){
 				ToolBarPasteTypeAndKey(nodeTypeAndKey,showDocInfo:true);
+				ThumbnailRefresh();
 				return;
 			}
 			Bitmap bitmapPaste=ODClipboard.GetImage();
@@ -1965,6 +1968,7 @@ Here is the desired behavior:
 					Cursor=Cursors.Default;
 					EventSelectTreeNode?.Invoke(this,null);
 				}//end of filenames
+				ThumbnailRefresh();
 				return;
 			}//mount
 			//Everything below this line is for one or more documents not in a mount=============================================================================================
@@ -4897,6 +4901,7 @@ Here is the desired behavior:
 				_idxSelectedInMount=listMountItemsAvail[0].ItemOrder-1;//-1 is to account for 1-indexed vs 0-indexed.
 				panelMain.Invalidate();
 			}
+			ThumbnailRefresh();
 		}
 
 		///<summary>Not importing to mount. Supports multiple imports at once (unless in AppStream).</summary>

@@ -168,7 +168,7 @@
 			// 
 			// groupExistingPat
 			// 
-			this.groupExistingPat.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(249)))), ((int)(((byte)(249)))), ((int)(((byte)(249)))));
+			this.groupExistingPat.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(252)))), ((int)(((byte)(253)))), ((int)(((byte)(254)))));
 			this.groupExistingPat.Controls.Add(this.checkExistingPatEmail);
 			this.groupExistingPat.Controls.Add(this.checkExistingPatText);
 			this.groupExistingPat.Location = new System.Drawing.Point(19, 83);
@@ -197,7 +197,7 @@
 			// 
 			// groupNewPat
 			// 
-			this.groupNewPat.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(249)))), ((int)(((byte)(249)))), ((int)(((byte)(249)))));
+			this.groupNewPat.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(252)))), ((int)(((byte)(253)))), ((int)(((byte)(254)))));
 			this.groupNewPat.Controls.Add(this.checkNewPatEmail);
 			this.groupNewPat.Controls.Add(this.checkNewPatText);
 			this.groupNewPat.Location = new System.Drawing.Point(19, 28);
@@ -227,6 +227,7 @@
 			// UserControlHostedURL
 			// 
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
+			this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(252)))), ((int)(((byte)(253)))), ((int)(((byte)(254)))));
 			this.Controls.Add(this.butClearExistingPat);
 			this.Controls.Add(this.butEditExistingPat);
 			this.Controls.Add(this.checkAllowChildren);

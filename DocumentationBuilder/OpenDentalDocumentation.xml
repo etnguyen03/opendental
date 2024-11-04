@@ -14548,7 +14548,7 @@
       <summary>.</summary>
     </column>
     <column order="11" name="ProvNum" type="bigint(20)" fk="provider">
-      <summary>FK to provider.ProvNum.  Used when referring out a patient to track the referring provider for EHR meaningful use.</summary>
+      <summary>FK to provider.ProvNum.  Used when referring out a patient to track the referring provider for EHR meaningful use.  Will be -1 when RefType is not set to RefTo.</summary>
     </column>
     <column order="12" name="DateTStamp" type="timestamp">
       <summary>The datetime this referral attachment was last edited.</summary>

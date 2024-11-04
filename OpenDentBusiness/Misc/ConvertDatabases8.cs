@@ -221,6 +221,38 @@ namespace OpenDentBusiness {
 				Db.NonQ(command);
 			}
 		}
+
+		///<summary>Safe to run many times</summary>
+		private static void ObsolesceCDTCodesFor2025() {
+			#region I56520
+			if(CultureInfo.CurrentCulture.Name.EndsWith("US")) {//United States
+				//Move deprecated codes to the Obsolete procedure code category.
+				//Make sure the procedure code category exists before moving the procedure codes.
+				string procCatDescript="Obsolete";
+				long defNum=0;
+				string command="SELECT DefNum FROM definition WHERE Category=11 AND ItemName='"+POut.String(procCatDescript)+"'";//11 is DefCat.ProcCodeCats
+				DataTable dtDef=Db.GetTable(command);
+				if(dtDef.Rows.Count==0) { //The procedure code category does not exist, add it
+					command="SELECT COUNT(*) FROM definition WHERE Category=11";//11 is DefCat.ProcCodeCats
+					int countCats=PIn.Int(Db.GetCount(command));
+					command="INSERT INTO definition (Category,ItemName,ItemOrder) "
+							+"VALUES (11"+",'"+POut.String(procCatDescript)+"',"+POut.Int(countCats)+")";//11 is DefCat.ProcCodeCats
+					defNum=Db.NonQ(command,true);
+				}
+				else { //The procedure code category already exists, get the existing defnum
+					defNum=PIn.Long(dtDef.Rows[0]["DefNum"].ToString());
+				}
+				string[] cdtCodesDeleted=new string[] {
+					"D2941",
+					"D6095"
+				};
+				//Change the procedure codes' category to Obsolete.
+				command="UPDATE procedurecode SET ProcCat="+POut.Long(defNum)
+				+" WHERE ProcCode IN('"+string.Join("','",cdtCodesDeleted.Select(x => POut.String(x)))+"') ";
+				Db.NonQ(command);
+			}//end United States CDT codes update
+			#endregion I56520
+		}
 		#endregion
 
 		private static void To23_2_1() {
@@ -2011,6 +2043,10 @@ namespace OpenDentBusiness {
 			//End B57668
 		}//End of 24_2_46
 
+		private static void To24_2_47() {
+			ObsolesceCDTCodesFor2025();
+		}
+
 		private static void To24_3_1() {
 			string command;
 			DataTable table;
@@ -2292,5 +2328,27 @@ namespace OpenDentBusiness {
 			}
 			//End B57668
 		}//End of 24_3_12
+
+		private static void To24_3_14() {
+			ObsolesceCDTCodesFor2025();
+			//Start S53342 eForms
+			string command="SELECT DISTINCT UserGroupNum FROM grouppermission WHERE PermType=42";//SheetEdit
+			DataTable table=Db.GetTable(command);
+			for(int i=0;i<table.Rows.Count;i++) {
+				long userGroupNum=PIn.Long(table.Rows[i]["UserGroupNum"].ToString());
+				command="INSERT INTO grouppermission (UserGroupNum,PermType) "
+					+"VALUES("+POut.Long(userGroupNum)+",259)";//EFormEdit
+				Db.NonQ(command);
+			}
+			command="SELECT DISTINCT UserGroupNum FROM grouppermission WHERE PermType=136";//SheetDelete
+			table=Db.GetTable(command);
+			for(int i=0;i<table.Rows.Count;i++) {
+				long userGroupNum=PIn.Long(table.Rows[i]["UserGroupNum"].ToString());
+				command="INSERT INTO grouppermission (UserGroupNum,PermType) "
+					+"VALUES("+POut.Long(userGroupNum)+",260)";//EFormDelete
+				Db.NonQ(command);
+			}
+			//End S53342 eForms
+		}
 	}
 }

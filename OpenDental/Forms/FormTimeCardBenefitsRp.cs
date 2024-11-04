@@ -37,6 +37,12 @@ namespace OpenDental{
 			_dateMonthT1 = _dateMonthT0.AddMonths(-1);
 			_dateMonthT2 = _dateMonthT0.AddMonths(-2);
 			_colorLightRed=Color.FromArgb(254,235,233); //light red
+			if(EmployeeNum!=0) {//Checkboxes for management only
+				checkIgnore.Checked=false;
+				checkShowAll.Checked=true;
+				checkIgnore.Visible=false;
+				checkShowAll.Visible=false;
+			}
 			FillGridMain();
 		}
 

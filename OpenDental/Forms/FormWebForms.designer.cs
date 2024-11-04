@@ -26,7 +26,6 @@ namespace OpenDental{
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormWebForms));
 			this.menuWebFormsRight = new System.Windows.Forms.ContextMenu();
 			this.menuItemViewAllSheets = new System.Windows.Forms.MenuItem();
-			this.groupFilters = new OpenDental.UI.GroupBox();
 			this.comboClinics = new OpenDental.UI.ComboBoxClinicPicker();
 			this.butRefresh = new OpenDental.UI.Button();
 			this.butToday = new OpenDental.UI.Button();
@@ -40,7 +39,7 @@ namespace OpenDental{
 			this.menuMain = new OpenDental.UI.MenuOD();
 			this.textBatchSize = new OpenDental.ValidNum();
 			this.label2 = new System.Windows.Forms.Label();
-			this.groupFilters.SuspendLayout();
+			this.label3 = new System.Windows.Forms.Label();
 			this.SuspendLayout();
 			// 
 			// menuWebFormsRight
@@ -55,36 +54,21 @@ namespace OpenDental{
 			this.menuItemViewAllSheets.Text = "View this patient\'s forms";
 			this.menuItemViewAllSheets.Click += new System.EventHandler(this.menuItemViewAllSheets_Click);
 			// 
-			// groupFilters
-			// 
-			this.groupFilters.Controls.Add(this.comboClinics);
-			this.groupFilters.Controls.Add(this.butRefresh);
-			this.groupFilters.Controls.Add(this.butToday);
-			this.groupFilters.Controls.Add(this.textDateStart);
-			this.groupFilters.Controls.Add(this.labelStartDate);
-			this.groupFilters.Controls.Add(this.labelEndDate);
-			this.groupFilters.Controls.Add(this.textDateEnd);
-			this.groupFilters.Location = new System.Drawing.Point(12, 28);
-			this.groupFilters.Name = "groupFilters";
-			this.groupFilters.Size = new System.Drawing.Size(495, 69);
-			this.groupFilters.TabIndex = 0;
-			this.groupFilters.Text = "Show Retrieved Forms";
-			// 
 			// comboClinics
 			// 
 			this.comboClinics.HqDescription = "Headquarters";
 			this.comboClinics.IncludeAll = true;
 			this.comboClinics.IncludeUnassigned = true;
-			this.comboClinics.Location = new System.Drawing.Point(275, 37);
-			this.comboClinics.Name = "comboClinics";
 			this.comboClinics.IsMultiSelect = true;
+			this.comboClinics.Location = new System.Drawing.Point(319, 52);
+			this.comboClinics.Name = "comboClinics";
 			this.comboClinics.Size = new System.Drawing.Size(200, 21);
 			this.comboClinics.TabIndex = 4;
 			this.comboClinics.SelectionChangeCommitted += new System.EventHandler(this.ComboClinics_SelectionChangeCommitted);
 			// 
 			// butRefresh
 			// 
-			this.butRefresh.Location = new System.Drawing.Point(163, 39);
+			this.butRefresh.Location = new System.Drawing.Point(173, 74);
 			this.butRefresh.Name = "butRefresh";
 			this.butRefresh.Size = new System.Drawing.Size(77, 24);
 			this.butRefresh.TabIndex = 3;
@@ -93,7 +77,7 @@ namespace OpenDental{
 			// 
 			// butToday
 			// 
-			this.butToday.Location = new System.Drawing.Point(163, 14);
+			this.butToday.Location = new System.Drawing.Point(173, 49);
 			this.butToday.Name = "butToday";
 			this.butToday.Size = new System.Drawing.Size(77, 24);
 			this.butToday.TabIndex = 2;
@@ -104,32 +88,32 @@ namespace OpenDental{
 			// 
 			this.textDateStart.BackColor = System.Drawing.SystemColors.Window;
 			this.textDateStart.ForeColor = System.Drawing.SystemColors.WindowText;
-			this.textDateStart.Location = new System.Drawing.Point(75, 16);
+			this.textDateStart.Location = new System.Drawing.Point(85, 51);
 			this.textDateStart.Name = "textDateStart";
 			this.textDateStart.Size = new System.Drawing.Size(77, 20);
 			this.textDateStart.TabIndex = 0;
 			// 
 			// labelStartDate
 			// 
-			this.labelStartDate.Location = new System.Drawing.Point(2, 19);
+			this.labelStartDate.Location = new System.Drawing.Point(15, 52);
 			this.labelStartDate.Name = "labelStartDate";
-			this.labelStartDate.Size = new System.Drawing.Size(69, 14);
+			this.labelStartDate.Size = new System.Drawing.Size(69, 18);
 			this.labelStartDate.TabIndex = 221;
 			this.labelStartDate.Text = "Start Date";
-			this.labelStartDate.TextAlign = System.Drawing.ContentAlignment.TopRight;
+			this.labelStartDate.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			// 
 			// labelEndDate
 			// 
-			this.labelEndDate.Location = new System.Drawing.Point(2, 44);
+			this.labelEndDate.Location = new System.Drawing.Point(15, 76);
 			this.labelEndDate.Name = "labelEndDate";
-			this.labelEndDate.Size = new System.Drawing.Size(69, 14);
+			this.labelEndDate.Size = new System.Drawing.Size(69, 18);
 			this.labelEndDate.TabIndex = 222;
 			this.labelEndDate.Text = "End Date";
-			this.labelEndDate.TextAlign = System.Drawing.ContentAlignment.TopRight;
+			this.labelEndDate.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			// 
 			// textDateEnd
 			// 
-			this.textDateEnd.Location = new System.Drawing.Point(75, 41);
+			this.textDateEnd.Location = new System.Drawing.Point(85, 76);
 			this.textDateEnd.Name = "textDateEnd";
 			this.textDateEnd.Size = new System.Drawing.Size(77, 20);
 			this.textDateEnd.TabIndex = 1;
@@ -199,12 +183,28 @@ namespace OpenDental{
     "aller batch sizes are more likely to succeed.";
 			this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			// 
+			// label3
+			// 
+			this.label3.Location = new System.Drawing.Point(12, 27);
+			this.label3.Name = "label3";
+			this.label3.Size = new System.Drawing.Size(159, 18);
+			this.label3.TabIndex = 243;
+			this.label3.Text = "Show Retrieved Forms";
+			this.label3.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			// 
 			// FormWebForms
 			// 
 			this.ClientSize = new System.Drawing.Size(755, 341);
+			this.Controls.Add(this.label3);
+			this.Controls.Add(this.butRefresh);
+			this.Controls.Add(this.comboClinics);
+			this.Controls.Add(this.butToday);
 			this.Controls.Add(this.label2);
+			this.Controls.Add(this.textDateStart);
+			this.Controls.Add(this.labelStartDate);
 			this.Controls.Add(this.textBatchSize);
-			this.Controls.Add(this.groupFilters);
+			this.Controls.Add(this.labelEndDate);
+			this.Controls.Add(this.textDateEnd);
 			this.Controls.Add(this.label1);
 			this.Controls.Add(this.butRetrieve);
 			this.Controls.Add(this.gridMain);
@@ -213,8 +213,6 @@ namespace OpenDental{
 			this.Name = "FormWebForms";
 			this.Text = "Web Forms";
 			this.Load += new System.EventHandler(this.FormWebForms_Load);
-			this.groupFilters.ResumeLayout(false);
-			this.groupFilters.PerformLayout();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -223,7 +221,6 @@ namespace OpenDental{
 		#endregion
 		private OpenDental.UI.GridOD gridMain;
 		private OpenDental.UI.Button butRetrieve;
-		private OpenDental.UI.GroupBox groupFilters;
 		private OpenDental.UI.Button butToday;
 		private ValidDate textDateStart;
 		private System.Windows.Forms.Label labelStartDate;
@@ -237,5 +234,6 @@ namespace OpenDental{
 		private UI.MenuOD menuMain;
 		private ValidNum textBatchSize;
 		private System.Windows.Forms.Label label2;
+		private System.Windows.Forms.Label label3;
 	}
 }

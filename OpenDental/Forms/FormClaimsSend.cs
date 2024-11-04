@@ -873,7 +873,7 @@ namespace OpenDental{
 					Claim claim=listClaims.FirstOrDefault(x => x.ClaimNum==listClaimSendQueueItems[i].ClaimNum);
 					XConnectWebResponse xConnectWebResponse=null;
 					try {
-						xConnectWebResponse=XConnect.ValidateClaim(claim,doValidateForAttachment:true);
+						xConnectWebResponse=XConnect.ValidateClaim(claim);
 						if(xConnectWebResponse.messages.Length!=0) {//Errors will go in the messages array of the object
 							listClaimSendQueueItemsToValidate[i].MissingData+=(listClaimSendQueueItemsToValidate[i].MissingData==""?"":", ")
 								+string.Join("\r\n",xConnectWebResponse.messages);

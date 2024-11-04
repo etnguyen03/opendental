@@ -146,7 +146,7 @@ namespace OpenDental {
 			XConnectWebResponse xConnectWebResponse=null;
 			//Usually super fast, but with a web call, they need a way to cancel if locked up.
 			ProgressWin progressWin=new ProgressWin();
-			progressWin.ActionMain=() => xConnectWebResponse=XConnect.ValidateClaim(ClaimCur,doValidateForAttachment:true);
+			progressWin.ActionMain=() => xConnectWebResponse=XConnect.ValidateClaim(ClaimCur);
 			progressWin.StartingMessage="Communicating with DentalXChange...";
 			try {
 				progressWin.ShowDialog();

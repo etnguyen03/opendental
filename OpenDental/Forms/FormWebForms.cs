@@ -16,7 +16,7 @@ namespace OpenDental {
 
 		/// <summary>
 		/// This Form does 3 things: 
-		/// 1) Retrieve data of filled out web forms from a web service and convert them into sheets and patients. Using the first name, last name and birth date it will check for existing patients. If an existing patient is found a new sheet is created. If no patient is found, a  patient and a sheet is created.
+		/// 1) Retrieve data of filled out web forms from a web service and convert them into sheets and patients. Using the first name, last name, and birth date, it will check for existing patients. If an existing patient is found, a new sheet is created. If no patient is found, a patient and a sheet is created.
 		/// 2) Send a list of the Sheets that have been created to the Server for deletion.
 		/// 3) Show all the sheets that have been created in 1) using a date filter and a clinic filter.
 		/// </summary>
@@ -30,11 +30,9 @@ namespace OpenDental {
 		private void FormWebForms_Load(object sender,EventArgs e) {
 			textDateStart.Text=DateTime.Today.ToShortDateString();
 			textDateEnd.Text=DateTime.Today.ToShortDateString();
-			if(!PrefC.HasClinicsEnabled) {
-				LayoutManager.MoveWidth(groupFilters,LayoutManager.Scale(240));//Shrink to better fit just the date range pickers.
-			}
-			else if(Clinics.ClinicNum==0) {
+			if(PrefC.HasClinicsEnabled && Clinics.ClinicNum==0) {
 				comboClinics.IsAllSelected=true;
+				//if a specific clinic is currently showing, then that clinic will automatically get selected
 			}
 			if(WebForms_Preferences.TryGetPreference(out _webForms_Preference)) {
 				if(string.IsNullOrEmpty(_webForms_Preference.CultureName)){//Just in case.
@@ -100,24 +98,22 @@ namespace OpenDental {
 		}
 
 
-		/// <summary>
-		///  This method is used only for testing with security certificates that has problems.
-		/// </summary>
+		/// <summary>This method is used only for testing with security certificates that have problems.</summary>
 		private void IgnoreCertificateErrors() {
-			///the line below will allow the code to continue by not throwing an exception.
-			///It will accept the security certificate if there is a problem with the security certificate.
+			//the line below will allow the code to continue by not throwing an exception.
+			//It will accept the security certificate if there is a problem with the security certificate.
 			ServicePointManager.ServerCertificateValidationCallback+=CertCallBack;
 		}
 
 		private bool CertCallBack(object sender,X509Certificate x509Certificate,X509Chain x509Chain,SslPolicyErrors sslPolicyErrors) {
-			///do stuff here and return true or false accordingly.
-			///In this particular case it always returns true i.e accepts any certificate.
+			//do stuff here and return true or false accordingly.
+			//In this particular case it always returns true i.e accepts any certificate.
 			if(sslPolicyErrors==SslPolicyErrors.None) {
 				return true;
 			}
-			// the sample below allows expired certificates
+			//the sample below allows expired certificates
 			for(int i = 0;i<x509Chain.ChainStatus.Length;i++) {
-				// allows expired certificates
+				//allows expired certificates
 				if(x509Chain.ChainStatus[i].ToString().ToLower()=="NotTimeValid".ToLower()) {
 					return true;
 				}

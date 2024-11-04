@@ -134,16 +134,20 @@ namespace OpenDental.User_Controls {
 		}
 
 		private void EditHelper(bool isNewPat,string text) {
-			using FormWebFormSetup formWebFormSetup=new FormWebFormSetup(Signup.ClinicNum,text,true);
+			using FormWebFormSetup formWebFormSetup=new FormWebFormSetup();
+			formWebFormSetup.ClinicNum=Signup.ClinicNum;
+			formWebFormSetup.UrlWebForm=text;
+			formWebFormSetup.IsPickerForWebSched=true;
 			formWebFormSetup.ShowDialog();
-			if(formWebFormSetup.DialogResult==DialogResult.OK) {
-				if(isNewPat) {
-					textWebFormToLaunchNewPat.Text=formWebFormSetup.SheetURLs;
-				}
-				else {
-					textWebFormToLaunchExistingPat.Text=formWebFormSetup.SheetURLs;
-				}
-			}			
+			if(formWebFormSetup.DialogResult!=DialogResult.OK) {
+				return;
+			}
+			if(isNewPat) {
+				textWebFormToLaunchNewPat.Text=formWebFormSetup.URLResult;
+			}
+			else {
+				textWebFormToLaunchExistingPat.Text=formWebFormSetup.URLResult;
+			}
 		}
 
 		private void butCopy_Click(object sender,EventArgs e) {

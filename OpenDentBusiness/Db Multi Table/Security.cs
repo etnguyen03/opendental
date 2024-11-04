@@ -253,7 +253,8 @@ namespace OpenDentBusiness{
 				|| perm==EnumPermType.PaymentCreate//Older versions did not have a date limitation to PaymentCreate
 				|| perm==EnumPermType.ImageEdit//In case an image has a document.DateCreated date of DateTime.MinVal.
 				|| perm==EnumPermType.ImageExport//In case an image has a document.DateCreated date of DateTime.MinVal.
-				|| perm==EnumPermType.SheetEdit)//In case a sheet has a sheet.DateTimeSheet date of DateTime.MinVal, will still allow the office to edit the sheet.
+				|| perm==EnumPermType.SheetEdit//In case a sheet has a sheet.DateTimeSheet date of DateTime.MinVal, will still allow the office to edit the sheet.
+				|| perm==EnumPermType.EFormEdit)
 			{
 				if(date.Year<1880	&& dateLimit.Year<1880) {
 					return true;
@@ -293,7 +294,7 @@ namespace OpenDentBusiness{
 				,EnumPermType.PayPlanEdit
 			//,Permissions.ClaimHistoryEdit //per Nathan & Mark 03/01/2018 this should not be affected by the global lock date, not financial data.
 			}).Contains(perm)) {
-				return false;//permission being checked is not affected by global lock date.
+				return false;//permission being checked is not affected by global lock date. (notice the ! 20 lines up)
 			}
 			if(date.Year==1) {
 				return false;//Invalid or MinDate passed in.

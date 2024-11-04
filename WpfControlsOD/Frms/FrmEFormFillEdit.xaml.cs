@@ -87,6 +87,9 @@ namespace OpenDental {
 			else{
 				butUnlockSig.Visible=false;
 			}
+			if(EFormCur.PatNum!=0 && !Security.IsAuthorized(EnumPermType.EFormDelete,EFormCur.DateTimeShown,suppressMessage:true,suppressLockDateMessage:true)) {
+				butDelete.IsEnabled=false;
+			}
 			_isLoaded=true;
 			SetCtrlWidth();
 		}
@@ -140,9 +143,8 @@ namespace OpenDental {
 			if(frmPatientSelect.IsDialogCancel) {
 				return;
 			}
-//todo: EnumPermType.EformEdit
-			//SecurityLogs.MakeLogEntry(EnumPermType.SheetEdit,SheetCur.PatNum,Lan.g(this,"Sheet with ID")+" "+SheetCur.SheetNum+" "+Lan.g(this,"moved to PatNum")+" "+frmPatientSelect.PatNumSelected);
-			//SecurityLogs.MakeLogEntry(EnumPermType.SheetEdit,frmPatientSelect.PatNumSelected,Lan.g(this,"Sheet with ID")+" "+SheetCur.SheetNum+" "+Lan.g(this,"moved from PatNum")+" "+SheetCur.PatNum);
+			SecurityLogs.MakeLogEntry(EnumPermType.EFormEdit,EFormCur.PatNum,Lang.g(this,"eForm with ID")+" "+EFormCur.EFormNum+" "+Lang.g(this,"moved to PatNum")+" "+frmPatientSelect.PatNumSelected);
+			SecurityLogs.MakeLogEntry(EnumPermType.EFormEdit,frmPatientSelect.PatNumSelected,Lang.g(this,"eForm with ID")+" "+EFormCur.EFormNum+" "+Lang.g(this,"moved from PatNum")+" "+EFormCur.PatNum);
 			EFormCur.PatNum=frmPatientSelect.PatNumSelected;
 		}
 
@@ -153,8 +155,7 @@ namespace OpenDental {
 				return;
 			}
 			MobileNotifications.CI_AddEForm(EFormCur.PatNum,EFormCur.EFormNum);//tells eClipboard to pull the eForm
-//todo EnumPermType.EformEdit
-			//SecurityLogs.MakeLogEntry(EnumPermType.SheetEdit,EFormCur.PatNum,EFormCur.Description+" from "+EFormCur.DateTimeShown.ToShortDateString());
+			SecurityLogs.MakeLogEntry(EnumPermType.EFormEdit,EFormCur.PatNum,EFormCur.Description+" from "+EFormCur.DateTimeShown.ToShortDateString());
 			IsDialogOK=true;
 		}
 
@@ -359,8 +360,7 @@ namespace OpenDental {
 				EFormCur.ListEFormFields[i].ItemOrder=i;
 				EFormFields.Insert(EFormCur.ListEFormFields[i]);//ignores any existing PK when inserting
 			}
-//todo EnumPermType.EformEdit
-			//SecurityLogs.MakeLogEntry(EnumPermType.SheetEdit,EFormCur.PatNum,"EForm: "+EFormCur.Description+" from "+EFormCur.DateTimeShown.ToShortDateString());
+			SecurityLogs.MakeLogEntry(EnumPermType.EFormEdit,EFormCur.PatNum,"EForm: "+EFormCur.Description+" from "+EFormCur.DateTimeShown.ToShortDateString());
 		}
 
 		#endregion Methods - private

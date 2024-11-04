@@ -117,9 +117,12 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <metadata name="colorDialog1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>17, 17</value>
-  </metadata>
+  <data name="label11.Text" xml:space="preserve">
+    <value>Multiple forms can be linked together into a single URL. Patients will be taken from one form to the next, in series. Select only one form at the left. Then click Next Forms to select subsequent forms.</value>
+  </data>
+  <data name="labelConstructInfo.Text" xml:space="preserve">
+    <value>This section is for constructing URL(s) to give to patients via email, website, etc. to fill out form(s).  The URL(s) are not saved anywhere upon exiting. As the settings below are changed, the resulting URL(s) can be seen at the bottom. Highlight multiple Web Forms in the grid at the left to see multiple URLs.</value>
+  </data>
   <metadata name="$this.TrayHeight" type="System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>44</value>
   </metadata>

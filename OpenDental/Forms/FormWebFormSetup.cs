@@ -15,6 +15,26 @@ namespace OpenDental {
 	/// This Form is primarily used by the dental office to upload sheetDefs
 	/// </summary>
 	public partial class FormWebFormSetup:FormODBase {
+		#region WebSched
+		/*
+		This form is called from 3 places.
+		2 of them are just ordinary setup links.
+		The third is when it's called from UserControlHostedURLs which is on FormEServicesWebSchedAdvanced.
+		In this case, the window is not being used for setup but is being used as a Web Form picker
+		with the twist that it's also expecting a constructed URL from the lower right section.
+		The 4 variables below are only for that situation.
+		The first 3 variables get set prior to launching this window,
+		and the URLResult is used after closing.
+		*/
+		///<summary></summary>
+		public bool IsPickerForWebSched;
+		///<summary>Only used when IsPickerForWebSched.</summary>
+		public long ClinicNum;
+		///<summary>Only used when IsPickerForWebSched.</summary>
+		public string UrlWebForm;
+		///<summary>Only used when IsPickerForWebSched. The result when successful Save.</summary>
+		public string URLResult="";
+		#endregion WebSched
 		
 		private string _sheetDefAddress="";
 		private string _redirectURL="";
@@ -23,11 +43,8 @@ namespace OpenDental {
 		private long _dentalOfficeID=0;
 		private long _registrationKeyID=0;
 		private List<long> _listNextFormIdsSelected=new List<long>();
-		private bool _isWebSchedSetup=false;
-		private long _clinicNumDefault=0;
 		private WebForms_Preference _webForms_PreferenceOld=new WebForms_Preference();
 		private WebForms_Preference _webForms_Preference=new WebForms_Preference();
-		public string SheetURLs="";
 		private bool _isAutoFillNameBirthday=true;
 		private bool _isDisableTypeSignature=false;
 
@@ -37,74 +54,109 @@ namespace OpenDental {
 			Lan.F(this);
 		}
 
-		public FormWebFormSetup(long clinicNum,string urlWebForm,bool isWebSchedSetup=true):this() {
-			if(!isWebSchedSetup) {
+	private void FormWebFormSetup_Load(object sender,EventArgs e) {
+			if(IsPickerForWebSched) {
+				//hide everything but grid, ConstructURL, and Save button.
+				for(int i = 0;i<PanelClient.Controls.Count;i++) {
+					if(PanelClient.Controls[i]==gridMain || PanelClient.Controls[i]==groupConstructURL || PanelClient.Controls[i]==butSave) {
+						PanelClient.Controls[i].Visible=true;
+						continue;
+					}
+					PanelClient.Controls[i].Visible=false;
+				}
+				labelConstructInfo.Visible=false;//these instructions are for general setup, not IsPickerForWebSched
+				comboClinic.Enabled=false;
+			}
+			else{
+				butSave.Visible=false;
 				return;
 			}
-			_isWebSchedSetup=isWebSchedSetup;
-			_clinicNumDefault=clinicNum;
-			gridMain.SelectionMode=GridSelectionMode.OneRow;//Allow only one form to be selected
-			if(!string.IsNullOrEmpty(urlWebForm)) {				
-				string decodeURL=HttpUtility.UrlDecode(urlWebForm);
-				Uri uRIUnparsed=new Uri(decodeURL);
-				NameValueCollection nameValueCollection=HttpUtility.ParseQueryString(uRIUnparsed.Query);
-				if(!string.IsNullOrEmpty(nameValueCollection["WSDID"])) {
-					_webSheetDefIDSelected=PIn.Long(nameValueCollection.Get("WSDID"),false);
-				}
-				if(!string.IsNullOrEmpty(nameValueCollection["NFID"])) {
-					_listNextFormIdsSelected=nameValueCollection.Get("NFID").Split(',').Select(x => PIn.Long(x,false)).ToList();
-				}
-				if(!string.IsNullOrEmpty(nameValueCollection["ReturnURL"])) {
-					_redirectURL=nameValueCollection.Get("ReturnURL");
-				}
-				if(!string.IsNullOrEmpty(nameValueCollection["AFNAB"])) {
-					if(nameValueCollection.Get("AFNAB")=="N") {
-						_isAutoFillNameBirthday=false;
+			if(IsPickerForWebSched) {
+				gridMain.SelectionMode=GridSelectionMode.OneRow;//Allow only one form to be selected
+				if(!string.IsNullOrEmpty(UrlWebForm)) {
+					//These variables will set the controls on the form during Shown, 
+					//and then ConstructURL will make the URL show the same as was passed in.
+					string decodeURL=HttpUtility.UrlDecode(UrlWebForm);
+					Uri uRIUnparsed=new Uri(decodeURL);
+					NameValueCollection nameValueCollection=HttpUtility.ParseQueryString(uRIUnparsed.Query);
+					if(!string.IsNullOrEmpty(nameValueCollection["WSDID"])) {
+						_webSheetDefIDSelected=PIn.Long(nameValueCollection.Get("WSDID"),false);
 					}
-				}
-				if(!string.IsNullOrEmpty(nameValueCollection["DTS"])) {
-					if(nameValueCollection.Get("DTS")=="Y") {
-						_isDisableTypeSignature=true;
+					if(!string.IsNullOrEmpty(nameValueCollection["NFID"])) {
+						_listNextFormIdsSelected=nameValueCollection.Get("NFID").Split(',').Select(x => PIn.Long(x,false)).ToList();
+					}
+					if(!string.IsNullOrEmpty(nameValueCollection["ReturnURL"])) {
+						_redirectURL=nameValueCollection.Get("ReturnURL");
+					}
+					if(!string.IsNullOrEmpty(nameValueCollection["AFNAB"])) {
+						if(nameValueCollection.Get("AFNAB")=="N") {
+							_isAutoFillNameBirthday=false;
+						}
+					}
+					if(!string.IsNullOrEmpty(nameValueCollection["DTS"])) {
+						if(nameValueCollection.Get("DTS")=="Y") {
+							_isDisableTypeSignature=true;
+						}
 					}
 				}
 			}
-			for(int i = 0;i<Controls.Count;i++) {
-				if(Controls[i]==gridMain || Controls[i]==groupConstructURL || Controls[i]==butSave || Controls[i]==checkEnableAutoDownload) {
-					continue;
-				}
-				Controls[i].Visible=false;
-			}
-			comboClinic.Enabled=false;
-		}
-
-	private void FormWebFormSetup_Load(object sender,EventArgs e) {
 			if(PrefC.HasClinicsEnabled) {
-				if(_isWebSchedSetup){
-					comboClinic.ClinicNumSelected=_clinicNumDefault;
+				if(IsPickerForWebSched){
+					comboClinic.ClinicNumSelected=ClinicNum;
 				}
 				else{
 					comboClinic.ClinicNumSelected=Clinics.ClinicNum;
 				}
 			}
 			butSavePrefs.Enabled=false;
-			checkAutoFillNameAndBirthdate.Checked=PrefC.GetBool(PrefName.WebFormsAutoFillNameAndBirthdate);
+			checkAutoFillNameBDPref.Checked=PrefC.GetBool(PrefName.WebFormsAutoFillNameAndBirthdate);//the pref itself
+			checkAutoFillNameAndBirthdate.Checked=checkAutoFillNameBDPref.Checked;//and the consequence of the pref
 			checkEnableAutoDownload.Checked=PrefC.GetBool(PrefName.WebFormsDownloadAutomcatically);
 			//Formats currently supported in webforms.
 			DateTime DateTimeExample=new DateTime(2024,6,18);
-			List<CultureDateFormat> listCultureDateFormats=new List<CultureDateFormat>() {
-				new CultureDateFormat("en-US","M/d/yyyy ("+DateTimeExample.ToString("M/d/yyyy")+")"),
-				new CultureDateFormat("en-CA","dd/MM/yyyy ("+DateTimeExample.ToString("dd/MM/yyyy")+")"),
-				new CultureDateFormat("da-DK","dd-MM-yyyy ("+DateTimeExample.ToString("dd-MM-yyyy")+")"),
-				new CultureDateFormat("en-AU","d/MM/yyyy ("+DateTimeExample.ToString("d/MM/yyyy")+")"),
-				new CultureDateFormat("mn-MN","yy.MM.dd ("+DateTimeExample.ToString("yy.MM.dd")+")"),
-				new CultureDateFormat("zh-CN","yyyy/M/d ("+DateTimeExample.ToString("yyyy/M/d")+")"),
-			};
+			List<CultureDateFormat> listCultureDateFormats=new List<CultureDateFormat>();
+			listCultureDateFormats.Add(new CultureDateFormat("en-US","M/d/yyyy ("+DateTimeExample.ToString("M/d/yyyy")+")"));
+			listCultureDateFormats.Add(new CultureDateFormat("en-CA","dd/MM/yyyy ("+DateTimeExample.ToString("dd/MM/yyyy")+")"));
+			listCultureDateFormats.Add(new CultureDateFormat("da-DK","dd-MM-yyyy ("+DateTimeExample.ToString("dd-MM-yyyy")+")"));
+			listCultureDateFormats.Add(new CultureDateFormat("en-AU","d/MM/yyyy ("+DateTimeExample.ToString("d/MM/yyyy")+")"));
+			listCultureDateFormats.Add(new CultureDateFormat("mn-MN","yy.MM.dd ("+DateTimeExample.ToString("yy.MM.dd")+")"));
+			listCultureDateFormats.Add(new CultureDateFormat("zh-CN","yyyy/M/d ("+DateTimeExample.ToString("yyyy/M/d")+")"));
 			comboDateFormat.Items.AddList(listCultureDateFormats,(cultureDateFormat) => cultureDateFormat.DateFormat);
 			comboDateFormat.SelectedIndex=0;
 		}
 
 		private void FormWebFormSetup_Shown(object sender,EventArgs e) {
-			FetchValuesFromWebServer();
+			#region FetchValuesFromWebServer
+			string webHostSynchServerURL=PrefC.GetString(PrefName.WebHostSynchServerURL);
+			textboxWebHostAddress.Text=webHostSynchServerURL;
+			butSavePrefs.Enabled=false;
+			if((webHostSynchServerURL==WebFormL.SynchUrlStaging) || (webHostSynchServerURL==WebFormL.SynchUrlDev)) {
+				WebFormL.IgnoreCertificateErrors();
+			}
+			Cursor=Cursors.WaitCursor;
+			_dentalOfficeID=WebUtils.GetDentalOfficeID();
+			_registrationKeyID=WebUtils.GetRegKeyID();
+			if(_registrationKeyID==0 && _dentalOfficeID==0) {
+				Cursor=Cursors.Default;
+				MsgBox.Show(this,"Either the registration key provided by the dental office is incorrect or the Host Server Address cannot be found.");
+				return;
+			}
+			if(WebForms_Preferences.TryGetPreference(out _webForms_Preference)) {
+				butWebformBorderColor.BackColor=_webForms_Preference.ColorBorder;
+				_sheetDefAddress=WebUtils.GetSheetDefAddress();
+				checkDisableSigsPref.Checked=_webForms_Preference.DisableSignatures;
+				if(string.IsNullOrEmpty(_webForms_Preference.CultureName)){//Just in case.
+					_webForms_Preference.CultureName=System.Globalization.CultureInfo.CurrentCulture.Name;
+					WebForms_Preferences.SetPreferences(_webForms_Preference);
+				}
+				SetComboBoxDateFormat();
+				_webForms_PreferenceOld=_webForms_Preference.Copy();
+			}
+			FillGrid();//Also gets sheet def list from server
+			Cursor=Cursors.Default;
+
+
+			#endregion FetchValuesFromWebServer
 			if(_listNextFormIdsSelected.Count > 0) {//If entering form with Next Form Id values, fill the textNextForms box with the corresponding descriptions.
 				textNextForms.Text=string.Join(", ",_listWebForms_SheetDefs.Where(x => _listNextFormIdsSelected
 					.Contains(x.WebSheetDefID)).Select(y => y.Description));
@@ -124,51 +176,21 @@ namespace OpenDental {
 			ConstructURLs();
 		}
 
-		private void FetchValuesFromWebServer() {
-			string webHostSynchServerURL=PrefC.GetString(PrefName.WebHostSynchServerURL);
-			textboxWebHostAddress.Text=webHostSynchServerURL;
-			butSavePrefs.Enabled=false;
-			if((webHostSynchServerURL==WebFormL.SynchUrlStaging) || (webHostSynchServerURL==WebFormL.SynchUrlDev)) {
-				WebFormL.IgnoreCertificateErrors();
-			}
-			Cursor=Cursors.WaitCursor;
-			_dentalOfficeID=WebUtils.GetDentalOfficeID();
-			_registrationKeyID=WebUtils.GetRegKeyID();
-			if(_registrationKeyID==0 && _dentalOfficeID==0) {
-				Cursor=Cursors.Default;
-				MsgBox.Show(this,"Either the registration key provided by the dental office is incorrect or the Host Server Address cannot be found.");
-				return;
-			}
-			if(WebForms_Preferences.TryGetPreference(out _webForms_Preference)) {
-				butWebformBorderColor.BackColor=_webForms_Preference.ColorBorder;
-				_sheetDefAddress=WebUtils.GetSheetDefAddress();
-				checkDisableWebFormSignatures.Checked=_webForms_Preference.DisableSignatures;
-				if(string.IsNullOrEmpty(_webForms_Preference.CultureName)){//Just in case.
-					_webForms_Preference.CultureName=System.Globalization.CultureInfo.CurrentCulture.Name;
-					WebForms_Preferences.SetPreferences(_webForms_Preference);
-				}
-				SetComboBoxDateFormat();
-				_webForms_PreferenceOld=_webForms_Preference.Copy();
-			}
-			FillGrid();//Also gets sheet def list from server
-			Cursor=Cursors.Default;
-		}
-
-		///<summary>This now also gets a new list of sheet defs from the server.  But it's only called after testing that the web service exists.</summary>
+		///<summary>This also gets a new list of sheet defs from the server.  But it's only called after testing that the web service exists.</summary>
 		private void FillGrid() {
 			if(!WebForms_SheetDefs.TryDownloadSheetDefs(out _listWebForms_SheetDefs)) {
 				MsgBox.Show(this,"Failed to download sheet definitions.");
 				_listWebForms_SheetDefs=new List<WebForms_SheetDef>();
 			}
 			gridMain.Columns.Clear();
-			GridColumn col=new GridColumn(Lan.g(this,"Description"),200);
-			gridMain.Columns.Add(col);
+			GridColumn gridColumn=new GridColumn(Lan.g(this,"Description"),200);
+			gridMain.Columns.Add(gridColumn);
 			gridMain.ListGridRows.Clear();
 			for(int i=0;i<_listWebForms_SheetDefs.Count;i++) {
-				GridRow row=new GridRow();
-				row.Tag=_listWebForms_SheetDefs[i];
-				row.Cells.Add(_listWebForms_SheetDefs[i].Description);
-				gridMain.ListGridRows.Add(row);
+				GridRow gridRow=new GridRow();
+				gridRow.Tag=_listWebForms_SheetDefs[i];
+				gridRow.Cells.Add(_listWebForms_SheetDefs[i].Description);
+				gridMain.ListGridRows.Add(gridRow);
 			}
 			gridMain.EndUpdate();
 		}
@@ -204,14 +226,13 @@ namespace OpenDental {
 			}
 		}
 
-		/// <summary>Returns true if any of the preferences/settings that get saved on a Save/OK click have changed from what they were when form was 
-		/// opened or last saved. Otherwise, false</summary>
+		/// <summary>Enables the SavePrefs button if any of the preferences/settings have changed from what they were when form was opened or last saved. Otherwise, false</summary>
 		private void ResetSavePrefsButton() {
 			if(_webForms_PreferenceOld.ColorBorder.ToArgb()!=_webForms_Preference.ColorBorder.ToArgb()
 				|| _webForms_PreferenceOld.CultureName!=_webForms_Preference.CultureName
 				|| _webForms_PreferenceOld.DisableSignatures!=_webForms_Preference.DisableSignatures
 				|| textboxWebHostAddress.Text.Trim()!=PrefC.GetString(PrefName.WebHostSynchServerURL) 
-				|| checkAutoFillNameAndBirthdate.Checked!=PrefC.GetBool(PrefName.WebFormsAutoFillNameAndBirthdate)
+				|| checkAutoFillNameBDPref.Checked!=PrefC.GetBool(PrefName.WebFormsAutoFillNameAndBirthdate)
 				|| checkEnableAutoDownload.Checked!=PrefC.GetBool(PrefName.WebFormsDownloadAutomcatically))
 			{
 				butSavePrefs.Enabled=true;
@@ -260,33 +281,29 @@ namespace OpenDental {
 		}
 
 		private void butSavePrefs_Click(object sender,EventArgs e) {
-			//disabled unless user changed url
-			if(SavePrefs()) {
-				butSavePrefs.Enabled=false;
-			}
-		}
-
-		private bool SavePrefs(bool includeAutoFillBirthdatePref=false) {
+			//disabled unless user changed prefs in UI
 			Cursor=Cursors.WaitCursor;
 			if(!WebForms_Preferences.SetPreferences(_webForms_Preference,urlOverride:textboxWebHostAddress.Text.Trim())) {
 				Cursor=Cursors.Default;
 				MsgBox.Show(this,"Either the registration key provided by the dental office is incorrect or the Host Server Address cannot be found.");
-				return false;
+				//leave the button enabled
+				return;
 			}
 			_webForms_PreferenceOld=_webForms_Preference.Copy();
 			int freqDownloadAlert=3600000;//Default, which is every 1 hour
 			if(checkEnableAutoDownload.Checked) {
 				freqDownloadAlert=120000;//Every 2 minutes
 			}
-			if(Prefs.UpdateString(PrefName.WebHostSynchServerURL,textboxWebHostAddress.Text.Trim())
-				| (includeAutoFillBirthdatePref && Prefs.UpdateBool(PrefName.WebFormsAutoFillNameAndBirthdate,checkAutoFillNameAndBirthdate.Checked))
-				| Prefs.UpdateBool(PrefName.WebFormsDownloadAutomcatically,checkEnableAutoDownload.Checked)
-				| Prefs.UpdateInt(PrefName.WebFormsDownloadAlertFrequency,freqDownloadAlert))
-			{
+			bool changed=false;
+			changed |=Prefs.UpdateString(PrefName.WebHostSynchServerURL,textboxWebHostAddress.Text.Trim());
+			changed |=Prefs.UpdateBool(PrefName.WebFormsAutoFillNameAndBirthdate,checkAutoFillNameBDPref.Checked);
+			changed |=Prefs.UpdateBool(PrefName.WebFormsDownloadAutomcatically,checkEnableAutoDownload.Checked);
+			changed |=Prefs.UpdateInt(PrefName.WebFormsDownloadAlertFrequency,freqDownloadAlert);
+			if(changed){
 				DataValid.SetInvalid(InvalidType.Prefs);
 			}
 			Cursor=Cursors.Default;
-			return true;
+			butSavePrefs.Enabled=false;
 		}
 
 		private void butWebformBorderColor_Click(object sender,EventArgs e) {
@@ -298,15 +315,14 @@ namespace OpenDental {
 		}
 
 		private void ShowColorDialog(){
-			colorDialog1.Color=butWebformBorderColor.BackColor;
-			if(colorDialog1.ShowDialog()!=DialogResult.OK) {
-				colorDialog1.Dispose();
+			using ColorDialog colorDialog=new ColorDialog();
+			colorDialog.Color=butWebformBorderColor.BackColor;
+			if(colorDialog.ShowDialog()!=DialogResult.OK) {
 				return;
 			}
-			butWebformBorderColor.BackColor=colorDialog1.Color;
+			butWebformBorderColor.BackColor=colorDialog.Color;
 			_webForms_Preference.ColorBorder=butWebformBorderColor.BackColor;
 			ResetSavePrefsButton();
-			colorDialog1.Dispose();
 		}
 
 		private void textRedirectURL_TextChanged(object sender,EventArgs e) {
@@ -316,6 +332,10 @@ namespace OpenDental {
 		private void butNextForms_Click(object sender,EventArgs e) {
 			if(_listWebForms_SheetDefs==null) {
 				MsgBox.Show(this,"No selected Available Web Forms");
+				return;
+			}
+			if(gridMain.SelectedIndices.Length!=1) {
+				MsgBox.Show(this,"Please pick only one Web Form first.");
 				return;
 			}
 			List<string> listSheetDefDescriptionsSelected=textNextForms.Text.Split(", ",StringSplitOptions.RemoveEmptyEntries).ToList();
@@ -345,7 +365,14 @@ namespace OpenDental {
 			ResetSavePrefsButton();
 		}
 
+		private void checkAutoFillNameBDPref_CheckedChanged(object sender,EventArgs e) {
+			//this event handler is for the checkbox in the pres section, not down in the construct URL section
+			checkAutoFillNameAndBirthdate.Checked=checkAutoFillNameBDPref.Checked;//the consequence of the pref
+			ConstructURLs();
+		}
+
 		private void checkAutoFillNameAndBirthdate_CheckedChanged(object sender,EventArgs e) {
+			//this event handler is for the check down in the construct URL section, not the one up in the prefs section
 			ConstructURLs();
 		}
 
@@ -382,8 +409,8 @@ namespace OpenDental {
 		
 		private void checkDisableWebFormSignatures_CheckedChanged(object sender,EventArgs e) {
 			//Do not allow user to disable typed signatures if they have already disabled all signatures.
-			_webForms_Preference.DisableSignatures=checkDisableWebFormSignatures.Checked;
-			checkDisableTypedSig.Enabled=!checkDisableWebFormSignatures.Checked;
+			_webForms_Preference.DisableSignatures=checkDisableSigsPref.Checked;
+			checkDisableTypedSig.Enabled=!checkDisableSigsPref.Checked;
 			ResetSavePrefsButton();
 		}
 
@@ -392,7 +419,8 @@ namespace OpenDental {
 		}
 
 		private void butAdd_Click(object sender,EventArgs e) {
-			FrmSheetPicker frmSheetPicker=new FrmSheetPicker(isWebForm:true);
+			FrmSheetPicker frmSheetPicker=new FrmSheetPicker();
+			frmSheetPicker.IsWebForm=true;
 			frmSheetPicker.AllowMultiSelect=true;
 			frmSheetPicker.SheetType=SheetTypeEnum.PatientForm;
 			frmSheetPicker.HideKioskButton=true;
@@ -429,7 +457,8 @@ namespace OpenDental {
 			SheetDef sheetDef=SheetDefs.GetFirstOrDefault(x => x.SheetDefNum==webForms_sheetDef.SheetDefNum);
 			if(sheetDef==null) {//This web form has never had a SheetDefNum assigned or the sheet has been deleted.
 				MsgBox.Show(this,"This Web Form is not linked to a valid Sheet.  Please select the correct Sheet that this Web Form should be linked to.");
-				FrmSheetPicker frmSheetPicker=new FrmSheetPicker(isWebForm:true);
+				FrmSheetPicker frmSheetPicker=new FrmSheetPicker();
+				frmSheetPicker.IsWebForm=true;
 				frmSheetPicker.SheetType=SheetTypeEnum.PatientForm;
 				frmSheetPicker.HideKioskButton=true;
 				frmSheetPicker.ShowDialog();
@@ -563,13 +592,13 @@ namespace OpenDental {
 		}
 
 		private void butSave_Click(object sender,EventArgs e) {
+			//button only visible when IsPickerForWebSched
 			if(!string.IsNullOrWhiteSpace(textRedirectURL.Text) && !Uri.IsWellFormedUriString(textRedirectURL.Text,UriKind.Absolute)) {
-				string error=label3.Text+Lan.g(this," should use the following format: http://www.patientviewer.com or https://www.patientviewer.com");
+				string error=label3.Text+Lan.g(this," should use the following format: http://www.opendental.com or https://www.opendental.com");
 				MsgBox.Show(this,error);
 				return;
 			}
-			SheetURLs=textURLs.Text;
-			SavePrefs(true);//No check for success, since we are closing just fail silently.
+			URLResult=textURLs.Text;
 			DialogResult=DialogResult.OK;
 		}
 

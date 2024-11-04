@@ -45,23 +45,23 @@ namespace OpenDentBusiness {
 			if(MockSheetSynchService!=null) {
 				return MockSheetSynchService;
 			}
-			SheetsSynchReal service=new SheetsSynchReal();
-			service.Timeout=100000;
-			if(TimeoutOverride!=service.Timeout) {
-				service.Timeout=TimeoutOverride;
+			SheetsSynchReal sheetsSynchReal=new SheetsSynchReal();
+			sheetsSynchReal.Timeout=100000;
+			if(TimeoutOverride!=sheetsSynchReal.Timeout) {
+				sheetsSynchReal.Timeout=TimeoutOverride;
 				TimeoutOverride=100000;
 			}
 			if(string.IsNullOrEmpty(UrlOverride)) {
-				service.Url=PrefC.GetString(PrefName.WebHostSynchServerURL);
+				sheetsSynchReal.Url=PrefC.GetString(PrefName.WebHostSynchServerURL);
 			}
 			else { 
-				service.Url=UrlOverride;
+				sheetsSynchReal.Url=UrlOverride;
 				UrlOverride="";
 			}
 			if(ODBuild.IsDebug()) {
 				//service.Url="http://localhost:2923/SheetsSynch.asmx";
 			}
-			return service;
+			return sheetsSynchReal;
 		}
 
 	}

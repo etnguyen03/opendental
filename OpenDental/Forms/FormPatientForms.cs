@@ -199,7 +199,7 @@ namespace OpenDental {
 			bool isPatUsingEClipboard=MobileAppDevices.PatientIsAlreadyUsingDevice(PatNum);
 			for(int i=0;i<frmSheetPicker.ListSheetDefsSelected.Count;i++) {
 				sheetDef=frmSheetPicker.ListSheetDefsSelected[i];
-				if(frmSheetPicker.DoTerminalSend && isPatUsingEClipboard && !sheetDef.HasMobileLayout) {
+				if(frmSheetPicker.DoKioskSend && isPatUsingEClipboard && !sheetDef.HasMobileLayout) {
 					if(!MsgBox.Show(MsgBoxButtons.YesNo,$"The patient is currently using an eClipboard to fill out forms, but the " +
 						$"{sheetDef.Description} sheet does not have a mobile layout and cannot be used with eClipboard. " +
 						$"If you add this form to the patient's list it will not be shown in eClipboard. Do you still want to add this form?")) {
@@ -220,7 +220,7 @@ namespace OpenDental {
 				SheetParameter.SetParameter(sheet,"PatNum",PatNum);
 				SheetFiller.FillFields(sheet);
 				SheetUtil.CalculateHeights(sheet);
-				if(frmSheetPicker.DoTerminalSend) {
+				if(frmSheetPicker.DoKioskSend) {
 					sheet.InternalNote="";//because null not ok
 					sheet.ShowInTerminal=(byte)(Sheets.GetBiggestShowInTerminal(PatNum)+1);
 					Sheets.SaveNewSheet(sheet);//save each sheet.
@@ -231,7 +231,7 @@ namespace OpenDental {
 					}
 				}
 			}
-			if(frmSheetPicker.DoTerminalSend) {
+			if(frmSheetPicker.DoKioskSend) {
 				//do not show a dialog now.  User will need to click the terminal button.
 				FillGrid();
 				Signalods.SetInvalid(InvalidType.Kiosk);

@@ -155,9 +155,9 @@ namespace OpenDental {
 			this.checkTreatAreas.Name = "checkTreatAreas";
 			this.checkTreatAreas.Size = new System.Drawing.Size(646, 36);
 			this.checkTreatAreas.TabIndex = 55;
-			this.checkTreatAreas.Text = "Treatment Areas - Update treatment areas bassed on the 2024 ADA recommendations. " +
-    "This option does not work in the trial version, self-compiled version, or outsid" +
-    "e the USA.";
+			this.checkTreatAreas.Text = "Treatment Areas - Update treatment areas based on the 2025 ADA recommendations. T" +
+    "his option does not work in the trial version, self-compiled version, or outside" +
+    " the USA.";
 			// 
 			// FormProcTools
 			// 
