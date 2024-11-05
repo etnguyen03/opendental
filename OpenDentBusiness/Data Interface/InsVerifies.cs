@@ -360,9 +360,8 @@ namespace OpenDentBusiness{
 				"+
 				mainQuery+
 				insVerifyJoin2+
-				whereClause+@"
-				ORDER BY AptDateTime";
-			return "SELECT * FROM ("+command+") AS iv GROUP BY PatPlanNum,FKey HAVING MAX(DateLastVerified)";
+				whereClause;
+			return "SELECT * FROM ("+command+") AS iv GROUP BY PatPlanNum,FKey HAVING MAX(DateLastVerified) ORDER BY AptDateTime";
 		}
 
 		///<summary>Converts a table of insverify objects into a list of InsVerifyGridObject.</summary>

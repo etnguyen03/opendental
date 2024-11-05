@@ -131,7 +131,7 @@ namespace OpenDental{
 				ClaimSendQueueItem[] claimSendQueueItemArray=Claims.GetQueueList(_claim.ClaimNum,_claim.ClinicNum,_claim.CustomTracking);
 				//GetMissingData() guards around null, so if somehow we don't have a claim here we pass in null. ElementAtOrDefault will pass in null if there is no 0 index somehow.
 				ClaimSendQueueItem claimSendQueueItem = Eclaims.GetMissingData(_clearinghouse,claimSendQueueItemArray.ElementAtOrDefault(0),true);
-				if(!claimSendQueueItem.MissingData.IsNullOrEmpty()){
+				if(!claimSendQueueItem.MissingData.IsNullOrEmpty() && (_claim.ClaimType!="PreAuth")){//Skip validation for pre-auths if they get a claim identifier warning since they won't have a claim identifier yet, which counts as missing data, but is fixed inside of this window.
 					MsgBox.Show("Cannot create claim due to missing data. The claim has the following errors: "+claimSendQueueItem.MissingData);
 					//Delete the pre-inserted claim and "reset" the procedures on the claim back to normal
 					Claims.Delete(_claim);

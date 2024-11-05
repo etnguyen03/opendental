@@ -45,7 +45,8 @@ This is similar to the OpenDental.ODprintout, but adapted for WPF and kept as si
 		///<summary>Returns true if there is a valid printer installed on this machine. If false then SettingsErrorCode will contain more detailed information.</summary>
 		public bool HasValidSettings() {
 			SettingsErrorCode=PrintoutErrorCode.Success;
-			ServiceController serviceControllerPrintSpooler=new ServiceController("Print Spooler");
+			ServiceController [] serviceControllerArray=ServiceController.GetServices();
+			ServiceController serviceControllerPrintSpooler=serviceControllerArray.FirstOrDefault(x => x.DisplayName=="Print Spooler");
 			if(serviceControllerPrintSpooler==null || serviceControllerPrintSpooler.Status!=ServiceControllerStatus.Running) {
 				SettingsErrorCode=PrintoutErrorCode.InactivePrintSpoolerService;
 				return false;

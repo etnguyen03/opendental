@@ -44,7 +44,7 @@ namespace OpenDental{
 			this.Name = "FormImages";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "Images";
-			this.Load += new System.EventHandler(this.FormImages_Load);
+			this.Shown += new System.EventHandler(this.FormImages_Shown);
 			this.ResumeLayout(false);
 
 		}

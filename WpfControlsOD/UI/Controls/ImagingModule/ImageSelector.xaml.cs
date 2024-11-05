@@ -46,6 +46,8 @@ Only used once in Imaging module.
 		private bool _isDragPendingMsgBox;
 		///<summary>The only reason we care about mouseDown is for initiating a drag.  Right mouse cannot initiate a drag.</summary>
 		private bool _isLeftMouseDownDragging;
+		///<summary>When we release capture mouse, it causes a mouse move event that messes up our logic. This allows us to ignore that event for that one line.</summary>
+		private bool _ignoreMouseMove;
 		///<summary>This list is passed in.</summary>
 		private List<Def> _listDefsImageCats;
 		///<summary>This keeps track of which nodes should remain expanded as the user moves between patients, etc.  Sometimes, a node has no children, so it cannot expand, but that will not change the state of this list.  The only actions which affect this list are Collapse All, Expand All, clicking on the +/- buttons, and SetSelected (which expands so that the selected can be seen).  This list is set to all expanded upon startup.</summary>
@@ -1108,11 +1110,15 @@ Only used once in Imaging module.
 				return;
 			}
 			_isLeftMouseDownDragging=true;
+			((IInputElement)sender).CaptureMouse();
 			//However, the drag icon won't show until we actually start moving.
 			//And if we don't move very far, nothing happens.			
 		}
 
 		private void Item_MouseLeftButtonUp(object sender, MouseButtonEventArgs e){
+			_ignoreMouseMove=true;
+			((IInputElement)sender).ReleaseMouseCapture();
+			_ignoreMouseMove=false;
 			Cursor=Cursors.Arrow;
 			if(DraggedToCategory==null) {//Dragged to category event handler is not defined. Therefore, this event is intentionally unsupported, like in FormImagePickerPatient.
 				return;
@@ -1123,7 +1129,11 @@ Only used once in Imaging module.
 			//_isLeftMouseDownDragging is actually almost always true.
 			//It's really synonymous with isMouseDown, so should nearly always be true.
 			_isLeftMouseDownDragging=false;
-			Border border=(Border)sender;
+			Point point=e.GetPosition(this);
+			Border border=BorderFromPoint(point);
+			if(border==null) {//Dragged and dropped onto an empty area
+				return;
+			}
 			int idx=IndexFromBorder(border);
 			if(_nodeObjTagSelected==null 
 				|| _nodeObjTagSelected.NodeType==EnumImageNodeType.None
@@ -1167,8 +1177,11 @@ Only used once in Imaging module.
 		}
 
 		private void Item_MouseMove(object sender, MouseEventArgs e){
-			Border border=(Border)sender;
-			int hoverIndex=IndexFromBorder(border);
+			if(_ignoreMouseMove){
+				return;
+			}
+			Point point=e.GetPosition(this);
+			int hoverIndex=IndexFromPoint(point);
 			if(_hoverIndex!=hoverIndex){
 				_hoverIndex=hoverIndex;
 				SetColors();
@@ -1185,7 +1198,6 @@ Only used once in Imaging module.
 				return;
 			}
 			Cursor=_cursorDrag;
-			Point point=e.GetPosition(this);
 			Rect rect=new Rect(0,0,ActualWidth,ActualHeight);
 			if(rect.Contains(point)){//inside bounds
 				return;

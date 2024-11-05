@@ -165,15 +165,15 @@ namespace OpenDental {
 		///<summary>Sets visibility of tabs based on user permissions. All tabs must be explicitly listed here in order to show/exist because we clear the tabControlNav list of tabs in the ctor.</summary>
 		#region TabControl Methods
 		private void UpdateTabVisibility() {
-			//If user has Concept permission, user has access to the actions tab, etc.
-			SetTabVisibility(tabAction,new List<JobPerm>() { JobPerm.Concept,JobPerm.QueryTech });
-			SetTabVisibility(tabSubscribed,JobPerm.Concept);
-			SetTabVisibility(tabNeedsExpert,JobPerm.Concept);
-			SetTabVisibility(tabNeedsEngineer,JobPerm.Concept);
-			SetTabVisibility(tabSearch,JobPerm.Concept);
-			SetTabVisibility(tabSubmittedJobs,JobPerm.Concept);
-			SetTabVisibility(tabProjectManagement,JobPerm.Concept);
-			SetTabVisibility(tabQuery,JobPerm.QueryTech);
+			//If user has Concept or QueryTech permissions, user has access to the actions tab, etc.
+			SetTabVisibility(tabAction,JobPerm.Concept,JobPerm.QueryTech);
+			SetTabVisibility(tabSubscribed);//Visible to anyone/everyone
+			SetTabVisibility(tabNeedsExpert,JobPerm.Writeup);
+			SetTabVisibility(tabNeedsEngineer,JobPerm.Engineer);
+			SetTabVisibility(tabSearch);//Visible to anyone/everyone
+			SetTabVisibility(tabSubmittedJobs);//Visible to anyone/everyone
+			SetTabVisibility(tabProjectManagement,JobPerm.ProjectManager,JobPerm.Approval);
+			SetTabVisibility(tabQuery,JobPerm.QueryTech,JobPerm.QueryCoordinator,JobPerm.SeniorQueryCoordinator);
 			SetTabVisibility(tabMarketing,JobPerm.DesignTech);
 			SetTabVisibility(tabDocumentation,JobPerm.Documentation);
 			SetTabVisibility(tabNotify,JobPerm.NotifyCustomer);
@@ -184,23 +184,13 @@ namespace OpenDental {
 			SetTabVisibility(tabUnresolvedIssues,JobPerm.UnresolvedIssues);
 		}
 
-		///<summary>Adds tabs to 'tabControlNav' if the current user has the provided permission and the tab doesn't already exist.
-		///Removes tabs from 'tabControlNav' if the current user doesn't have the provided permission and the tab already exists.
+		///<summary>Adds or removes a tab to 'tabControlNav' based on the user's authorization for *any* of the provided permissions.
+		///No permissions passed in is the same as passing all permissions in - i.e. the tab will be visible to anyone/everyone.
+		///Adds the tab if the user is authorized for any permission and the tab doesn't already exist.
+		///Removes the tab if the user isn't authorized for any permission and the tab already exists.
 		///Will not add duplicate tabs, and will not throw if trying to remove a non-existent tab.</summary>
-		private void SetTabVisibility(System.Windows.Forms.TabPage tabPage,JobPerm jobPermission) {
-			if(JobPermissions.IsAuthorized(jobPermission,true) && !tabControlNav.TabPages.Contains(tabPage)) {
-				tabControlNav.TabPages.Add(tabPage);
-			}
-			if(!JobPermissions.IsAuthorized(jobPermission,true) && tabControlNav.TabPages.Contains(tabPage)) {
-				tabControlNav.TabPages.Remove(tabPage);
-			}
-		}
-
-		///<summary>Adds tabs to 'tabControlNav' if the current user has any of the provided permissions and the tab doesn't already exist.
-		///Removes tabs from 'tabControlNav' if the current user doesn't have the provided permission and the tab already exists.
-		///Will not add duplicate tabs, and will not throw if trying to remove a non-existent tab.</summary>
-		private void SetTabVisibility(System.Windows.Forms.TabPage tabPage,List<JobPerm> listJobPermission) {
-			bool isAuthorized=listJobPermission.Any(x => JobPermissions.IsAuthorized(x,true));
+		private void SetTabVisibility(System.Windows.Forms.TabPage tabPage, params JobPerm[] jobPermissions) {
+			bool isAuthorized=jobPermissions.Any(perm=>JobPermissions.IsAuthorized(perm,true)) || jobPermissions.Length==0;
 			if(isAuthorized && !tabControlNav.TabPages.Contains(tabPage)) {
 				tabControlNav.TabPages.Add(tabPage);
 			}
@@ -239,7 +229,6 @@ namespace OpenDental {
 		///<summary>Refreshes the grid in the active tab. Should be the only reference to any FillGrid in FormJobManager</summary>
 		private void FillActiveTabGrid() {
 			Cursor=Cursors.WaitCursor;
-			tabAction.Text="Needs Action";
 			if(tabControlNav.SelectedTab==tabAction) {
 				FillGridActions();
 			}
@@ -804,14 +793,6 @@ namespace OpenDental {
 			}
 			else if(comboUser.SelectedIndex>1) {
 				userFilter=_listUsers[comboUser.SelectedIndex-2];
-			}
-			if(JobPermissions.IsAuthorized(JobPerm.NotifyCustomer,true,userFilter.UserNum)) {
-				gridDocumentation.Title="Action Items";
-				tabAction.Text="Needs Action";
-			}
-			else {
-				gridDocumentation.Title="Jobs To Document";
-				tabAction.Text="Needs Documentation";
 			}
 			long selectedJobNum=userControlJobManagerEditor.JobNumCur;
 			gridDocumentation.BeginUpdate();

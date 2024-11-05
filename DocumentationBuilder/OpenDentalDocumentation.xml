@@ -8390,6 +8390,8 @@
         <EnumValue name="ChildDaycareEdit">256 - Internal Child Daycare only. Allow users to make changes to the daycare. Only userd at HQ.</EnumValue>
         <EnumValue name="PerioEditCopy">257 - Allow users to copy perio charts in the Perio Chart window.</EnumValue>
         <EnumValue name="LicenseAccept">258 - For audit trail only. Logs when a license is accepted by a user.</EnumValue>
+        <EnumValue name="EFormEdit">259 - Uses date restrictions but no global lock date. Also used in audit trail to log importing.</EnumValue>
+        <EnumValue name="EFormDelete">260 - Allows deleting eForms when they're attached to patients. No date restrictions.</EnumValue>
       </Enumeration>
     </column>
     <column order="5" name="FKey" type="bigint(20)">
@@ -15873,6 +15875,8 @@
         <EnumValue name="ChildDaycareEdit">256 - Internal Child Daycare only. Allow users to make changes to the daycare. Only userd at HQ.</EnumValue>
         <EnumValue name="PerioEditCopy">257 - Allow users to copy perio charts in the Perio Chart window.</EnumValue>
         <EnumValue name="LicenseAccept">258 - For audit trail only. Logs when a license is accepted by a user.</EnumValue>
+        <EnumValue name="EFormEdit">259 - Uses date restrictions but no global lock date. Also used in audit trail to log importing.</EnumValue>
+        <EnumValue name="EFormDelete">260 - Allows deleting eForms when they're attached to patients. No date restrictions.</EnumValue>
       </Enumeration>
     </column>
     <column order="2" name="UserNum" type="bigint(20)" fk="userod">

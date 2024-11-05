@@ -75,6 +75,8 @@ adjustment.ObjNum=listObj.GetSelectedKey<ObjType>(x=>x.ObjNum);
 		private SelectionMode _selectionMode=SelectionMode.One;
 		private Color _colorSelectedBack=Color.FromRgb(186,199,219);//#BAC7DB, grid default was Silver: C0C0C0 (192 gray)
 		private Color _colorBack=Colors.White;
+		///<summary>This index ONLY tracks the index for key presses on autonotes. It does not track checkbox click index changes. The assumption is that users will generally be either using mouse clicks or keyboard, so they operate independently.</summary>
+		private int _idxLastSelectedKey=-1;
 		#endregion Fields
 
 		#region Constructor
@@ -589,10 +591,7 @@ adjustment.ObjNum=listObj.GetSelectedKey<ObjType>(x=>x.ObjNum);
 			if(listItems==null || listItems.Count==0){
 				return;
 			}
-			int index=0;
-			if(SelectionMode==SelectionMode.One && SelectedIndex!=-1){
-				index=SelectedIndex+1;
-			}
+			int index=_idxLastSelectedKey+1;
 			if(index>=Items.Count){
 				index=0;
 			}
@@ -603,46 +602,41 @@ adjustment.ObjNum=listObj.GetSelectedKey<ObjType>(x=>x.ObjNum);
 			if(key.Length>1 && key[0]=='d'){//EX:Keyboard presses like 1,2,3 will result in D1, D2, ect so we remove the D part from it. Also need to check D so we don't trim key presses like f1.
 				key=key.Substring(1,1);
 			}
-			//From the index to the end of the list
+			bool foundMatch=false;
 			for(int i=index;i<listItems.Count;i++){
 				if(key[0]!=listItems[i].ToLower()[0]){//If the key does not match, skip it.
 					continue;
 				}
-				//We found a match
-				if(SelectionMode==SelectionMode.One){
-					SelectedIndex=i;
-					return;
-				}
-				//Otherwise SelectionMode.CheckBoxes
-				Border border=(Border)stackPanel.Children[i];
-				CheckBox checkBox=(CheckBox)border.Child;
-				if(checkBox.Checked==true){
+				foundMatch=true;
+				_idxLastSelectedKey=i;
+				break;
+			}
+			//If the next item wasn't found this way, do it from the start
+			for(int i=0;i<listItems.Count;i++){
+				if(foundMatch){//Skip this section if a match was already found
 					continue;
 				}
-				_listSelectedIndices.Add(i);
-				FillCheckBoxesFromSelectedIndices();
-				return;
-			}
-			//From the start of the list to the index
-			for(int i=0;i<index;i++){
 				if(key[0]!=listItems[i].ToLower()[0]){//If the key does not match, skip it.
 					continue;
 				}
-				//We found a match
-				if(SelectionMode==SelectionMode.One){
-					SelectedIndex=i;
-					return;
-				}
-				//Otherwise SelectionMode.CheckBoxes
-				Border border=(Border)stackPanel.Children[i];
-				CheckBox checkBox=(CheckBox)border.Child;
-				if(checkBox.Checked==true){
-					continue;
-				}
-				_listSelectedIndices.Add(i);
-				FillCheckBoxesFromSelectedIndices();
-				return;
+				foundMatch=true;
+				_idxLastSelectedKey=i;
+				break;
 			}
+			if(!foundMatch){
+				return;//We never found a match
+			}
+			//Now we have our match.
+			if(SelectionMode==SelectionMode.One){
+					SelectedIndex=_idxLastSelectedKey;//Set the index to whatever the next match was.
+					return;
+			}
+			//Otherwise SelectionMode.CheckBoxes
+			Border border2=(Border)stackPanel.Children[_idxLastSelectedKey];
+			CheckBox checkBox2=(CheckBox)border2.Child;
+			checkBox2.Checked=!checkBox2.Checked;//Flip the check and call it a day
+			FillSelectedIndicesFromCheckBoxes();
+			return;
 		}
 
 		#endregion Methods - event handlers, mouse

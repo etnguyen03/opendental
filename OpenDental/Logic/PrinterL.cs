@@ -4,6 +4,7 @@ using System.Data;
 using System.Drawing;
 using System.Drawing.Printing;
 using System.IO;
+using System.Linq;
 using System.ServiceProcess;
 using System.Windows.Forms;
 using CodeBase;
@@ -213,8 +214,9 @@ namespace OpenDental {
 			}
 			//checking spooler service prevents this method from crashing.
 			//But there are also additional more rigorous checks over in ODprintout.HasValidSettings that will happen later.
-			ServiceController serviceController = new ServiceController("Spooler");
-			if(serviceController.Status!=ServiceControllerStatus.Running) {
+			ServiceController [] serviceControllerArray=ServiceController.GetServices();
+			ServiceController serviceController=serviceControllerArray.FirstOrDefault(x => x.DisplayName=="Print Spooler");
+			if(serviceController==null || serviceController.Status!=ServiceControllerStatus.Running) {
 				MsgBox.Show("Please start the Printer Spooler service to proceed with printing.");
 				return false;
 			}

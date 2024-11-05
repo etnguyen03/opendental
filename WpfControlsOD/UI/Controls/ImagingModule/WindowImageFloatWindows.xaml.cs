@@ -60,6 +60,7 @@ Jordan is the only one allowed to edit this file.
 		private Path _pathQuarter_UR2;
 		private Path _pathQuarter_LL2;
 		private Path _pathQuarter_LR2;
+		private System.Windows.Forms.Screen _screen2=null;
 		///<summary>80x48. The size of each "screen" area.</summary>
 		private Size _sizeScreen=new Size(80,48);
 		#endregion Fields - Private
@@ -133,19 +134,18 @@ Jordan is the only one allowed to edit this file.
 			Keyboard.Focus(borderMain);
 			System.Drawing.Point drawing_PointScreen=new System.Drawing.Point((int)PointAnchor1.X,(int)PointAnchor1.Y);
 			System.Windows.Forms.Screen screenThis=System.Windows.Forms.Screen.FromPoint(drawing_PointScreen);
-			System.Windows.Forms.Screen screen2=null;
 			System.Windows.Forms.Screen[] screenArray=System.Windows.Forms.Screen.AllScreens;
 			if(screenArray.Length>1){
-				screen2=screenArray[0];
-				if(screen2.Bounds==screenThis.Bounds){//probably a better way to do this
-					screen2=screenArray[1];
+				_screen2=screenArray[0];
+				if(_screen2.Bounds==screenThis.Bounds){//probably a better way to do this
+					_screen2=screenArray[1];
 				}
 			}
 			Typeface typeface=new Typeface(new FontFamily("Segoe UI"), FontStyles.Normal, FontWeights.Normal, FontStretches.Normal);
 			double pixelsPerDip=VisualTreeHelper.GetDpi(new System.Windows.Controls.Control()).PixelsPerDip;//1 in testing on a 150% scale monitor, which seems wrong.
 			FormattedText formattedText = new FormattedText("A",CultureInfo.CurrentCulture,FlowDirection.LeftToRight,typeface,11.5,Brushes.Black,pixelsPerDip);
 			double heightFont=formattedText.Height;//15.3 DIPs
-			if(screen2 !=null){
+			if(_screen2 !=null){
 				UI.Label label=new Label();
 				label.Margin=new Thickness(_marginOuter-2,4,0,0);
 				label.Width=150;
@@ -185,7 +185,7 @@ Jordan is the only one allowed to edit this file.
 			_pathQuarter_LR=CreatePath(x+w+_marginInner,y+h+_marginInner,w,h,roundLR:true);
 			CreateCenteredLabel(x+w+_marginInner,y+h+_marginInner,w,h,"LR");
 			//Second Screen======================================================================================
-			if(screen2 !=null){
+			if(_screen2 !=null){
 				x=_marginOuter;
 				y+=_sizeScreen.Height+4;
 				UI.Label label=new Label();
@@ -311,33 +311,35 @@ Jordan is the only one allowed to edit this file.
 			if(_pathQuarter_LR.Data.FillContains(point)){
 				enumImageFloatWinButton=EnumImageFloatWinButton.Quarter_LR;
 			}
-			point=e.GetPosition(_pathHalf_L2);
-			if(_pathHalf_L2.Data.FillContains(point)){
-				enumImageFloatWinButton=EnumImageFloatWinButton.Half_L2;
-			}
-			point=e.GetPosition(_pathHalf_R2);
-			if(_pathHalf_R2.Data.FillContains(point)){
-				enumImageFloatWinButton=EnumImageFloatWinButton.Half_R2;
-			}
-			point=e.GetPosition(_pathCenter2);
-			if(_pathCenter2.Data.FillContains(point)){
-				enumImageFloatWinButton=EnumImageFloatWinButton.Center2;
-			}
-			point=e.GetPosition(_pathQuarter_UL2);
-			if(_pathQuarter_UL2.Data.FillContains(point)){
-				enumImageFloatWinButton=EnumImageFloatWinButton.Quarter_UL2;
-			}
-			point=e.GetPosition(_pathQuarter_UR2);
-			if(_pathQuarter_UR2.Data.FillContains(point)){
-				enumImageFloatWinButton=EnumImageFloatWinButton.Quarter_UR2;
-			}
-			point=e.GetPosition(_pathQuarter_LL2);
-			if(_pathQuarter_LL2.Data.FillContains(point)){
-				enumImageFloatWinButton=EnumImageFloatWinButton.Quarter_LL2;
-			}
-			point=e.GetPosition(_pathQuarter_LR2);
-			if(_pathQuarter_LR2.Data.FillContains(point)){
-				enumImageFloatWinButton=EnumImageFloatWinButton.Quarter_LR2;
+			if(_screen2!=null) {
+				point=e.GetPosition(_pathHalf_L2);
+				if(_pathHalf_L2.Data.FillContains(point)){
+					enumImageFloatWinButton=EnumImageFloatWinButton.Half_L2;
+				}
+				point=e.GetPosition(_pathHalf_R2);
+				if(_pathHalf_R2.Data.FillContains(point)){
+					enumImageFloatWinButton=EnumImageFloatWinButton.Half_R2;
+				}
+				point=e.GetPosition(_pathCenter2);
+				if(_pathCenter2.Data.FillContains(point)){
+					enumImageFloatWinButton=EnumImageFloatWinButton.Center2;
+				}
+				point=e.GetPosition(_pathQuarter_UL2);
+				if(_pathQuarter_UL2.Data.FillContains(point)){
+					enumImageFloatWinButton=EnumImageFloatWinButton.Quarter_UL2;
+				}
+				point=e.GetPosition(_pathQuarter_UR2);
+				if(_pathQuarter_UR2.Data.FillContains(point)){
+					enumImageFloatWinButton=EnumImageFloatWinButton.Quarter_UR2;
+				}
+				point=e.GetPosition(_pathQuarter_LL2);
+				if(_pathQuarter_LL2.Data.FillContains(point)){
+					enumImageFloatWinButton=EnumImageFloatWinButton.Quarter_LL2;
+				}
+				point=e.GetPosition(_pathQuarter_LR2);
+				if(_pathQuarter_LR2.Data.FillContains(point)){
+					enumImageFloatWinButton=EnumImageFloatWinButton.Quarter_LR2;
+				}
 			}
 			if(enumImageFloatWinButton==EnumImageFloatWinButton.None){
 				return;

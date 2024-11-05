@@ -2043,6 +2043,13 @@ namespace OpenDentBusiness {
 			//End B57668
 		}//End of 24_2_46
 
+		private static void To24_2_48() {
+			string command="INSERT INTO preference (PrefName,ValueString) VALUES ('CareCreditBatchProcessDateTime',"+POut.DateT(DateTime.MinValue,true)+")";
+			Db.NonQ(command);
+			command="INSERT INTO preference (PrefName,ValueString) VALUES ('CareCreditBatchPullbackDateTime',"+POut.DateT(DateTime.MinValue,true)+")";
+			Db.NonQ(command);
+		}//End of 24_2_48
+
 		private static void To24_2_47() {
 			ObsolesceCDTCodesFor2025();
 		}
@@ -2350,5 +2357,20 @@ namespace OpenDentBusiness {
 			}
 			//End S53342 eForms
 		}
+
+		private static void To24_3_15() {
+			string command="SELECT COUNT(*) FROM preference WHERE PrefName='CareCreditBatchProcessDateTime'";
+			long countRows=Db.GetLong(command);
+			if(countRows==0) {
+				command="INSERT INTO preference (PrefName,ValueString) VALUES ('CareCreditBatchProcessDateTime',"+POut.DateT(DateTime.MinValue,true)+")";
+				Db.NonQ(command);
+			}
+			command="SELECT COUNT(*) FROM preference WHERE PrefName='CareCreditBatchPullbackDateTime'";
+			countRows=Db.GetLong(command);
+			if(countRows==0) {
+				command="INSERT INTO preference (PrefName,ValueString) VALUES ('CareCreditBatchPullbackDateTime',"+POut.DateT(DateTime.MinValue,true)+")";
+				Db.NonQ(command);
+			}
+		}//End of 24_3_15
 	}
 }

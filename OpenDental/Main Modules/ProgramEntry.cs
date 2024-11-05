@@ -17,6 +17,7 @@ namespace OpenDental {
 	static class ProgramEntry {
 		[STAThread]
 		static void Main(string[] args) {
+			System.Windows.Media.RenderOptions.ProcessRenderMode=System.Windows.Interop.RenderMode.SoftwareOnly;
 			//Application.EnableVisualStyles() uses version 6 of comctl32.dll instead of version 5.
 			//See https://support.microsoft.com/en-us/topic/system-accessviolationexception-occurs-with-tooltips-in-windows-forms-application-71a775b2-8a03-6846-f810-76930766cda0?ui=en-us&rs=en-us&ad=us
 			//See also http://stackoverflow.com/questions/8335983/accessviolationexception-on-tooltip-that-faults-comctl32-dll-net-4-0

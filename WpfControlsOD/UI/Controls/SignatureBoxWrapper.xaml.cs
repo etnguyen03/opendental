@@ -41,6 +41,7 @@ How to use the SignatureBoxWrapper control:
 			signatureBoxWrapper=new OpenDental.UI.SignatureBoxWrapper();
 			windowsFormsHost.Child = signatureBoxWrapper;
 			Loaded+=this_Loaded;
+			Unloaded+=this_Unloaded;
 			//System.Windows.Forms.Integration.WindowsFormsHost.EnableWindowsFormsInterop();
 			//window.Content=this;
 			//ElementHost.EnableModelessKeyboardInterop(window);
@@ -61,6 +62,12 @@ How to use the SignatureBoxWrapper control:
 			//ElementHost.EnableModelessKeyboardInterop(window);
 			///Key up/down events also don't work either.
 			
+		}
+
+		private void this_Unloaded(object sender,RoutedEventArgs e) {
+			signatureBoxWrapper.Dispose();
+			windowsFormsHost.Child=null;
+			this.Content=null;
 		}
 
 		///<summary>keyData should not be hashed.</summary>

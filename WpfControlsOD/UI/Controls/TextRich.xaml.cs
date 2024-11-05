@@ -12,6 +12,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
@@ -135,6 +136,7 @@ How to use the TextRich control:
 			richTextBox.LostKeyboardFocus+=textBox_LostKeyboardFocus;
 			richTextBox.PreviewKeyDown+=textBox_PreviewKeyDown;
 			richTextBox.TextChanged+=textBox_TextChanged;
+			richTextBox.Unloaded+=textBox_Unloaded;
 			GotKeyboardFocus+=This_GotKeyboardFocus;
 			IsEnabledChanged+=This_IsEnabledChanged;
 			Loaded+=This_Loaded;
@@ -1119,6 +1121,16 @@ How to use the TextRich control:
 				textPointer=textPointer.GetPositionAtOffset(run.Length);
 			}
 			TextChanged?.Invoke(this,new EventArgs());
+		}
+
+		private void textBox_Unloaded(object sender,RoutedEventArgs e) {
+			ScrollViewer scrollViewer=richTextBox.Template.FindName("PART_ContentHost",richTextBox) as ScrollViewer;
+			if(scrollViewer!=null) {
+				ScrollBar scrollBarVertical=scrollViewer.Template.FindName("PART_VerticalScrollBar",scrollViewer) as ScrollBar;
+				if(scrollBarVertical!=null) {
+					scrollBarVertical.Template=null;
+				}
+			}
 		}
 
 		private void This_GotKeyboardFocus(object sender,KeyboardFocusChangedEventArgs e) {

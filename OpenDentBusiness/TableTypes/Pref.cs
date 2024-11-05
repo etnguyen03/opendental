@@ -541,6 +541,12 @@ namespace OpenDentBusiness {
 		BytesPerSmsHeader,
 		///<summmary>Int. Set by HQ</summmary>
 		BytesPerSmsMessagePart,
+		///<summary>DateTime.  Updated by HQ.  Determines what time to process CareCredit batch quickscreen transactions.</summary>
+		[PrefName(ValueType=PrefValueType.DATETIME)]
+		CareCreditBatchProcessDateTime,
+		///<summary>DateTime.  Updated by HQ.  Determines what time to run CareCredit batch quickscreen pullbacks.</summary>
+		[PrefName(ValueType=PrefValueType.DATETIME)]
+		CareCreditBatchPullbackDateTime,
 		///<summary>Boolean.  True by default.  When true, Canadian PPO insurance plans create estimates for labs (default behavior for category percentage plans).</summary>
 		[PrefName(ValueType=PrefValueType.BOOL)]
 		CanadaCreatePpoLabEst,

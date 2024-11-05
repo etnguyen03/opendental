@@ -20,8 +20,9 @@ namespace OpenDental {
 			Lan.F(this);
 		}
 
-		private void FormImages_Load(object sender,EventArgs e) {
+		private void FormImages_Shown(object sender,EventArgs e) {
 			if(ClaimPaymentNum!=0) {
+				//this line has to be in Shown instead of Load for the cloudiFrame used by ODCloud
 				contrImagesMain.ModuleSelectedClaimPayment(ClaimPaymentNum);
 			}
 			else if(EhrAmendmentCur!=null) {

@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
@@ -87,6 +88,7 @@ Validating/Validated events are not supported.
 			LostFocus+=This_LostFocus;
 			LostKeyboardFocus+=This_LostKeyboardFocus;
 			PreviewMouseLeftButtonDown+=This_PreviewMouseLeftButtonDown;
+			Unloaded+=TextBox_Unloaded;
 			border1.Visibility=Visibility.Collapsed;
 			border2.Visibility=Visibility.Collapsed;
 		}
@@ -342,6 +344,16 @@ Validating/Validated events are not supported.
 
 		private void TextBox_TextChanged(object sender,TextChangedEventArgs e) {
 			TextChanged?.Invoke(this,new EventArgs());
+		}
+
+		private void TextBox_Unloaded(object sender,RoutedEventArgs e) {
+			ScrollViewer scrollViewer=textBox.Template.FindName("PART_ContentHost",textBox) as ScrollViewer;
+			if(scrollViewer!=null) {
+				ScrollBar scrollBarVertical=scrollViewer.Template.FindName("PART_VerticalScrollBar",scrollViewer) as ScrollBar;
+				if(scrollBarVertical!=null) {
+					scrollBarVertical.Template=null;
+				}
+			}
 		}
 
 		private void This_GotKeyboardFocus(object sender,KeyboardFocusChangedEventArgs e) {

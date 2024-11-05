@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Drawing.Printing;
+using System.Linq;
 using System.ServiceProcess;
 using System.Windows.Forms;
 
@@ -42,7 +43,8 @@ namespace CodeBase {
 		///<summary>Returns true if printer can be validated.
 		///If false then SettingsErrorCode will contain more detailed information.</summary>
 		public bool HasValidSettings() {
-			ServiceController serviceControllerPrintSpooler=new ServiceController("Print Spooler");
+			ServiceController [] serviceControllerArray= ServiceController.GetServices();
+			ServiceController serviceControllerPrintSpooler=serviceControllerArray.FirstOrDefault(x => x.DisplayName=="Print Spooler");
 			if(serviceControllerPrintSpooler==null || serviceControllerPrintSpooler.Status!=ServiceControllerStatus.Running) {
 				SettingsErrorCode=PrintoutErrorCode.InactivePrintSpoolerService;
 				return false;
