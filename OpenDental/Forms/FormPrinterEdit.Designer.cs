@@ -29,13 +29,13 @@ namespace OpenDental {
 			this.comboPrinter = new OpenDental.UI.ComboBox();
 			this.labelPrinter = new System.Windows.Forms.Label();
 			this.checkVirtualPrinter = new OpenDental.UI.CheckBox();
-			this.label1 = new System.Windows.Forms.Label();
+			this.labelExtension = new System.Windows.Forms.Label();
 			this.textFileExtension = new OpenDental.ODtextBox();
 			this.labelSituation = new System.Windows.Forms.Label();
 			this.textSituation = new OpenDental.ODtextBox();
 			this.label11 = new System.Windows.Forms.Label();
 			this.label2 = new System.Windows.Forms.Label();
-			this.label3 = new System.Windows.Forms.Label();
+			this.labelExtensionNote = new System.Windows.Forms.Label();
 			this.SuspendLayout();
 			// 
 			// butSave
@@ -82,14 +82,14 @@ namespace OpenDental {
 			this.checkVirtualPrinter.TabIndex = 171;
 			this.checkVirtualPrinter.Text = "Virtual Printer";
 			// 
-			// label1
+			// labelExtension
 			// 
-			this.label1.Location = new System.Drawing.Point(16, 171);
-			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(99, 16);
-			this.label1.TabIndex = 173;
-			this.label1.Text = "File Extension";
-			this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			this.labelExtension.Location = new System.Drawing.Point(16, 171);
+			this.labelExtension.Name = "labelExtension";
+			this.labelExtension.Size = new System.Drawing.Size(99, 16);
+			this.labelExtension.TabIndex = 173;
+			this.labelExtension.Text = "File Extension";
+			this.labelExtension.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			// 
 			// textFileExtension
 			// 
@@ -145,24 +145,24 @@ namespace OpenDental {
 			this.label2.TabIndex = 178;
 			this.label2.Text = "These settings only apply to this workstation";
 			// 
-			// label3
+			// labelExtensionNote
 			// 
-			this.label3.Location = new System.Drawing.Point(186, 166);
-			this.label3.Name = "label3";
-			this.label3.Size = new System.Drawing.Size(233, 33);
-			this.label3.TabIndex = 179;
-			this.label3.Text = "The file extension the selected virtual printer writes to (i.e. pdf, xps, etc.)";
+			this.labelExtensionNote.Location = new System.Drawing.Point(186, 166);
+			this.labelExtensionNote.Name = "labelExtensionNote";
+			this.labelExtensionNote.Size = new System.Drawing.Size(233, 33);
+			this.labelExtensionNote.TabIndex = 179;
+			this.labelExtensionNote.Text = "The file extension the selected virtual printer writes to (i.e. pdf, xps, etc.)";
 			// 
 			// FormPrinterEdit
 			// 
 			this.ClientSize = new System.Drawing.Size(516, 273);
-			this.Controls.Add(this.label3);
+			this.Controls.Add(this.labelExtensionNote);
 			this.Controls.Add(this.label2);
 			this.Controls.Add(this.label11);
 			this.Controls.Add(this.textSituation);
 			this.Controls.Add(this.labelSituation);
 			this.Controls.Add(this.textFileExtension);
-			this.Controls.Add(this.label1);
+			this.Controls.Add(this.labelExtension);
 			this.Controls.Add(this.checkVirtualPrinter);
 			this.Controls.Add(this.comboPrinter);
 			this.Controls.Add(this.labelPrinter);
@@ -182,12 +182,12 @@ namespace OpenDental {
 		private UI.ComboBox comboPrinter;
 		private System.Windows.Forms.Label labelPrinter;
 		private UI.CheckBox checkVirtualPrinter;
-		private System.Windows.Forms.Label label1;
+		private System.Windows.Forms.Label labelExtension;
 		private ODtextBox textFileExtension;
 		private System.Windows.Forms.Label labelSituation;
 		private ODtextBox textSituation;
 		private System.Windows.Forms.Label label11;
 		private System.Windows.Forms.Label label2;
-		private System.Windows.Forms.Label label3;
+		private System.Windows.Forms.Label labelExtensionNote;
 	}
 }

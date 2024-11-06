@@ -78,7 +78,8 @@ namespace OpenDental.Bridges{
 			}
 		}
 
-		///<summary>Strips out characters that SOTACloud considers invalid for patient names.</summary>
+		///<summary>Strips out characters that SOTACloud considers invalid for patient names. If the string contains characters such as "é", "-", or " ",
+		///this method will escape them to ensure that the final URL is still valid.</summary>
 		private static string CleanPatientName(string name) {
 			string retVal=name.Replace("&","");
 			retVal=retVal.Replace("!","");
@@ -86,6 +87,7 @@ namespace OpenDental.Bridges{
 			retVal=retVal.Replace("+","");
 			retVal=retVal.Replace("=","");
 			retVal=retVal.Replace("?","");
+			retVal=Uri.EscapeDataString(retVal);
 			return retVal;
 		}
 

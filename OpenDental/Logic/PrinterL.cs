@@ -288,6 +288,7 @@ namespace OpenDental {
 			#region 3 - Present the dialog
 			//Remote print requests aren't expected to hit this code.
 			if(showPrompt && !ODEnvironment.IsCloudServer && !isRemotePrint) {
+				//This is the normal dialog when not using AppStream or ThinFinity
 				PrintDialog printDialog=new PrintDialog();
 				printDialog.AllowSomePages=true;
 				printDialog.PrinterSettings=printerSettings;
@@ -302,6 +303,17 @@ namespace OpenDental {
 				}
 			}
 			#endregion 3
+			#region 4
+			if(showPrompt && ODCloudClient.IsAppStream){
+				//This is mutually exclusing with region 3. When using Cloud.
+				PrintDialog printDialog=new PrintDialog();
+				printDialog.PrinterSettings=printerSettings;
+				DialogResult dialogResult=printDialog.ShowDialog();
+				if(dialogResult!=DialogResult.OK){
+					return false;
+				}
+			}
+			#endregion 4
 			//Create audit log entry for printing.  PatNum can be 0.
 			if(!string.IsNullOrEmpty(auditDescription)){
 				SecurityLogs.MakeLogEntry(EnumPermType.Printing,patNum,auditDescription);

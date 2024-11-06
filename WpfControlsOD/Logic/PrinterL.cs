@@ -166,7 +166,9 @@ then change:
 			}
 			#endregion 2
 			#region 3 - Present the dialog
-			if(showPrompt && !ODBuild.IsThinfinity()) {
+			//Remote print requests aren't expected to hit this code.
+			if(showPrompt && !ODEnvironment.IsCloudServer) {
+				//This is the normal dialog when not using AppStream or ThinFinity
 				PrintDialog printDialog=new PrintDialog();
 				//printDialog.AllowSomePages=true;
 //todo:
@@ -182,6 +184,18 @@ then change:
 				}
 			}
 			#endregion 3
+						#region 4
+			if(showPrompt && ODCloudClient.IsAppStream){
+				//This is mutually exclusing with region 3. When using Cloud.
+				PrintDialog printDialog=new PrintDialog();
+//todo:
+				//printDialog.PrinterSettings=printerSettings;
+				bool? dialogResult=printDialog.ShowDialog();
+				if(dialogResult!=true){
+					return false;
+				}
+			}
+			#endregion 4
 			//Create audit log entry for printing.  PatNum can be 0.
 			if(!string.IsNullOrEmpty(auditDescription)){
 				SecurityLogs.MakeLogEntry(EnumPermType.Printing,patNum,auditDescription);

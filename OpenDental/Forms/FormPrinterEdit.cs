@@ -16,6 +16,12 @@ namespace OpenDental {
 			InitializeComponent();
 			InitializeLayoutManager();
 			Lan.F(this);
+			if(ODCloudClient.IsAppStream) {
+				labelExtension.Visible=false;
+				labelExtensionNote.Visible=false;
+				textFileExtension.Visible=false;
+				checkVirtualPrinter.Visible=false;
+			}
 			_printSituation=printer.PrintSit;
 			textFileExtension.Text=printer.FileExtension;
 			checkPrompt.Checked=printer.DisplayPrompt;
