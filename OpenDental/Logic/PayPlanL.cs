@@ -431,14 +431,17 @@ namespace OpenDental {
 			listPaySplits.Reverse();//Same reason why we are reversing listPayPlanCharges.
 			for(int i=0;i<dynamicPaymentPlanModuleData.ListPayPlanProductionEntries.Count;i++) {
 				GridRow row=new GridRow();
-				if(dynamicPaymentPlanModuleData.ListPayPlanProductionEntries[i].ProductionDate==DateTime.MinValue) {
-					//credit was just added 
-					row.Cells.Add(DateTime.Today.ToShortDateString());//Date Added
+				DateTime dateShowing=dynamicPaymentPlanModuleData.ListPayPlanProductionEntries[i].CreditDate;
+				if(PrefC.GetBool(PrefName.PayPlanItemDateShowProc)){
+					dateShowing=dynamicPaymentPlanModuleData.ListPayPlanProductionEntries[i].ProductionDate;
+				}
+				if(dateShowing==DateTime.MinValue) {//credit was just added 
+					row.Cells.Add(DateTime.Today.ToShortDateString());//Date Showing
 				}
 				else {
-					row.Cells.Add(dynamicPaymentPlanModuleData.ListPayPlanProductionEntries[i].ProductionDate.ToShortDateString());//Date Added
+					row.Cells.Add(dateShowing.ToShortDateString());//Date Showing
 				}
-				row.Cells.Add(dynamicPaymentPlanModuleData.ListPayPlanProductionEntries[i].ProductionDate.ToShortDateString());//Date
+				row.Cells.Add(dynamicPaymentPlanModuleData.ListPayPlanProductionEntries[i].ProductionDate.ToShortDateString());//Date Production
 				row.Cells.Add(Providers.GetAbbr(dynamicPaymentPlanModuleData.ListPayPlanProductionEntries[i].ProvNum));//Provider
 				if(PrefC.HasClinicsEnabled) {
 					row.Cells.Add(Clinics.GetAbbr(dynamicPaymentPlanModuleData.ListPayPlanProductionEntries[i].ClinicNum));//Clinic

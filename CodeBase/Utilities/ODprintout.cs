@@ -44,7 +44,7 @@ namespace CodeBase {
 		///If false then SettingsErrorCode will contain more detailed information.</summary>
 		public bool HasValidSettings() {
 			ServiceController [] serviceControllerArray= ServiceController.GetServices();
-			ServiceController serviceControllerPrintSpooler=serviceControllerArray.FirstOrDefault(x => x.DisplayName=="Print Spooler");
+			ServiceController serviceControllerPrintSpooler=serviceControllerArray.FirstOrDefault(x => x.ServiceName=="Spooler");
 			if(serviceControllerPrintSpooler==null || serviceControllerPrintSpooler.Status!=ServiceControllerStatus.Running) {
 				SettingsErrorCode=PrintoutErrorCode.InactivePrintSpoolerService;
 				return false;

@@ -14,6 +14,8 @@ namespace OpenDental {
 	/// <summary></summary>
 	public partial class FrmApptProvPrompt:FrmODBase {
 		public EnumApptProvPrompt EnumApptProvPrompt_;
+		///<summary>Location of the current screen. Used to relocate this frm to the center of the current screen.</summary>
+		public System.Drawing.Point PointScreen;
 
 		///<summary></summary>
 		public FrmApptProvPrompt() {
@@ -24,12 +26,12 @@ namespace OpenDental {
 
 		private void FrmApptProvPrompt_Load(object sender,EventArgs e) {
 			Lang.F(this);
-			System.Drawing.Point drawing_PointScreen=new System.Drawing.Point(_formFrame.Location.X,_formFrame.Location.Y);
+			System.Drawing.Point drawing_PointScreen=new System.Drawing.Point(PointScreen.X,PointScreen.X);
 			System.Drawing.Rectangle drawing_RectangleBoundsScreen=System.Windows.Forms.Screen.GetWorkingArea(drawing_PointScreen);
-			int x=(drawing_RectangleBoundsScreen.Width/2)-((int)this.ActualWidth/2);
+			int x=drawing_PointScreen.X+(drawing_RectangleBoundsScreen.Width/2)-((int)this.ActualWidth/2);
 			int y=(drawing_RectangleBoundsScreen.Height/2)-((int)this.ActualHeight/2);
 			//Position the window relative to the center of the screen
-			_formFrame.Location=new System.Drawing.Point(x,y+ScaleFormValue(10));
+			_formFrame.Location=new System.Drawing.Point(x,y+ScaleFormValue(15));//Total border height is 31
 		}
 
 		///<summary>Automatically selects Yes or No based on the ApptModuleProviderPrompt preference setting without prompting the user.</summary>

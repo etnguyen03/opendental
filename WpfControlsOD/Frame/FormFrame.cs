@@ -1080,7 +1080,8 @@ namespace OpenDental {
 			//PanelBorders.Invalidate();//Doesn't work well enough. 
 Refresh();
 			//panelClient.Refresh();//Looked worse than form.Refresh, actually.
-Application.DoEvents();//Without this, there are huge drag artifacts, especially dragging top downward
+			//Application.DoEvents();//Without this, there are huge drag artifacts, especially dragging top downward
+			//Jordan 2024-11-07-The above line was causing stack overflow. Artifacts seem better than that, but there might not be any.
 			//ResumeLayout();//doesn't help
 			//OnResize(new EventArgs());
 			#endregion Dragging

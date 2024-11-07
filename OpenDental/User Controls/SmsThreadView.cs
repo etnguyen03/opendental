@@ -96,7 +96,6 @@ namespace OpenDental {
 			}
 			//Find last sms sent to mobile
 			SmsThreadMessage smsThreadMessageLastSent=_listSmsThreadToDisplay.FindAll(x => !x.IsAlignedLeft).LastOrDefault();
-			OpenDental.Drawing.Graphics g=OpenDental.Drawing.Graphics.MeasureBegin();
 			//Loop through and update existing control sizes, text, borders, etc.  Add new controls for messages not already represented.
 			for(int i=0;i<_listSmsThreadToDisplay.Count;i++) {
 				SmsThreadMessage smsThreadMessage=_listSmsThreadToDisplay[i];
@@ -187,12 +186,10 @@ namespace OpenDental {
 				if(smsThreadMessage.IsAiMessage) {
 					message=CleanAiResponse(message);
 				}
-				richTextBoxMessage.Text=message.Replace("\r\n","\n").Replace("\n","\r\n");//Normalize \n coming from RichTextBox to \r\n for TextBox.
-				//Each message wraps horizontally.
-				OpenDental.Drawing.Font od_Font=new OpenDental.Drawing.Font();
-				System.Windows.Size size2=g.MeasureString(richTextBoxMessage.Text,od_Font,widthMax:bodyWidth*0.7);
-				richTextBoxMessage.Width=(int)Math.Ceiling(size2.Width)+4;//Extra horizontal padding to ensure that the text will fit when including the border.
-				richTextBoxMessage.Height=(int)Math.Ceiling(size2.Height)+4;//Extra vertical padding to ensure that the text will fit when including the border.
+				richTextBoxMessage.Text=message.Replace("\r\n","\n").Replace("\n","\r\n");//Normalize \n coming from RichTextBox to \r\n for TextBox.	
+				size=GetSizeForText(richTextBoxMessage.Text);
+				richTextBoxMessage.Width=size.Width+4;//Extra horizontal padding to ensure that the text will fit when including the border.
+				richTextBoxMessage.Height=size.Height+4;//Extra vertical padding to ensure that the text will fit when including the border.
 				richTextBoxMessage.ReadOnly=true;
 				Panel panelBorder=new Panel() {
 					Width=richTextBoxMessage.Width+4,
@@ -251,6 +248,13 @@ namespace OpenDental {
 			panelScroll.ResumeLayout();
 		}
 
+		///<summary>Returns the Size for the given text, assumes you need 70% of the panelScroll width.</summary>
+		private Size GetSizeForText(string text) {
+			//Previously we've used TextRenderer.MeasureText(...) to measure text, but that had issues with multi-line and/or complicated text.
+			using Graphics g=panelScroll.CreateGraphics();
+			return g.MeasureString(text,panelScroll.Font,(int)(GetBodyWidth()*0.7)).ToSize();
+		}
+
 		///<summary>Updates the last RichTextBox in the view with the given message. Returns false if there are no messages.</summary>
 		public bool UpdateLastRichTextBoxText(string msg) {
 			if(_listSmsThreadToDisplay.IsNullOrEmpty()) {
@@ -266,8 +270,7 @@ namespace OpenDental {
 				return false;
 			}
 			RichTextBox richTextBox=richTextBoxes[index];
-			Size size=TextRenderer.MeasureText(msg,panelScroll.Font,
-				new Size((int)(GetBodyWidth()*0.7),Int32.MaxValue),TextFormatFlags.WordBreak|TextFormatFlags.TextBoxControl);
+			Size size=GetSizeForText(richTextBox.Text);
 			richTextBox.Width=size.Width+4;//Extra horizontal padding to ensure that the text will fit when including the border.
 			richTextBox.Height=size.Height+4;//Extra vertical padding to ensure that the text will fit when including the border.
 			if(richTextBox.Tag is Panel panelBorder) {

@@ -801,6 +801,32 @@ namespace UnitTests.Ledgers_Tests {
 			Assert.AreEqual(200,PIn.Double(dictAging[pat.Guarantor]["InsWoEst"].ToString()));
 		}
 
+		[TestMethod]
+		public void Ledgers_PrefPayPlanItemDateShowProcReturnsCorrectDate(){
+			//Set the pref value to determine if the credit date or production date will grabbed from the DB
+			Prefs.UpdateBool(PrefName.PayPlanItemDateShowProc,false);
+			PayPlanT.ClearPayPlanTable();
+			Patient patient=PatientT.CreatePatient(fName:"Polly",lName:"PayPlan");
+			Procedure procedure=ProcedureT.CreateProcedure(patient, "D0150",ProcStat.C,"5",555,procDate:DateTime.Today.AddDays(-3));
+			List<Procedure> listProcedures=new List<Procedure>();
+			listProcedures.Add(procedure);
+			PrefT.UpdateInt(PrefName.PayPlansVersion,(int)PayPlanVersions.AgeCreditsAndDebits);
+			PayPlan payPlan=PayPlanT.CreateDynamicPaymentPlan(patient.PatNum,patient.PatNum,DateTime.Today,6666,0,777,listProcedures,new List<Adjustment>(),dynamicPayPlanTPOptions:DynamicPayPlanTPOptions.AwaitComplete);
+			string query=Ledgers.GetTransQueryString(DateTime.Today,patient.PatNum.ToString(),isAgedByProc:true);
+			DataTable table=DataCore.GetTable(query);
+			DataRow dataRowPrefFalse=table.Rows[3];
+			Prefs.UpdateBool(PrefName.PayPlanItemDateShowProc,true);
+			query=Ledgers.GetTransQueryString(DateTime.Today,patient.PatNum.ToString(),isAgedByProc:true);
+			table=DataCore.GetTable(query);
+			DataRow rowPrefTruePayPlanLink=table.Rows[3];
+			//Comparing the dates for the payplanlink gotten from GetTransQueryString(). If the preference is true it should use procedurelog.produtiondate, and if the preference is false, it should use payplanlink.secdateTentry.
+			if(dataRowPrefFalse.ItemArray[3]==rowPrefTruePayPlanLink.ItemArray[3]){
+				//We only fail if the dates are the same here, since we are expecting different dates. The procedure date should be 3 days before the date of the link (which should be the current day today).
+				Assert.Fail();
+			}
+			//Otherwise we pass the test.
+		}
+
 	}
 }
 

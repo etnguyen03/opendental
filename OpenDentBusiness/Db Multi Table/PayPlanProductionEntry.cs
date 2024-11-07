@@ -18,6 +18,8 @@ namespace OpenDentBusiness {
 		public object ProductionTag;
 		//The following fields are accessors to fields within the ProductionTag object.
 		public DateTime ProductionDate;
+		///<summary>credit.SecDateTEntry.  Will be MinValue if this credit is new (not inserted into the db yet).</summary>
+		public DateTime CreditDate;
 		///<summary>Contains the primary key for the production entry (ProcNum,AdjNum...etc)</summary>
 		public long PriKey;
 		public long ProvNum;
@@ -85,7 +87,7 @@ namespace OpenDentBusiness {
 			}
 			AmountOverride=(decimal)credit.AmountOverride;
 			AmountRemaining=(AmountOverride==0)?AmountOriginal:AmountOverride;
-			ProductionDate=proc.ProcDate;
+			CreditDate=credit.SecDateTEntry;
 			Description=$"{ProcedureCodes.GetStringProcCode(proc.CodeNum)}: {Procedures.GetDescription(proc)} - Procedure Status: {proc.ProcStatus}";
 			IsProcedureCompleted=ProcStat.C==proc.ProcStatus;
 			LinkType=PayPlanLinkType.Procedure;
@@ -111,7 +113,7 @@ namespace OpenDentBusiness {
 			}
 			AmountOverride=(decimal)credit.AmountOverride;
 			AmountRemaining=(AmountOverride==0)?AmountOriginal:AmountOverride;//Gets set when calculating
-			ProductionDate=adj.AdjDate;
+			CreditDate=credit.SecDateTEntry;
 			Description=$"Adjustment - {Defs.GetName(DefCat.AdjTypes,adj.AdjType)}";
 			LinkType=PayPlanLinkType.Adjustment;
 		}

@@ -570,8 +570,14 @@ namespace OpenDentBusiness{
 			#region PayPlanLinks (Dynamic Payment Plan) for Versions 2 & 3
 			if(payPlanVersionCur.In(PayPlanVersions.AgeCreditsAndDebits,PayPlanVersions.AgeCreditsOnly)) {
 				command+=@"UNION ALL
-					SELECT 'PayPlanLink' TranType,ppl.PayPlanLinkNum PriKey,prodlink.PatNum PatNum,DATE(AgeDate) TranDate,
-					(CASE WHEN ppl.AmountOverride=0 THEN -prodlink.Fee ELSE -ppl.AmountOverride END) TranAmount,0 PayPlanAmount,0 InsWoEst,0 InsPayEst";
+					SELECT 'PayPlanLink' TranType,ppl.PayPlanLinkNum PriKey,prodlink.PatNum PatNum,DATE(";
+				if(PrefC.GetBool(PrefName.PayPlanItemDateShowProc)){
+					command+="AgeDate";
+				}
+				else{
+					command+="ppl.SecDateTEntry";
+				}
+				command+=") TranDate,(CASE WHEN ppl.AmountOverride=0 THEN -prodlink.Fee ELSE -ppl.AmountOverride END) TranAmount,0 PayPlanAmount,0 InsWoEst,0 InsPayEst";
 				if(doIncludeProcNum) {
 					command+=",prodlink.ProcNum ProcNum,0 PayNum ";
 				}
@@ -591,7 +597,7 @@ namespace OpenDentBusiness{
 						INNER JOIN payplan ON payplanlink.PayPlanNum=payplan.PayPlanNum
 						INNER JOIN procedurelog ON procedurelog.ProcNum=payplanlink.FKey
 							AND payplanlink.LinkType={POut.Int((int)PayPlanLinkType.Procedure)}
-							AND procedurelog.ProcStatus={POut.Int((int)ProcStat.C)}
+							AND (procedurelog.ProcStatus={POut.Int((int)ProcStat.C)} OR payplan.dynamicPayPlanTPOption={POut.Int((int)DynamicPayPlanTPOptions.TreatAsComplete)})
 						LEFT JOIN (
 							SELECT SUM(adjustment.AdjAmt) AdjAmt,adjustment.ProcNum,adjustment.PatNum,adjustment.ProvNum,adjustment.ClinicNum
 							FROM adjustment ";

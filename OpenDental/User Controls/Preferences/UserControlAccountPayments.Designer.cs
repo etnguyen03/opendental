@@ -52,6 +52,7 @@ namespace OpenDental {
 			this.label38 = new System.Windows.Forms.Label();
 			this.checkAllowEmailCCReceipt = new OpenDental.UI.CheckBox();
 			this.checkPaymentsPromptForPayType = new OpenDental.UI.CheckBox();
+			this.checkPayPlanItemDateShowProc = new OpenDental.UI.CheckBox();
 			this.groupBoxUnearnedIncome.SuspendLayout();
 			this.groupBoxPayPlans.SuspendLayout();
 			this.groupBoxPayments.SuspendLayout();
@@ -63,7 +64,7 @@ namespace OpenDental {
 			this.groupBoxUnearnedIncome.Controls.Add(this.checkShowAllocateUnearnedPaymentPrompt);
 			this.groupBoxUnearnedIncome.Controls.Add(this.checkAllowPrepayProvider);
 			this.groupBoxUnearnedIncome.Controls.Add(this.label28);
-			this.groupBoxUnearnedIncome.Location = new System.Drawing.Point(20, 443);
+			this.groupBoxUnearnedIncome.Location = new System.Drawing.Point(20, 467);
 			this.groupBoxUnearnedIncome.Name = "groupBoxUnearnedIncome";
 			this.groupBoxUnearnedIncome.Size = new System.Drawing.Size(450, 87);
 			this.groupBoxUnearnedIncome.TabIndex = 323;
@@ -109,6 +110,7 @@ namespace OpenDental {
 			// 
 			// groupBoxPayPlans
 			// 
+			this.groupBoxPayPlans.Controls.Add(this.checkPayPlanItemDateShowProc);
 			this.groupBoxPayPlans.Controls.Add(this.checkPayPlanRequireLockForAPR);
 			this.groupBoxPayPlans.Controls.Add(this.comboPayPlansVersion);
 			this.groupBoxPayPlans.Controls.Add(this.comboDppUnearnedType);
@@ -124,7 +126,7 @@ namespace OpenDental {
 			this.groupBoxPayPlans.Controls.Add(this.label27);
 			this.groupBoxPayPlans.Location = new System.Drawing.Point(20, 205);
 			this.groupBoxPayPlans.Name = "groupBoxPayPlans";
-			this.groupBoxPayPlans.Size = new System.Drawing.Size(450, 232);
+			this.groupBoxPayPlans.Size = new System.Drawing.Size(450, 256);
 			this.groupBoxPayPlans.TabIndex = 322;
 			this.groupBoxPayPlans.Text = "Pay Plans";
 			// 
@@ -350,6 +352,16 @@ namespace OpenDental {
 			this.checkPaymentsPromptForPayType.Text = "Payments prompt for Payment Type";
 			this.checkPaymentsPromptForPayType.Click += new System.EventHandler(this.checkPaymentsPromptForPayType_Click);
 			// 
+			// checkPayPlanItemDateShowProc
+			// 
+			this.checkPayPlanItemDateShowProc.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+			this.checkPayPlanItemDateShowProc.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
+			this.checkPayPlanItemDateShowProc.Location = new System.Drawing.Point(100, 233);
+			this.checkPayPlanItemDateShowProc.Name = "checkPayPlanItemDateShowProc";
+			this.checkPayPlanItemDateShowProc.Size = new System.Drawing.Size(340, 17);
+			this.checkPayPlanItemDateShowProc.TabIndex = 331;
+			this.checkPayPlanItemDateShowProc.Text = "Use date of production as date showing";
+			// 
 			// UserControlAccountPayments
 			// 
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
@@ -396,5 +408,6 @@ namespace OpenDental {
 		private UI.GroupBox groupBoxUnearnedIncome;
 		private OpenDental.UI.CheckBox checkOnlinePaymentsMarkAsProcessed;
 		private UI.CheckBox checkPayPlanRequireLockForAPR;
+		private UI.CheckBox checkPayPlanItemDateShowProc;
 	}
 }

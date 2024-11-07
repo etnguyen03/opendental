@@ -276,9 +276,9 @@ namespace OpenDental {
 			int widthClinic=140;
 			int widthDesc=(PrefC.HasClinicsEnabled ? 170 : 170 + widthClinic);
 			GridColumn col;
-			col=new GridColumn(Lan.g(gridLinkedProduction.TranslationName,"Date\r\nAdded"),70,HorizontalAlignment.Center);
+			col=new GridColumn(Lan.g(gridLinkedProduction.TranslationName,"Date\r\nShowing"),70,HorizontalAlignment.Center);
 			gridLinkedProduction.Columns.Add(col);
-			col=new GridColumn(Lan.g(gridLinkedProduction.TranslationName,"Date"),70,HorizontalAlignment.Center);
+			col=new GridColumn(Lan.g(gridLinkedProduction.TranslationName,"Date\r\nProduction"),70,HorizontalAlignment.Center);
 			gridLinkedProduction.Columns.Add(col);
 			col=new GridColumn(Lan.g(gridLinkedProduction.TranslationName,"Provider"),70);
 			gridLinkedProduction.Columns.Add(col);

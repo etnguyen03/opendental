@@ -1341,30 +1341,98 @@ namespace OpenDentBusiness {
 
 		///<summary>Gets a list of all prescriptions from DoseSpot for the passed in patientId.  Call GetDoseSpotPatID to convert patnum -> patientId.</summary>
 		public static List<DoseSpotPrescription> GetPrescriptions(string authToken,string patientId) {
+			List<DoseSpotPrescription> listDoseSpotPrescriptions=new List<DoseSpotPrescription>();
 			//GET, don't need a body
 			string body="";
 			var resObj=Request(ApiRoute.GetPrescriptions,HttpMethod.Get,"Bearer "+authToken,body,new {
 				Items=new List<DoseSpotPrescription>(),
+				PageResult=new {
+					CurrentPage="",
+					TotalPages="",
+					PageSize="",
+					TotalCount="",
+					HasPrevious="",
+					HasNext=""
+				},
 				Result=new {ResultCode="",ResultDescription=""}
 			},"application/json",patientId);
 			if(resObj.Result.ResultCode.ToUpper().Contains("ERROR")) {
 				throw new ODException(Lans.g("DoseSpot","Error getting Prescriptions: ")+resObj.Result.ResultDescription);
 			}
-			return resObj.Items;
+			for(int i = 0;i<resObj.Items.Count;i++) {
+				listDoseSpotPrescriptions.Add(resObj.Items[i]);
+			}
+			string pageNumber;
+			while(bool.Parse(resObj.PageResult.HasNext)) {
+				pageNumber=(int.Parse(resObj.PageResult.CurrentPage)+1).ToString();
+				resObj=Request(ApiRoute.GetPrescriptions,HttpMethod.Get,"Bearer "+authToken,body,new {
+					Items=new List<DoseSpotPrescription>(),
+					PageResult=new {
+						CurrentPage="",
+						TotalPages="",
+						PageSize="",
+						TotalCount="",
+						HasPrevious="",
+						HasNext=""
+					},
+					Result=new {ResultCode="",ResultDescription=""}
+				},"application/json",patientId,pageNumber);
+				if(resObj.Result.ResultCode.ToUpper().Contains("ERROR")) {
+					throw new ODException(Lans.g("DoseSpot","Error getting Prescriptions: ")+resObj.Result.ResultDescription);
+				}
+				for(int i = 0;i<resObj.Items.Count;i++) {
+					listDoseSpotPrescriptions.Add(resObj.Items[i]);
+				}
+			}
+			return listDoseSpotPrescriptions;
 		}
 
 		///<summary>Gets a list of all self reported medications from DoseSpot for the passed in patientId.  Call GetDoseSpotPatID to convert patnum -> patientId.</summary>
 		public static List<DoseSpotSelfReported> GetSelfReported(string authToken,string patientId) {
+			List<DoseSpotSelfReported> listDoseSpotSelfReportedPerscriptions=new List<DoseSpotSelfReported>();
 			//GET, don't need a body
 			string body="";
 			var resObj=Request(ApiRoute.GetSelfReportedMedications,HttpMethod.Get,"Bearer "+authToken,body,new {
 				Items=new List<DoseSpotSelfReported>(),
+				PageResult=new {
+					CurrentPage="",
+					TotalPages="",
+					PageSize="",
+					TotalCount="",
+					HasPrevious="",
+					HasNext=""
+				},
 				Result=new {ResultCode="",ResultDescription=""}
 			},"application/json",patientId);
 			if(resObj.Result.ResultCode.ToUpper().Contains("ERROR")) {
 				throw new ODException(Lans.g("DoseSpot","Error getting self reported medications: ")+resObj.Result.ResultDescription);
 			}
-			return resObj.Items;
+			for(int i = 0;i<resObj.Items.Count;i++) {
+				listDoseSpotSelfReportedPerscriptions.Add(resObj.Items[i]);
+			}
+			string pageNumber;
+			while(bool.Parse(resObj.PageResult.HasNext)) {
+				pageNumber=(int.Parse(resObj.PageResult.CurrentPage)+1).ToString();
+				resObj=Request(ApiRoute.GetSelfReportedMedications,HttpMethod.Get,"Bearer "+authToken,body,new {
+					Items=new List<DoseSpotSelfReported>(),
+					PageResult=new {
+						CurrentPage="",
+						TotalPages="",
+						PageSize="",
+						TotalCount="",
+						HasPrevious="",
+						HasNext=""
+					},
+					Result=new {ResultCode="",ResultDescription=""}
+				},"application/json",patientId,pageNumber);
+				if(resObj.Result.ResultCode.ToUpper().Contains("ERROR")) {
+					throw new ODException(Lans.g("DoseSpot","Error getting Prescriptions: ")+resObj.Result.ResultDescription);
+				}
+				for(int i = 0;i<resObj.Items.Count;i++) {
+					listDoseSpotSelfReportedPerscriptions.Add(resObj.Items[i]);
+				}
+			}
+			return listDoseSpotSelfReportedPerscriptions;
 		}
 
 		///<summary>Returns the StoreName in DoseSpot of the given pharmacy.</summary>
@@ -1701,6 +1769,7 @@ namespace OpenDentBusiness {
 					if(!String.IsNullOrWhiteSpace(token)) {
 						programPropertyDoseSpotApiVersion.PropertyValue="2";
 						ProgramProperties.Update(programPropertyDoseSpotApiVersion);
+						Cache.Refresh(InvalidType.Programs);
 						return;
 					}
 				}
@@ -1856,9 +1925,15 @@ namespace OpenDentBusiness {
 				case ApiRoute.GetPrescriptions: //changed from V1 to return Dispensable Drug Info in prescripiton object
 					//routeId[0]=PatientId
 					apiUrl+=$"/api/patients/{arrayRouteIDs[0]}/prescriptions";
+					if(arrayRouteIDs.Count()>1) {
+						apiUrl+=$"?pageNumber={arrayRouteIDs[1]}";
+					}
 					break;
 				case ApiRoute.GetSelfReportedMedications: //changed from V1 to return Dispensable Drug Info in prescripiton object
 					apiUrl+=$"/api/patients/{arrayRouteIDs[0]}/selfReportedMedications";
+					if(arrayRouteIDs.Count()>1) {
+						apiUrl+=$"?pageNumber={arrayRouteIDs[1]}";
+					}
 					break;
 				case ApiRoute.LogMedicationHistoryConsent: //changed from V1
 					//routeId[0]=PatientId

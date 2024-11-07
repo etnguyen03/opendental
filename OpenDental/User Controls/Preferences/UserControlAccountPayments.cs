@@ -114,6 +114,7 @@ namespace OpenDental {
 			_payPlanTermsAndConditions=PrefC.GetString(PrefName.PayPlanTermsAndConditions);
 			checkShowAllocateUnearnedPaymentPrompt.Checked=PrefC.GetBool(PrefName.ShowAllocateUnearnedPaymentPrompt);
 			checkOnlinePaymentsMarkAsProcessed.Checked=PrefC.GetBool(PrefName.OnlinePaymentsMarkAsProcessed);
+			checkPayPlanItemDateShowProc.Checked=PrefC.GetBool(PrefName.PayPlanItemDateShowProc);
 		}
 
 		public bool SaveAccountPayments() {
@@ -142,6 +143,7 @@ namespace OpenDental {
 			if(comboUnallocatedSplits.SelectedIndex!=-1) {
 				Changed|=Prefs.UpdateLong(PrefName.PrepaymentUnearnedType,comboUnallocatedSplits.GetSelectedDefNum());
 			}
+			Changed|=Prefs.UpdateBool(PrefName.PayPlanItemDateShowProc,checkPayPlanItemDateShowProc.Checked);
 			return true;
 		}
 

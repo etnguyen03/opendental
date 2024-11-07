@@ -7983,7 +7983,12 @@ namespace OpenDental {
 				}
 				//We have valid DoseSpot credentials.  Try to access information from DoseSpot's API.  Catch independently to ensure as much data is gathered as possible.
 				try {
-					DoseSpot.GetPrescriberNotificationCounts(doseSpotClinicID,doseSpotClinicKey,doseSpotUserID,out countRefillRequests,out countErrors,out countPendingPrescriptions);
+					if(programPropertyDoseSpotApiVersion.PropertyValue=="1") {
+						DoseSpot.GetPrescriberNotificationCounts(doseSpotClinicID,doseSpotClinicKey,doseSpotUserID,out countRefillRequests,out countErrors,out countPendingPrescriptions);
+					} 
+					else {
+						DoseSpotV2.GetPrescriberNotificationCounts(doseSpotClinicID,doseSpotClinicKey,doseSpotUserID,out countRefillRequests,out countErrors,out countPendingPrescriptions);
+					}
 					SetErxButtonNotification(countRefillRequests,countErrors,countPendingPrescriptions,false);
 				}
 				catch(Exception ex) {
@@ -7997,7 +8002,12 @@ namespace OpenDental {
 					//Consent for DoseSpot to share medication history must be renewed every 24 hours. Once we have patient's consent stored in DB, we renew
 					//consent each time we refresh notifications.
 					if(Pd.PatientNote.Consent.HasFlag(PatConsentFlags.ShareMedicationHistoryErx)) {
-						DoseSpot.SetMedicationHistConsent(Pd.Patient,clinicNum);
+						if(programPropertyDoseSpotApiVersion.PropertyValue=="1") {
+							DoseSpot.SetMedicationHistConsent(Pd.Patient,clinicNum);
+						}
+						else {
+							DoseSpotV2.SetMedicationHistConsent(Pd.Patient,clinicNum);
+						}
 					}
 					if(programPropertyDoseSpotApiVersion.PropertyValue=="2") {
 						DoseSpotV2.SyncPrescriptionsToDoseSpot(doseSpotClinicID,doseSpotClinicKey,doseSpotUserID,Pd.PatNum);

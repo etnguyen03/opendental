@@ -1542,6 +1542,8 @@ namespace OpenDental {
 				if((assignedDent!=0&&assignedDent!=appointment.ProvNum)||(assignedHyg!=0&&assignedHyg!=appointment.ProvHyg)) {
 					FrmApptProvPrompt frmApptProvPrompt=new FrmApptProvPrompt();
 					EnumApptProvPrompt enumApptProvPrompt=PrefC.GetEnum<EnumApptProvPrompt>(PrefName.ApptModuleProviderPrompt);
+					System.Windows.Forms.Screen screen=System.Windows.Forms.Screen.FromControl(this);
+					frmApptProvPrompt.PointScreen=screen.Bounds.Location;
 					frmApptProvPrompt.EnumApptProvPrompt_=enumApptProvPrompt;
 					if(enumApptProvPrompt==EnumApptProvPrompt.NoPromptChange || enumApptProvPrompt==EnumApptProvPrompt.NoPromptNoChange) {
 						//Pref is set to don't prompt. Automate the provider change selection.
@@ -4314,6 +4316,8 @@ namespace OpenDental {
 					}
 					FrmApptProvPrompt frmApptProvPrompt=new FrmApptProvPrompt();
 					EnumApptProvPrompt enumApptProvPrompt=PrefC.GetEnum<EnumApptProvPrompt>(PrefName.ApptModuleProviderPrompt);
+					System.Windows.Forms.Screen screen=System.Windows.Forms.Screen.FromControl(this);
+					frmApptProvPrompt.PointScreen=screen.Bounds.Location;
 					frmApptProvPrompt.EnumApptProvPrompt_=enumApptProvPrompt;
 					if(!isOpUpdate && (enumApptProvPrompt==EnumApptProvPrompt.NoPromptChange || enumApptProvPrompt==EnumApptProvPrompt.NoPromptNoChange)) {
 						//We're not updating op through Update All an pref is set to don't prompt. Automate the provider change selection.

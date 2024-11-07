@@ -46,7 +46,7 @@ This is similar to the OpenDental.ODprintout, but adapted for WPF and kept as si
 		public bool HasValidSettings() {
 			SettingsErrorCode=PrintoutErrorCode.Success;
 			ServiceController [] serviceControllerArray=ServiceController.GetServices();
-			ServiceController serviceControllerPrintSpooler=serviceControllerArray.FirstOrDefault(x => x.DisplayName=="Print Spooler");
+			ServiceController serviceControllerPrintSpooler=serviceControllerArray.FirstOrDefault(x => x.ServiceName=="Spooler");
 			if(serviceControllerPrintSpooler==null || serviceControllerPrintSpooler.Status!=ServiceControllerStatus.Running) {
 				SettingsErrorCode=PrintoutErrorCode.InactivePrintSpoolerService;
 				return false;

@@ -271,7 +271,14 @@ namespace OpenDentBusiness {
 				return "";
 			}
 			string command=@$"
-				SELECT 'PayPlanLink' TranType,prodlink.PatNum PatNum,DATE(AgeDate) TranDate,
+				SELECT 'PayPlanLink' TranType,prodlink.PatNum PatNum,DATE(";
+				if(PrefC.GetBool(PrefName.PayPlanItemDateShowProc)){
+					command+="AgeDate";
+				}
+				else{
+					command+="payplanlink.SecDateTEntry";
+				}
+				command+=$@") TranDate,
 					(CASE WHEN payplanlink.AmountOverride=0 THEN -prodlink.Fee ELSE -payplanlink.AmountOverride END) TranAmount"
 					+(_isAgedByProc?",prodlink.ProcNum AgedProcNum,prodlink.AgeDate AgedProcDate":"")+" "+$@"
 				FROM payplanlink
@@ -285,7 +292,7 @@ namespace OpenDentBusiness {
 					INNER JOIN payplan ON payplanlink.PayPlanNum=payplan.PayPlanNum
 					INNER JOIN procedurelog ON procedurelog.ProcNum=payplanlink.FKey
 						AND payplanlink.LinkType={POut.Int((int)PayPlanLinkType.Procedure)}
-						AND procedurelog.ProcStatus={POut.Int((int)ProcStat.C)}
+						AND (procedurelog.ProcStatus={POut.Int((int)ProcStat.C)} OR payplan.dynamicPayPlanTPOption={POut.Int((int)DynamicPayPlanTPOptions.TreatAsComplete)})
 					LEFT JOIN (
 						SELECT SUM(adjustment.AdjAmt) AdjAmt,adjustment.ProcNum,adjustment.PatNum,adjustment.ProvNum,adjustment.ClinicNum
 						FROM adjustment 

@@ -1730,6 +1730,9 @@ namespace OpenDentBusiness {
 		[PrefName(ValueType=PrefValueType.BOOL)]
 		PayPlanRequireLockForAPR,
 		PayPlansBillInAdvanceDays,
+		[PrefName(ValueType=PrefValueType.BOOL)]
+		///<summary>Boolean. False by default. If true, payment plans will use the date of production as the Date Showing. If false, payment plans use the payplanlink.SecDateTEntry as the date showing. That field is not editable and is the date that the user attached the proc to the pp. In the normal scenario of adding procs at the same time as pp creation, this is effectively the pp date. This also handles the scenario where you have a long-running pp and periodically add procedures to it. If we get complaints, we might add this as a date field that users can control.</summary>
+		PayPlanItemDateShowProc,
 		///<summary>Boolean.  False by default.  If true, payment plan window will exclude past activity in the amortization grid by default.</summary>
 		PayPlansExcludePastActivity,
 		PayPlansUseSheets,

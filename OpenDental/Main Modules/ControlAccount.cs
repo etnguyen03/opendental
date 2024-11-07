@@ -1262,7 +1262,10 @@ namespace OpenDental {
 
 		private void menuItemSendCareCreditCSS_Click(object sender,EventArgs e) {
 			using FormAmountEdit formAmountEdit=new FormAmountEdit("Amount: ");
-			formAmountEdit.Amount=PIn.Decimal(labelPatEstBalAmt.Text);
+			decimal balance=PIn.Decimal(labelPatEstBalAmt.Text);
+			if(balance>0) {
+				formAmountEdit.Amount=balance;
+			}
 			formAmountEdit.ShowDialog();
 			if(formAmountEdit.DialogResult==DialogResult.OK) {
 				CareCreditL.LaunchPurchasePage(_patient,decimal.ToDouble(formAmountEdit.Amount));

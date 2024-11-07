@@ -2195,32 +2195,32 @@ namespace OpenDentBusiness {
 				//are not made from paymentplancharges when using dynamic payment plans,they are their own table. We need to handle the credits here 
 				//according to what the user wants to see based on their payment plans version.
 				command=GetDynamicPayPlanCreditsString(familyPatNums);
-				DataTable payplanLinks=new DataTable();
+				DataTable tablePayPlanLinks=new DataTable();
 				if(!isInvoice && statement.StatementType!=StmtType.LimitedStatement) {
-					payplanLinks=dataConnection.GetTable(command);
+					tablePayPlanLinks=dataConnection.GetTable(command);
 				}
-				for(int i = 0;i < payplanLinks.Rows.Count;i++) {
+				for(int i = 0;i < tablePayPlanLinks.Rows.Count;i++) {
 					//Don't show treatment planned procedure credits, no matter what.
-					if(PIn.Int(payplanLinks.Rows[i]["LinkType"].ToString())==(int)PayPlanLinkType.Procedure && PIn.Enum<ProcStat>(payplanLinks.Rows[i]["ProcStatus"].ToString())!=ProcStat.C) {
+					if(PIn.Int(tablePayPlanLinks.Rows[i]["LinkType"].ToString())==(int)PayPlanLinkType.Procedure && PIn.Enum<ProcStat>(tablePayPlanLinks.Rows[i]["ProcStatus"].ToString())!=ProcStat.C) {
 						continue;
 					}
 					dataRow=dataTableAccount.NewRow();
-					string num=payplanLinks.Rows[i]["Num"].ToString();
+					string num=tablePayPlanLinks.Rows[i]["Num"].ToString();
 					string adjNum="";
 					string procNum="";
-					amt=PIn.Decimal(payplanLinks.Rows[i]["AmountOverride"].ToString());
+					amt=PIn.Decimal(tablePayPlanLinks.Rows[i]["AmountOverride"].ToString());
 					if(amt==0) {
-						amt=PIn.Decimal(payplanLinks.Rows[i]["Fee"].ToString());
+						amt=PIn.Decimal(tablePayPlanLinks.Rows[i]["Fee"].ToString());
 					}
-					if(PIn.Int(payplanLinks.Rows[i]["LinkType"].ToString())==(int)PayPlanLinkType.Adjustment) {
+					if(PIn.Int(tablePayPlanLinks.Rows[i]["LinkType"].ToString())==(int)PayPlanLinkType.Adjustment) {
 						adjNum=num;
 					}
 					else {//Procedure Link
 						procNum=num;
-						if(payplanLinks.Rows[i]["dynamicPayPlanTPOption"].ToString()==((int)DynamicPayPlanTPOptions.AwaitComplete).ToString() 
-							&& payplanLinks.Rows[i]["ProcStatus"].ToString()==((int)ProcStat.TP).ToString()) 
+						if(tablePayPlanLinks.Rows[i]["dynamicPayPlanTPOption"].ToString()==((int)DynamicPayPlanTPOptions.AwaitComplete).ToString() 
+							&& tablePayPlanLinks.Rows[i]["ProcStatus"].ToString()==((int)ProcStat.TP).ToString()) 
 						{
-							totPlannedFee+=PIn.Decimal(payplanLinks.Rows[i]["Fee"].ToString());
+							totPlannedFee+=PIn.Decimal(tablePayPlanLinks.Rows[i]["Fee"].ToString());
 							amt=0;
 						}
 					}
@@ -2234,28 +2234,31 @@ namespace OpenDentBusiness {
 					dataRow["credits"]=amt.ToString("n");
 					dataRow["ClaimNum"]=0;
 					dataRow["ClaimPaymentNum"]="0";
-					long clinicNumCur=PIn.Long(payplanLinks.Rows[i]["ClinicNum"].ToString());
+					long clinicNumCur=PIn.Long(tablePayPlanLinks.Rows[i]["ClinicNum"].ToString());
 					dataRow["clinic"]=Clinics.GetDesc(clinicNumCur);
 					dataRow["ClinicNum"]=clinicNumCur;
 					dataRow["colorText"]=listDefs[6].ItemColor.ToArgb().ToString();
-					dateT=PIn.DateT(payplanLinks.Rows[i]["ProdDate"].ToString());
+					dateT=PIn.DateT(tablePayPlanLinks.Rows[i]["SecDateTEntry"].ToString());
+					if(PrefC.GetBool(PrefName.PayPlanItemDateShowProc)){
+						dateT=PIn.DateT(tablePayPlanLinks.Rows[i]["ProdDate"].ToString());
+					}
 					dataRow["DateTime"]=dateT.Date;
 					dataRow["date"]=dateT.ToString(Lans.GetShortDateTimeFormat());
-					dataRow["dateTimeSort"]=PIn.DateT(payplanLinks.Rows[i]["SecDateTEntry"].ToString());//SecDateTEntry will be used for sorting if RandomKeys is enabled
+					dataRow["dateTimeSort"]=PIn.DateT(tablePayPlanLinks.Rows[i]["SecDateTEntry"].ToString());//SecDateTEntry will be used for sorting if RandomKeys is enabled
 					dataRow["description"]="";
-					long patNumCur=PIn.Long(payplanLinks.Rows[i]["PatNum"].ToString());
+					long patNumCur=PIn.Long(tablePayPlanLinks.Rows[i]["PatNum"].ToString());
 					dataRow["patient"]=GetPatName(patNumCur,family,(isReseller || doIncludePatLName));
 					//For insurance payment plans, the charges should appear on the patient's account.
 					dataRow["PatNum"]=patNumCur;
 					dataRow["PayNum"]=0;
-					dataRow["PayPlanNum"]=PIn.Long(payplanLinks.Rows[i]["PayPlanNum"].ToString());
+					dataRow["PayPlanNum"]=PIn.Long(tablePayPlanLinks.Rows[i]["PayPlanNum"].ToString());
 					dataRow["PayPlanChargeNum"]=0;//may need to make a new functional column here?
 					dataRow["ProcCode"]=Lans.g("AccountModule","PayPln:")+" Credit";
 					dataRow["ProcNum"]="0";
 					dataRow["ProcNumLab"]="";
 					dataRow["procsOnObj"]=procNum;
 					dataRow["adjustsOnObj"]=adjNum;
-					dataRow["prov"]=Providers.GetAbbr(PIn.Long(payplanLinks.Rows[i]["ProvNum"].ToString()));
+					dataRow["prov"]=Providers.GetAbbr(PIn.Long(tablePayPlanLinks.Rows[i]["ProvNum"].ToString()));
 					dataRow["signed"]="";
 					dataRow["StatementNum"]=0;
 					dataRow["ToothNum"]="";

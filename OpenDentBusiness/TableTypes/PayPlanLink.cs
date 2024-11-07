@@ -19,7 +19,7 @@ namespace OpenDentBusiness{
 		public long FKey;
 		///<summary>Optional override if full amount of object is not desired. </summary>
 		public double AmountOverride;
-		///<summary>DateTime. Date the link was created.  </summary>
+		///<summary>DateTime. Date the link was created. If pref.PayPlanItemDateShowProc is false, then this is also the date that this entry shows in the main account module.</summary>
 		[CrudColumn(SpecialType=CrudSpecialColType.DateTEntry)]
 		public DateTime SecDateTEntry;
 
