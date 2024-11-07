@@ -53,7 +53,7 @@ namespace OpenDental{
 			this.groupBox3.Controls.Add(this.label15);
 			this.groupBox3.Location = new System.Drawing.Point(12, 12);
 			this.groupBox3.Name = "groupBox3";
-			this.groupBox3.Size = new System.Drawing.Size(253, 112);
+			this.groupBox3.Size = new System.Drawing.Size(262, 112);
 			this.groupBox3.TabIndex = 55;
 			this.groupBox3.Text = "Default Dates";
 			// 

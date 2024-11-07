@@ -619,7 +619,9 @@ namespace OpenDental {
 						JobAction.ReviewCode,
 						JobAction.ApproveChanges,
 						JobAction.ApproveConcept,
-						JobAction.ApproveJob
+						JobAction.ApproveJob,
+						JobAction.ApproveQuote,
+						JobAction.WaitForApproval
 					};
 			}
 		}

@@ -626,10 +626,6 @@ namespace OpenDental {
 				e.Cancel=true;//Stops the page from loading in FormWiki.
 				return;
 			}
-			else {
-				e.Cancel=true;//Stops the page from loading in FormWiki.
-				return;
-			}
 		}
 
 		private bool HasExistingWikiPage(WikiPage wikiPage,out WikiPage wikiPageExisting) {
@@ -699,9 +695,9 @@ namespace OpenDental {
 			}
 			if(wikiLinkMouseHoverName.StartsWith("wiki:")) {
 				NavigateToWiki(wikiLinkMouseHoverName,isNewWindow:true);
+				e.Cancel=true;
+				return;
 			}
-			e.Cancel=true;
-			return;
 		}
 
 		private void FormWiki_ResizeEnd(object sender,EventArgs e) {

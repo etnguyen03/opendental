@@ -300,6 +300,10 @@ namespace OpenDental {
 			if(HasAnotherNoteOpen()) {
 				return;
 			}
+			if(_openAiChatSession.ChatSession==null) {
+				MsgBox.Show(this,"Please send a message before adding a note.");
+				return;
+			}
 			WebChatNote webChatNote=new WebChatNote();
 			webChatNote.WebChatSessionNum=_openAiChatSession.ChatSession.WebChatSessionNum;
 			webChatNote.TechName=_openAiChatSession.ChatSession.TechName;

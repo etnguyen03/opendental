@@ -218,7 +218,7 @@ namespace OpenDentalCloud {
 			protected override async Task PerformIO() {
 				bool hadToConnect=_client.ConnectIfNeeded();
 				_client.CreateDirectoriesIfNeeded(FolderPath);
-				List<SftpFile> listFiles=(await Task.Factory.FromAsync(_client.BeginListDirectory(FolderPath,null,null),_client.EndListDirectory)).ToList();
+				List<ISftpFile> listFiles=(await Task.Factory.FromAsync(_client.BeginListDirectory(FolderPath,null,null),_client.EndListDirectory)).ToList();
 				listFiles=listFiles.FindAll(x => !x.FullName.EndsWith("."));//Sftp has 2 "extra" files that are "." and "..".  I think it's for explorer navigation.
 				ListFolderPathLower=listFiles.Select(x => x.FullName.ToLower()).ToList();
 				ListFolderPathsDisplay=listFiles.Select(x => x.FullName).ToList();
@@ -310,7 +310,7 @@ namespace OpenDentalCloud {
 						}
 						else {//Moving
 							await Task.Run(() => {
-								SftpFile file=_client.Get(path);
+								ISftpFile file=_client.Get(path);
 								_client.CreateDirectoriesIfNeeded(ToPath);
 								file.MoveTo(toPathFull);
 							});

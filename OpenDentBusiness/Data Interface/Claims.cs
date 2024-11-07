@@ -976,13 +976,19 @@ namespace OpenDentBusiness{
 			if(RemotingClient.MiddleTierRole==MiddleTierRole.ClientMT) {
 				return Meth.GetTable(MethodBase.GetCurrentMethod(),listDateTimes,listClaimFees);
 			}
-			string command=$@"SELECT claim.ClaimNum,claim.ClaimIdentifier,claim.ClaimStatus,ROUND(ClaimFee,2) ClaimFee,claim.DateService,patient.LName,
-				patient.FName,inssub.SubscriberID
-				FROM claim
-				INNER JOIN patient ON patient.PatNum=claim.PatNum
-				INNER JOIN inssub ON inssub.InsSubNum=claim.InsSubNum AND claim.PlanNum=inssub.PlanNum
-				WHERE (DATE(DateService) IN ({string.Join(",",listDateTimes.Select(x => POut.Date(x)))}) OR {DbHelper.Year("DateService")}=1)
-				AND ROUND(ClaimFee,2) IN ({string.Join(",",listClaimFees.Select(x => POut.Double(x)))})";
+			string command=$@"SELECT a.ClaimNum,a.ClaimIdentifier,a.ClaimStatus,a.ClaimFee,a.DateService,patient.LName,patient.FName,inssub.SubscriberID
+				FROM (
+					SELECT claim.ClaimNum,claim.ClaimIdentifier,claim.ClaimStatus,ROUND(ClaimFee, 2) ClaimFee,claim.DateService,claim.PatNum,claim.InsSubNum,claim.PlanNum
+					FROM claim
+					WHERE DateService IN ({string.Join(",",listDateTimes.Select(x => POut.Date(x)))})
+					UNION
+					SELECT claim.ClaimNum,claim.ClaimIdentifier,claim.ClaimStatus,ROUND(ClaimFee, 2) ClaimFee,claim.DateService,claim.PatNum,claim.InsSubNum,claim.PlanNum
+					FROM claim
+					WHERE ClaimType='PreAuth' AND DateService={DbHelper.Year("DateService")}=1 AND SecDateEntry>{POut.Date(listDateTimes.Min())}-INTERVAL 1 YEAR
+				) a
+				INNER JOIN patient ON patient.PatNum=a.PatNum
+				INNER JOIN inssub ON inssub.InsSubNum=a.InsSubNum AND a.PlanNum=inssub.PlanNum
+				WHERE ClaimFee IN ({string.Join(",",listClaimFees.Select(x => POut.Double(x)))})";
 			return Db.GetTable(command);
 		}
 
@@ -994,13 +1000,19 @@ namespace OpenDentBusiness{
 			if(RemotingClient.MiddleTierRole==MiddleTierRole.ClientMT) {
 				return Meth.GetTable(MethodBase.GetCurrentMethod(),dateMin,dateMax,listClaimFees);
 			}
-			string command=$@"SELECT claim.ClaimNum,claim.ClaimIdentifier,claim.ClaimStatus,ROUND(ClaimFee,2) ClaimFee,claim.DateService,patient.LName,
-				patient.FName,inssub.SubscriberID
-				FROM claim
-				INNER JOIN patient ON patient.PatNum=claim.PatNum
-				INNER JOIN inssub ON inssub.InsSubNum=claim.InsSubNum AND claim.PlanNum=inssub.PlanNum
-				WHERE ({DbHelper.BetweenDates("DateService",dateMin,dateMax)} OR {DbHelper.Year("DateService")}=1)
-				AND ROUND(ClaimFee,2) IN ({string.Join(",",listClaimFees.Select(x => POut.Double(x)))})";
+			string command=$@"SELECT a.ClaimNum,a.ClaimIdentifier,a.ClaimStatus,a.ClaimFee,a.DateService,patient.LName,patient.FName,inssub.SubscriberID
+				FROM (
+					SELECT claim.ClaimNum,claim.ClaimIdentifier,claim.ClaimStatus,ROUND(ClaimFee, 2) ClaimFee,claim.DateService,claim.PatNum,claim.InsSubNum,claim.PlanNum
+					FROM claim
+					WHERE ({DbHelper.BetweenDates("DateService",dateMin,dateMax)})
+					UNION
+					SELECT claim.ClaimNum,claim.ClaimIdentifier,claim.ClaimStatus,ROUND(ClaimFee, 2) ClaimFee,claim.DateService,claim.PatNum,claim.InsSubNum,claim.PlanNum
+					FROM claim
+					WHERE ClaimType='PreAuth' AND DateService={DbHelper.Year("DateService")}=1 AND SecDateEntry>{POut.Date(dateMin)}-INTERVAL 1 YEAR
+				) a
+				INNER JOIN patient ON patient.PatNum=a.PatNum
+				INNER JOIN inssub ON inssub.InsSubNum=a.InsSubNum AND a.PlanNum=inssub.PlanNum
+				WHERE ClaimFee IN ({string.Join(",",listClaimFees.Select(x => POut.Double(x)))})";
 			return Db.GetTable(command);
 		}
 

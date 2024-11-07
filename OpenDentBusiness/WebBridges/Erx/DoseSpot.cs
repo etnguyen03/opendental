@@ -1988,17 +1988,17 @@ namespace OpenDentBusiness {
 		//DO NOT RENAME ANYTHING IN THIS CLASS. IT IS USED FOR SERIALIZING DOSESPOT API RESPONSES AND NEEDS TO MATCH THE DOSESPOT API DOCS.
 		public int? SelfReportedMedicationId;
 		public DateTime? DateReported;
-		public DateTime? WrittenDate;
-		public string Directions;
-		public string Quantity;
-		public int? DispenseUnitId;
-		public string DispenseUnitDescription;
+		public DateTime? WrittenDate;//Changed from V2 to DatePrescribed
+		public string Directions;//Changed from V2 to DosageText
+		public string Quantity;//Changed from V2 to Dispense
+		public int? DispenseUnitId;//Changed from V2 to DispenseUnitTypeId
+		public string DispenseUnitDescription;//Changed from V2 to DispenseUnitType
 		public string Refills;
 		public int? DaysSupply;
 		public int? PatientMedicationId;
-		public DoseSpotREST.MedicationStatus MedicationStatus;
+		public DoseSpotREST.MedicationStatus MedicationStatus;//Changed from V2 to Status
 		public string Comment;
-		public DateTime? DateInactive;
+		public DateTime? DateInactive;//Changed from V2 to DiscontinuedDate
 		public string Encounter;
 		public string DoseForm;
 		public string Route;
@@ -2015,6 +2015,25 @@ namespace OpenDentBusiness {
 		public string DisplayName;
 		public string MonographPath;
 		public string DrugClassification;
+
+		//Added for DoseSpot V2 DoseSpotSelfReported return object
+		[JsonProperty("DatePrescribed")]
+		private DateTime? DatePrescribed {set{WrittenDate=value;}}
+		[JsonProperty("DispenseUnitType")]
+		private string? DispenseUnitType {set{DispenseUnitDescription=value;}}
+		[JsonProperty("DosageText")]
+		private string? DosageText {set{Directions=value;}}
+		[JsonProperty("Dispense")]
+		private string? Dispense {set{Quantity=value;}}
+		[JsonProperty("DispenseUnitTypeId")]
+		private int? DispenseUnitTypeId {set{DispenseUnitId=value;}}
+		[JsonProperty("Status")]
+		private DoseSpotREST.MedicationStatus Status {set{MedicationStatus=value;}}
+		[JsonProperty("DiscontinuedDate")]
+		private DateTime? DiscontinuedDate {set{DateInactive=value;}}
+		private int DispensableDrugId; 
+		private bool RoutedDoseFormDrugID;
+		private string StateSchedules;
 	}
 
 	///<summary>Wrapper class to hold prescriptions and medications that we recieve from DoseSpot before converting into RxPats.  Not all fields 

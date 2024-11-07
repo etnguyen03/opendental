@@ -220,6 +220,7 @@ namespace OpenDental{
 			// 
 			// webViewMain
 			// 
+			this.webViewMain.AllowExternalDrop = true;
 			this.webViewMain.CreationProperties = null;
 			this.webViewMain.DefaultBackgroundColor = System.Drawing.Color.White;
 			this.webViewMain.Location = new System.Drawing.Point(420, 23);
@@ -254,8 +255,7 @@ namespace OpenDental{
 			this.label1.Name = "label1";
 			this.label1.Size = new System.Drawing.Size(275, 32);
 			this.label1.TabIndex = 50;
-			this.label1.Text = "If you need to change the Amount, you must then click Refresh to see your changes" +
-    " on the right";
+			this.label1.Text = "Click to update the amount";
 			this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			// 
 			// FormPayConnect2

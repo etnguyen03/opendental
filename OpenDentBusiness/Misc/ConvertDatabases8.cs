@@ -2054,6 +2054,21 @@ namespace OpenDentBusiness {
 			ObsolesceCDTCodesFor2025();
 		}
 
+		private static void To24_2_50() {
+			string command;
+			//Start I57518
+			try {
+				if(!IndexExists("appointment","DateTStamp")) {
+					command="ALTER TABLE appointment ADD INDEX (DateTStamp)";
+					Db.NonQ(command);
+				}
+			}
+			catch(Exception ex) {
+				ex.DoNothing(); //Only an index. (Exception ex) required to catch thrown exception
+			}
+			//End I57518
+		}//End of 24_2_50
+
 		private static void To24_3_1() {
 			string command;
 			DataTable table;
@@ -2372,5 +2387,20 @@ namespace OpenDentBusiness {
 				Db.NonQ(command);
 			}
 		}//End of 24_3_15
+
+		private static void To24_3_17() {
+			string command;
+			//Start I57518
+			try {
+				if(!IndexExists("appointment","DateTStamp")) {
+					command="ALTER TABLE appointment ADD INDEX (DateTStamp)";
+					Db.NonQ(command);
+				}
+			}
+			catch(Exception ex) {
+				ex.DoNothing(); //Only an index. (Exception ex) required to catch thrown exception
+			}
+			//End I57518
+		}//End of 24_3_17
 	}
 }
