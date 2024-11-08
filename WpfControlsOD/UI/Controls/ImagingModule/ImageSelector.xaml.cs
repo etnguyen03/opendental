@@ -1039,6 +1039,9 @@ Only used once in Imaging module.
 		private void Item_MouseLeftButtonDown(object sender, MouseButtonEventArgs e){
 			Point point=e.GetPosition(this);
 			Border border=BorderFromPoint(point);
+			if(border==null){
+				return;
+			}
 			int idx=IndexFromBorder(border);
 			bool isDoubleClick=e.ClickCount==2;
 			if(isDoubleClick){

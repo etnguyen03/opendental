@@ -12603,7 +12603,7 @@
       <summary>Optional override if full amount of object is not desired. </summary>
     </column>
     <column order="5" name="SecDateTEntry" type="datetime">
-      <summary>DateTime. Date the link was created.  </summary>
+      <summary>DateTime. Date the link was created. If pref.PayPlanItemDateShowProc is false, then this is also the date that this entry shows in the main account module.</summary>
     </column>
   </table>
   <table name="payplantemplate">

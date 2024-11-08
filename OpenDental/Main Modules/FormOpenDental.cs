@@ -6340,8 +6340,14 @@ namespace OpenDental{
 
 		//Tools
 		private void menuItemPrintScreen_Click(object sender, System.EventArgs e) {
-			using FormPrntScrn formPrntScrn=new FormPrntScrn();
-			formPrntScrn.ShowDialog();
+			try {
+				using FormPrntScrn formPrntScrn=new FormPrntScrn();
+				formPrntScrn.ShowDialog();
+			}
+			catch(Exception ex) {
+				//Example: Printer spooler is not running
+				MsgBox.Show(ex.Message);
+			}
 		}
 
 		private void menuItemScreenSnip_Click(object sender,EventArgs e) {

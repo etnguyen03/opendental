@@ -2604,6 +2604,10 @@ namespace OpenDental {
 			List<SheetFieldDef> listSheetFieldDefsNew=new List<SheetFieldDef>();
 			for(int i=0;i<_listSheetFieldDefsCopyPaste.Count;i++) { //create new controls
 				SheetFieldDef sheetFieldDef=_listSheetFieldDefsCopyPaste[i].Copy();
+				//If there's an image, make a deep copy of it so that the copy and original don't reference the same memory
+				if(_listSheetFieldDefsCopyPaste[i].ImageField!=null) {
+					sheetFieldDef.ImageField=new Bitmap(_listSheetFieldDefsCopyPaste[i].ImageField);
+				}
 				sheetFieldDef.XPos=sheetFieldDef.XPos-minX+pointOrigin.X;
 				sheetFieldDef.YPos=sheetFieldDef.YPos-minY+pointOrigin.Y;
 				AddNewSheetFieldDef(sheetFieldDef);
