@@ -184,6 +184,7 @@ namespace OpenDental {
 			#region Miscellaneous Replacement Rows
 			//misc replacement rows
 			listReplacementFields.Add(new ReplacementField("[CurrentMonth]","The text description of the current month (ex December).",MessageReplaceType.Misc,isAllowPhi,listMessageReplaceTypesSupported));
+			listReplacementFields.Add(new ReplacementField("[ClinicNumCur]","The currently selected clinic number or 0 if clinics are disabled",MessageReplaceType.Misc,isAllowPhi,listMessageReplaceTypesSupported));
 			#endregion
 			#region Patient's "From" Referrals-IsDoctor only Replacement Rows
 			listReplacementFields.Add(new ReplacementField("[ReferredFromProvInitialReferralNum]","The 'ReferralNum' of the initial (oldest) 'Referred From' provider that is marked as "

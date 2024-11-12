@@ -298,7 +298,7 @@ namespace OpenDental {
 		///<summary>Removes un-wanted text that OpenAi includes in their response.</summary>
 		private string CleanAiResponse(string text) {
 			//Pattern to capture `?` followed by numbers and then `†` followed by alphanumeric characters, underscores, and periods.
-			string regexPattern = @"\?\d+:\d+†[\w._]+";
+			string regexPattern = @"\?\d+:\d+†[\w._]+\?";
 			return Regex.Replace(text, regexPattern, string.Empty);
 		}
 

@@ -121,6 +121,26 @@ namespace OpenDentBusiness {
 			return retVal;
 		}
 
+		///<summary>Will create folder if needed. Will validate that folder exists. Currently only used for ODCloud AppStream</summary>
+		public static string GetMobileBrandingImageFolder() {
+			string retVal="";
+			if(PrefC.AtoZfolderUsed==DataStorageType.InDatabase) {
+				return retVal;
+			}
+			string AtoZPath=GetPreferredAtoZpath();
+			retVal=ODFileUtils.CombinePaths(AtoZPath,"MobileBrandingImages");
+			if(CloudStorage.IsCloudStorage) {
+				retVal=retVal.Replace("\\","/");
+			}
+			if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ && !Directory.Exists(retVal)) {
+				if(string.IsNullOrEmpty(AtoZPath)) {
+					throw new ApplicationException(Lans.g("ContrDocs","Could not find the path for the AtoZ folder."));
+				}
+				Directory.CreateDirectory(retVal);
+			}
+			return retVal;
+		}
+
 		///<summary>Gets the folder name where provider images are stored. Will create folder if needed.</summary>
 		public static string GetProviderImagesFolder() {
 			string retVal="";

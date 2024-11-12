@@ -142,6 +142,12 @@ namespace OpenDental {
 			formEClipboardImageCaptureDefEdit.EClipboardImageCaptureDefCur=eClipboardImageCaptureDefSelected;
 			formEClipboardImageCaptureDefEdit.ListEClipboardImageCaptureDefs=_listEClipboardImageCaptureDefs.Select(x => x.Copy()).ToList();
 			formEClipboardImageCaptureDefEdit.ShowDialog();
+			if(formEClipboardImageCaptureDefEdit.DialogResult==DialogResult.Cancel){
+				//If changes are made in FormEClipboardDefs, they're still saved to the db even if the user cancels out of FormEClipboardImageCaptureDefEdit.
+				//This can affect the instructions or def name, so we need to refresh the grid.
+				FillGridImages();
+				return;
+			}
 			if(formEClipboardImageCaptureDefEdit.IsDeleted){
 				_listEClipboardImageCaptureDefs.Remove(eClipboardImageCaptureDefSelected);
 			}
@@ -150,13 +156,20 @@ namespace OpenDental {
 
 		private void gridForms_CellDoubleClick(object sender,ODGridClickEventArgs e) {
 			using FormEClipboardSheetRule formEClipboardSheetRule=new FormEClipboardSheetRule();
+			//EClipboardSheetDef eClipboardSheetDef=(EClipboardSheetDef)gridForms.ListGridRows[e.Row].Tag;
+			//formEClipboardSheetRule.EClipboardSheetDefCur=eClipboardSheetDef.Clone();
 			formEClipboardSheetRule.EClipboardSheetDefCur=(EClipboardSheetDef)gridForms.ListGridRows[e.Row].Tag;
 			formEClipboardSheetRule.ListEClipboardSheetDefs=gridForms.ListGridRows.Select(x=>(EClipboardSheetDef)x.Tag).ToList();
 			formEClipboardSheetRule.ShowDialog();
-			if(formEClipboardSheetRule.IsDeleted) {
+			if(formEClipboardSheetRule.DialogResult==DialogResult.Cancel){
+				return;
+			}
+			if(formEClipboardSheetRule.IsDeleted){
 				EClipboardSheetDef eClipboardSheetDef=(EClipboardSheetDef)gridForms.ListGridRows[e.Row].Tag;
 				_listEClipboardSheetDefs.Remove(eClipboardSheetDef);
 			}
+			//int idx=_listEClipboardSheetDefs.IndexOf(eClipboardSheetDef);
+			//_listEClipboardSheetDefs[idx]=formEClipboardSheetRule.EClipboardSheetDefCur;
 			FillGridForms();
 		}
 
@@ -165,18 +178,25 @@ namespace OpenDental {
 			if(checkEClipboardUseDefaults.Checked) {
 				clinicNum=0;
 			}
-			using FormEClipboardImagePicker formEClipboardImagePicker=new FormEClipboardImagePicker();
-			formEClipboardImagePicker.ClinicNum=clinicNum;
-			formEClipboardImagePicker.ListEClipboardImageCaptureDefs=_listEClipboardImageCaptureDefs;//no longer need to send in copies, child form can't make edits to eClipboardImageCaptureDefs already in this list.
-			formEClipboardImagePicker.ShowDialog();
-			if(formEClipboardImagePicker.DialogResult!=DialogResult.OK) {
+			EClipboardImageCaptureDef eClipboardImageCaptureDef=new EClipboardImageCaptureDef();
+			eClipboardImageCaptureDef.ClinicNum=clinicNum;
+			eClipboardImageCaptureDef.Frequency=EnumEClipFreq.TimeSpan;
+			Interval interval=new Interval(days:0,weeks:0,months:0,years:1);
+			eClipboardImageCaptureDef.ResubmitInterval=interval.ToTimeSpan();//default to 1 year
+			eClipboardImageCaptureDef.OcrCaptureType=EnumOcrCaptureType.Miscellaneous;
+			eClipboardImageCaptureDef.IsNew=true;
+			using FormEClipboardImageCaptureDefEdit formEClipboardImageCaptureDefEdit=new FormEClipboardImageCaptureDefEdit();
+			formEClipboardImageCaptureDefEdit.EClipboardImageCaptureDefCur=eClipboardImageCaptureDef;
+			formEClipboardImageCaptureDefEdit.ListEClipboardImageCaptureDefs=_listEClipboardImageCaptureDefs.Select(x => x.Copy()).ToList();
+			formEClipboardImageCaptureDefEdit.ShowDialog();
+			if(formEClipboardImageCaptureDefEdit.DialogResult!=DialogResult.OK){
+				//If changes are made in FormEClipboardDefs, they're still saved to the db even if the user cancels out of FormEClipboardImageCaptureDefEdit.
+				//This can affect the instructions or def name, so we need to refresh the grid.
+				FillGridImages();
 				return;
 			}
-			//On OK click, update _listEClipboardImageCaptureDefs to reflect any newly added eClipboardImageCaptureDefs
-			for(int i=0;i<formEClipboardImagePicker.ListEClipboardImageCaptureDefsSelected.Count;i++){
-				EClipboardImageCaptureDef eClipboardImageCaptureDef=formEClipboardImagePicker.ListEClipboardImageCaptureDefsSelected[i];
-				_listEClipboardImageCaptureDefs.Add(eClipboardImageCaptureDef);
-			}
+			eClipboardImageCaptureDef.IsNew=false;//set back to false. IsNew is only used for adding a new eClipboardImageCaptureDef.
+			_listEClipboardImageCaptureDefs.Add(formEClipboardImageCaptureDefEdit.EClipboardImageCaptureDefCur);
 			//Update the UI to reflect the new changes
 			FillGridImages();
 		}
@@ -195,32 +215,42 @@ namespace OpenDental {
 			listSheetDefs.RemoveAll(x => !x.HasMobileLayout);
 			for(int i=0;i<gridForms.ListGridRows.Count;i++){
 				//Remove any current sheets in use from the list of sheet defs available to add.
-				EClipboardSheetDef eClipboardSheetDef=(EClipboardSheetDef)gridForms.ListGridRows[i].Tag;
-				if(eClipboardSheetDef.SheetDefNum==0 || eClipboardSheetDef is null){//If SheetDefNum==0, this is an eForm.
+				EClipboardSheetDef eClipboardSheetDef2=(EClipboardSheetDef)gridForms.ListGridRows[i].Tag;
+				if(eClipboardSheetDef2.SheetDefNum==0 || eClipboardSheetDef2 is null){//If SheetDefNum==0, this is an eForm.
 					continue;
 				}
-				if(listSheetDefs.Select(x=>x.SheetDefNum).Contains(eClipboardSheetDef.SheetDefNum)){
-					listSheetDefs.RemoveAll(x=>x.SheetDefNum==eClipboardSheetDef.SheetDefNum);
+				if(listSheetDefs.Select(x=>x.SheetDefNum).Contains(eClipboardSheetDef2.SheetDefNum)){
+					listSheetDefs.RemoveAll(x=>x.SheetDefNum==eClipboardSheetDef2.SheetDefNum);
 				}
 			}
 			frmSheetPicker.ListSheetDefs=listSheetDefs;
 			frmSheetPicker.ShowDialog();
-			if(frmSheetPicker.IsDialogOK){
-				List<SheetDef> listSheetDefsSelected=frmSheetPicker.ListSheetDefsSelected;
-				List<EClipboardSheetDef> listEClipboardSheetDefs=new List<EClipboardSheetDef>();
-				for(int i=0;i<listSheetDefsSelected.Count;i++){
-					EClipboardSheetDef eClipboardSheetDef=new EClipboardSheetDef();
-					eClipboardSheetDef.SheetDefNum=listSheetDefsSelected[i].SheetDefNum;
-					eClipboardSheetDef.ClinicNum=clinicNum;
-					eClipboardSheetDef.ResubmitInterval=TimeSpan.FromDays(30);
-					eClipboardSheetDef.MinAge=-1;
-					eClipboardSheetDef.MaxAge=-1;
-					eClipboardSheetDef.ItemOrder=gridForms.ListGridRows.Count;
-					_listEClipboardSheetDefs.Add(eClipboardSheetDef);
-				}
-				FillGridForms();
-				SetEClipboardSheetOrder();
+			if(!frmSheetPicker.IsDialogOK){
+				return;
 			}
+			List<SheetDef> listSheetDefsSelected=frmSheetPicker.ListSheetDefsSelected;
+			SheetDef sheetDef=listSheetDefsSelected[0];//listSheetDefsSelected can only contain 1 SheetDef since frmSheetPicker.MultiSelect is not set to true.
+			EClipboardSheetDef eClipboardSheetDef=new EClipboardSheetDef();
+			eClipboardSheetDef.SheetDefNum=sheetDef.SheetDefNum;
+			eClipboardSheetDef.ClinicNum=clinicNum;
+			eClipboardSheetDef.Frequency=EnumEClipFreq.TimeSpan;
+			Interval interval=new Interval(days:0,weeks:0,months:0,years:1);
+			eClipboardSheetDef.ResubmitInterval=interval.ToTimeSpan();//default to 1 year
+			eClipboardSheetDef.PrefillStatus=PrefillStatuses.PreFill;
+			eClipboardSheetDef.MinAge=-1;
+			eClipboardSheetDef.MaxAge=-1;
+			eClipboardSheetDef.ItemOrder=gridForms.ListGridRows.Count;
+			eClipboardSheetDef.IsNew=true;
+			using FormEClipboardSheetRule formEClipboardSheetRule=new FormEClipboardSheetRule();
+			formEClipboardSheetRule.EClipboardSheetDefCur=eClipboardSheetDef;
+			formEClipboardSheetRule.ListEClipboardSheetDefs=gridForms.ListGridRows.Select(x=>(EClipboardSheetDef)x.Tag).ToList();
+			formEClipboardSheetRule.ShowDialog();
+			if(formEClipboardSheetRule.DialogResult!=DialogResult.OK){//User cancelled or clicked the delete button.
+				return;
+			}
+			eClipboardSheetDef.IsNew=false;//set back to false. IsNew is only used for adding a new eClipboardSheetDefs.
+			_listEClipboardSheetDefs.Add(eClipboardSheetDef);
+			FillGridForms();
 		}
 		
 		private void butEFormAdd_Click(object sender,EventArgs e) {
@@ -239,13 +269,24 @@ namespace OpenDental {
 			EClipboardSheetDef eClipboardSheetDef=new EClipboardSheetDef();
 			eClipboardSheetDef.EFormDefNum=eFormDef.EFormDefNum;
 			eClipboardSheetDef.ClinicNum=clinicNum;
-			eClipboardSheetDef.ResubmitInterval=TimeSpan.FromDays(30);
+			eClipboardSheetDef.Frequency=EnumEClipFreq.TimeSpan;
+			Interval interval=new Interval(days:0,weeks:0,months:0,years:1);
+			eClipboardSheetDef.ResubmitInterval=interval.ToTimeSpan();//default to 1 year
+			eClipboardSheetDef.PrefillStatus=PrefillStatuses.PreFill;
 			eClipboardSheetDef.MinAge=-1;
 			eClipboardSheetDef.MaxAge=-1;
 			eClipboardSheetDef.ItemOrder=gridForms.ListGridRows.Count;
+			eClipboardSheetDef.IsNew=true;
+			using FormEClipboardSheetRule formEClipboardSheetRule=new FormEClipboardSheetRule();
+			formEClipboardSheetRule.EClipboardSheetDefCur=eClipboardSheetDef;
+			formEClipboardSheetRule.ListEClipboardSheetDefs=gridForms.ListGridRows.Select(x=>(EClipboardSheetDef)x.Tag).ToList();
+			formEClipboardSheetRule.ShowDialog();
+			if(formEClipboardSheetRule.DialogResult!=DialogResult.OK){//User cancelled or clicked the delete button.
+				return;
+			}
+			eClipboardSheetDef.IsNew=false;//set back to false. IsNew is only used for adding a new eClipboardSheetDefs.
 			_listEClipboardSheetDefs.Add(eClipboardSheetDef);
 			FillGridForms();
-			SetEClipboardSheetOrder();
 		}
 
 		private void butBrandingProfile_Click(object sender,EventArgs e) {
@@ -448,27 +489,51 @@ namespace OpenDental {
 			gridImages.ListGridRows.Clear();
 			gridImages.Columns.Clear();
 			gridImages.BeginUpdate();
-			GridColumn col=new GridColumn("Definition",120);
+			GridColumn col=new GridColumn("Definition",100);
 			gridImages.Columns.Add(col);
-			col=new GridColumn("Item Value",180);
+			col=new GridColumn("Instructions",200);
+			gridImages.Columns.Add(col);
+			col=new GridColumn("OCR Capture Type",120);
 			gridImages.Columns.Add(col);
 			if(eClipboardImageCaptureDefSelfPortrait!=null){//First add self portait if not null
 				GridRow row=new GridRow();
 				row.Cells.Add("Self Portrait");//Col: Definition
 				row.Cells.Add("Allows patient to submit a self-portrait upon checkin");//Col: Item Value
-				row.Cells.Add(eClipboardImageCaptureDefSelfPortrait.FrequencyDays.ToString());//Col: Frequency
+				EnumOcrCaptureType enumOcrCaptureType=eClipboardImageCaptureDefSelfPortrait.OcrCaptureType;
+				row.Cells.Add(enumOcrCaptureType.GetDescription());
+				if(eClipboardImageCaptureDefSelfPortrait.Frequency==EnumEClipFreq.TimeSpan){
+					Interval interval=new Interval(eClipboardImageCaptureDefSelfPortrait.ResubmitInterval);
+					row.Cells.Add(interval.ToString());//Col: Frequency
+				}
+				else if(eClipboardImageCaptureDefSelfPortrait.Frequency==EnumEClipFreq.EachTime){
+					row.Cells.Add("Each Visit");
+				}
+				else if(eClipboardImageCaptureDefSelfPortrait.Frequency==EnumEClipFreq.Once){
+					row.Cells.Add("Once");
+				}
 				gridImages.ListGridRows.Add(row);
 				row.Tag=eClipboardImageCaptureDefSelfPortrait;
 			}
 			for(int i=0;i<listEClipboardImageCaptureDefs.Count;i++){
 				GridRow row=new GridRow();
-				row.Cells.Add(Defs.GetDef(DefCat.EClipboardImageCapture,listEClipboardImageCaptureDefs[i].DefNum).ItemName);//Col: Definition
-				row.Cells.Add(Defs.GetDef(DefCat.EClipboardImageCapture,listEClipboardImageCaptureDefs[i].DefNum).ItemValue);//Col: Item Value
-				row.Cells.Add(listEClipboardImageCaptureDefs[i].FrequencyDays.ToString());//Col: Frequency
+				row.Cells.Add(Defs.GetName(DefCat.EClipboardImageCapture,listEClipboardImageCaptureDefs[i].DefNum));
+				row.Cells.Add(Defs.GetValue(DefCat.EClipboardImageCapture,listEClipboardImageCaptureDefs[i].DefNum));
+				EnumOcrCaptureType enumOcrCaptureType=listEClipboardImageCaptureDefs[i].OcrCaptureType;
+				row.Cells.Add(enumOcrCaptureType.GetDescription());
+				if(listEClipboardImageCaptureDefs[i].Frequency==EnumEClipFreq.TimeSpan){
+					Interval interval=new Interval(listEClipboardImageCaptureDefs[i].ResubmitInterval);
+					row.Cells.Add(interval.ToString());//Col: Frequency
+				}
+				else if(listEClipboardImageCaptureDefs[i].Frequency==EnumEClipFreq.EachTime){
+					row.Cells.Add("Each Visit");
+				}
+				else if(listEClipboardImageCaptureDefs[i].Frequency==EnumEClipFreq.Once){
+					row.Cells.Add("Once");
+				}
 				row.Tag=listEClipboardImageCaptureDefs[i];
 				gridImages.ListGridRows.Add(row);
 			}
-			col=new GridColumn("Frequency (Days)",100,HorizontalAlignment.Center);
+			col=new GridColumn("Freq.",60,HorizontalAlignment.Center);
 			gridImages.Columns.Add(col);
 			gridImages.EndUpdate();
 		}
@@ -480,23 +545,24 @@ namespace OpenDental {
 			if(checkEClipboardUseDefaults.Checked) {
 				clinicNum=0;
 			}
-			List<EClipboardSheetDef> listEClipboardSheetDefs=_listEClipboardSheetDefs.FindAll(x => x.ClinicNum==clinicNum);
+			List<EClipboardSheetDef> listEClipboardSheetDefsOrdered=_listEClipboardSheetDefs.FindAll(x => x.ClinicNum==clinicNum).OrderBy(x => x.ItemOrder).ToList();
+			for(int i=0;i<listEClipboardSheetDefsOrdered.Count;i++){//Replaces the old "SetEClipboardSheetOrder" method.
+				listEClipboardSheetDefsOrdered[i].ItemOrder=i;
+			}
 			//Put the sheets that are in use into the grid of sheets in use
 			gridForms.ListGridRows.Clear();
 			gridForms.Columns.Clear();
 			gridForms.BeginUpdate();
-			GridColumn col=new GridColumn("",50);//Can either be "Sheet" or "eForm". Does not correspond to 'SheetType' column in SheetDef or 'FormType' column in eFormDef. May need to rename this column to reduce ambiguity.
+			GridColumn col=new GridColumn("",60);//Can either be "Sheet" or "eForm". Does not correspond to 'SheetType' column in SheetDef or 'FormType' column in eFormDef. May need to rename this column to reduce ambiguity.
 			gridForms.Columns.Add(col);
 			col=new GridColumn("Form Name",180);
 			gridForms.Columns.Add(col);
-			col=new GridColumn("Behavior",180);
+			col=new GridColumn("Behavior",70);
 			gridForms.Columns.Add(col);
-			col=new GridColumn("Min Age",40,HorizontalAlignment.Center);
+			col=new GridColumn("Min Age",55,HorizontalAlignment.Center);
 			gridForms.Columns.Add(col);
-			col=new GridColumn("Max Age",40,HorizontalAlignment.Center);
+			col=new GridColumn("Max Age",55,HorizontalAlignment.Center);
 			gridForms.Columns.Add(col);
-			string addOn="";
-			List<EClipboardSheetDef> listEClipboardSheetDefsOrdered=listEClipboardSheetDefs.OrderBy(x => x.ItemOrder).ToList();
 			string gridCellValue;
 			for(int i=0;i<listEClipboardSheetDefsOrdered.Count;i++){
 				GridRow row=new GridRow();
@@ -513,35 +579,32 @@ namespace OpenDental {
 				}
 				GridCell gridCell=new GridCell(Lan.g("enumPrefillCondition",listEClipboardSheetDefsOrdered[i].PrefillStatus.ToString()));
 				row.Cells.Add(gridCell);
-				gridCellValue="Not Set";
+				gridCellValue="";
 				if(listEClipboardSheetDefsOrdered[i].MinAge>0) {
 					gridCellValue=listEClipboardSheetDefsOrdered[i].MinAge.ToString();
 				}
 				row.Cells.Add(gridCellValue);
-				gridCellValue="Not Set";
+				gridCellValue="";
 				if(listEClipboardSheetDefsOrdered[i].MaxAge>0) {
 					gridCellValue=listEClipboardSheetDefsOrdered[i].MaxAge.ToString();
 				}
 				row.Cells.Add(gridCellValue);
-				row.Cells.Add(listEClipboardSheetDefsOrdered[i].ResubmitInterval.TotalDays.ToString()+addOn);
+				if(listEClipboardSheetDefsOrdered[i].Frequency==EnumEClipFreq.TimeSpan){
+					Interval interval=new Interval(listEClipboardSheetDefsOrdered[i].ResubmitInterval);
+					row.Cells.Add(interval.ToString());
+				}
+				else if(listEClipboardSheetDefsOrdered[i].Frequency==EnumEClipFreq.EachTime){
+					row.Cells.Add("Each Visit");
+				}
+				else if(listEClipboardSheetDefsOrdered[i].Frequency==EnumEClipFreq.Once){
+					row.Cells.Add("Once");
+				}
 				row.Tag=listEClipboardSheetDefsOrdered[i];
 				gridForms.ListGridRows.Add(row);
 			}
-			col=new GridColumn("Frequency (Days)",100,HorizontalAlignment.Center);
+			col=new GridColumn("Freq.",60,HorizontalAlignment.Center);
 			gridForms.Columns.Add(col);
 			gridForms.EndUpdate();
-		}
-
-		private void SetEClipboardSheetOrder() {
-			if(gridForms.ListGridRows.Count<1) {
-				return;
-			}
-			int idx=0;
-			List<EClipboardSheetDef> listEClipboardSheetDefs=gridForms.ListGridRows.Select(x => (EClipboardSheetDef)x.Tag).ToList();
-			for(int i=0;i<listEClipboardSheetDefs.Count;i++) {
-				listEClipboardSheetDefs[i].ItemOrder=idx;
-				idx++;
-			}
 		}
 
 		///<summary>Called when user clicks on use defaults for clinic, AuthorizeTab, clinicPicker.SelectedIndexChanged, and CheckEClipboardCreateMissingForms_Click.  It sets various areas enabled or disabled.  Doesn't change the checked values.</summary>

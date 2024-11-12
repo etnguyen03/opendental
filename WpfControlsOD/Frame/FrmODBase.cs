@@ -565,6 +565,9 @@ How to:
 		///<summary>Returns true if any control within this FrmODBase has keyboard focus (not logical focus)</summary>
 		private bool IsFocusAlreadySet(){
 			IInputElement iInputElement=Keyboard.FocusedElement;
+			if(iInputElement is System.Windows.Documents.Hyperlink) {
+				return false;
+			}
 			DependencyObject dependencyObject = iInputElement as DependencyObject;
 			if(dependencyObject is null){
 				return false;

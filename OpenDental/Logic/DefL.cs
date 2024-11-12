@@ -22,6 +22,14 @@ namespace OpenDental {
 				if(listDefCats[i].GetDescription().Contains("HqOnly") && !PrefC.IsODHQ) {
 					continue;
 				}
+				if(listDefCats[i]==DefCat.EClipboardImageCapture) {
+					//This category should not be visible in the main defs window.
+					//We built our own UI windows for it that have a some special logic.
+					//For example, we don't allow hiding, we allow delete, and we validate when deleting.
+					//It's available over in FormEClipboardDefs and FrmEClipboardDefEdit
+					//inside of eServices, eClipboard, Definitions.
+					continue;
+				}
 				DefCatOptions defCatOptions=new DefCatOptions(listDefCats[i]);
 				switch(listDefCats[i]) {
 					case DefCat.AccountColors:

@@ -152,7 +152,7 @@ namespace OpenDental {
 		///<summary>The selected image opens in default photo viewer. This code was copied from FormClaimEdit gridSent_CellDoubleClick().</summary>
 		private void gridMain_CellDoubleClick(object sender,ODGridClickEventArgs e) {
 			if(!PrefC.GetBool(PrefName.SaveDXCAttachments)) {
-				MsgBox.Show(this,$"Not allowed to view attachment. Attachments can only be viewed when the 'Save Attachments to Imaging Module' preference is set.");
+				MsgBox.Show(this,$"Not allowed to view attachment. Attachments can only be viewed when the 'Save Attachments to Imaging Module' preference is set.\r\n\r\nThis preference can be found by going to Setup > Family / Insurance > Clearinghouses and then selecting a clearinghouse.");
 				return;
 			}
 			ClaimAttach claimAttach=new ClaimAttach();

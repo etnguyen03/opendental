@@ -1021,7 +1021,7 @@ namespace OpenDental {
 			this.checkProductionLock.Name = "checkProductionLock";
 			this.checkProductionLock.Size = new System.Drawing.Size(133, 18);
 			this.checkProductionLock.TabIndex = 199;
-			this.checkProductionLock.Text = "Full Lock";
+			this.checkProductionLock.Text = "Permanent Lock";
 			this.checkProductionLock.CheckedChanged += new System.EventHandler(this.CheckProductionLock_CheckedChanged);
 			// 
 			// labelOverchargedWarning

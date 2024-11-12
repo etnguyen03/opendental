@@ -52,7 +52,7 @@ namespace OpenDentBusiness{
 		public PayPlanFrequency ChargeFrequency;
 		///<summary>The date of the first payment plan charge. Does not include downpayment.</summary>
 		public DateTime DatePayPlanStart;
-		///<summary>True if the payment plan is locked. Locked payment plans cannot add production or modify terms. </summary>
+		///<summary>True if the payment plan is locked. Locked payment plans cannot add production or modify terms. There is a checkbox that can't be unchecked. If the preference PayPlanRequireLockForAPR is enabled, full Lock must be checked before saving a plan with APR.</summary>
 		public bool IsLocked;
 		///<summary>The date on which the pay plan can begin posting interest charges.</summary>
 		public DateTime DateInterestStart;
@@ -62,6 +62,10 @@ namespace OpenDentBusiness{
 		public long MobileAppDeviceNum;
 		///<summary>Holds the salted hash of the following paysplit fields: Guarantor, PayAmt, IsClosed, IsLocked. </summary>
 		public string SecurityHash;
+
+		public PayPlan() {
+			Signature="";
+		}
 
 		///<summary></summary>
 		public PayPlan Copy(){

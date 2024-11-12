@@ -11,8 +11,7 @@ namespace OpenDentBusiness {
     public long EClipboardImageCaptureNum;
     ///<summary>FK to patient.PatNum.</summary>
     public long PatNum;
-    ///<summary>FK to def.DefNum. Should match a DefNum that that is in the in 'EClipboard Images' defcat or has (or had) the 'P' (Patient Pictures)  
-    ///usage in the 'Image Categories' defcat.</summary>
+    ///<summary>FK to def.DefNum. Should match a DefNum that that is in the in 'EClipboard Images' defcat. Will be zero when IsSelfPortrait.</summary>
     public long DefNum;
     ///<summary>Using DefNum to identify the self portrait is unreliable as the image category that is used to store self portraits may change. Instead, set this field to
     ///true for any image capture that is a self portrait. Only for self-portraits tied to the pref 'EClipboardAllowSelfPortraitOnCheckIn', not 'eClipboard Images' defcat.</summary>

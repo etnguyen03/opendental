@@ -1233,7 +1233,7 @@ namespace OpenDental{
 				doSaveToImagingModule=PrefC.GetBool(PrefName.SaveEDSAttachments);
 			}
 			if(!doSaveToImagingModule) {
-				MsgBox.Show(this,$"Not allowed to view attachment. Attachments can only be viewed when the 'Save Attachments to Imaging Module' preference is set.");
+				MsgBox.Show(this,$"Not allowed to view attachment. Attachments can only be viewed when the 'Save Attachments to Imaging Module' preference is set.\r\n\r\nThis preference can be found by going to Setup > Family / Insurance > Clearinghouses and then selecting a clearinghouse.");
 				return;
 			}
 			string patFolder=ImageStore.GetPatientFolder(_patient,ImageStore.GetPreferredAtoZpath());

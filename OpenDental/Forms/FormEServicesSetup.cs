@@ -128,6 +128,10 @@ namespace OpenDental {
 			//Permissions check presumably. Discuss with Sam.
 			if(!ClinicPrefs.IsODTouchAllowed(Clinics.ClinicNum)) {
 				string site="https://www.opendental.com/site/odtouch.html";
+				if(!ODBuild.IsThinfinity() && ODCloudClient.IsAppStream) {
+					ODCloudClient.LaunchFileWithODCloudClient(site);
+					return;
+				}
 				try{
 					Process.Start(site);
 				}

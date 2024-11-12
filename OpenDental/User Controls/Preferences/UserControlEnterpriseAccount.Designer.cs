@@ -206,7 +206,7 @@ namespace OpenDental {
 			// 
 			this.radioReceiveAtAnInterval.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
 			this.radioReceiveAtAnInterval.Checked = true;
-			this.radioReceiveAtAnInterval.Location = new System.Drawing.Point(136, 248);
+			this.radioReceiveAtAnInterval.Location = new System.Drawing.Point(136, 251);
 			this.radioReceiveAtAnInterval.Name = "radioReceiveAtAnInterval";
 			this.radioReceiveAtAnInterval.RightToLeft = System.Windows.Forms.RightToLeft.No;
 			this.radioReceiveAtAnInterval.Size = new System.Drawing.Size(182, 18);
@@ -276,9 +276,9 @@ namespace OpenDental {
 			// 
 			// butReplacements
 			// 
-			this.butReplacements.Location = new System.Drawing.Point(97, 42);
+			this.butReplacements.Location = new System.Drawing.Point(89, 42);
 			this.butReplacements.Name = "butReplacements";
-			this.butReplacements.Size = new System.Drawing.Size(85, 23);
+			this.butReplacements.Size = new System.Drawing.Size(93, 23);
 			this.butReplacements.TabIndex = 240;
 			this.butReplacements.Text = "Replacements";
 			this.butReplacements.UseVisualStyleBackColor = true;

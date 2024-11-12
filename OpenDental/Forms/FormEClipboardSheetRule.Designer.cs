@@ -27,11 +27,8 @@ namespace OpenDental {
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormEClipboardSheetRule));
 			this.labelMinAge = new System.Windows.Forms.Label();
 			this.labelMaxAge = new System.Windows.Forms.Label();
-			this.labelFrequency = new System.Windows.Forms.Label();
 			this.textMinAge = new System.Windows.Forms.TextBox();
 			this.textMaxAge = new System.Windows.Forms.TextBox();
-			this.labelFreqNote = new System.Windows.Forms.Label();
-			this.textFrequency = new System.Windows.Forms.TextBox();
 			this.labelSheet = new System.Windows.Forms.Label();
 			this.textSheet = new System.Windows.Forms.TextBox();
 			this.butSave = new OpenDental.UI.Button();
@@ -43,17 +40,28 @@ namespace OpenDental {
 			this.groupBehavior = new OpenDental.UI.GroupBox();
 			this.labelBehaviorNewHelp = new System.Windows.Forms.Label();
 			this.labelBehaviorPreFillHelp = new System.Windows.Forms.Label();
-			this.labelBehaviorOnceHelp = new System.Windows.Forms.Label();
-			this.radioBehaviorOnce = new System.Windows.Forms.RadioButton();
 			this.radioBehaviorPreFill = new System.Windows.Forms.RadioButton();
 			this.radioBehaviorNew = new System.Windows.Forms.RadioButton();
 			this.label1 = new System.Windows.Forms.Label();
+			this.groupFrequency = new OpenDental.UI.GroupBox();
+			this.labelTimeSpanHelp = new System.Windows.Forms.Label();
+			this.textVIntDays = new OpenDental.ValidNum();
+			this.labelDays = new System.Windows.Forms.Label();
+			this.textVIntMonths = new OpenDental.ValidNum();
+			this.labelMonths = new System.Windows.Forms.Label();
+			this.radioFreqTimeSpan = new System.Windows.Forms.RadioButton();
+			this.textVIntYears = new OpenDental.ValidNum();
+			this.labelFreqHelp = new System.Windows.Forms.Label();
+			this.radioFreqOnce = new System.Windows.Forms.RadioButton();
+			this.labelYears = new System.Windows.Forms.Label();
+			this.radioFreqEachTime = new System.Windows.Forms.RadioButton();
 			this.groupBehavior.SuspendLayout();
+			this.groupFrequency.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// labelMinAge
 			// 
-			this.labelMinAge.Location = new System.Drawing.Point(28, 187);
+			this.labelMinAge.Location = new System.Drawing.Point(14, 291);
 			this.labelMinAge.Name = "labelMinAge";
 			this.labelMinAge.Size = new System.Drawing.Size(120, 20);
 			this.labelMinAge.TabIndex = 1;
@@ -62,56 +70,30 @@ namespace OpenDental {
 			// 
 			// labelMaxAge
 			// 
-			this.labelMaxAge.Location = new System.Drawing.Point(28, 216);
+			this.labelMaxAge.Location = new System.Drawing.Point(14, 316);
 			this.labelMaxAge.Name = "labelMaxAge";
 			this.labelMaxAge.Size = new System.Drawing.Size(120, 20);
 			this.labelMaxAge.TabIndex = 2;
 			this.labelMaxAge.Text = "Maximum Age";
 			this.labelMaxAge.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			// 
-			// labelFrequency
-			// 
-			this.labelFrequency.Location = new System.Drawing.Point(28, 158);
-			this.labelFrequency.Name = "labelFrequency";
-			this.labelFrequency.Size = new System.Drawing.Size(120, 20);
-			this.labelFrequency.TabIndex = 3;
-			this.labelFrequency.Text = "Frequency (Days)";
-			this.labelFrequency.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-			// 
 			// textMinAge
 			// 
-			this.textMinAge.Location = new System.Drawing.Point(150, 188);
+			this.textMinAge.Location = new System.Drawing.Point(136, 292);
 			this.textMinAge.Name = "textMinAge";
 			this.textMinAge.Size = new System.Drawing.Size(35, 20);
 			this.textMinAge.TabIndex = 7;
 			// 
 			// textMaxAge
 			// 
-			this.textMaxAge.Location = new System.Drawing.Point(150, 217);
+			this.textMaxAge.Location = new System.Drawing.Point(136, 317);
 			this.textMaxAge.Name = "textMaxAge";
 			this.textMaxAge.Size = new System.Drawing.Size(35, 20);
 			this.textMaxAge.TabIndex = 8;
 			// 
-			// labelFreqNote
-			// 
-			this.labelFreqNote.Location = new System.Drawing.Point(191, 161);
-			this.labelFreqNote.Name = "labelFreqNote";
-			this.labelFreqNote.Size = new System.Drawing.Size(549, 20);
-			this.labelFreqNote.TabIndex = 9;
-			this.labelFreqNote.Text = "How often should the patient be asked to resubmit this form? (In days, where 0 in" +
-    "dicates only submit once.)";
-			// 
-			// textFrequency
-			// 
-			this.textFrequency.Location = new System.Drawing.Point(150, 159);
-			this.textFrequency.Name = "textFrequency";
-			this.textFrequency.Size = new System.Drawing.Size(35, 20);
-			this.textFrequency.TabIndex = 10;
-			this.textFrequency.TextChanged += new System.EventHandler(this.textFrequency_TextChanged);
-			// 
 			// labelSheet
 			// 
-			this.labelSheet.Location = new System.Drawing.Point(44, 9);
+			this.labelSheet.Location = new System.Drawing.Point(30, 9);
 			this.labelSheet.Name = "labelSheet";
 			this.labelSheet.Size = new System.Drawing.Size(100, 20);
 			this.labelSheet.TabIndex = 11;
@@ -120,7 +102,7 @@ namespace OpenDental {
 			// 
 			// textSheet
 			// 
-			this.textSheet.Location = new System.Drawing.Point(150, 10);
+			this.textSheet.Location = new System.Drawing.Point(136, 10);
 			this.textSheet.Name = "textSheet";
 			this.textSheet.ReadOnly = true;
 			this.textSheet.Size = new System.Drawing.Size(144, 20);
@@ -129,7 +111,7 @@ namespace OpenDental {
 			// butSave
 			// 
 			this.butSave.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.butSave.Location = new System.Drawing.Point(681, 387);
+			this.butSave.Location = new System.Drawing.Point(539, 468);
 			this.butSave.Name = "butSave";
 			this.butSave.Size = new System.Drawing.Size(75, 24);
 			this.butSave.TabIndex = 13;
@@ -140,7 +122,7 @@ namespace OpenDental {
 			// butSelectSheetsToIgnore
 			// 
 			this.butSelectSheetsToIgnore.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butSelectSheetsToIgnore.Location = new System.Drawing.Point(333, 262);
+			this.butSelectSheetsToIgnore.Location = new System.Drawing.Point(319, 343);
 			this.butSelectSheetsToIgnore.Name = "butSelectSheetsToIgnore";
 			this.butSelectSheetsToIgnore.Size = new System.Drawing.Size(60, 24);
 			this.butSelectSheetsToIgnore.TabIndex = 20;
@@ -150,7 +132,7 @@ namespace OpenDental {
 			// 
 			// labelSheetsToIgnore
 			// 
-			this.labelSheetsToIgnore.Location = new System.Drawing.Point(28, 260);
+			this.labelSheetsToIgnore.Location = new System.Drawing.Point(14, 341);
 			this.labelSheetsToIgnore.Name = "labelSheetsToIgnore";
 			this.labelSheetsToIgnore.Size = new System.Drawing.Size(120, 20);
 			this.labelSheetsToIgnore.TabIndex = 19;
@@ -159,7 +141,7 @@ namespace OpenDental {
 			// 
 			// listSheetsToIgnore
 			// 
-			this.listSheetsToIgnore.Location = new System.Drawing.Point(150, 262);
+			this.listSheetsToIgnore.Location = new System.Drawing.Point(136, 343);
 			this.listSheetsToIgnore.Name = "listSheetsToIgnore";
 			this.listSheetsToIgnore.SelectionMode = OpenDental.UI.SelectionMode.None;
 			this.listSheetsToIgnore.Size = new System.Drawing.Size(177, 95);
@@ -171,7 +153,7 @@ namespace OpenDental {
 			this.butDelete.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
 			this.butDelete.Icon = OpenDental.UI.EnumIcons.DeleteX;
 			this.butDelete.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butDelete.Location = new System.Drawing.Point(12, 387);
+			this.butDelete.Location = new System.Drawing.Point(12, 468);
 			this.butDelete.Name = "butDelete";
 			this.butDelete.Size = new System.Drawing.Size(81, 24);
 			this.butDelete.TabIndex = 80;
@@ -181,7 +163,7 @@ namespace OpenDental {
 			// 
 			// labelMinAgeHelp
 			// 
-			this.labelMinAgeHelp.Location = new System.Drawing.Point(191, 188);
+			this.labelMinAgeHelp.Location = new System.Drawing.Point(177, 292);
 			this.labelMinAgeHelp.Name = "labelMinAgeHelp";
 			this.labelMinAgeHelp.Size = new System.Drawing.Size(136, 20);
 			this.labelMinAgeHelp.TabIndex = 81;
@@ -193,57 +175,35 @@ namespace OpenDental {
 			this.groupBehavior.BackColor = System.Drawing.Color.White;
 			this.groupBehavior.Controls.Add(this.labelBehaviorNewHelp);
 			this.groupBehavior.Controls.Add(this.labelBehaviorPreFillHelp);
-			this.groupBehavior.Controls.Add(this.labelBehaviorOnceHelp);
-			this.groupBehavior.Controls.Add(this.radioBehaviorOnce);
 			this.groupBehavior.Controls.Add(this.radioBehaviorPreFill);
 			this.groupBehavior.Controls.Add(this.radioBehaviorNew);
-			this.groupBehavior.Location = new System.Drawing.Point(89, 40);
+			this.groupBehavior.Location = new System.Drawing.Point(50, 36);
 			this.groupBehavior.Name = "groupBehavior";
-			this.groupBehavior.Size = new System.Drawing.Size(667, 103);
+			this.groupBehavior.Size = new System.Drawing.Size(536, 68);
 			this.groupBehavior.TabIndex = 250;
 			this.groupBehavior.Text = "Behavior";
 			// 
 			// labelBehaviorNewHelp
 			// 
-			this.labelBehaviorNewHelp.Location = new System.Drawing.Point(80, 40);
+			this.labelBehaviorNewHelp.Location = new System.Drawing.Point(103, 40);
 			this.labelBehaviorNewHelp.Name = "labelBehaviorNewHelp";
-			this.labelBehaviorNewHelp.Size = new System.Drawing.Size(567, 19);
+			this.labelBehaviorNewHelp.Size = new System.Drawing.Size(380, 19);
 			this.labelBehaviorNewHelp.TabIndex = 255;
 			this.labelBehaviorNewHelp.Text = "Do not use this unless you actually want the form to be blank every time.";
 			this.labelBehaviorNewHelp.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			// 
 			// labelBehaviorPreFillHelp
 			// 
-			this.labelBehaviorPreFillHelp.Location = new System.Drawing.Point(80, 18);
+			this.labelBehaviorPreFillHelp.Location = new System.Drawing.Point(103, 18);
 			this.labelBehaviorPreFillHelp.Name = "labelBehaviorPreFillHelp";
-			this.labelBehaviorPreFillHelp.Size = new System.Drawing.Size(567, 19);
+			this.labelBehaviorPreFillHelp.Size = new System.Drawing.Size(380, 19);
 			this.labelBehaviorPreFillHelp.TabIndex = 254;
 			this.labelBehaviorPreFillHelp.Text = "Form will be pre-filled with information from the database if possible.";
 			this.labelBehaviorPreFillHelp.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			// 
-			// labelBehaviorOnceHelp
-			// 
-			this.labelBehaviorOnceHelp.Location = new System.Drawing.Point(80, 66);
-			this.labelBehaviorOnceHelp.Name = "labelBehaviorOnceHelp";
-			this.labelBehaviorOnceHelp.Size = new System.Drawing.Size(567, 31);
-			this.labelBehaviorOnceHelp.TabIndex = 251;
-			this.labelBehaviorOnceHelp.Text = "Only fill once per patient. Once filled, patient is not automatically prompted to" +
-    " fill again, unless the form has been revised.";
-			// 
-			// radioBehaviorOnce
-			// 
-			this.radioBehaviorOnce.Location = new System.Drawing.Point(4, 64);
-			this.radioBehaviorOnce.Name = "radioBehaviorOnce";
-			this.radioBehaviorOnce.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
-			this.radioBehaviorOnce.Size = new System.Drawing.Size(70, 18);
-			this.radioBehaviorOnce.TabIndex = 253;
-			this.radioBehaviorOnce.Text = "Once";
-			this.radioBehaviorOnce.UseVisualStyleBackColor = true;
-			this.radioBehaviorOnce.CheckedChanged += new System.EventHandler(this.radioBehaviorOnce_CheckedChanged);
-			// 
 			// radioBehaviorPreFill
 			// 
-			this.radioBehaviorPreFill.Location = new System.Drawing.Point(4, 19);
+			this.radioBehaviorPreFill.Location = new System.Drawing.Point(27, 19);
 			this.radioBehaviorPreFill.Name = "radioBehaviorPreFill";
 			this.radioBehaviorPreFill.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
 			this.radioBehaviorPreFill.Size = new System.Drawing.Size(70, 18);
@@ -253,7 +213,7 @@ namespace OpenDental {
 			// 
 			// radioBehaviorNew
 			// 
-			this.radioBehaviorNew.Location = new System.Drawing.Point(4, 41);
+			this.radioBehaviorNew.Location = new System.Drawing.Point(27, 41);
 			this.radioBehaviorNew.Name = "radioBehaviorNew";
 			this.radioBehaviorNew.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
 			this.radioBehaviorNew.Size = new System.Drawing.Size(70, 18);
@@ -263,16 +223,138 @@ namespace OpenDental {
 			// 
 			// label1
 			// 
-			this.label1.Location = new System.Drawing.Point(191, 217);
+			this.label1.Location = new System.Drawing.Point(177, 317);
 			this.label1.Name = "label1";
 			this.label1.Size = new System.Drawing.Size(136, 20);
 			this.label1.TabIndex = 251;
 			this.label1.Text = "or leave blank";
 			this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			// 
+			// groupFrequency
+			// 
+			this.groupFrequency.BackColor = System.Drawing.Color.White;
+			this.groupFrequency.Controls.Add(this.labelTimeSpanHelp);
+			this.groupFrequency.Controls.Add(this.textVIntDays);
+			this.groupFrequency.Controls.Add(this.labelDays);
+			this.groupFrequency.Controls.Add(this.textVIntMonths);
+			this.groupFrequency.Controls.Add(this.labelMonths);
+			this.groupFrequency.Controls.Add(this.radioFreqTimeSpan);
+			this.groupFrequency.Controls.Add(this.textVIntYears);
+			this.groupFrequency.Controls.Add(this.labelFreqHelp);
+			this.groupFrequency.Controls.Add(this.radioFreqOnce);
+			this.groupFrequency.Controls.Add(this.labelYears);
+			this.groupFrequency.Controls.Add(this.radioFreqEachTime);
+			this.groupFrequency.Location = new System.Drawing.Point(50, 109);
+			this.groupFrequency.Name = "groupFrequency";
+			this.groupFrequency.Size = new System.Drawing.Size(536, 177);
+			this.groupFrequency.TabIndex = 256;
+			this.groupFrequency.Text = "Frequency";
+			// 
+			// labelTimeSpanHelp
+			// 
+			this.labelTimeSpanHelp.Location = new System.Drawing.Point(103, 80);
+			this.labelTimeSpanHelp.Name = "labelTimeSpanHelp";
+			this.labelTimeSpanHelp.Size = new System.Drawing.Size(226, 19);
+			this.labelTimeSpanHelp.TabIndex = 264;
+			this.labelTimeSpanHelp.Text = "Specify a custom frequency.";
+			this.labelTimeSpanHelp.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			// 
+			// textVIntDays
+			// 
+			this.textVIntDays.Location = new System.Drawing.Point(86, 150);
+			this.textVIntDays.MaxVal = 365;
+			this.textVIntDays.Name = "textVIntDays";
+			this.textVIntDays.Size = new System.Drawing.Size(51, 20);
+			this.textVIntDays.TabIndex = 263;
+			// 
+			// labelDays
+			// 
+			this.labelDays.Location = new System.Drawing.Point(25, 149);
+			this.labelDays.Name = "labelDays";
+			this.labelDays.Size = new System.Drawing.Size(60, 20);
+			this.labelDays.TabIndex = 262;
+			this.labelDays.Text = "Days";
+			this.labelDays.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			// 
+			// textVIntMonths
+			// 
+			this.textVIntMonths.Location = new System.Drawing.Point(86, 126);
+			this.textVIntMonths.MaxVal = 12;
+			this.textVIntMonths.Name = "textVIntMonths";
+			this.textVIntMonths.Size = new System.Drawing.Size(51, 20);
+			this.textVIntMonths.TabIndex = 261;
+			// 
+			// labelMonths
+			// 
+			this.labelMonths.Location = new System.Drawing.Point(25, 125);
+			this.labelMonths.Name = "labelMonths";
+			this.labelMonths.Size = new System.Drawing.Size(60, 20);
+			this.labelMonths.TabIndex = 260;
+			this.labelMonths.Text = "Months";
+			this.labelMonths.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			// 
+			// radioFreqTimeSpan
+			// 
+			this.radioFreqTimeSpan.Location = new System.Drawing.Point(4, 81);
+			this.radioFreqTimeSpan.Name = "radioFreqTimeSpan";
+			this.radioFreqTimeSpan.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
+			this.radioFreqTimeSpan.Size = new System.Drawing.Size(93, 18);
+			this.radioFreqTimeSpan.TabIndex = 256;
+			this.radioFreqTimeSpan.Text = "Time Span";
+			this.radioFreqTimeSpan.UseVisualStyleBackColor = true;
+			this.radioFreqTimeSpan.CheckedChanged += new System.EventHandler(this.radioFreq_CheckedChanged);
+			// 
+			// textVIntYears
+			// 
+			this.textVIntYears.Location = new System.Drawing.Point(86, 103);
+			this.textVIntYears.Name = "textVIntYears";
+			this.textVIntYears.Size = new System.Drawing.Size(51, 20);
+			this.textVIntYears.TabIndex = 259;
+			// 
+			// labelFreqHelp
+			// 
+			this.labelFreqHelp.Location = new System.Drawing.Point(11, 17);
+			this.labelFreqHelp.Name = "labelFreqHelp";
+			this.labelFreqHelp.Size = new System.Drawing.Size(252, 19);
+			this.labelFreqHelp.TabIndex = 254;
+			this.labelFreqHelp.Text = "Form will be submitted by patient:";
+			this.labelFreqHelp.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			// 
+			// radioFreqOnce
+			// 
+			this.radioFreqOnce.Location = new System.Drawing.Point(4, 38);
+			this.radioFreqOnce.Name = "radioFreqOnce";
+			this.radioFreqOnce.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
+			this.radioFreqOnce.Size = new System.Drawing.Size(93, 18);
+			this.radioFreqOnce.TabIndex = 252;
+			this.radioFreqOnce.Text = "Once";
+			this.radioFreqOnce.UseVisualStyleBackColor = true;
+			this.radioFreqOnce.CheckedChanged += new System.EventHandler(this.radioFreq_CheckedChanged);
+			// 
+			// labelYears
+			// 
+			this.labelYears.Location = new System.Drawing.Point(25, 102);
+			this.labelYears.Name = "labelYears";
+			this.labelYears.Size = new System.Drawing.Size(60, 20);
+			this.labelYears.TabIndex = 258;
+			this.labelYears.Text = "Years";
+			this.labelYears.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			// 
+			// radioFreqEachTime
+			// 
+			this.radioFreqEachTime.Location = new System.Drawing.Point(4, 59);
+			this.radioFreqEachTime.Name = "radioFreqEachTime";
+			this.radioFreqEachTime.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
+			this.radioFreqEachTime.Size = new System.Drawing.Size(93, 18);
+			this.radioFreqEachTime.TabIndex = 251;
+			this.radioFreqEachTime.Text = "Each Visit";
+			this.radioFreqEachTime.UseVisualStyleBackColor = true;
+			this.radioFreqEachTime.CheckedChanged += new System.EventHandler(this.radioFreq_CheckedChanged);
+			// 
 			// FormEClipboardSheetRule
 			// 
-			this.ClientSize = new System.Drawing.Size(768, 423);
+			this.ClientSize = new System.Drawing.Size(626, 504);
+			this.Controls.Add(this.groupFrequency);
 			this.Controls.Add(this.label1);
 			this.Controls.Add(this.groupBehavior);
 			this.Controls.Add(this.labelMinAgeHelp);
@@ -283,11 +365,8 @@ namespace OpenDental {
 			this.Controls.Add(this.butSave);
 			this.Controls.Add(this.textSheet);
 			this.Controls.Add(this.labelSheet);
-			this.Controls.Add(this.textFrequency);
-			this.Controls.Add(this.labelFreqNote);
 			this.Controls.Add(this.textMaxAge);
 			this.Controls.Add(this.textMinAge);
-			this.Controls.Add(this.labelFrequency);
 			this.Controls.Add(this.labelMaxAge);
 			this.Controls.Add(this.labelMinAge);
 			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -297,6 +376,8 @@ namespace OpenDental {
 			this.Text = "eClipboard Sheet Rule";
 			this.Load += new System.EventHandler(this.FormEClipboardSheetRule_Load);
 			this.groupBehavior.ResumeLayout(false);
+			this.groupFrequency.ResumeLayout(false);
+			this.groupFrequency.PerformLayout();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -305,11 +386,8 @@ namespace OpenDental {
 		#endregion
 		private System.Windows.Forms.Label labelMinAge;
 		private System.Windows.Forms.Label labelMaxAge;
-		private System.Windows.Forms.Label labelFrequency;
 		private System.Windows.Forms.TextBox textMinAge;
 		private System.Windows.Forms.TextBox textMaxAge;
-		private System.Windows.Forms.Label labelFreqNote;
-		private System.Windows.Forms.TextBox textFrequency;
 		private System.Windows.Forms.Label labelSheet;
 		private System.Windows.Forms.TextBox textSheet;
 		private UI.Button butSave;
@@ -321,10 +399,20 @@ namespace OpenDental {
 		private UI.GroupBox groupBehavior;
 		private System.Windows.Forms.RadioButton radioBehaviorPreFill;
 		private System.Windows.Forms.RadioButton radioBehaviorNew;
-		private System.Windows.Forms.RadioButton radioBehaviorOnce;
-		private System.Windows.Forms.Label labelBehaviorOnceHelp;
 		private System.Windows.Forms.Label labelBehaviorPreFillHelp;
 		private System.Windows.Forms.Label labelBehaviorNewHelp;
 		private System.Windows.Forms.Label label1;
+		private UI.GroupBox groupFrequency;
+		private System.Windows.Forms.Label labelFreqHelp;
+		private System.Windows.Forms.RadioButton radioFreqOnce;
+		private System.Windows.Forms.RadioButton radioFreqEachTime;
+		private System.Windows.Forms.RadioButton radioFreqTimeSpan;
+		private ValidNum textVIntMonths;
+		private System.Windows.Forms.Label labelMonths;
+		private ValidNum textVIntYears;
+		private System.Windows.Forms.Label labelYears;
+		private ValidNum textVIntDays;
+		private System.Windows.Forms.Label labelDays;
+		private System.Windows.Forms.Label labelTimeSpanHelp;
 	}
 }

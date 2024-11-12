@@ -14,46 +14,6 @@ using OpenDentBusiness;
 using WpfControls.UI;
 
 namespace OpenDental {
-	/*
-Conversion Checklist====================================================================================================================
-Questions (do not edit)                                              |Answers might include "yes", "ok", "no", "n/a", "done", etc.
--Review this form. Any unsupported controls or properties?           |Done
-   Search for "progress". Any progress bars?                         |Done
-   Anything in the Tray?                                             |Yes, ImageList
-   Search for "filter". Any use of SetFilterControlsAndAction?       |Done
-   If yes, then STOP here. Talk to Jordan for strategy               |
--Look in the code for any references to other Forms. If those forms  |Done
-   have not been converted, then STOP.  Convert those forms first.   |
--Will we include TabIndexes?  If so, up to what index?  This applies |No
-   even if one single control is set so that cursor will start there |
--Grids: get familiar with properties in bold and with events.        |n/a
--Run UnitTests FormWpfConverter, type in Form name, TabI, and convert|Done
--Any conversion exceptions? Consider reverting.                      |No
--In WpfControlsOD/Frms, include the new files in the project.        |Done
--Switch to using this checklist in the new Frm. Delete the other one-|Done
--Do the red areas and issues at top look fixable? Consider reverting |No, lines:63,77,83,96,131,134,141,160,227,232,270,282,286,293,312
--Does convert script need any changes instead of fixing manually?    |No
--Fix all the red areas.                                              |The above lines still have problems, but are commented out
--Address all the issues at the top. Leave in place for review.       |n/a
--Verify that the Button click events converted automatically.        |n/a
--Attach all orphaned event handlers to events in constructor.        |Partially done. Can't do for WebBrowserNavigated events
--Possibly make some labels or other controls slightly bigger due to  |n/a
-   font change.                                                      |
--Change OK button to Save and get rid of Cancel button (in Edit      |n/a
-   windows). Put any old Cancel button functionality into a Close    |
-   event handler.                                                    |
--Change all places where the form is called to now call the new Frm. |Done. The only place it is called is within itself
--Test thoroughly                                                     |Partially done
--Are behavior and look absolutely identical? List any variation.     |Trouble getting window to come up for Frms
-   Exceptions include taborders only applying to textboxes           |
-   and minor control color variations if they are not annoying       |
--Copy original Form.cs into WpfControlsOD/Frms temporarily for review|
--Review with Jordan                                                  |
--Commit                                                              |
--Delete the old Winform files. That gets reviewed on the next round  |
-End of Checklist=========================================================================================================================
-*/
-
 	public partial class FrmHelpBrowser:FrmODBase {
 		private static string _stableVersion;
 		private bool _hasInitialized=false;
@@ -196,6 +156,8 @@ End of Checklist================================================================
 		}
 
 		private void ManageFAQs_Click(object sender,EventArgs e) {
+			MsgBox.Show("11/10/2024 Jordan - FAQs are currently undergoing an overhaul and cannot be edited. I estimate that version 244 will be released as beta in early December, and FAQ editing will be possible soon after that.");
+			return;
 			string url="";
 			string programVersion="";
 			if(webBrowserManual!=null) {
@@ -267,6 +229,8 @@ End of Checklist================================================================
 		}
 
 		private void AddFAQ_Click(object sender,EventArgs e) {
+			MsgBox.Show("11/10/2024 Jordan - FAQs are currently undergoing an overhaul and cannot be edited. I estimate that version 244 will be released as beta in early December, and FAQ editing will be possible soon after that.");
+			return;
 			string url="";
 			if(webBrowserManual!=null) {
 				url=webBrowserManual.GetUri().ToString();

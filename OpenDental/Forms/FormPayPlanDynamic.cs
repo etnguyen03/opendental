@@ -491,7 +491,7 @@ namespace OpenDental {
 			labelDateInterestStart.Visible=areVisible;
 		}
 
-		///<summary>Unlocks a saved payment plan for editing. Allows users to try out new terms which will not be saved unless user specifies.</summary>
+		///<summary>If opening a saved payment plan, the terms groupbox will be disabled to prevent accidental changes. This button just makes the user go through an additional step before editing terms. It gently reminds them that they probably shouldn't touch the terms. It has nothing to do with the nearby checkbox for Permanent Lock.</summary>
 		private void ButUnlock_Click(object sender,EventArgs e) {
 			UnlockTerms();
 		}
@@ -566,9 +566,9 @@ namespace OpenDental {
 			}
 		}
 
-		///<summary></summary>
-		private void LockTerms(bool isSaveData,bool isUiValid=true) {
-			if(isSaveData) {
+		///<summary>This is the gentle "lock", not the permanent one.</summary>
+		private void LockTerms(bool doSaveData,bool isUiValid=true) {
+			if(doSaveData) {
 				if(SaveData(isUiValid:isUiValid)) {
 					groupTerms.Enabled=false;
 					groupBoxFrequency.Enabled=false;
@@ -577,6 +577,7 @@ namespace OpenDental {
 					//failed saving. Return user to form.
 					return;
 				}
+				signatureBoxWrapper.FillSignature(_dynamicPaymentPlanData.PayPlan.SigIsTopaz,PayPlans.GetKeyDataForSignature(_dynamicPaymentPlanData.PayPlan),_dynamicPaymentPlanData.PayPlan.Signature);
 			}
 			groupTerms.Enabled=false;
 			groupBoxFrequency.Enabled=false;
@@ -990,6 +991,9 @@ namespace OpenDental {
 			if(!SaveData()) {
 				return;
 			}
+			if(!_dynamicPaymentPlanData.PayPlan.IsLocked) {//if not permanently locked
+				butUnlock.Visible=true;
+			}
 			Sheet sheet=null;
 			sheet=PayPlanToSheet(_dynamicPaymentPlanData.PayPlan);
 			string keyData=PayPlans.GetKeyDataForSignature(_dynamicPaymentPlanData.PayPlan);
@@ -998,9 +1002,8 @@ namespace OpenDental {
 			using FormSheetFillEdit formSheetFillEdit=new FormSheetFillEdit();
 			formSheetFillEdit.SheetCur=sheet;
 			formSheetFillEdit.ShowDialog();
-			if(formSheetFillEdit.DialogResult!=DialogResult.OK) {
-				return;
-			}
+			//Even though they hit cancel on the "sign" portion, the save was already done.
+			//In that case, we do need to clear the signature.
 			//save signature
 			if(_dynamicPaymentPlanData.PayPlan.Signature=="") {//clear signature and hide sigbox if blank sig was saved
 				signatureBoxWrapper.ClearSignature();

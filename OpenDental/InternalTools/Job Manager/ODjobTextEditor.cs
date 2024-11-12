@@ -639,7 +639,7 @@ namespace OpenDental {
 				return;
 			}
 			try {
-				_textFocused.SelectionFont=new Font(comboFontType.SelectedItem.ToString(),float.Parse(comboFontSize.SelectedItem.ToString()));
+				_textFocused.SelectionFont=new Font("Times New Roman",8.5f);
 				_textFocused.SelectionBullet=false;
 				_textFocused.SelectionColor=_textFocused.ForeColor;
 				_textFocused.SelectionBackColor=_textFocused.BackColor;

@@ -188,14 +188,23 @@ namespace OpenDental{
 				&& !PIn.Bool(ProgramProperties.GetPropVal(progPayConnect.ProgramNum,PayConnect.ProgramProperties.PayConnectPreventSavingNewCC,clinicNum))) 
 			{
 				if(PrefC.HasClinicsEnabled) {//if clinics are enabled, PayConnect is enabled if the PaymentType is valid and the Username and Password are not blank
+					string programVersion=ProgramProperties.GetPropVal(progPayConnect.ProgramNum,"Program Version",clinicNum);
 					string paymentType=ProgramProperties.GetPropVal(progPayConnect.ProgramNum,"PaymentType",clinicNum);
 					//Decrypt password for later checks because an empty string password is not an empty string when encrypted.
-					string password=CDT.Class1.TryDecrypt(ProgramProperties.GetPropVal(progPayConnect.ProgramNum,"Password",clinicNum));
-					if(!string.IsNullOrEmpty(ProgramProperties.GetPropVal(progPayConnect.ProgramNum,"Username",clinicNum))
-						&& !string.IsNullOrEmpty(password)
-						&& listDefs.Any(x => x.DefNum.ToString()==paymentType))
-					{
-						butPayConnect.Visible=true;
+					if(programVersion=="1") {
+						string password=CDT.Class1.TryDecrypt(ProgramProperties.GetPropVal(progPayConnect.ProgramNum,"Password",clinicNum));
+						if(!string.IsNullOrEmpty(ProgramProperties.GetPropVal(progPayConnect.ProgramNum,"Username",clinicNum))
+							&& !string.IsNullOrEmpty(password)
+							&& listDefs.Any(x => x.DefNum.ToString()==paymentType))
+						{
+							butPayConnect.Visible=true;
+						}
+					}
+					else if(programVersion=="2") {
+						string apiSecret=PayConnect2.GetApiSecretForClinic(clinicNum);
+						if(!apiSecret.IsNullOrEmpty() && listDefs.Any(x => x.DefNum.ToString()==paymentType)) {
+							butPayConnect.Visible=true;
+						}
 					}
 				}
 				else {//if clinics are disabled, PayConnect button will be visible if PayConnect has been enabled in program links

@@ -96,7 +96,9 @@ namespace OpenDentBusiness{
 			Db.NonQ(command);
 		}
 		#endregion Methods - Modify
+
 		#region Methods - Misc
+
 		#endregion Methods - Misc
 	}
 }

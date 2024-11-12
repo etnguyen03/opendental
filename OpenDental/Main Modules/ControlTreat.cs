@@ -416,7 +416,7 @@ namespace OpenDental{
 						ToolBarLabCase_Click();
 						break;
 					case "Consent":
-						ToolBarConsent_Click();
+						ToolBarConsent_Click(e.Button);
 						break;
 				}
 			}
@@ -1740,14 +1740,15 @@ namespace OpenDental{
 			}
 		}
 
-		private void ToolBarConsent_Click() {
+		private void ToolBarConsent_Click(ODToolBarButton odToolBarButton) {
 			if(PatientCur==null) {
 				MsgBox.Show(this,"Please select a patient.");
 				return;
 			}
 			List<SheetDef> listSheetDefs=SheetDefs.GetCustomForType(SheetTypeEnum.Consent);
 			if(listSheetDefs.Count>0) {
-				MsgBox.Show(this,"Please use dropdown list.");
+				ContextMenu contextMenuConsent=odToolBarButton.DropDownMenu.GetContextMenu();
+				contextMenuConsent.Show(this,new Point(odToolBarButton.Bounds.X,odToolBarButton.Bounds.Y+odToolBarButton.Bounds.Height));
 				return;
 			}
 			SheetDef sheetDef=SheetsInternal.GetSheetDef(SheetInternalType.Consent);

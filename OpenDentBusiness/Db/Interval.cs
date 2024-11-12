@@ -35,6 +35,16 @@ namespace OpenDentBusiness{
 			Years=years;
 		}
 
+		///<summary>Used for FormEClipboardImageCaptureDefEdit and FormEClipboardSheetRule. Overload for converting TimeSpan into Interval.</summary>
+		public Interval(TimeSpan timeSpan){
+			DateTime dateTime=DateTime.MinValue;//Ex: 01/01/0001
+			DateTime dateTimeSpan=dateTime.AddTicks(timeSpan.Ticks);//Ex: 03/28/0004
+			Days=dateTimeSpan.Day-1;//Ex: 27
+			Weeks=0;//Weeks not needed.
+			Months=dateTimeSpan.Month-1;//Ex: 2
+			Years=dateTimeSpan.Year-1;//Ex: 3
+		}
+
 		///<summary>Define the == operator.</summary>
 		public static bool operator==(Interval a,Interval b) {
 			if(a.Years==b.Years
@@ -114,11 +124,17 @@ namespace OpenDentBusiness{
 			return retVal;
 		}
 
+		///<summary>Used for FormEClipboardImageCaptureDefEdit and FormEClipboardSheetRule. Overload for converting TimeSpan into Interval.</summary>
+		public TimeSpan ToTimeSpan(){
+			DateTime dateTime=DateTime.MinValue;//Ex: 01/01/0001
+			dateTime=dateTime.AddDays(Days);//Ex: 01/28/0001
+			dateTime=dateTime.AddMonths(Months);//Ex: 03/28/0001
+			dateTime=dateTime.AddYears(Years);// Ex: 03/28/0004
+			TimeSpan timeSpan=TimeSpan.FromTicks(dateTime.Ticks);//DateTime.MinValue.Ticks=0, no need to subtract 1 year, 1 month, and 1 day.
+			return timeSpan;
+		}
+
 	}
-
-	
-
-
 }
 
 

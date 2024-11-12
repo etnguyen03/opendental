@@ -79,6 +79,10 @@ namespace OpenDental {
 
 		private void butNavigateTo_Click(object sender,EventArgs e) {
 			if(!string.IsNullOrWhiteSpace(textHostedUrlPortal.Text)) {
+				if(!ODBuild.IsThinfinity() && ODCloudClient.IsAppStream) {
+					ODCloudClient.LaunchFileWithODCloudClient(textHostedUrlPortal.Text);
+					return;
+				}
 				Process.Start(textHostedUrlPortal.Text);
 			}
 		}

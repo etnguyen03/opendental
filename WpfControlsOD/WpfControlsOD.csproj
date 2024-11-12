@@ -287,6 +287,9 @@
     <Compile Include="Frms\FrmChildRooms.xaml.cs">
       <DependentUpon>FrmChildRooms.xaml</DependentUpon>
     </Compile>
+		<Compile Include="Frms\FrmEClipboardDefEdit.xaml.cs">
+			<DependentUpon>FrmEClipboardDefEdit.xaml</DependentUpon>
+		</Compile>
     <Compile Include="InternalTools\Job Manager\FrmJobGitBranch.xaml.cs">
       <DependentUpon>FrmJobGitBranch.xaml</DependentUpon>
     </Compile>
@@ -883,6 +886,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+		<Page Include="Frms\FrmEClipboardDefEdit.xaml">
+			<Generator>MSBuild:Compile</Generator>
+			<SubType>Designer</SubType>
+		</Page>
     <Page Include="InternalTools\Job Manager\FrmJobGitBranch.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

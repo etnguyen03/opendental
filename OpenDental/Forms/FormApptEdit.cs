@@ -1093,6 +1093,7 @@ namespace OpenDental{
 				}
 				listClaimProcHists.AddRange(ClaimProcs.GetHistForProc(listClaimProcs,listProcedures[i],listProcedures[i].CodeNum));
 			}
+			long aptNumOld=procedure.AptNum;
 			using FormProcEdit formProcEdit=new FormProcEdit(procedure,_patient,_family);
 			formProcEdit.ListClaimProcHists=_loadData.ListClaimProcHists;
 			formProcEdit.ListClaimProcHistsLoop=listClaimProcHists;
@@ -1102,6 +1103,18 @@ namespace OpenDental{
 				//SetTimeSliderColors();
 				return;
 			}
+			//Scenario we are trying to fix:
+			//	appt was complete
+			//	appt was set to scheduled via status combobox on this form
+			//	and before closing form, this procedure was edited.
+			//	Problem is that Procedures.Update erroneously detaches the proc from the appt.
+			//Our solution is to let it get detached and then reattach below.
+			Procedure procedureOld=procedure.Copy();
+			if(procedure.AptNum!=aptNumOld){
+				procedure.AptNum=aptNumOld;
+			}
+			//this method guarantees that we are only changing AptNum, even though procedure object is stale.
+			Procedures.Update(procedure,procedureOld);
 			_listProceduresForAppointment=Procedures.GetProcsForApptEdit(_appointment);//We need to refresh in case the user changed the ProcCode or set the proc complete.
 			//The next 3 lines are a duplicate of a section in butDeleteProc to handle deleted procedures.
 			Appointments.SetProcDescript(_appointment,_listProceduresForAppointment);

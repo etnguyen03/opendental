@@ -22,6 +22,7 @@ namespace OpenDentBusiness {
 			string query="";
 			string whereProv="";//used as the provider portion of the where clauses.
 											//each whereProv needs to be set up separately for each query
+			PayPlanVersions payPlanVersionCur=(PayPlanVersions)PrefC.GetInt(PrefName.PayPlansVersion);
 			switch(tableName) {
 				case "TableCharge":
 					whereProv="";
@@ -48,6 +49,16 @@ namespace OpenDentBusiness {
 										+ "AND payplancharge.ChargeType = "+POut.Int((int)PayPlanChargeType.Credit)+" "
 										+ whereProv
 										+ "GROUP BY payplancharge.ChargeDate ";
+					if(payPlanVersionCur==PayPlanVersions.AgeCreditsAndDebits || payPlanVersionCur==PayPlanVersions.AgeCreditsOnly) {
+						query += "UNION ALL "
+											+"SELECT credit.ProdDate TranDate, "
+											+"-SUM(CASE WHEN credit.AmountOverride > 0 THEN credit.AmountOverride ELSE credit.Fee END) Amt "
+											+"FROM ("+AccountModules.GetDynamicPayPlanCreditsString("")+") AS credit "
+											+"WHERE credit.ProdDate >= '" + bDate + "' "
+											+"AND credit.ProdDate < '" + eDate + "' "
+											+whereProv
+											+"GROUP By credit.ProdDate ";
+					}
 					query += ")tran "
 									+ "GROUP BY TranDate "
 									+ "ORDER BY TranDate";
@@ -244,7 +255,7 @@ namespace OpenDentBusiness {
 					if(listProvNums.Count != 0) {
 						whereProv+=" AND credit.ProvNum IN ("+string.Join(",",listProvNums)+") ";
 					}
-					query=@"SELECT credit.Fee Amt,credit.ProdDate TranDate,credit.ProvNum FROM(";
+					query=@"SELECT CASE WHEN credit.AmountOverride > 0 THEN credit.AmountOverride ELSE credit.Fee END Amt,credit.ProdDate TranDate,credit.ProvNum FROM(";
 					query+=AccountModules.GetDynamicPayPlanCreditsString("")
 						+") AS credit "
 						+"GROUP BY TranDate "

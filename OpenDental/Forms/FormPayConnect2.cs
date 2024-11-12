@@ -365,12 +365,12 @@ namespace OpenDental {
 		public async void SetUpIframe(int amountInCents,bool update=false) {
 			if(iframeOpen) {
 				if(!update) {
-					Size=new Size(LayoutManager.Scale(959),516);
+					Size=new Size(LayoutManager.Scale(959),LayoutManager.Scale(516));
 					return;
 				}
 				if(update) {
 					webViewMain.Stop();
-					Size=new Size(LayoutManager.Scale(959), 516);
+					Size=new Size(LayoutManager.Scale(959),LayoutManager.Scale(516));
 				}
 			}
 			if(ODBuild.IsThinfinity()) {
@@ -383,7 +383,7 @@ namespace OpenDental {
 				return;
 			}
 			string url = "";
-			Size=new Size(LayoutManager.Scale(959), 516);
+			Size=new Size(LayoutManager.Scale(959),LayoutManager.Scale(516));
 			try {
 				url=GetiFrameUrl(amountInCents);
 			}
@@ -474,7 +474,7 @@ namespace OpenDental {
 		
 		///<summary>Size of this form is the original size. If any size changes occur this should be changed as well.</summary>
 		private void SetFormSizeToNormal() {
-			Size=new Size(LayoutManager.Scale(430), 516);
+			Size=new Size(LayoutManager.Scale(430),LayoutManager.Scale(516));
 		}
 
 		private void radioTerminal_CheckedChanged(object sender,EventArgs e) {

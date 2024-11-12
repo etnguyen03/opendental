@@ -12,7 +12,7 @@
 		<ui:ToolBar x:Name="toolBarMain" Width="1096" Height="24" Margin="0,0,0,0" />
 		<ui:SplitContainer x:Name="splitContainer" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,24,0,0" >
 			<ui:SplitContainer.RowDefinitions>
-				<RowDefinition Height="425"/>
+				<RowDefinition Height="4*"/>
 				<RowDefinition Height="Auto"/>
 				<RowDefinition Height="*"/>
 			</ui:SplitContainer.RowDefinitions>

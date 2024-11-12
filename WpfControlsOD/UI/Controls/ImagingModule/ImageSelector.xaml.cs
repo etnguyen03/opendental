@@ -1134,6 +1134,11 @@ Only used once in Imaging module.
 			if(_nodeObjTagSelected.NodeType==EnumImageNodeType.Category){//can't drag a category
 				return;
 			}
+			//A few lines up in SelectionChangeCommitted, there is a DoEvents that seems to fire a mouse up if single click.
+			//Through testing, we determined that we actually need to test the left button at this point.
+			if(Mouse.LeftButton!=MouseButtonState.Pressed){
+				return;
+			}
 			_isLeftMouseDownDragging=true;
 			((IInputElement)sender).CaptureMouse();
 			//However, the drag icon won't show until we actually start moving.
@@ -1142,6 +1147,7 @@ Only used once in Imaging module.
 
 		private void Item_MouseLeftButtonUp(object sender, MouseButtonEventArgs e){
 			_ignoreMouseMove=true;
+			//ignoreMouseMove because releasing mouse capture fires MouseMove with left mouse button not pressed.
 			((IInputElement)sender).ReleaseMouseCapture();
 			_ignoreMouseMove=false;
 			Cursor=Cursors.Arrow;

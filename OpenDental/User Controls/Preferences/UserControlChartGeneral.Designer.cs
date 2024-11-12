@@ -27,14 +27,14 @@ namespace OpenDental {
 			this.checkBoxRxClinicUseSelected = new OpenDental.UI.CheckBox();
 			this.checkChartOrthoTabAutomaticCheckboxes = new OpenDental.UI.CheckBox();
 			this.groupBoxFunctionality = new OpenDental.UI.GroupBox();
+			this.comboProcCodeListSort = new OpenDental.UI.ComboBox();
+			this.comboToothNomenclature = new OpenDental.UI.ComboBox();
+			this.textMedDefaultStopDays = new System.Windows.Forms.TextBox();
 			this.checkAutoClearEntryStatus = new OpenDental.UI.CheckBox();
 			this.checkProvColorChart = new OpenDental.UI.CheckBox();
-			this.comboProcCodeListSort = new OpenDental.UI.ComboBox();
 			this.label32 = new System.Windows.Forms.Label();
-			this.comboToothNomenclature = new OpenDental.UI.ComboBox();
 			this.labelToothNomenclature = new System.Windows.Forms.Label();
 			this.checkIsAlertRadiologyProcsEnabled = new OpenDental.UI.CheckBox();
-			this.textMedDefaultStopDays = new System.Windows.Forms.TextBox();
 			this.label11 = new System.Windows.Forms.Label();
 			this.checkScreeningsUseSheets = new OpenDental.UI.CheckBox();
 			this.groupBoxPerio = new OpenDental.UI.GroupBox();
@@ -45,18 +45,18 @@ namespace OpenDental {
 			this.checkShowPlannedApptPrompt = new OpenDental.UI.CheckBox();
 			this.groupBoxMedicalHistory = new OpenDental.UI.GroupBox();
 			this.textProblemsIndicateNone = new System.Windows.Forms.TextBox();
-			this.label8 = new System.Windows.Forms.Label();
 			this.textMedicationsIndicateNone = new System.Windows.Forms.TextBox();
-			this.label9 = new System.Windows.Forms.Label();
 			this.textAllergiesIndicateNone = new System.Windows.Forms.TextBox();
+			this.label8 = new System.Windows.Forms.Label();
+			this.label9 = new System.Windows.Forms.Label();
 			this.label14 = new System.Windows.Forms.Label();
 			this.butProblemsIndicateNone = new OpenDental.UI.Button();
 			this.butAllergiesIndicateNone = new OpenDental.UI.Button();
 			this.butMedicationsIndicateNone = new OpenDental.UI.Button();
 			this.groupBoxMedicalCodes = new OpenDental.UI.GroupBox();
+			this.textICD9DefaultForNewProcs = new System.Windows.Forms.TextBox();
 			this.checkMedicalFeeUsedForNewProcs = new OpenDental.UI.CheckBox();
 			this.checkDxIcdVersion = new OpenDental.UI.CheckBox();
-			this.textICD9DefaultForNewProcs = new System.Windows.Forms.TextBox();
 			this.labelIcdCodeDefault = new System.Windows.Forms.Label();
 			this.butDiagnosisCode = new OpenDental.UI.Button();
 			this.groupBoxFunctionality.SuspendLayout();
@@ -104,6 +104,30 @@ namespace OpenDental {
 			this.groupBoxFunctionality.TabIndex = 252;
 			this.groupBoxFunctionality.Text = "Functionality";
 			// 
+			// comboProcCodeListSort
+			// 
+			this.comboProcCodeListSort.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+			this.comboProcCodeListSort.Location = new System.Drawing.Point(185, 139);
+			this.comboProcCodeListSort.Name = "comboProcCodeListSort";
+			this.comboProcCodeListSort.Size = new System.Drawing.Size(255, 21);
+			this.comboProcCodeListSort.TabIndex = 246;
+			// 
+			// comboToothNomenclature
+			// 
+			this.comboToothNomenclature.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+			this.comboToothNomenclature.Location = new System.Drawing.Point(185, 95);
+			this.comboToothNomenclature.Name = "comboToothNomenclature";
+			this.comboToothNomenclature.Size = new System.Drawing.Size(255, 21);
+			this.comboToothNomenclature.TabIndex = 241;
+			// 
+			// textMedDefaultStopDays
+			// 
+			this.textMedDefaultStopDays.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+			this.textMedDefaultStopDays.Location = new System.Drawing.Point(401, 31);
+			this.textMedDefaultStopDays.Name = "textMedDefaultStopDays";
+			this.textMedDefaultStopDays.Size = new System.Drawing.Size(39, 20);
+			this.textMedDefaultStopDays.TabIndex = 232;
+			// 
 			// checkAutoClearEntryStatus
 			// 
 			this.checkAutoClearEntryStatus.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
@@ -124,14 +148,6 @@ namespace OpenDental {
 			this.checkProvColorChart.TabIndex = 243;
 			this.checkProvColorChart.Text = "Use provider color in chart";
 			// 
-			// comboProcCodeListSort
-			// 
-			this.comboProcCodeListSort.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.comboProcCodeListSort.Location = new System.Drawing.Point(185, 139);
-			this.comboProcCodeListSort.Name = "comboProcCodeListSort";
-			this.comboProcCodeListSort.Size = new System.Drawing.Size(255, 21);
-			this.comboProcCodeListSort.TabIndex = 246;
-			// 
 			// label32
 			// 
 			this.label32.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
@@ -142,18 +158,10 @@ namespace OpenDental {
 			this.label32.Text = "Procedure Code List sort";
 			this.label32.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			// 
-			// comboToothNomenclature
-			// 
-			this.comboToothNomenclature.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.comboToothNomenclature.Location = new System.Drawing.Point(185, 95);
-			this.comboToothNomenclature.Name = "comboToothNomenclature";
-			this.comboToothNomenclature.Size = new System.Drawing.Size(255, 21);
-			this.comboToothNomenclature.TabIndex = 241;
-			// 
 			// labelToothNomenclature
 			// 
 			this.labelToothNomenclature.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.labelToothNomenclature.Location = new System.Drawing.Point(72, 98);
+			this.labelToothNomenclature.Location = new System.Drawing.Point(72, 97);
 			this.labelToothNomenclature.Name = "labelToothNomenclature";
 			this.labelToothNomenclature.Size = new System.Drawing.Size(112, 17);
 			this.labelToothNomenclature.TabIndex = 242;
@@ -170,18 +178,10 @@ namespace OpenDental {
 			this.checkIsAlertRadiologyProcsEnabled.TabIndex = 238;
 			this.checkIsAlertRadiologyProcsEnabled.Text = "OpenDentalService alerts for scheduled non-CPOE radiology procedures";
 			// 
-			// textMedDefaultStopDays
-			// 
-			this.textMedDefaultStopDays.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.textMedDefaultStopDays.Location = new System.Drawing.Point(401, 31);
-			this.textMedDefaultStopDays.Name = "textMedDefaultStopDays";
-			this.textMedDefaultStopDays.Size = new System.Drawing.Size(39, 20);
-			this.textMedDefaultStopDays.TabIndex = 232;
-			// 
 			// label11
 			// 
 			this.label11.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.label11.Location = new System.Drawing.Point(39, 34);
+			this.label11.Location = new System.Drawing.Point(39, 33);
 			this.label11.Name = "label11";
 			this.label11.Size = new System.Drawing.Size(361, 17);
 			this.label11.TabIndex = 234;
@@ -284,6 +284,24 @@ namespace OpenDental {
 			this.textProblemsIndicateNone.Size = new System.Drawing.Size(146, 20);
 			this.textProblemsIndicateNone.TabIndex = 219;
 			// 
+			// textMedicationsIndicateNone
+			// 
+			this.textMedicationsIndicateNone.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+			this.textMedicationsIndicateNone.Location = new System.Drawing.Point(265, 39);
+			this.textMedicationsIndicateNone.Name = "textMedicationsIndicateNone";
+			this.textMedicationsIndicateNone.ReadOnly = true;
+			this.textMedicationsIndicateNone.Size = new System.Drawing.Size(146, 20);
+			this.textMedicationsIndicateNone.TabIndex = 222;
+			// 
+			// textAllergiesIndicateNone
+			// 
+			this.textAllergiesIndicateNone.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+			this.textAllergiesIndicateNone.Location = new System.Drawing.Point(265, 63);
+			this.textAllergiesIndicateNone.Name = "textAllergiesIndicateNone";
+			this.textAllergiesIndicateNone.ReadOnly = true;
+			this.textAllergiesIndicateNone.Size = new System.Drawing.Size(146, 20);
+			this.textAllergiesIndicateNone.TabIndex = 226;
+			// 
 			// label8
 			// 
 			this.label8.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
@@ -294,15 +312,6 @@ namespace OpenDental {
 			this.label8.Text = "Indicator patient has no problems";
 			this.label8.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			// 
-			// textMedicationsIndicateNone
-			// 
-			this.textMedicationsIndicateNone.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.textMedicationsIndicateNone.Location = new System.Drawing.Point(265, 39);
-			this.textMedicationsIndicateNone.Name = "textMedicationsIndicateNone";
-			this.textMedicationsIndicateNone.ReadOnly = true;
-			this.textMedicationsIndicateNone.Size = new System.Drawing.Size(146, 20);
-			this.textMedicationsIndicateNone.TabIndex = 222;
-			// 
 			// label9
 			// 
 			this.label9.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
@@ -312,15 +321,6 @@ namespace OpenDental {
 			this.label9.TabIndex = 221;
 			this.label9.Text = "Indicator patient has no medications";
 			this.label9.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-			// 
-			// textAllergiesIndicateNone
-			// 
-			this.textAllergiesIndicateNone.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.textAllergiesIndicateNone.Location = new System.Drawing.Point(265, 63);
-			this.textAllergiesIndicateNone.Name = "textAllergiesIndicateNone";
-			this.textAllergiesIndicateNone.ReadOnly = true;
-			this.textAllergiesIndicateNone.Size = new System.Drawing.Size(146, 20);
-			this.textAllergiesIndicateNone.TabIndex = 226;
 			// 
 			// label14
 			// 
@@ -372,6 +372,14 @@ namespace OpenDental {
 			this.groupBoxMedicalCodes.TabIndex = 249;
 			this.groupBoxMedicalCodes.Text = "Medical Codes";
 			// 
+			// textICD9DefaultForNewProcs
+			// 
+			this.textICD9DefaultForNewProcs.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+			this.textICD9DefaultForNewProcs.Location = new System.Drawing.Point(332, 52);
+			this.textICD9DefaultForNewProcs.Name = "textICD9DefaultForNewProcs";
+			this.textICD9DefaultForNewProcs.Size = new System.Drawing.Size(85, 20);
+			this.textICD9DefaultForNewProcs.TabIndex = 229;
+			// 
 			// checkMedicalFeeUsedForNewProcs
 			// 
 			this.checkMedicalFeeUsedForNewProcs.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
@@ -392,14 +400,6 @@ namespace OpenDental {
 			this.checkDxIcdVersion.TabIndex = 231;
 			this.checkDxIcdVersion.Text = "Use ICD-10 Diagnosis Codes";
 			this.checkDxIcdVersion.Click += new System.EventHandler(this.checkDxIcdVersion_Click);
-			// 
-			// textICD9DefaultForNewProcs
-			// 
-			this.textICD9DefaultForNewProcs.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.textICD9DefaultForNewProcs.Location = new System.Drawing.Point(332, 52);
-			this.textICD9DefaultForNewProcs.Name = "textICD9DefaultForNewProcs";
-			this.textICD9DefaultForNewProcs.Size = new System.Drawing.Size(85, 20);
-			this.textICD9DefaultForNewProcs.TabIndex = 229;
 			// 
 			// labelIcdCodeDefault
 			// 

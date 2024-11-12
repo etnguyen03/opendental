@@ -13,7 +13,6 @@ namespace OpenDental {
 		private ApptReminderRule _apptReminderRule;
 		private UserControlReminderMessage _userControlReminderMessage;
 		private MsgToPayEmailTemplate _msgToPayEmailTemplate;
-		private ApptReminderRule _apptReminderRuleAppt;
 		private MsgToPayEmailTemplate _msgToPayEmailTemplateAppt;
 
 		public FormEServicesPaymentPortal() {
@@ -75,15 +74,6 @@ namespace OpenDental {
 					listErrors.Add(Lan.g(this,"Email Message Template cannot contain the URL")+" "+emailErrorText+" "+Lan.g(this,"as this is only allowed for eServices."));
 				}
 			}
-			if(!string.IsNullOrWhiteSpace(_apptReminderRuleAppt.TemplateEmail)) {
-				if(!_apptReminderRuleAppt.TemplateEmail.Contains(MsgToPayTagReplacer.MSG_TO_PAY_TAG)) {
-					listErrors.Add(Lan.g(this,"Your Appointment Message-to-Pay Email Template must contain")+$" {MsgToPayTagReplacer.MSG_TO_PAY_TAG} ");
-				}
-				string emailErrorText=PrefC.GetFirstShortURL(_apptReminderRuleAppt.TemplateEmail);
-				if(!string.IsNullOrWhiteSpace(emailErrorText)) {
-					listErrors.Add(Lan.g(this,"Appointment Email Message Template cannot contain the URL")+" "+emailErrorText+" "+Lan.g(this,"as this is only allowed for eServices."));
-				}
-			}
 			//SMS Template
 			if(!string.IsNullOrWhiteSpace(_apptReminderRule.TemplateSMS)) {
 				if(!_apptReminderRule.TemplateSMS.Contains(MsgToPayTagReplacer.MSG_TO_PAY_TAG)) {
@@ -92,15 +82,6 @@ namespace OpenDental {
 				string smsErrorText=PrefC.GetFirstShortURL(_apptReminderRule.TemplateSMS);
 				if(!string.IsNullOrWhiteSpace(smsErrorText)) {
 					listErrors.Add(Lan.g(this,"Text Message Template cannot contain the URL")+" "+smsErrorText+" "+Lan.g(this,"as this is only allowed for eServices."));
-				}
-			}
-			if(!string.IsNullOrWhiteSpace(_apptReminderRuleAppt.TemplateSMS)) {
-				if(!_apptReminderRuleAppt.TemplateSMS.Contains(MsgToPayTagReplacer.MSG_TO_PAY_TAG)) {
-					listErrors.Add(Lan.g(this,"Your Appointment Message-to-Pay Text Template must contain")+$" {MsgToPayTagReplacer.MSG_TO_PAY_TAG} ");
-				}
-				string smsErrorText=PrefC.GetFirstShortURL(_apptReminderRuleAppt.TemplateSMS);
-				if(!string.IsNullOrWhiteSpace(smsErrorText)) {
-					listErrors.Add(Lan.g(this,"Appointment Text Message Template cannot contain the URL")+" "+smsErrorText+" "+Lan.g(this,"as this is only allowed for eServices."));
 				}
 			}
 			if(!listErrors.IsNullOrEmpty()) {

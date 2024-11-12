@@ -316,7 +316,7 @@ namespace DatabaseIntegrityCheck {
 				return;
 			}
 			//If tool is not currently being run on the server (i.e, textComputer.Text is not the current computer or localhost), they cannot use the Repair function.
-			if(textComputerName.Text.ToLower()!=Environment.MachineName.ToLower() && textComputerName.Text.ToLower()!="localhost") {
+			if(textComputerName.Text.ToLower()!=Environment.MachineName.ToLower() && textComputerName.Text.ToLower().Trim()!="localhost") {
 				MessageBox.Show("Repair must be run on the server.");
 				return;
 			}

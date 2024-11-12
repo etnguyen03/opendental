@@ -525,10 +525,10 @@ namespace WpfControls {
 				return;
 			}
 			//all remaining programs:
-			string cmdline=program.CommandLine;
-			string path=Programs.GetProgramPath(program);
-			string outputFilePath=program.FilePath;
-			string fileTemplate=program.FileTemplate;
+			string cmdline=program.CommandLine.Replace("[ClinicNumCur]",Clinics.ClinicNum.ToString());
+			string path=Programs.GetProgramPath(program).Replace("[ClinicNumCur]",Clinics.ClinicNum.ToString());
+			string outputFilePath=program.FilePath.Replace("[ClinicNumCur]",Clinics.ClinicNum.ToString());
+			string fileTemplate=program.FileTemplate.Replace("[ClinicNumCur]",Clinics.ClinicNum.ToString());
 			if(patient!=null) {
 				cmdline=ReplaceHelper(cmdline,patient);
 				path=ReplaceHelper(path,patient);

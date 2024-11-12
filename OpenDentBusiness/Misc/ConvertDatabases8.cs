@@ -2425,5 +2425,23 @@ namespace OpenDentBusiness {
 			//End I56324
 		}//End of 24_3_18
 
+		private static void To24_3_20() {
+			//Start I56390
+			string command="UPDATE eclipboardsheetdef SET Frequency=2 WHERE ResubmitInterval>0";//2=Timespan
+			Db.NonQ(command);
+			command="UPDATE eclipboardsheetdef SET PrefillStatus=0 WHERE PrefillStatus=2";//0=New, 2=Once(deprecated)
+			Db.NonQ(command);
+			command="UPDATE eclipboardimagecapturedef SET Frequency=1 WHERE FrequencyDays=0";//1=EachTime - Don't need to do this for eclipboardsheetdef since 0 days previously indicated Once
+			Db.NonQ(command);
+			command="UPDATE eclipboardimagecapturedef SET Frequency=2 WHERE FrequencyDays>0";//2=Timespan
+			Db.NonQ(command);
+			command="UPDATE eclipboardimagecapturedef SET ResubmitInterval=864000000000*FrequencyDays WHERE FrequencyDays>0";
+			Db.NonQ(command);
+			command="UPDATE eclipboardimagecapturedef SET FrequencyDays=0";
+			Db.NonQ(command);
+			//End I56390
+		}//End of 24_3_20
+
+
 	}
 }

@@ -339,13 +339,13 @@ namespace OpenDentBusiness {
 				case DefCat.AutoNoteCats:
 					AutoNotes.RemoveFromCategory(def.DefNum);//set any autonotes assigned to this category to 0 (unassigned), user already warned about this
 					List<Def> listDefsAutoNote=GetDefsForCategory(DefCat.AutoNoteCats);
-					List<Def> listDefsChilden=listDefsAutoNote.FindAll(x => x.ItemValue==def.DefNum.ToString());
-					for(int i=0;i<listDefsChilden.Count;i++) {
+					List<Def> listDefsChildren=listDefsAutoNote.FindAll(x => x.ItemValue==def.DefNum.ToString());
+					for(int i=0;i<listDefsChildren.Count;i++) {
 						//Set item value to empty string to remove previous linkage to parent category.
-						listDefsChilden[i].ItemValue="";
-						Update(listDefsChilden[i]);
-						string logText=Lans.g("Defintions","Definition edited:")+" "+listDefsChilden[i].ItemName+" "
-						+Lans.g("Defintions","with category:")+" "+listDefsChilden[i].Category.GetDescription();
+						listDefsChildren[i].ItemValue="";
+						Update(listDefsChildren[i]);
+						string logText=Lans.g("Defintions","Definition edited:")+" "+listDefsChildren[i].ItemName+" "
+						+Lans.g("Defintions","with category:")+" "+listDefsChildren[i].Category.GetDescription();
 						SecurityLogs.MakeLogEntry(EnumPermType.DefEdit,0,logText);
 					}
 					listCommands.Add("SELECT COUNT(*) FROM autonote WHERE Category="+POut.Long(def.DefNum));//just in case update failed or concurrency issue
@@ -355,6 +355,10 @@ namespace OpenDentBusiness {
 					break;
 				case DefCat.WebSchedExistingApptTypes:
 					DefCountValid(DefCat.WebSchedExistingApptTypes);
+					break;
+				case DefCat.EClipboardImageCapture:
+					listCommands.Add("SELECT COUNT(*) FROM eclipboardimagecapturedef WHERE DefNum="+POut.Long(def.DefNum));
+					listCommands.Add("SELECT COUNT(*) FROM eclipboardimagecapture WHERE DefNum="+POut.Long(def.DefNum));
 					break;
 				default:
 					throw new ApplicationException("NOT Allowed to delete this type of def.");
