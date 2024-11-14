@@ -369,10 +369,10 @@ namespace OpenDental {
 
 		private void butClearFormatting_Click(object sender,EventArgs e) {
 			try {
-				textDescription.SelectionFont=new Font((string)comboFontType.SelectedItem,(int)comboFontSize.SelectedItem);
+				textDescription.SelectionFont=new Font("Times New Roman",8.5f);
 				textDescription.SelectionBullet=false;
-				textDescription.SelectionColor=DefaultForeColor;
-				textDescription.SelectionBackColor=DefaultBackColor;
+				textDescription.SelectionColor=textDescription.ForeColor;
+				textDescription.SelectionBackColor=textDescription.BackColor;
 				UpdateSelectedFontStyles();
 				textDescription.Focus();
 			}

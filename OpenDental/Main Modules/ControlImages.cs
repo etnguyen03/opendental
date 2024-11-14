@@ -3013,6 +3013,7 @@ namespace OpenDental{
 			//Some buttons don't show here because they are always enabled as long as there is a patient,
 			//including Scan, Import, Paste, Templates, Mounts
 			toolBarMain.SetEnabled(TB.Print.ToString(),toolBarButtonState.Print);
+			imageSelector.PrintOptionEnabled=toolBarButtonState.Print;
 			toolBarMain.SetEnabled(TB.Delete.ToString(),toolBarButtonState.Delete);
 			toolBarMain.SetEnabled(TB.Info.ToString(),toolBarButtonState.Info);
 			toolBarMain.SetEnabled(TB.Sign.ToString(),toolBarButtonState.Sign);
@@ -3899,11 +3900,9 @@ namespace OpenDental{
 			}
 			if(Path.GetExtension(GetDocumentShowing(0).FileName).ToLower()==".pdf"){ 
 				menuItemTreePrint.Enabled=false; //pdf printing is handled in Adobe, so users don't need the menu option
-				imageSelector.PrintOptionEnabled=false;
 			}
 			else {
 				menuItemTreePrint.Enabled=true;
-				imageSelector.PrintOptionEnabled=true;
 			}
 		}
 

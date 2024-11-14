@@ -1,4 +1,5 @@
-﻿using System.Windows.Forms;
+﻿using System;
+using System.Windows.Forms;
 using CodeBase;
 using OpenDental.Thinfinity;
 
@@ -13,14 +14,14 @@ namespace OpenDental.UI {
 		}
 
 		///<summary>Inserts the iFrame into the DOM and initializes it.</summary>
-		public void Initialize(string url="",bool isHidden=false) {
-			_frameId=Browser.InsertIframe(this.Handle,url,isHidden);
+		public void Initialize(IntPtr handle,string url="",bool isHidden=false) {
+			_frameId=Browser.InsertIframe(handle,url,isHidden);
 		}
 
 		///<summary>Navigates the iFrame to the url.</summary>
-		public void Navigate(string url) {
+		public void Navigate(IntPtr handle,string url) {
 			if(_frameId.IsNullOrEmpty()) {
-				Initialize(url);
+				Initialize(handle,url);
 				return;
 			}
 			ODCloudClient.ODBrowserData odBrowserData=new ODCloudClient.ODBrowserData {
@@ -31,17 +32,17 @@ namespace OpenDental.UI {
 		}
 
 		///<summary>Displays a file in the iFrame.</summary>
-		public void DisplayFile(string filepath) {
+		public void DisplayFile(IntPtr handle,string filepath) {
 			if(!string.IsNullOrEmpty(filepath) && filepath.StartsWith(@"\\")) {
 				filepath=ThinfinityUtils.GetTempLocalPathForFile(filepath);
 			}
 			string url=Browser.GetSafeUrl(filepath);
-			Navigate(url);
+			Navigate(handle,url);
 		}
 
 		///<summary>Makes the iFrame visible.</summary>
-		public void ShowIframe() {
-			Initialize();
+		public void ShowIframe(IntPtr handle) {
+			Initialize(handle);
 			ODCloudClient.ODBrowserData odBrowserData=new ODCloudClient.ODBrowserData {
 				ElementId=_frameId,
 				IsVisible=true
@@ -50,8 +51,8 @@ namespace OpenDental.UI {
 		}
 
 		///<summary>Hides the iFrame.</summary>
-		public void HideIframe() {
-			Initialize(isHidden:true);
+		public void HideIframe(IntPtr handle) {
+			Initialize(handle,isHidden:true);
 			ODCloudClient.ODBrowserData odBrowserData=new ODCloudClient.ODBrowserData {
 				ElementId=_frameId,
 				IsVisible=false

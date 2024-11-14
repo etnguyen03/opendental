@@ -89,7 +89,7 @@ namespace OpenDental {
 		public void ComposeNewRxDoseSpot() {
 			string doseSpotUrl=Erx.GetRxDoseSpotUrl(StringSSOQuery);
 			if(ODBuild.IsThinfinity()) {
-				cloudIframe.Initialize(doseSpotUrl);
+				cloudIframe.Initialize(Handle,doseSpotUrl);
 			}
 			else {
 				webViewMain.CoreWebView2.Navigate(doseSpotUrl);

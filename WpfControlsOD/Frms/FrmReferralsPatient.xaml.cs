@@ -61,7 +61,7 @@ namespace OpenDental {
 		}
 
 		private void LinkLabel_LinkClicked(object sender,EventArgs e) {
-			string str="Neither To nor From. Will not show on referral reports. Will still show in Letters dropdown. To change the label in front of it, go to DisplayFields, Patient Information. Change the display text for the field called Referrals. This will show in the Family module, in this grid, and in the referral edit window.";
+			string str="Neither To nor From. Will not show on referral reports. Will still show in Letters dropdown. To change the label in front of it, go to DisplayFields, Patient Information. Change the display text for the field called Referrals. This will show in the Family module, in this grid, and in the Edit Referral Attachment window.";
 			MsgBox.Show(str);
 		}
 

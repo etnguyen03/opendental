@@ -1178,6 +1178,13 @@ namespace OpenDental
 		///<summary>Gets the current cell as a col,row based on the x-y pixel coordinate supplied.</summary>
 		private ColRow GetCellFromPixel(int x,int y){
 			int row=0;
+			//Values sent by the MouseEventArgs when dragging may sometimes send over a negative number when just outside of the panel, these checks prevent an error from occuring from negative values
+			if(y<0){
+				y=0;
+			}
+			if(x<0){
+				x=0;
+			}
 			for(int i=0;i<_rowPosArray.Length;i++){
 				if(y<_rowPosArray[i]){
 					row=i-1;
@@ -1186,9 +1193,6 @@ namespace OpenDental
 				if(i==_rowPosArray.Length-1){//last row
 					row=i;
 				}
-			}
-			if(y==-1){
-				y=0;
 			}
 			int col=0;
 			for(int i=0;i<_colPosArray.Length;i++){

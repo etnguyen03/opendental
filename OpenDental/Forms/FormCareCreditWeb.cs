@@ -27,7 +27,7 @@ namespace OpenDental {
 			InitializeLayoutManager();
 			Lan.F(this);
 			if(ODBuild.IsThinfinity()) {
-				cloudIframe.Initialize(url);
+				cloudIframe.Initialize(Handle,url);
 			}
 			_urlBrowseTo=url;
 			_patient=patient;

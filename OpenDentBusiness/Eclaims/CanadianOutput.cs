@@ -61,19 +61,19 @@ namespace OpenDentBusiness.Eclaims {
 			}
 			CanadianNetwork network=CanadianNetworks.GetNetwork(carrier.CanadianNetworkNum,clearinghouseClin,claim);
 			Patient patient=Patients.GetPat(patNum);
-			Provider provDefaultTreat=Providers.GetProv(PrefC.GetLong(PrefName.PracticeDefaultProv));
+			Provider provider=Providers.GetProv(claim.ProvTreat);
 			if(clearinghouseClin==null) {
 				throw new ODException("Canadian clearinghouse not found.");
 			}
 			string error="";
-			if(!provDefaultTreat.IsCDAnet) {
+			if(!provider.IsCDAnet) {
 				error+="Prov not setup as CDA provider";
 			}
-			if(provDefaultTreat.NationalProvID.Length!=9) {
+			if(provider.NationalProvID.Length!=9) {
 				if(error!="") error+=", ";
 				error+="Prov CDA num 9 digits";
 			}
-			if(provDefaultTreat.CanadianOfficeNum.Length!=4) {
+			if(provider.CanadianOfficeNum.Length!=4) {
 				if(error!="") error+=", ";
 				error+="Prov office num 4 char";
 			}
@@ -106,9 +106,9 @@ namespace OpenDentBusiness.Eclaims {
 				//A09 carrier transaction counter 5 N, only version 04
 				strb.Append(Canadian.TidyN(etrans.CarrierTransCounter,5));
 				//B01 CDA provider number 9 AN
-				strb.Append(Canadian.TidyAN(provDefaultTreat.NationalProvID,9));//already validated
+				strb.Append(Canadian.TidyAN(provider.NationalProvID,9));//already validated
 				//B02 (treating) provider office number 4 AN
-				strb.Append(Canadian.TidyAN(provDefaultTreat.CanadianOfficeNum,4));//already validated
+				strb.Append(Canadian.TidyAN(provider.CanadianOfficeNum,4));//already validated
 				//Note: The preamble to the Attachment transaction indicates it can be used to send attachments to other providers as well as claims processors. To date the ability
 				//to send to other providers has not been implemented, and there are no known plans to introduce this functionality—fields B07 and B08 will always be empty.
 				//B07 Receiving Provider Number 9 AN
@@ -231,7 +231,7 @@ namespace OpenDentBusiness.Eclaims {
 			CanadianNetwork network=CanadianNetworks.GetNetwork(carrier.CanadianNetworkNum,clearinghouseClin);
 			Patient patient=Patients.GetPat(patNum);
 			Patient subscriber=Patients.GetPat(insSub.Subscriber);
-			Provider provDefaultTreat=Providers.GetProv(PrefC.GetLong(PrefName.PracticeDefaultProv));
+			Provider provider=Providers.GetProv(Patients.GetProvNum(patNum));
 			if(clearinghouseClin==null) {
 				throw new ApplicationException("Canadian clearinghouse not found.");
 			}
@@ -246,14 +246,14 @@ namespace OpenDentBusiness.Eclaims {
 				if(error!="") error+=", ";
 				error+="CarrierId 6 digits";
 			}
-			if(!provDefaultTreat.IsCDAnet) {
+			if(!provider.IsCDAnet) {
 				error+="Prov not setup as CDA provider";
 			}
-			if(provDefaultTreat.NationalProvID.Length!=9) {
+			if(provider.NationalProvID.Length!=9) {
 				if(error!="") error+=", ";
 				error+="Prov CDA num 9 digits";
 			}
-			if(provDefaultTreat.CanadianOfficeNum.Length!=4) {
+			if(provider.CanadianOfficeNum.Length!=4) {
 				if(error!="") error+=", ";
 				error+="Prov office num 4 char";
 			}
@@ -349,12 +349,12 @@ namespace OpenDentBusiness.Eclaims {
 				strb.Append(Canadian.TidyN(etrans.CarrierTransCounter,5));
 			}
 			//B01 CDA provider number 9 AN
-			strb.Append(Canadian.TidyAN(provDefaultTreat.NationalProvID,9));//already validated
+			strb.Append(Canadian.TidyAN(provider.NationalProvID,9));//already validated
 																																			//B02 provider office number 4 AN
-			strb.Append(Canadian.TidyAN(provDefaultTreat.CanadianOfficeNum,4));//already validated
+			strb.Append(Canadian.TidyAN(provider.CanadianOfficeNum,4));//already validated
 			if(carrier.CDAnetVersion=="04") {
 				//B03 billing provider number 9 AN
-				Provider provBilling=Providers.GetProv(Providers.GetBillingProvNum(provDefaultTreat.ProvNum,patient.ClinicNum));
+				Provider provBilling=Providers.GetProv(Providers.GetBillingProvNum(provider.ProvNum,patient.ClinicNum));
 				strb.Append(Canadian.TidyAN(provBilling.NationalProvID,9));//already validated
 			}
 			if(carrier.CDAnetVersion=="02") {

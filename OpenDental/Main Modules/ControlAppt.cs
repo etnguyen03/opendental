@@ -4571,6 +4571,7 @@ namespace OpenDental {
 		private void PrintApptCard() {
 			PrinterL.TryPrintOrDebugRpPreview(pd2_PrintApptCard,
 				Lan.g(this,"Appointment reminder postcard printed"),
+				printoutOrientation:PrintoutOrientation.Default,
 				printSituation:PrintSituation.Postcard,
 				auditPatNum:_patient.PatNum,
 				margins:new Margins(0,0,0,0),

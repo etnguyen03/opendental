@@ -53,8 +53,6 @@ Here is the desired behavior:
 		public Color ColorTextBack;
 		///<summary>Tracks when this form was launched from the Chart Module to prevent specific behavior when deleted.</summary>
 		public bool DidLaunchFromChartModule;
-		///<summary>This will be true for PDF. This prevents dragging away from docked position.</summary>
-		public bool IsImageFloatLocked;
 		///<summary>For a few things, an actual reference to the imageSelector of the parent is handy.</summary>
 		public WpfControls.UI.ImageSelector ImageSelector_;
 		public LayoutManagerForms LayoutManager=new LayoutManagerForms();
@@ -165,8 +163,7 @@ Here is the desired behavior:
 			}
 			else if(ODBuild.IsThinfinity()) {//For cloud, instead use CloudIframe.
 				_cloudIframe=new CloudIframe();
-				_cloudIframe.Initialize();
-				_cloudIframe.HideIframe();
+				_cloudIframe.HideIframe(Handle);
 				_cloudIframe.Dock=DockStyle.Fill;
 				LayoutManager.Add(_cloudIframe,this);
 			}
@@ -239,13 +236,11 @@ Here is the desired behavior:
 		#region Methods - Public
 		///<summary>Disposes and recreates a new CloudIframe control for ODCloud that is hidden.</summary>
 		public void ClearPDFBrowser() {
-			if(ODBuild.IsThinfinity()) {
-				//ODCloud does not use _odWebView2
-				_cloudIframe.HideIframe();
-				IsImageFloatLocked=false;
+			if(!ODBuild.IsThinfinity()) {
 				return;
 			}
-			IsImageFloatLocked=false;
+			//ODCloud does not use _odWebView2
+			_cloudIframe.HideIframe(Handle);
 		}
 
 		///<summary>Deletes the specified document from the database and refreshes the tree view. Set securityCheck false when creating a new document that might get cancelled.  Document is passed in because it might not be in the tree if the image folder it belongs to is now hidden.</summary>
@@ -547,9 +542,8 @@ Here is the desired behavior:
 		public bool HideWebBrowser() {
 			if(ODBuild.IsThinfinity()) {
 				//ODCloud uses _cloudIframe instead of _odWebView2
-				_cloudIframe.HideIframe();
+				_cloudIframe.HideIframe(Handle);
 			}
-			IsImageFloatLocked=false;
 			return true;
 		}
 
@@ -1054,10 +1048,9 @@ Here is the desired behavior:
 		public void SelectTreeNode2(NodeTypeAndKey nodeTypeAndKey,string localPathImportedCloud="") {
 			_pointTranslation=new Point();
 			panelMain.Visible=true;
-			_cloudIframe?.HideIframe();
+			_cloudIframe?.HideIframe(Handle);
 			if(_odWebView2!=null) {
 				_odWebView2.Visible=false;
-				IsImageFloatLocked=false;
 			}
 			if(nodeTypeAndKey is null){
 				return;
@@ -4586,16 +4579,14 @@ Here is the desired behavior:
 				}
 				else {
 					if(ODBuild.IsThinfinity()) {
-						_cloudIframe.ShowIframe();
-						_cloudIframe.DisplayFile(_odWebView2FilePath);
-						IsImageFloatLocked=true;
+						_cloudIframe.ShowIframe(Handle);
+						_cloudIframe.DisplayFile(Handle,_odWebView2FilePath);
 						return;
 					}
 					if(_odWebView2.CoreWebView2==null) {
 						await _odWebView2.Init();//Throws exception if Microsoft WebView2 Runtime is not installed so need to have in try-catch.
 					}
 					_odWebView2.ODWebView2Navigate(_odWebView2FilePath);
-					IsImageFloatLocked=true;
 				}
 			}
 			catch(Exception ex) {

@@ -111,6 +111,7 @@ namespace OpenDental {
 			if(_windowImageFloatWindows!=null){
 				_windowImageFloatWindows.Close();
 			}
+			ControlImageDisplay_.ClearPDFBrowser();
 		}
 
 		private void FormImageFloat_Load(object sender, EventArgs e){

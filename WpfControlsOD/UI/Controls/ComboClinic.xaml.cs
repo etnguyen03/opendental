@@ -384,12 +384,11 @@ RunReport(listClinicNums,stringDisplayClinics);
 				}
 				List<long> listClinicNumsSelected=new List<long>();
 				//_clinicSelectedNoPermission should be meaningless for multiselect, but we'll give it to them anyway because we're not throwing exception
-				long keyWhenMissing=comboBox.GetSelectedKey<Clinic>(x=>x.ClinicNum);
-				if(keyWhenMissing>0){//nuance, we ignore possibility of HQ clinic
-					listClinicNumsSelected.Add(keyWhenMissing);
-					return listClinicNumsSelected;
-				}
 				if(comboBox.SelectedIndices.Count==0) {
+					long keyWhenMissing=comboBox.GetSelectedKey<Clinic>(x=>x.ClinicNum);//Guaranteed to return comboBox._keyWhenMissing
+					if(keyWhenMissing>0){//nuance, we ignore possibility of HQ clinic
+						listClinicNumsSelected.Add(keyWhenMissing);
+					}
 					return listClinicNumsSelected;
 				}
 				if(IncludeAll && IsAllSelected){

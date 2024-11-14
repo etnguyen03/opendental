@@ -1974,7 +1974,7 @@ namespace OpenDentBusiness {
 				sb.AppendLine(Lans.g("FormPayPlanDynamic","Down payment must be less than or equal to total amount."));
 			}
 			if(doCheckApr && !CompareDouble.IsZero(payPlanTerms.APR) && PrefC.GetBool(PrefName.PayPlanRequireLockForAPR) && !isLocked){
-				sb.AppendLine(Lans.g("FormPayPlanDynamic","Payment plans with APR must be locked. Remove the APR or check the box for FullLock."));
+				sb.AppendLine(Lans.g("FormPayPlanDynamic","Payment plans with APR must be locked. Remove the APR or check the box for Permanent Lock."));
 			}
 			Action<string> actionNotAuthorized=(msg) => {
 				sb.AppendLine(Lans.g("FormPayPlanDynamic",msg));
