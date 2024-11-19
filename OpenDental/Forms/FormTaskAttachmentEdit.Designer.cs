@@ -36,6 +36,7 @@ namespace OpenDental{
 			this.labelText = new System.Windows.Forms.Label();
 			this.butDelete = new OpenDental.UI.Button();
 			this.butViewDoc = new OpenDental.UI.Button();
+			this.butAttach = new OpenDental.UI.Button();
 			this.SuspendLayout();
 			// 
 			// butSave
@@ -158,7 +159,7 @@ namespace OpenDental{
 			// 
 			// butViewDoc
 			// 
-			this.butViewDoc.Location = new System.Drawing.Point(250, 37);
+			this.butViewDoc.Location = new System.Drawing.Point(328, 37);
 			this.butViewDoc.Name = "butViewDoc";
 			this.butViewDoc.Size = new System.Drawing.Size(69, 24);
 			this.butViewDoc.TabIndex = 2;
@@ -166,9 +167,20 @@ namespace OpenDental{
 			this.butViewDoc.UseVisualStyleBackColor = true;
 			this.butViewDoc.Click += new System.EventHandler(this.butViewDoc_Click);
 			// 
+			// butAttach
+			// 
+			this.butAttach.Location = new System.Drawing.Point(250, 37);
+			this.butAttach.Name = "butAttach";
+			this.butAttach.Size = new System.Drawing.Size(69, 24);
+			this.butAttach.TabIndex = 65;
+			this.butAttach.Text = "Attach";
+			this.butAttach.UseVisualStyleBackColor = true;
+			this.butAttach.Click += new System.EventHandler(this.butAttach_Click);
+			// 
 			// FormTaskAttachmentEdit
 			// 
 			this.ClientSize = new System.Drawing.Size(1230, 696);
+			this.Controls.Add(this.butAttach);
 			this.Controls.Add(this.butViewDoc);
 			this.Controls.Add(this.butDelete);
 			this.Controls.Add(this.butImport);
@@ -204,5 +216,6 @@ namespace OpenDental{
 		private UI.Button butImport;
 		private UI.Button butDelete;
 		private UI.Button butViewDoc;
+		private UI.Button butAttach;
 	}
 }

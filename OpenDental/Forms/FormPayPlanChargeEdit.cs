@@ -143,7 +143,7 @@ namespace OpenDental{
 					MsgBox.Show(this,"Payment plan adjustments cannot have negative principal.");
 					return;
 				}
-				bool isEstimatedChargeDate=_dynamicPaymentPlanModuleData.ListPayPlanChargesExpected.Select(x=>x.ChargeDate).Contains(chargeDate);
+				bool isEstimatedChargeDate=_dynamicPaymentPlanModuleData.ListPayPlanChargesExpected.FindAll(x=>x.PayPlanChargeNum==0).Select(x=>x.ChargeDate).Contains(chargeDate);
 				if(isEstimatedChargeDate && chargeDate!=_payPlanChargeCurOld.ChargeDate) {
 					MsgBox.Show(this,"This charge date is the same as a future charge date. This will prevent the future charge from being issued","Warning");
 				}
@@ -154,7 +154,8 @@ namespace OpenDental{
 				double amountCharged=_dynamicPaymentPlanModuleData.ListPayPlanChargesExpected
 					.FindAll(x=>x.PayPlanChargeNum!=0 && x.PayPlanChargeNum!=_payPlanChargeCurOld.PayPlanChargeNum && x.FKey==PayPlanChargeCur.FKey && x.LinkType==PayPlanChargeCur.LinkType)
 					.Sum(x=>x.Principal);
-				remainingProd-=amountCharged;
+				//Sometimes a rounding error can happen with small charges, so this rounds the remaining production to the nearest cent.
+				remainingProd=Math.Round(remainingProd-amountCharged,digits:2,MidpointRounding.AwayFromZero);
 				if(principal > remainingProd) {
 					string msgString=Lans.g(this,"Principal cannot be greater than the remaining production value of")+ " " + remainingProd.ToString("c") + ".";
 					MsgBox.Show(msgString);

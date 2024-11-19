@@ -21,6 +21,7 @@ We cache as many things as possible to reduce api calls,
 and we hide as many calculations as possible behind inexpensive early return checks.
 */
 	public static class MouseWatcher {
+		public static bool IsRunning;
 		///<summary>Delegates are often stored in a static field because passing a method directly could result in the method being garbage collected. By keeping a static reference,the program ensures the method remains alive for the duration of the hook.</summary>
 		private static readonly DelegateLowLevelMouseProc _delegateLowLevelMouseProc=HookCallback;
 		private static IntPtr _intPtrHookID=IntPtr.Zero;
@@ -37,15 +38,18 @@ and we hide as many calculations as possible behind inexpensive early return che
 		///<summary>Windows message identifier used to detect and respond to mouse movement events.</summary>
 		private const int WM_MOUSEMOVE=0x0200;
 
-		public static void Start() {
-			APPBARDATA aPPBARDATA=new APPBARDATA();
-			aPPBARDATA.cbSize=(uint)Marshal.SizeOf(aPPBARDATA);
-			aPPBARDATA.hWnd=_intPtrTaskbarWnd;
-			TaskbarState taskbarState=(TaskbarState)SHAppBarMessage((int)TaskBarCommand.ABM_GETSTATE,ref aPPBARDATA);
-			bool isAutoHideEnabled=(taskbarState & TaskbarState.ABS_AUTOHIDE)!=0;
-			if(!isAutoHideEnabled) {
-				return; //No need to hook if if auto-hide is disabled.
-				//If user hides taskbar after starting OD, then this watcher will not be running and user will still have the issue.
+		public static void Start(bool forceStart=false) {
+			IsRunning=false;
+			if(!forceStart) {
+				APPBARDATA aPPBARDATA=new APPBARDATA();
+				aPPBARDATA.cbSize=(uint)Marshal.SizeOf(aPPBARDATA);
+				aPPBARDATA.hWnd=_intPtrTaskbarWnd;
+				TaskbarState taskbarState=(TaskbarState)SHAppBarMessage((int)TaskBarCommand.ABM_GETSTATE,ref aPPBARDATA);
+				bool isAutoHideEnabled=(taskbarState & TaskbarState.ABS_AUTOHIDE)!=0;
+				if(!isAutoHideEnabled) {
+					return; //No need to hook if if auto-hide is disabled.
+					//If user hides taskbar after starting OD, then this watcher will not be running and user will still have the issue.
+				}
 			}
 			_intPtrTaskbarWnd=FindWindow("Shell_TrayWnd",null); //Get and cache taskbar handle. FindWindow returns IntPtr.Zero on fail.
 			if(_intPtrTaskbarWnd==IntPtr.Zero) {
@@ -58,13 +62,19 @@ and we hide as many calculations as possible behind inexpensive early return che
 			GetWindowRect(_intPtrTaskbarWnd,ref rectTaskbar);
 			_heightTaskbar=rectTaskbar.bottom-rectTaskbar.top;
 			Application.ApplicationExit+=Application_ApplicationExit;
+			IsRunning=true;
 		}
 
 		public static void Application_ApplicationExit(object sender,EventArgs e) {
+			Stop();
+		}
+
+		public static void Stop() {
 			if(_intPtrHookID!=IntPtr.Zero) {
 				UnhookWindowsHookEx(_intPtrHookID);
 				_intPtrHookID=IntPtr.Zero;
 			}
+			IsRunning=false;
 		}
 
 		private static IntPtr HookCallback(int nCode,IntPtr wParam,IntPtr lParam) {

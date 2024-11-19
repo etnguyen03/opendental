@@ -21,7 +21,7 @@ namespace OpenDentBusiness.InternalTools.Job_Manager.HelperClasses {
 		///<summary>Fetches all needed data for passed in teams and date range,
 		///and creates a TeamReportUser for each team member. Returns them in a list.</summary>
 		public static List<TeamReportUser> CreateListForTeam(List<JobTeam> listJobTeamsToReport,DateTime dateTimeFrom,DateTime dateTimeTo,List<JobTeam> listJobTeamsAll) {
-			List<Userod> listUserods=Userods.GetListByJobTeams(listJobTeamsToReport);
+			List<Userod> listUserods=Userods.GetListByJobTeams(listJobTeamsToReport).OrderBy(x => x.UserName).ToList();
 			List<Job> listJobs=Jobs.GetListForTeamReport(listUserods,dateTimeFrom,dateTimeTo);
 			List<JobReview> listJobReviewsInDateRange=GetJobReviewsInDateRangeFromJobs(listJobs,dateTimeFrom,dateTimeTo);
 			List<Def> listPriorityDefs=Defs.GetDefsForCategory(DefCat.JobPriorities);

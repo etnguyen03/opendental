@@ -34,6 +34,10 @@ namespace OpenDental{
 			this.butCopy = new OpenDental.UI.Button();
 			this.label2 = new System.Windows.Forms.Label();
 			this.butAddEForm = new OpenDental.UI.Button();
+			this.groupSortBy = new OpenDental.UI.GroupBox();
+			this.radioSortByDateTime = new System.Windows.Forms.RadioButton();
+			this.radioSortByDescDateT = new System.Windows.Forms.RadioButton();
+			this.groupSortBy.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// label1
@@ -93,12 +97,13 @@ namespace OpenDental{
 			// 
 			// gridMain
 			// 
+			this.gridMain.AllowSortingByColumn = true;
 			this.gridMain.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-			this.gridMain.Location = new System.Drawing.Point(12, 27);
+			this.gridMain.Location = new System.Drawing.Point(12, 98);
 			this.gridMain.Name = "gridMain";
-			this.gridMain.Size = new System.Drawing.Size(592, 527);
+			this.gridMain.Size = new System.Drawing.Size(722, 456);
 			this.gridMain.TabIndex = 4;
 			this.gridMain.Title = "Patient Forms and Medical Histories";
 			this.gridMain.TranslationName = "FormPatientForms";
@@ -109,7 +114,7 @@ namespace OpenDental{
 			this.menuMain.Dock = System.Windows.Forms.DockStyle.Top;
 			this.menuMain.Location = new System.Drawing.Point(0, 0);
 			this.menuMain.Name = "menuMain";
-			this.menuMain.Size = new System.Drawing.Size(615, 24);
+			this.menuMain.Size = new System.Drawing.Size(745, 24);
 			this.menuMain.TabIndex = 12;
 			// 
 			// butCopy
@@ -145,9 +150,43 @@ namespace OpenDental{
 			this.butAddEForm.Text = "Add eForm";
 			this.butAddEForm.Click += new System.EventHandler(this.butAddEForm_Click);
 			// 
+			// groupSortBy
+			// 
+			this.groupSortBy.BackColor = System.Drawing.Color.White;
+			this.groupSortBy.Controls.Add(this.radioSortByDateTime);
+			this.groupSortBy.Controls.Add(this.radioSortByDescDateT);
+			this.groupSortBy.Location = new System.Drawing.Point(12, 30);
+			this.groupSortBy.Name = "groupSortBy";
+			this.groupSortBy.Size = new System.Drawing.Size(290, 62);
+			this.groupSortBy.TabIndex = 251;
+			this.groupSortBy.Text = "Sort forms by";
+			// 
+			// radioSortByDateTime
+			// 
+			this.radioSortByDateTime.Checked = true;
+			this.radioSortByDateTime.Location = new System.Drawing.Point(24, 18);
+			this.radioSortByDateTime.Name = "radioSortByDateTime";
+			this.radioSortByDateTime.Size = new System.Drawing.Size(184, 18);
+			this.radioSortByDateTime.TabIndex = 252;
+			this.radioSortByDateTime.TabStop = true;
+			this.radioSortByDateTime.Text = "Date and Time";
+			this.radioSortByDateTime.UseVisualStyleBackColor = true;
+			this.radioSortByDateTime.Click += new System.EventHandler(this.radioSortByDateTime_Click);
+			// 
+			// radioSortByDescDateT
+			// 
+			this.radioSortByDescDateT.Location = new System.Drawing.Point(24, 38);
+			this.radioSortByDescDateT.Name = "radioSortByDescDateT";
+			this.radioSortByDescDateT.Size = new System.Drawing.Size(236, 18);
+			this.radioSortByDescDateT.TabIndex = 251;
+			this.radioSortByDescDateT.Text = "Description, then Date/Time";
+			this.radioSortByDescDateT.UseVisualStyleBackColor = true;
+			this.radioSortByDescDateT.Click += new System.EventHandler(this.radioSortByDescriptionDateTime_Click);
+			// 
 			// FormPatientForms
 			// 
-			this.ClientSize = new System.Drawing.Size(615, 696);
+			this.ClientSize = new System.Drawing.Size(745, 696);
+			this.Controls.Add(this.groupSortBy);
 			this.Controls.Add(this.butAddEForm);
 			this.Controls.Add(this.label2);
 			this.Controls.Add(this.butCopy);
@@ -162,6 +201,7 @@ namespace OpenDental{
 			this.Name = "FormPatientForms";
 			this.Text = "Patient Forms and Medical Histories";
 			this.Load += new System.EventHandler(this.FormPatientForms_Load);
+			this.groupSortBy.ResumeLayout(false);
 			this.ResumeLayout(false);
 
 		}
@@ -177,5 +217,8 @@ namespace OpenDental{
 		private UI.Button butCopy;
 		private System.Windows.Forms.Label label2;
 		private UI.Button butAddEForm;
+		private UI.GroupBox groupSortBy;
+		private System.Windows.Forms.RadioButton radioSortByDateTime;
+		private System.Windows.Forms.RadioButton radioSortByDescDateT;
 	}
 }

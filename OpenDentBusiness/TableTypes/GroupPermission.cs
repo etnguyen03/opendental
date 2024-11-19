@@ -817,6 +817,9 @@ namespace OpenDentBusiness{
 		///<summary>260 - Allows deleting eForms when they're attached to patients. No date restrictions.</summary>
 		[Description("eForm Delete")]
 		EFormDelete,
+		///<summary>261 - Used for logging only. Can be used to log whenever mobile notifications are inserted into the database.</summary>
+		[Description("Mobile Notifications")]
+		MobileNotification,
 	}
 }
 

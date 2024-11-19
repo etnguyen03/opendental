@@ -8949,6 +8949,7 @@ namespace OpenDentBusiness {
 			string command=$@"SELECT patient.PatNum,patient.LName,patient.FName,claim.ClaimNum,claim.DateService,
 					procedurelog.ProcNum,procedurecode.ProcCode,procedurelog.ProcStatus,procedurelog.ProcDate,
 					procedurelog.ProcNumLab,procedurecodelab.ProcCode ProcCodeLab,procedureloglab.ProcStatus ProcStatusLab,procedureloglab.ProcDate ProcDateLab
+					procedurelog.ProcNumLab,claim.ClaimNum
 				FROM procedurelog
 				INNER JOIN claimproc ON procedurelog.ProcNum=claimproc.ProcNum
 				INNER JOIN claim ON claimproc.ClaimNum=claim.ClaimNum
@@ -8960,6 +8961,7 @@ namespace OpenDentBusiness {
 				AND claim.ClaimStatus IN ('W','S','R')
 				AND claim.ClaimType IN ('P','S','Other')";
 			DataTable table=Db.GetTable(command);
+			table.TableName=nameof(Claim);
 			if(table.Rows.Count==0 && !verbose) {
 				return "";
 			}
@@ -8974,9 +8976,11 @@ namespace OpenDentBusiness {
 				case DbmMode.Breakdown:
 					if(table.Rows.Count>0) {
 						stringBuilder.AppendLine(", "+Lans.g("FormDatabaseMaintenance","including")+":");
+						List<long> listProcNums=table.Select().Select(x => PIn.Long(x["ProcNum"].ToString())).ToList();
+						DataTable dataTableLabProcs=GetLabProcsForProcNums(listProcNums);
 						List<PatNumProceduresGroup> listPatNumClaimsGroups=table.Select()
 							.GroupBy(x => PIn.Long(x["PatNum"].ToString()))
-							.Select(x => new PatNumProceduresGroup(x.Key,x.ToList()))
+							.Select(x => new PatNumProceduresGroup(x.Key,ListTools.FromSingle(table),dataTableLabProcs))
 							.ToList();
 						for(int i=0;i<listPatNumClaimsGroups.Count;i++) {
 							/**********************************************************************************************************************
@@ -9060,38 +9064,29 @@ namespace OpenDentBusiness {
 			if(RemotingClient.MiddleTierRole==MiddleTierRole.ClientMT) {
 				return Meth.GetString(MethodBase.GetCurrentMethod(),verbose,dbmMode,patNumSpecific);
 			}
-			string command=$@"SELECT patient.PatNum,patient.LName,patient.FName,
-					COALESCE(claimproc.ClaimProcNum,0) ClaimProcNum,COALESCE(paysplit.SplitNum,0) SplitNum,
-					COALESCE(claimproc.ClaimNum,0) ClaimNum,COALESCE(claimproc.ProcDate,'0001-01-01') dateService,
-					COALESCE(adjustment.AdjNum,0) AdjNum, COALESCE(adjustment.AdjDate,'0001-01-01') AdjDate,COALESCE(adjustment.AdjAmt,0) AdjAmt,
-					COALESCE(paysplit.PayNum,0) PayNum, COALESCE(paysplit.DatePay,'0001-01-01') DatePay,COALESCE(paysplit.SplitAmt,0) SplitAmt,
-					procedurelog.ProcNum,procedurecode.ProcCode,procedurelog.ProcStatus,procedurelog.ProcDate,
-					procedurelog.ProcNumLab,procedurecodelab.ProcCode ProcCodeLab,procedureloglab.ProcStatus ProcStatusLab,
-					procedureloglab.ProcDate ProcDateLab
-				FROM procedurelog 
-				INNER JOIN procedurecode ON procedurecode.CodeNum=procedurelog.CodeNum
-				INNER JOIN patient ON patient.PatNum=procedurelog.PatNum
-				LEFT JOIN claimproc ON claimproc.ProcNum=procedurelog.ProcNum AND claimproc.Status IN ({POut.Enum(ClaimProcStatus.NotReceived)},
-					{POut.Enum(ClaimProcStatus.Received)},
-					{POut.Enum(ClaimProcStatus.Supplemental)},
-					{POut.Enum(ClaimProcStatus.CapComplete)})
-				LEFT JOIN adjustment ON adjustment.ProcNum=procedurelog.ProcNum
-				LEFT JOIN paysplit ON paysplit.ProcNum=procedurelog.ProcNum and paysplit.UnearnedType=0
-				LEFT JOIN procedurelog procedureloglab ON procedurelog.ProcNumLab=procedureloglab.ProcNum
-				LEFT JOIN procedurecode procedurecodelab ON procedureloglab.CodeNum=procedurecodelab.CodeNum
-				WHERE procedurelog.ProcStatus NOT IN({POut.Enum(ProcStat.C)}) 
-				AND (claimproc.ProcNum IS NOT NULL 
-					OR adjustment.ProcNum IS NOT NULL 
-					OR paysplit.ProcNum IS NOT NULL 
-					OR procedureloglab.ProcNum IS NOT NULL) "
-				+PatientAndClauseHelper(patNumSpecific,"patient");//Allow this DBM to run just for a specific patient.
-			DataTable table=Db.GetTable(command);
-			if(table.Rows.Count==0 && !verbose) {
+			List<string> listTableNames=new List<string>();
+			listTableNames.Add(nameof(Claim));
+			listTableNames.Add(nameof(Adjustment));
+			listTableNames.Add(nameof(PaySplit));
+			string command="";
+			DataTable dataTable;
+			List<DataTable> listDataTables=new List<DataTable>();
+			for(int i=0;i<listTableNames.Count;i++) {
+				command=GetCommandForProcedurelogNotCompletedAttached(listTableNames[i],patNumSpecific);
+				dataTable=Db.GetTable(command);
+				dataTable.TableName=listTableNames[i];
+				listDataTables.Add(dataTable);
+			}
+			if(listDataTables.All(x => x.Rows.Count == 0) && !verbose) {
 				return "";
 			}
-			int countClaims=table.Select().Where(x => PIn.Long(x["ClaimNum"].ToString()) > 0).DistinctBy(x => PIn.Long(x["ClaimProcNum"].ToString())).Count();
-			int countAdjustments=table.Select().Where(x => PIn.Long(x["AdjNum"].ToString()) > 0).DistinctBy(x => PIn.Long(x["AdjNum"].ToString())).Count();
-			int countPayments=table.Select().Where(x => PIn.Long(x["PayNum"].ToString()) > 0).DistinctBy(x => PIn.Long(x["SplitNum"].ToString())).Count();
+			List<long> listProcNums=listDataTables.SelectMany(x => x.Select().Select(y => PIn.Long(y["ProcNum"].ToString())))
+						.Distinct()
+						.ToList();
+			DataTable dataTableLabProcs=GetLabProcsForProcNums(listProcNums);
+			int countClaims=listDataTables.Find(x => x.TableName==nameof(Claim)).Rows.Count;
+			int countAdjustments=listDataTables.Find(x => x.TableName==nameof(Adjustment)).Rows.Count;
+			int countPayments=listDataTables.Find(x => x.TableName==nameof(PaySplit)).Rows.Count;
 			StringBuilder stringBuilder=new StringBuilder();
 			stringBuilder.AppendLine(Lans.g("FormDatabaseMaintenance","Procedures attached to claims that are not complete")+$": {countClaims}");
 			stringBuilder.AppendLine(Lans.g("FormDatabaseMaintenance","Adjustments attached to procedures that are not complete")+$": {countAdjustments}");
@@ -9099,43 +9094,44 @@ namespace OpenDentBusiness {
 			switch(dbmMode) {
 				case DbmMode.Check:
 				case DbmMode.Fix:
-					if(table.Rows.Count!=0) {
+					if(listDataTables.Any(x => x.Rows.Count > 0)) {
 						stringBuilder.AppendLine(Lans.g("FormDatabaseMaintenance","Manual fix needed.  Double click to see a break down."));
 					}
 					break;
 				case DbmMode.Breakdown:
-					if(table.Rows.Count>0) {
-					/**********************************************************************************************************************
-					* Display the claims for each patient in groupings that will yield something like this for Americans:
-					* 
-					* Test Patient (PatNum:9)
-					*   Claim (ClaimNum:10) with service date of 06/30/2020
-					*     Procedure T6357 on 06/30/2020 (ProcNum:51) has a status of 'TP'
-					*     Procedure T6357 on 06/30/2020 (ProcNum:52) has a status of 'TP'
-					*   Adjustment (AdjustmentNum:14) with adjustment date of 04/24/2020
-					*     Procedure T9999 on 04/24/2020 (ProcNum:92) has a status of 'TP'
-					* Test Patient2 (PatNum:25)
-					*   Patient Payment (PayNum:16) with payment date of 09/21/2022
-					*     Procedure T1356 on 09/21/2022 (ProcNum:122) has a status of 'TP'
-					*     Procedure T3541 on 09/21/2022 (ProcNum:123) has a status of 'TP'
-					*     Procedure T1254 on 09/21/2022 (ProcNum:124) has a status of 'TP'
-					* 
-					* And something like this for Canadians (if Lab Fees are involved):
-					* 
-					* Test Patient3 (PatNum:1277)
-					*   Claim (ClaimNum:15210) with service date of 2020-03-04
-					*     Procedure 67201 on 2020-03-04 (ProcNum:97282) has a status of 'C'
-					*       ^^Lab Fee 99111 on 2019-10-04 (ProcNum:97294) has a status of 'TPi'
-					*     Procedure 62502 on 2020-03-04 (ProcNum:97283) has a status of 'C'
-					*       ^^Lab Fee 99111 on 2019-10-04 (ProcNum:97295) has a status of 'TPi'
-					*       ...
-					**********************************************************************************************************************/
-						List<PatNumProceduresGroup> listPatNumClaimsGroups=table.Select()
-							.GroupBy(x => PIn.Long(x["PatNum"].ToString()))
-							.Select(x => new PatNumProceduresGroup(x.Key,x.ToList()))
+					if(listDataTables.Any(x => x.Rows.Count > 0)) {
+						/**********************************************************************************************************************
+						* Display the claims for each patient in groupings that will yield something like this for Americans:
+						* 
+						* Test Patient (PatNum:9)
+						*   Claim (ClaimNum:10) with service date of 06/30/2020
+						*     Procedure T6357 on 06/30/2020 (ProcNum:51) has a status of 'TP'
+						*     Procedure T6357 on 06/30/2020 (ProcNum:52) has a status of 'TP'
+						*   Adjustment (AdjustmentNum:14) with adjustment date of 04/24/2020
+						*     Procedure T9999 on 04/24/2020 (ProcNum:92) has a status of 'TP'
+						* Test Patient2 (PatNum:25)
+						*   Patient Payment (PayNum:16) with payment date of 09/21/2022
+						*     Procedure T1356 on 09/21/2022 (ProcNum:122) has a status of 'TP'
+						*     Procedure T3541 on 09/21/2022 (ProcNum:123) has a status of 'TP'
+						*     Procedure T1254 on 09/21/2022 (ProcNum:124) has a status of 'TP'
+						* 
+						* And something like this for Canadians (if Lab Fees are involved):
+						* 
+						* Test Patient3 (PatNum:1277)
+						*   Claim (ClaimNum:15210) with service date of 2020-03-04
+						*     Procedure 67201 on 2020-03-04 (ProcNum:97282) has a status of 'C'
+						*       ^^Lab Fee 99111 on 2019-10-04 (ProcNum:97294) has a status of 'TPi'
+						*     Procedure 62502 on 2020-03-04 (ProcNum:97283) has a status of 'C'
+						*       ^^Lab Fee 99111 on 2019-10-04 (ProcNum:97295) has a status of 'TPi'
+						*       ...
+						**********************************************************************************************************************/
+						List<PatNumProceduresGroup> listPatNumProceduresGroups=new List<PatNumProceduresGroup>();
+						List<long> listPatNums=listDataTables.SelectMany(x => x.Select().Select(y => PIn.Long(y["PatNum"].ToString())))
+							.Distinct()
 							.ToList();
-						for(int i=0;i<listPatNumClaimsGroups.Count;i++) {
-							stringBuilder.AppendLine(listPatNumClaimsGroups[i].ToString());
+						for(int i=0;i<listPatNums.Count;i++) {
+							PatNumProceduresGroup patNumProceduresGroup=new PatNumProceduresGroup(listPatNums[i],listDataTables,dataTableLabProcs);
+							stringBuilder.AppendLine(patNumProceduresGroup.ToString());
 						}
 						stringBuilder.AppendLine(Lans.g("FormDatabaseMaintenance","They need to be fixed manually."));
 					}
@@ -12228,6 +12224,54 @@ HAVING cnt>1";
 			return methodInfo.GetCustomAttributes(typeof(DbmMethodAttr),true).OfType<DbmMethodAttr>().All(x => x.HasExplain);
 		}
 
+		/// <summary>Throws exception if tableName is unsupported. Otherwise returns the appropriate query to grab the list of incomplete procedures that should be complete. Supported tableNames are ClaimProc, Adjustment, and PaySplit.</summary>
+		private static string GetCommandForProcedurelogNotCompletedAttached(string tableName,long patNumSpecific) {
+			switch(tableName) {
+			case nameof(Claim)://Incomplete procedures attached to received claims.
+				return $@"SELECT procedurelog.ProcNum, patient.PatNum, patient.Fname, patient.Lname, procedurecode.ProcCode, claimproc.ClaimNum,claimproc.ProcDate AS ProcDate, procedurelog.ProcStatus
+					FROM procedurelog
+					INNER JOIN claimproc ON claimproc.ProcNum=procedurelog.ProcNum
+					INNER JOIN patient ON patient.Patnum=procedurelog.PatNum
+					INNER JOIN procedurecode ON procedurecode.CodeNum=procedurelog.CodeNum
+					WHERE claimproc.Status IN ({POut.Enum(ClaimProcStatus.NotReceived)},
+						{POut.Enum(ClaimProcStatus.Received)},
+						{POut.Enum(ClaimProcStatus.Supplemental)},
+						{POut.Enum(ClaimProcStatus.CapComplete)})
+					AND procedurelog.ProcStatus <> {POut.Enum(ProcStat.C)}
+					AND claimproc.claimnum > 0 "+PatientAndClauseHelper(patNumSpecific,"patient");
+			case nameof(Adjustment)://Incomplete procedures attached to adjustments.
+				return $@"SELECT procedurelog.ProcNum, patient.PatNum, patient.Fname, patient.Lname, procedurecode.ProcCode,adjustment.AdjNum,
+					adjustment.AdjAmt AS Amount, adjustment.AdjDate AS ProcDate, procedurelog.ProcStatus
+				FROM procedurelog 
+				INNER JOIN patient ON procedurelog.PatNum=patient.PatNum
+				INNER JOIN procedurecode ON procedurelog.CodeNum=procedurecode.CodeNum 
+				INNER JOIN adjustment ON procedurelog.ProcNum=adjustment.ProcNum
+				WHERE procedurelog.ProcStatus <> {POut.Enum(ProcStat.C)} "+PatientAndClauseHelper(patNumSpecific,"patient");
+			case nameof(PaySplit)://Incomplete procedures attached to payments.
+				return $@"SELECT procedurelog.ProcNum, patient.PatNum, patient.Fname, patient.Lname, procedurecode.ProcCode,paysplit.SplitNum,
+					paysplit.SplitAmt AS Amount, paysplit.DatePay AS ProcDate, procedurelog.ProcStatus
+				FROM procedurelog
+				INNER JOIN patient ON procedurelog.PatNum=patient.PatNum
+				INNER JOIN procedurecode ON procedurelog.CodeNum=procedurecode.CodeNum 
+				INNER JOIN paysplit ON procedurelog.ProcNum = paysplit.ProcNum
+				WHERE procedurelog.ProcStatus <> {POut.Enum(ProcStat.C)} AND paysplit.UnearnedType=0 AND paysplit.PayPlanNum=0 "+PatientAndClauseHelper(patNumSpecific,"patient");
+			default:
+				throw new ODException("Unsupported table type.");
+			}
+		}
+
+		/// <summary>Returns a table containing ProcNum, ProcStatus, ProcDate, ProcNumLab, and ProcCode for lab fees that point to the list of procNums passed in.</summary>
+		private static DataTable GetLabProcsForProcNums(List<long> listProcNums) {
+			if(listProcNums.IsNullOrEmpty()) {
+				return new DataTable();
+			}
+			string command="SELECT procedurelog.ProcNum, procedurelog.ProcStatus, procedurelog.ProcDate, procedurelog.ProcNumLab, procedurecode.ProcCode " +
+				"FROM procedurelog " +
+				"INNER JOIN procedurecode ON procedurelog.CodeNum=procedurecode.CodeNum " +
+				$"WHERE procedurelog.ProcNumLab IN ({string.Join(",",listProcNums)})";
+			DataTable dataTable=DataCore.GetTable(command);
+			return dataTable;
+		}
 		#region Helper Classes
 
 		private class PatientMissingTableHelper {
@@ -12260,41 +12304,66 @@ HAVING cnt>1";
 		private class PatNumProceduresGroup {
 			public long PatNum;
 			public string PatientName;
-			public List<ProceduresGroup> ListClaimNumProceduresGroups;
-			public List<ProceduresGroup> ListAdjNumProceduresGroups=new List<ProceduresGroup>();//new List<AdjNumProceduresGroup>();
-			public List<ProceduresGroup> ListPayNumProceduresGroups=new List<ProceduresGroup>();//new List<PayNumProceduresGroup>();
+			public List<ProceduresGroup> ListProceduresGroupsClaimProc=new List<ProceduresGroup>();
+			public List<ProceduresGroup> ListProceduresGroupsAdjNum=new List<ProceduresGroup>();
+			public List<ProceduresGroup> ListProceduresGroupsPayNum=new List<ProceduresGroup>();
 
-			///<summary>Each DataRow passed in must contain the following column names:
-			///LName, FName, PatNum, ClaimNum, DateService, ProcNum, ProcCode, ProcDate, ProcStatus, ProcNumLab, ProcCodeLab, ProcDateLab, ProcStatusLab.
-			///Optionally: AdjNum, AdjDate, PayNum, PayDate </summary>
-			public PatNumProceduresGroup(long patNum,List<DataRow> listDataRows) {
+			/// <summary>Expects 3 tables in the list of DataTables: Claim, Adjustment, and PaySplit. Each table should have their respective PK (ClaimNum, AdjNum, or SplitNum) as well as the following columns: ProcNum, PatNum, Fname, Lname, ProcCode, ClaimNum, Amount (ClaimFee, AdjAmt, or SplitAmt), ProcDate, and ProcStatus. Additionally, dataTableLabProcs should contain ProcNum, ProcStatus, ProcDate, ProcNumLab, and ProcCode for lab fees attached to any of the procedures in listDataTables.</summary>
+			public PatNumProceduresGroup(long patNum,List<DataTable> listDataTables,DataTable dataTableLabProcs) {
 				PatNum=patNum;
-				PatientName=Patients.GetNameFLnoPref(PIn.String(listDataRows.First()["LName"].ToString()),PIn.String(listDataRows.First()["FName"].ToString()),"");
-				ListClaimNumProceduresGroups=listDataRows.Where(x => PIn.Long(x["ClaimNum"].ToString()) > 0)
-					.GroupBy(x => PIn.Long(x["ClaimNum"].ToString()))
-					.Select(x => new ProceduresGroup(x.Key,"Claim","ClaimNum","dateService",x.ToList(),strDateName:"service"))
-					.ToList();
-				if(!listDataRows.IsNullOrEmpty() && listDataRows[0].Table.Columns.Contains("AdjNum")) {
-					ListAdjNumProceduresGroups=listDataRows.Where(x => PIn.Long(x["AdjNum"].ToString()) > 0)
-						.GroupBy(x => PIn.Long(x["AdjNum"].ToString()))
-						.Select(x => new ProceduresGroup(x.Key,"Adjustment","AdjNum","AdjDate",x.ToList(),amountColumn:"AdjAmt"))
-						.ToList();
+				//Grab the first table that contains the specified patient.
+				DataTable dataTablePatientName=listDataTables
+					.FirstOrDefault(x => x.Select().FirstOrDefault(x => PIn.Long(x["PatNum"].ToString())==patNum)!=null);
+				if(dataTablePatientName==null) {
+					PatientName="UNKNOWN";
+					return;
 				}
-				if(!listDataRows.IsNullOrEmpty() && listDataRows[0].Table.Columns.Contains("PayNum")) {
-					ListPayNumProceduresGroups=listDataRows.Where(x => PIn.Long(x["PayNum"].ToString()) > 0)
-						.GroupBy(x => PIn.Long(x["PayNum"].ToString()))
-						.Select(x => new ProceduresGroup(x.Key,"Payment","PayNum","DatePay",x.ToList(),amountColumn:"SplitAmt"))
-						.ToList();
+				//Grab the first DataRow for the patient.
+				DataRow dataRowPatientName=dataTablePatientName.Select().FirstOrDefault(x => PIn.Long(x["PatNum"].ToString())==patNum);
+				if(dataRowPatientName==null) {
+					return;
+				}
+				PatientName=Patients.GetNameFLnoPref(PIn.String(dataRowPatientName["LName"].ToString()),
+					PIn.String(dataRowPatientName["FName"].ToString()),MiddleI:"");
+				for(int i=0;i<listDataTables.Count;i++) {
+					switch(listDataTables[i].TableName) {
+						case nameof(Claim):
+							ListProceduresGroupsClaimProc=listDataTables[i].Select()
+								.Where(x => PIn.Long(x["ClaimNum"].ToString()) > 0 && PIn.Long(x["PatNum"].ToString())==patNum)
+								.GroupBy(x => PIn.Long(x["ClaimNum"].ToString()))
+								.Select(x => new ProceduresGroup(x.Key,"Claim","ClaimNum","ProcDate",x.ToList(),dataTableLabProcs,strDateName:"service"))
+								.ToList();
+							break;
+						case nameof(Adjustment):
+								ListProceduresGroupsAdjNum=listDataTables[i].Select()
+								.Where(x => PIn.Long(x["AdjNum"].ToString()) > 0 && PIn.Long(x["PatNum"].ToString())==patNum)
+								.GroupBy(x => PIn.Long(x["AdjNum"].ToString()))
+								.Select(x => new ProceduresGroup(x.Key,"Adjustment","AdjNum","ProcDate",x.ToList(),dataTableLabProcs,amountColumn:"Amount"))
+								.ToList();
+							break;
+						case nameof(PaySplit):
+							ListProceduresGroupsPayNum=listDataTables[i].Select()
+								.Where(x => PIn.Long(x["SplitNum"].ToString()) > 0 && PIn.Long(x["PatNum"].ToString())==patNum)
+								.GroupBy(x => PIn.Long(x["SplitNum"].ToString()))
+								.Select(x => new ProceduresGroup(x.Key,"Payment","PayNum","ProcDate",x.ToList(),dataTableLabProcs,amountColumn:"Amount"))
+								.ToList();
+							break;
+						default:
+							break;
+					}
 				}
 			}
 
 			public override string ToString() {
-				string retVal=$"{PatientName} (PatNum:{PatNum})\r\n{string.Join("\r\n",ListClaimNumProceduresGroups)}\r\n";
-				if(!ListAdjNumProceduresGroups.IsNullOrEmpty()) {
-					retVal+=$"{string.Join("\r\n",ListAdjNumProceduresGroups)}\r\n";
+				string retVal=$"{PatientName} (PatNum:{PatNum})\r\n";
+				if(!ListProceduresGroupsClaimProc.IsNullOrEmpty()) {
+					retVal+=$"{string.Join("\r\n",ListProceduresGroupsClaimProc)}\r\n";
 				}
-				if(!ListPayNumProceduresGroups.IsNullOrEmpty()) {
-					retVal+=$"{string.Join("\r\n",ListPayNumProceduresGroups)}\r\n";
+				if(!ListProceduresGroupsAdjNum.IsNullOrEmpty()) {
+					retVal+=$"{string.Join("\r\n",ListProceduresGroupsAdjNum)}\r\n";
+				}
+				if(!ListProceduresGroupsPayNum.IsNullOrEmpty()) {
+					retVal+=$"{string.Join("\r\n",ListProceduresGroupsPayNum)}\r\n";
 				}
 				return retVal;
 			}
@@ -12325,6 +12394,15 @@ HAVING cnt>1";
 			public ProcStat ProcStatus;
 			public DateTime ProcDate;
 			public bool IsLabFee;
+
+			/// <summary>dataRow MUST contain ProcNum, ProcCode, ProcStatus, and ProcDate columns</summary>
+			public ProcedureLite(DataRow dataRow, bool isLab=false) {
+				ProcNum=PIn.Long(dataRow["ProcNum"].ToString());
+				ProcCode=PIn.String(dataRow["ProcCode"].ToString());
+				ProcStatus=PIn.Enum<ProcStat>(dataRow["ProcStatus"].ToString());
+				ProcDate=PIn.Date(dataRow["ProcDate"].ToString());
+				IsLabFee=isLab;
+			}
 
 			public override string ToString() {
 				string retVal;
@@ -12357,7 +12435,7 @@ HAVING cnt>1";
 			public string PrimaryKeyColumn;
 			public string StrDateName;
 
-			public ProceduresGroup(long primaryKey,string tableName, string primaryKeyColumn, string dateColumn, List<DataRow> listDataRows,string amountColumn="",string strDateName="") {
+			public ProceduresGroup(long primaryKey,string tableName, string primaryKeyColumn, string dateColumn, List<DataRow> listDataRows,DataTable dataTableLabProcs,string amountColumn="",string strDateName="") {
 				PrimaryKey=primaryKey;
 				TableName=tableName;
 				PrimaryKeyColumn=primaryKeyColumn;
@@ -12373,53 +12451,16 @@ HAVING cnt>1";
 					Amount=PIn.Double(dataRow[amountColumn].ToString());
 				}
 				DateService=PIn.Date(dataRow[dateColumn].ToString());
+				List<long> listProcNums=listDataRows.Select(x => PIn.Long(x["ProcNum"].ToString())).ToList();
 				for(int i=0;i<listDataRows.Count;i++) {
-					long procNum=PIn.Long(listDataRows[i]["ProcNum"].ToString());
-					long procNumLab=PIn.Long(listDataRows[i]["ProcNumLab"].ToString());
-					long procNumParent=procNum;
-					if(procNumLab!=0) {
-						procNumParent=procNumLab;//Prefer the 'parent' num for lab fees.
+					ProcedureLite procedureLite=new ProcedureLite(listDataRows[i]);
+					ProcedureLiteLabsGroup procedureLiteLabsGroup=new ProcedureLiteLabsGroup(procedureLite);
+					List<DataRow> listDataRowsLabProcs=dataTableLabProcs.Select().ToList().FindAll(x => PIn.Long(x["ProcNumLab"].ToString())==procedureLite.ProcNum);
+					for(int j=0;j<listDataRowsLabProcs.Count;j++) {
+						ProcedureLite procedureLiteLab=new ProcedureLite(listDataRowsLabProcs[i],isLab:true);
+						procedureLiteLabsGroup.ListProcedureLitesLabs.Add(procedureLiteLab);
 					}
-					//Check to see if parent procedure has already been added to the list (procedures can have multiple lab fees attached).
-					if(ListProcedureLiteLabsGroups.Any(x => x.ProcedureLite.ProcNum==procNumParent)) {
-						continue;
-					}
-					ProcedureLite procedureLite=new ProcedureLite();
-					if(procNumLab==0) {//parent proc
-						procedureLite.ProcNum=procNum;
-						procedureLite.ProcCode=PIn.String(listDataRows[i]["ProcCode"].ToString());
-						procedureLite.ProcStatus=PIn.Enum<ProcStat>(listDataRows[i]["ProcStatus"].ToString());
-						procedureLite.ProcDate=PIn.Date(listDataRows[i]["ProcDate"].ToString());
-						ListProcedureLiteLabsGroups.Add(new ProcedureLiteLabsGroup(procedureLite));
-						continue;
-					}
-					//else lab
-					procedureLite.ProcNum=procNumLab;
-					procedureLite.ProcCode=PIn.String(listDataRows[i]["ProcCodeLab"].ToString());
-					procedureLite.ProcStatus=PIn.Enum<ProcStat>(listDataRows[i]["ProcStatusLab"].ToString());
-					procedureLite.ProcDate=PIn.Date(listDataRows[i]["ProcDateLab"].ToString());
-					ListProcedureLiteLabsGroups.Add(new ProcedureLiteLabsGroup(procedureLite));
-				}
-				List<DataRow> listDataRowsLabs=listDataRows.FindAll(x => x["ProcNumLab"].ToString()!="0");
-				//Add any Canadian Lab Fees to their parent ProcNumProcLabsGroup.
-				for(int i=0;i<listDataRowsLabs.Count;i++) {
-					long procNumLab=PIn.Long(listDataRows[i]["ProcNumLab"].ToString());
-					ProcedureLite procedureLite=new ProcedureLite();
-					procedureLite.ProcNum=PIn.Long(listDataRows[i]["ProcNum"].ToString());
-					procedureLite.ProcCode=PIn.String(listDataRows[i]["ProcCode"].ToString());
-					procedureLite.ProcStatus=PIn.Enum<ProcStat>(listDataRows[i]["ProcStatus"].ToString());
-					procedureLite.ProcDate=PIn.Date(listDataRows[i]["ProcDate"].ToString());
-					procedureLite.IsLabFee=true;
-					//Look for the parent procedure (which should have been added already).
-					ProcedureLiteLabsGroup procedureLiteLabsGroup=ListProcedureLiteLabsGroups.Find(x => x.ProcedureLite.ProcNum==procNumLab);
-					if(procedureLiteLabsGroup==null) {
-						//The parent procedure wasn't found in the database... probably database corruption.
-						//Regardless, add this lab fee as a parent procedure so that it shows up in the break down.
-						ListProcedureLiteLabsGroups.Add(new ProcedureLiteLabsGroup(procedureLite));
-						continue;
-					}
-					//Add this lab fee to the parent procedure list of labs; there can be multiple labs.
-					procedureLiteLabsGroup.ListProcedureLitesLabs.Add(procedureLite);
+					ListProcedureLiteLabsGroups.Add(procedureLiteLabsGroup);
 				}
 			}
 

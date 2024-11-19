@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 
 namespace OpenDentBusiness {
 	///<summary></summary>
@@ -26,10 +27,15 @@ namespace OpenDentBusiness {
 				+" AND DateTimeExpires>"+POut.DateT(DateTime_.Now)
 				+" AND DeviceId='"+POut.String(deviceId)+"'"
 				+" AND AppTarget='"+POut.Enum<EnumAppTarget>(enumAppTarget)+"'";
-			return Crud.MobileNotificationCrud.SelectMany(command);
+			List<MobileNotification> listMobileNotifications=Crud.MobileNotificationCrud.SelectMany(command);
+			if(!listMobileNotifications.IsNullOrEmpty() && Logger.DoVerboseLogging!=null && Logger.DoVerboseLogging()) {
+				string logText=GenerateRetrieveLogText(listMobileNotifications);
+				Logger.WriteLine(logText,"Mobile Notifications");
+			}
+			return listMobileNotifications;
 		}
-		#endregion Methods - Get
 
+		#endregion Methods - Get
 		#region Methods - Modify
 		///<summary></summary>
 		public static long Insert(MobileNotification mobileNotification){
@@ -412,8 +418,42 @@ namespace OpenDentBusiness {
 			mobileNotification.DateTimeEntry=DateTime_.Now;
 			mobileNotification.DateTimeExpires=DateTime_.Now.AddMinutes(10);
 			MobileNotifications.Insert(mobileNotification);
-		}		
+			if(Logger.DoVerboseLogging!=null && Logger.DoVerboseLogging()) {
+				string logText=GenerateInsertLogText(mobileNotification,mobileAppDeviceNum,enumAppTarget);
+				Logger.WriteLine(logText,"Mobile Notifications");
+			}
+		}
 		#endregion
 		#endregion Methods - Misc
+
+		#region Helper Methods
+		private static string GenerateInsertLogText(MobileNotification mobileNotification,long mobileAppDeviceNum,EnumAppTarget enumAppTarget) {
+			StringBuilder stringBuilder=new StringBuilder();
+			stringBuilder.AppendLine("---Mobile Notification Inserted---");
+			stringBuilder.AppendLine("Notification Type: "+((int)mobileNotification.NotificationType).ToString()+" ("+mobileNotification.NotificationType.ToString()+")"); //Notification Type: 8 (CI_TreatmentPlan)
+			stringBuilder.AppendLine("MADNum (ID): "+mobileAppDeviceNum+" ("+mobileNotification.DeviceId+")"); //MADNum (ID): 3 (CF0A5DC2-DC35-4D4E-A7CE-84BE1C265D8B)
+			stringBuilder.AppendLine("App Target: "+((int)enumAppTarget).ToString()+" ("+enumAppTarget.ToString()+")"); //App Target: 0 (eClipboard)
+			stringBuilder.AppendLine("Date Time Entered: "+mobileNotification.DateTimeEntry.ToString("yyyy-MM-dd HH:mm:ss"));
+			stringBuilder.AppendLine("Primary Keys: "+mobileNotification.PrimaryKeys);//Primary Keys: ["1",2"]
+			stringBuilder.AppendLine("Tags: "+mobileNotification.Tags);//Tags: ["Can","Be","Anything"]
+			return stringBuilder.ToString();
+		}
+
+		private static string GenerateRetrieveLogText(List<MobileNotification> listMobileNotifications) {
+			StringBuilder stringBuilder=new StringBuilder();
+			stringBuilder.AppendLine("---Mobile Notifications Retrieved---");
+			for(int i=0;i<listMobileNotifications.Count;i++) {
+				MobileNotification mobileNotification=listMobileNotifications[i];
+				stringBuilder.AppendLine("Notification Type: "+((int)mobileNotification.NotificationType).ToString()+" ("+mobileNotification.NotificationType.ToString()+")"); //Notification Type: 8 (CI_TreatmentPlan)
+				stringBuilder.AppendLine("DeviceId: "+mobileNotification.DeviceId); //DeviceId: CF0A5DC2-DC35-4D4E-A7CE-84BE1C265D8B
+				stringBuilder.AppendLine("App Target: "+((int)mobileNotification.AppTarget).ToString()+" ("+mobileNotification.AppTarget.ToString()+")"); //App Target: 0 (eClipboard)
+				stringBuilder.AppendLine("Date Time Entered: "+mobileNotification.DateTimeEntry.ToString("yyyy-MM-dd HH:mm:ss"));
+				stringBuilder.AppendLine("Primary Keys: "+mobileNotification.PrimaryKeys);//Primary Keys: ["1",2"]
+				stringBuilder.AppendLine("Tags: "+mobileNotification.Tags);//Tags: ["Can","Be","Anything"]
+				stringBuilder.AppendLine("---------------------------------------------------------------------------------------");
+			}
+			return stringBuilder.ToString();
+		}
+		#endregion Helper Methods
 	}
 }

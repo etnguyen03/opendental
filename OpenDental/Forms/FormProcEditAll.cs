@@ -333,11 +333,16 @@ namespace OpenDental {
 			Provider provider=comboProv.GetSelected<Provider>();
 			ProcFeeHelper procFeeHelper=new ProcFeeHelper(patNum);
 			if(provider!=null) {
-				//Act like the provider changed on all of the procedures.
-				List<Procedure> listProceduresNew=ListProcedures.Select(x => x.Copy()).ToList();
-				List<Procedure> listProceduresOld=ListProcedures.Select(x => x.Copy()).ToList();
-				for(int i=0;i<listProceduresNew.Count;i++) {
-					listProceduresNew[i].ProvNum=provider.ProvNum;
+				List<Procedure> listProceduresNew=new List<Procedure>();
+				List<Procedure> listProceduresOld=new List<Procedure>();
+				for(int i=0;i<ListProcedures.Count;i++) {
+					Procedure procedure=ListProcedures[i].Copy();
+					procedure.ProvNum=provider.ProvNum;
+					//Add the procedure to both lists only if the provider number has changed.
+					if(ListProcedures[i].ProvNum!=procedure.ProvNum) {
+						listProceduresOld.Add(ListProcedures[i]);
+						listProceduresNew.Add(procedure);
+					}
 				}
 				//Check to see if the ProcFee will change due to the provider changing.
 				string promptText="";

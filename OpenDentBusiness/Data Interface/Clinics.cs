@@ -63,7 +63,9 @@ namespace OpenDentBusiness{
 
 		///<summary>Currently active clinic within OpenDental.  Reflects FormOpenDental.ClinicNum</summary>
 		private static long _clinicNum=0;
-
+		///<summary>Only used with Web Apps. The currently active clinic within the thread that is currently executing.</summary>
+		[ThreadStatic]
+		private static long _clinicNumT=0;
 		#region Cache Pattern
 
 		private class ClinicCache : CacheListAbs<Clinic> {
@@ -158,16 +160,20 @@ namespace OpenDentBusiness{
 			//But there are a huge number of places we would have to fix with very little benefit.
 			//So we are leaving this as is for now.
 			get {
+				if(_clinicNumT>0) {
+					return _clinicNumT;
+				}
 				return _clinicNum;
 			}
 		}
 
 		public static void SetClinicNum(long clinicNum){
 			Meth.NoCheckMiddleTierRole();
-			if(_clinicNum==clinicNum) {
+			if(_clinicNum==clinicNum && _clinicNumT==clinicNum) {
 				return;//no change
 			}
 			_clinicNum=clinicNum;
+			_clinicNumT=clinicNum;
 			if(Security.CurUser==null) {
 				return;
 			}
@@ -198,6 +204,10 @@ namespace OpenDentBusiness{
 			UserOdPrefs.Insert(userOdPref);
 			Signalods.SetInvalid(InvalidType.UserOdPrefs);
 			UserOdPrefs.RefreshCache();
+		}
+
+		public static void SetClinicNumT(long clinicNum) {
+			_clinicNumT=clinicNum;
 		}
 
 		///<summary>Sets Clinics.ClinicNum. Used when logging on to determines what clinic to start with based on user and workstation preferences.</summary>

@@ -65,9 +65,24 @@ namespace OpenDental {
 		private void SetReadOnly() {
 			butDelete.Enabled=false;
 			butImport.Enabled=false;
+			butAttach.Enabled=false;
 			butSave.Enabled=false;
 			textDescription.Enabled=false;
 			textValue.Enabled=false;
+		}
+
+		private void butAttach_Click(object sender,EventArgs e) {
+			using FormImageSelect formImageSelect=new FormImageSelect();
+			formImageSelect.PatNum=_task.KeyNum;//KeyNum must be the PatNum due to validation in FormTaskAttachments
+			formImageSelect.ShowDialog();
+			if(formImageSelect.DialogResult!=DialogResult.OK) {
+				return;
+			}
+			_document=Documents.GetByNum(formImageSelect.SelectedDocNum);
+			TaskAttachmentCur.DocNum=_document.DocNum;
+			textDocNum.Text=TaskAttachmentCur.DocNum.ToString();
+			textDescription.Text=_document.Description;
+			butViewDoc.Enabled=true;
 		}
 
 		private void butImport_Click(object sender,EventArgs e) {

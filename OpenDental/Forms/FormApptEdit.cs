@@ -1199,7 +1199,7 @@ namespace OpenDental{
 			if(!PatientL.CheckPatientTextingAllowed(_patient,this)) {
 				return;
 			}
-			string message=PatComm.BuildConfirmMessage(ContactMethod.TextMessage,_patient,_appointment.DateTimeAskedToArrive,_appointment.AptDateTime,_appointment.ClinicNum);
+			string message=PatComm.BuildConfirmMessage(ContactMethod.TextMessage,_patient,_appointment);
 			using FormTxtMsgEdit formTxtMsgEdit=new FormTxtMsgEdit();
 			formTxtMsgEdit.PatNum=_patient.PatNum;
 			formTxtMsgEdit.WirelessPhone=_patient.WirelessPhone;

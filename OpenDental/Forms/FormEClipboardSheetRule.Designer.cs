@@ -203,22 +203,26 @@ namespace OpenDental {
 			// 
 			// radioBehaviorPreFill
 			// 
+			this.radioBehaviorPreFill.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
 			this.radioBehaviorPreFill.Location = new System.Drawing.Point(27, 19);
 			this.radioBehaviorPreFill.Name = "radioBehaviorPreFill";
-			this.radioBehaviorPreFill.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
+			this.radioBehaviorPreFill.RightToLeft = System.Windows.Forms.RightToLeft.No;
 			this.radioBehaviorPreFill.Size = new System.Drawing.Size(70, 18);
 			this.radioBehaviorPreFill.TabIndex = 252;
 			this.radioBehaviorPreFill.Text = "Pre-fill";
+			this.radioBehaviorPreFill.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			this.radioBehaviorPreFill.UseVisualStyleBackColor = true;
 			// 
 			// radioBehaviorNew
 			// 
+			this.radioBehaviorNew.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
 			this.radioBehaviorNew.Location = new System.Drawing.Point(27, 41);
 			this.radioBehaviorNew.Name = "radioBehaviorNew";
-			this.radioBehaviorNew.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
+			this.radioBehaviorNew.RightToLeft = System.Windows.Forms.RightToLeft.No;
 			this.radioBehaviorNew.Size = new System.Drawing.Size(70, 18);
 			this.radioBehaviorNew.TabIndex = 251;
 			this.radioBehaviorNew.Text = "New";
+			this.radioBehaviorNew.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			this.radioBehaviorNew.UseVisualStyleBackColor = true;
 			// 
 			// label1
@@ -295,12 +299,14 @@ namespace OpenDental {
 			// 
 			// radioFreqTimeSpan
 			// 
+			this.radioFreqTimeSpan.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
 			this.radioFreqTimeSpan.Location = new System.Drawing.Point(4, 81);
 			this.radioFreqTimeSpan.Name = "radioFreqTimeSpan";
-			this.radioFreqTimeSpan.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
+			this.radioFreqTimeSpan.RightToLeft = System.Windows.Forms.RightToLeft.No;
 			this.radioFreqTimeSpan.Size = new System.Drawing.Size(93, 18);
 			this.radioFreqTimeSpan.TabIndex = 256;
 			this.radioFreqTimeSpan.Text = "Time Span";
+			this.radioFreqTimeSpan.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			this.radioFreqTimeSpan.UseVisualStyleBackColor = true;
 			this.radioFreqTimeSpan.CheckedChanged += new System.EventHandler(this.radioFreq_CheckedChanged);
 			// 
@@ -322,12 +328,14 @@ namespace OpenDental {
 			// 
 			// radioFreqOnce
 			// 
+			this.radioFreqOnce.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
 			this.radioFreqOnce.Location = new System.Drawing.Point(4, 38);
 			this.radioFreqOnce.Name = "radioFreqOnce";
-			this.radioFreqOnce.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
+			this.radioFreqOnce.RightToLeft = System.Windows.Forms.RightToLeft.No;
 			this.radioFreqOnce.Size = new System.Drawing.Size(93, 18);
 			this.radioFreqOnce.TabIndex = 252;
 			this.radioFreqOnce.Text = "Once";
+			this.radioFreqOnce.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			this.radioFreqOnce.UseVisualStyleBackColor = true;
 			this.radioFreqOnce.CheckedChanged += new System.EventHandler(this.radioFreq_CheckedChanged);
 			// 
@@ -342,12 +350,14 @@ namespace OpenDental {
 			// 
 			// radioFreqEachTime
 			// 
+			this.radioFreqEachTime.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
 			this.radioFreqEachTime.Location = new System.Drawing.Point(4, 59);
 			this.radioFreqEachTime.Name = "radioFreqEachTime";
-			this.radioFreqEachTime.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
+			this.radioFreqEachTime.RightToLeft = System.Windows.Forms.RightToLeft.No;
 			this.radioFreqEachTime.Size = new System.Drawing.Size(93, 18);
 			this.radioFreqEachTime.TabIndex = 251;
 			this.radioFreqEachTime.Text = "Each Visit";
+			this.radioFreqEachTime.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			this.radioFreqEachTime.UseVisualStyleBackColor = true;
 			this.radioFreqEachTime.CheckedChanged += new System.EventHandler(this.radioFreq_CheckedChanged);
 			// 

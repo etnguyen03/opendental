@@ -67,7 +67,7 @@ namespace OpenDental {
 			return databaseIntegrityDefault;//shouldn't be null unless something is wrong with db
 		}
 
-		///<summary>Can return null. Will return for a specific class type. If none, then Default. Can return null if couldn't connect to HQ or load preference.</summary>
+		///<summary>Can return null. Will return for a specific class type. If none, then Default. Can return null if couldn't connect to HQ, load the DatabaseIntegritiesWhiteList preference, or find a matching integrity type and HQ intentionally didn't send a DefaultClass type.</summary>
 		public static DatabaseIntegrity GetOneClass(EnumWarningIntegrityType warningIntegrityType){
 			if(_listDatabaseIntegrities is null){
 				RefreshFromHQ();
@@ -85,14 +85,15 @@ namespace OpenDental {
 				}
 			}
 			if(_listDatabaseIntegrities.Count==0){
-				//must have had trouble connecting to HQ,
+				//Couldn't connect to HQ or load the DatabaseIntegritiesWhiteList preference.
 				return null;
 			}
 			DatabaseIntegrity databaseIntegrity=_listDatabaseIntegrities.Find(x => x.WarningIntegrityType==warningIntegrityType);
 			if(databaseIntegrity is null){ //If not found, get default behavior
 				databaseIntegrity=_listDatabaseIntegrities.Find(x => x.WarningIntegrityType==EnumWarningIntegrityType.DefaultClass);
 			}
-			return databaseIntegrity; //shouldn't be null unless something is wrong with db
+			//Can return null if no matching integrity type and HQ intentionally didn't provide a DefaultClass type.
+			return databaseIntegrity;
 		}
 
 		///<summary>Can return null if couldn't connect to HQ, load preference, or Module is not set at HQ.</summary>

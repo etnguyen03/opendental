@@ -34,7 +34,7 @@ namespace OpenDental {
 			_listJobTeams=JobTeams.GetDeepCopy();
 			_listJobTeamUsersOld=JobTeamUsers.GetDeepCopy();
 			_listJobTeamUsers=JobTeamUsers.GetDeepCopy();
-			_listUsers=JobHelper.ListEngineerUsers;
+			_listUsers=JobHelper.ListEngineerUsers.OrderBy(x => x.UserName).ToList();
 			FillAllTeamsUI();
 		}
 
@@ -93,14 +93,18 @@ namespace OpenDental {
 		///<summary>Fills the list of team members for the currently selected team.<summary>
 		private void FillListTeamUsers() {
 			listBoxTeamMembers.Items.Clear();
-			if(gridTeams.SelectedTag<JobTeam>()==null) {//Only happens if there are no teams. No need to try and fill team members then.
+			JobTeam jobTeamCur=gridTeams.SelectedTag<JobTeam>();
+			_listJobTeamUsersCur=_listJobTeamUsers.FindAll(x => x.JobTeamNum==jobTeamCur?.JobTeamNum);
+			if(_listJobTeamUsersCur.IsNullOrEmpty()) {//No teams or no team members assigned to team yet.
 				return;
 			}
-			_listJobTeamUsersCur=_listJobTeamUsers.FindAll(x => x.JobTeamNum==gridTeams.SelectedTag<JobTeam>().JobTeamNum);
-			if(_listJobTeamUsersCur==null) {//No team members assigned to team yet.
-				return;
-			}
-			List<Userod> listUserodsCur=_listUsers.FindAll(x => _listJobTeamUsersCur.Select(x => x.UserNumEngineer).ToList().Contains(x.UserNum));
+			JobTeamUser jobTeamUserLead=_listJobTeamUsersCur.FirstOrDefault(x => x.IsTeamLead);
+			List<long> listJobTeamUserNumsCur=_listJobTeamUsersCur.ConvertAll(x => x.UserNumEngineer);
+			List<Userod> listUserodsCur=_listUsers
+				.Where(x => listJobTeamUserNumsCur.Contains(x.UserNum))
+				.OrderByDescending(x => x.UserNum == jobTeamUserLead?.UserNumEngineer)
+				.ThenBy(x => x.UserName)
+				.ToList();
 			listBoxTeamMembers.Items.AddList(listUserodsCur,x => x.UserName);
 		}
 

@@ -11,7 +11,6 @@ using OpenDentBusiness.SheetFramework;
 
 namespace OpenDental {
 	public partial class FormPatientForms:FormODBase {
-		private DataTable _table;
 		public long PatNum;
 		///<summary>Indicates the most recently selected Document.DocNum</summary>
 		public long DocNum;
@@ -31,7 +30,7 @@ namespace OpenDental {
 			_patient=Patients.GetPat(PatNum);
 			Text=Lan.g(this,"Patient Forms for")+" "+_patient.GetNameFL();
 			LayoutMenu();
-			FillGrid();
+			FillGrid(refreshFromDb:true);
 		}
 
 		private void LayoutMenu() {
@@ -50,61 +49,98 @@ namespace OpenDental {
 			menuMain.EndUpdate();
 		}
 
-		private void FillGrid(){
+		private void FillGrid(bool refreshFromDb){
+			//js This is an edge case pattern because we are not normally dealing with a table.
+			DataTable table=new DataTable();
+			if(refreshFromDb){
+				table=Sheets.GetPatientFormsTable(PatNum);
+			}
+			else{
+				List<DataRow> listDataRows2=gridMain.ListGridRows.Select(x=>(DataRow)x.Tag).ToList();//Get the list of DataRows from the grid.
+				if(listDataRows2.Count>0){//The line below will throw an exception if there aren't any rows to copy.
+					table=listDataRows2.CopyToDataTable();//Add them to the new DataTable. CopyToDataTable() will also copy the schema to the table.
+				}
+			}
+			//Sort DataTable.
+			if(radioSortByDateTime.Checked && table.Rows.Count>0){
+				DataView dataView=table.DefaultView;
+				dataView.Sort="dateTime";
+				table=dataView.ToTable();
+			}
+			else if(radioSortByDescDateT.Checked && table.Rows.Count>0){
+				DataView dataView=table.DefaultView;
+				dataView.Sort="description,dateTime";
+				table=dataView.ToTable();
+			}
+			//Get previously selected form, if one was selected.
 			long sheetNumSelected=0;
 			long eFormNumSelected=0;
+			long docNumSelected=0;
 			if(gridMain.GetSelectedIndex()!=-1) {
-				sheetNumSelected=PIn.Long(_table.Rows[gridMain.GetSelectedIndex()]["SheetNum"].ToString());
-				eFormNumSelected=PIn.Long(_table.Rows[gridMain.GetSelectedIndex()]["EFormNum"].ToString());
+				DataRow dataRow=(DataRow)gridMain.ListGridRows[gridMain.GetSelectedIndex()].Tag;
+				sheetNumSelected=PIn.Long(dataRow["SheetNum"].ToString());
+				eFormNumSelected=PIn.Long(dataRow["EFormNum"].ToString());
+				docNumSelected=PIn.Long(dataRow["DocNum"].ToString());
 			}
+			//Fill Grid.
 			gridMain.BeginUpdate();
 			gridMain.Columns.Clear();
-			GridColumn col=new GridColumn(Lan.g(this,"Date"),70);
+			GridColumn col=new GridColumn(Lan.g(this,"Type"),60);
 			gridMain.Columns.Add(col);
-			col=new GridColumn(Lan.g(this,"Time"),42);
+			col=new GridColumn(Lan.g(this,"Date/Time"),140,GridSortingStrategy.DateParse);
 			gridMain.Columns.Add(col);
-			col=new GridColumn(Lan.g(this,"Kiosk"),55,HorizontalAlignment.Center);
+			col=new GridColumn(Lan.g(this,"Kiosk"),55,HorizontalAlignment.Center,GridSortingStrategy.AmountParse);
 			gridMain.Columns.Add(col);
-			col=new GridColumn(Lan.g(this,"Description"),210);
+			col=new GridColumn(Lan.g(this,"Description"),190);
 			gridMain.Columns.Add(col);
 			col=new GridColumn(Lan.g(this,"Image Category"),120);
 			gridMain.Columns.Add(col);
-			col=new GridColumn(Lan.g(this,"Updated"),70);
+			col=new GridColumn(Lan.g(this,"Updated"),65,GridSortingStrategy.DateParse);
 			gridMain.Columns.Add(col);
 			gridMain.ListGridRows.Clear();
 			GridRow row;
-			_table=Sheets.GetPatientFormsTable(PatNum);
-			for(int i=0;i<_table.Rows.Count;i++){
+			for(int i=0;i<table.Rows.Count;i++){
 				row=new GridRow();
-				row.Cells.Add(_table.Rows[i]["date"].ToString());
-				row.Cells.Add(_table.Rows[i]["time"].ToString());
-				row.Cells.Add(_table.Rows[i]["showInTerminal"].ToString());
-				row.Cells.Add(_table.Rows[i]["description"].ToString());
-				row.Cells.Add(_table.Rows[i]["imageCat"].ToString());
-				row.Cells.Add(_table.Rows[i]["DateTSheetEdited"].ToString());
+				//Test each form for its form type
+				if(table.Rows[i]["DocNum"].ToString()!="0"){
+					row.Cells.Add("Document");
+				}
+				else if(table.Rows[i]["SheetNum"].ToString()!="0"){
+					row.Cells.Add("Sheet");
+				}
+				else if(table.Rows[i]["EFormNum"].ToString()!="0"){
+					row.Cells.Add("eForm");
+				}
+				row.Cells.Add(table.Rows[i]["dateTime"].ToString());
+				row.Cells.Add(table.Rows[i]["showInTerminal"].ToString());
+				row.Cells.Add(table.Rows[i]["description"].ToString());
+				row.Cells.Add(table.Rows[i]["imageCat"].ToString());
+				row.Cells.Add(table.Rows[i]["DateTSheetEdited"].ToString());
+				row.Tag=table.Rows[i];
 				gridMain.ListGridRows.Add(row);
 			}
 			gridMain.EndUpdate();
-			for(int i=0;i<_table.Rows.Count;i++) {
-				if(sheetNumSelected!=0) {
-					if(_table.Rows[i]["SheetNum"].ToString()==sheetNumSelected.ToString()) {
-						gridMain.SetSelected(i,true);
-						break;
-					}
-				}
-				if(eFormNumSelected!=0) {
-					if(_table.Rows[i]["EFormNum"].ToString()==eFormNumSelected.ToString()) {
-						gridMain.SetSelected(i,true);
-						break;
-					}
-				}
+			//Set selected row if there was one selected.
+			List<DataRow> listDataRows=gridMain.ListGridRows.Select(x=>(DataRow)x.Tag).ToList();
+			if(sheetNumSelected!=0){
+				int idx=listDataRows.FindIndex(x=>x["SheetNum"].ToString()==sheetNumSelected.ToString());
+				gridMain.SetSelected(idx,true);
+			}
+			else if(eFormNumSelected!=0){
+				int idx=listDataRows.FindIndex(x=>x["eFormNum"].ToString()==eFormNumSelected.ToString());
+				gridMain.SetSelected(idx,true);
+			}
+			else if(docNumSelected!=0){
+				int idx=listDataRows.FindIndex(x=>x["DocNum"].ToString()==docNumSelected.ToString());
+				gridMain.SetSelected(idx,true);
 			}
 		}
 
 		private void gridMain_CellDoubleClick(object sender,ODGridClickEventArgs e) {
+			DataRow dataRow=(DataRow)gridMain.ListGridRows[e.Row].Tag;
 			//Images
 			//Hold onto docNum so Image module refresh persists selection when closing FormPatientForms.
-			DocNum=PIn.Long(_table.Rows[e.Row]["DocNum"].ToString());//Set to 0 if not a Document, i.e. a Sheet.
+			DocNum=PIn.Long(dataRow["DocNum"].ToString());//Set to 0 if not a Document, i.e. a Sheet.
 			if(DocNum!=0) {
 				if(!Security.IsAuthorized(EnumPermType.ImagingModule)) {
 					return;
@@ -113,14 +149,14 @@ namespace OpenDental {
 				return;
 			}
 			//Sheets
-			long sheetNum=PIn.Long(_table.Rows[e.Row]["SheetNum"].ToString());
+			long sheetNum=PIn.Long(dataRow["SheetNum"].ToString());
 			if(sheetNum!=0){
 				Sheet sheet=Sheets.GetSheet(sheetNum);
 				FormSheetFillEdit.ShowForm(sheet,FormSheetFillEdit_FormClosing);
 				return;
 			}
 			//EForms
-			long eFormNum=PIn.Long(_table.Rows[e.Row]["EFormNum"].ToString());
+			long eFormNum=PIn.Long(dataRow["EFormNum"].ToString());
 			if(eFormNum!=0){
 				EForm eForm=EForms.GetEForm(eFormNum);
 				FrmEFormFillEdit frmEFormFillEdit=new FrmEFormFillEdit();
@@ -131,7 +167,7 @@ namespace OpenDental {
 				}
 				//Must have saved to db.
 				//This might have included "deleting" the eForm, which we don't need to test for here.
-				FillGrid();
+				FillGrid(refreshFromDb:true);
 				return;
 			}
 		}
@@ -143,7 +179,7 @@ namespace OpenDental {
 			using FormSheetDefs formSheetDefs=new FormSheetDefs();
 			formSheetDefs.ShowDialog();
 			SecurityLogs.MakeLogEntry(EnumPermType.Setup,0,"Sheets");
-			FillGrid();
+			FillGrid(refreshFromDb:false);
 		}
 
 		private void menuItemEForms_Click(object sender,EventArgs e) {
@@ -153,7 +189,7 @@ namespace OpenDental {
 			FrmEFormDefs frmEFormDefs=new FrmEFormDefs();
 			frmEFormDefs.ShowDialog();
 			SecurityLogs.MakeLogEntry(EnumPermType.Setup,0,"EForms");
-			FillGrid();
+			FillGrid(refreshFromDb:false);
 		}
 
 		private void menuItemImageCats_Click(object sender,EventArgs e) {
@@ -163,7 +199,7 @@ namespace OpenDental {
 			using FormDefinitions formDefinitions=new FormDefinitions(DefCat.ImageCats);
 			formDefinitions.ShowDialog();
 			SecurityLogs.MakeLogEntry(EnumPermType.DefEdit,0,"Defs");
-			FillGrid();
+			FillGrid(refreshFromDb:true);
 		}
 
 		private void menuItemOptions_Click(object sender,EventArgs e) {
@@ -173,7 +209,17 @@ namespace OpenDental {
 			FrmSheetSetup frmSheetSetup=new FrmSheetSetup();
 			frmSheetSetup.ShowDialog();
 			SecurityLogs.MakeLogEntry(EnumPermType.Setup,0,"ShowForms");
-			FillGrid();
+			FillGrid(refreshFromDb:true);
+		}
+
+		private void radioSortByDateTime_Click(object sender,EventArgs e) {
+			//Refill gridMain without pulling from the db.
+			FillGrid(refreshFromDb:false);
+		}
+
+		private void radioSortByDescriptionDateTime_Click(object sender,EventArgs e) {
+			//Refill gridMain without pulling from the db.
+			FillGrid(refreshFromDb:false);
 		}
 
 		//private void menuItemImportRules_Click(object sender,EventArgs e) {
@@ -233,7 +279,7 @@ namespace OpenDental {
 			}
 			if(frmSheetPicker.DoKioskSend) {
 				//do not show a dialog now.  User will need to click the terminal button.
-				FillGrid();
+				FillGrid(refreshFromDb:true);
 				Signalods.SetInvalid(InvalidType.Kiosk);
 			}
 			else if(sheet!=null) {
@@ -261,12 +307,13 @@ namespace OpenDental {
 				return;
 			}
 			//must have saved to db.
-			FillGrid();
+			FillGrid(refreshFromDb:true);
 		}
 
 		private void butTerminal_Click(object sender,EventArgs e) {
 			//<List>.All() returns true for an empty list.
-			if(_table.Select().All(x => x["showInTerminal"].ToString()=="")) {
+			List<DataRow> listDataRows=gridMain.ListGridRows.Select(x=>(DataRow)x.Tag).ToList();//Get the list of DataRows from the grid.
+			if(listDataRows.All(x=>x["showInTerminal"].ToString()=="")){
 				MsgBox.Show(this,"No forms for this patient are set to show in the kiosk.");
 				return;
 			}
@@ -289,7 +336,7 @@ namespace OpenDental {
 					Application.OpenForms[i].Visible=true;
 				}
 			}
-			FillGrid();
+			FillGrid(refreshFromDb:true);
 		}
 
 		private void butPreFill_Click(object sender,EventArgs e) {
@@ -297,7 +344,8 @@ namespace OpenDental {
 				MsgBox.Show(this,"Please select one completed sheet from the list above first.");
 				return;
 			}
-			long sheetNum=PIn.Long(_table.Rows[gridMain.SelectedIndices[0]]["SheetNum"].ToString());
+			DataRow dataRow=(DataRow)gridMain.ListGridRows[gridMain.SelectedIndices[0]].Tag;
+			long sheetNum=PIn.Long(dataRow["SheetNum"].ToString());
 			if(sheetNum==0) {
 				MsgBox.Show(this,"Must select a sheet.");
 				return;
@@ -335,10 +383,11 @@ namespace OpenDental {
 			//If they press ok, the form is inserted, so refresh the grid, make a security log, and select the new entry.
 			if(formSheetFillEdit.DialogResult==DialogResult.OK) {
 				SecurityLogs.MakeLogEntry(EnumPermType.Copy,PatNum,"Patient form "+sheet.Description+" from "+sheet.DateTimeSheet.ToString()+" copied via Pre-Fill");
-				FillGrid();
+				FillGrid(refreshFromDb:true);
 				//Select the newly added sheet.
-				for(int i=0;i<_table.Rows.Count;i++) {
-					if(_table.Rows[i]["SheetNum"].ToString()==sheetNew.SheetNum.ToString()) {
+				for(int i=0;i<gridMain.ListGridRows.Count;i++) {
+					dataRow=(DataRow)gridMain.ListGridRows[i].Tag;
+					if(dataRow["SheetNum"].ToString()==sheetNew.SheetNum.ToString()) {
 						gridMain.SetSelected(i,true);
 						break;
 					}
@@ -347,11 +396,12 @@ namespace OpenDental {
 		}
 
 		private void butCopy_Click(object sender,EventArgs e) {
-			if(gridMain.SelectedIndices.Length !=1) {
+			if(gridMain.SelectedIndices.Length!=1) {
 				MsgBox.Show(this,"Please select one completed sheet from the list above first.");
 				return;
 			}
-			long sheetNum=PIn.Long(_table.Rows[gridMain.SelectedIndices[0]]["SheetNum"].ToString());
+			DataRow dataRow=(DataRow)gridMain.ListGridRows[gridMain.SelectedIndices[0]].Tag;
+			long sheetNum=PIn.Long(dataRow["SheetNum"].ToString());
 			if(sheetNum==0) {
 				MsgBox.Show(this,"Must select a sheet.");
 				return;
@@ -372,9 +422,10 @@ namespace OpenDental {
 			formSheetFillEdit.SheetCur=sheet2;
 			formSheetFillEdit.ShowDialog();
 			if(formSheetFillEdit.DialogResult==DialogResult.OK || formSheetFillEdit.DidChangeSheet) {
-				FillGrid();
-				for(int i=0;i<_table.Rows.Count;i++){
-					if(_table.Rows[i]["SheetNum"].ToString()==sheet2.SheetNum.ToString()){
+				FillGrid(refreshFromDb:true);
+				for(int i=0;i<gridMain.ListGridRows.Count;i++){
+					dataRow=(DataRow)gridMain.ListGridRows[i].Tag;
+					if(dataRow["SheetNum"].ToString()==sheet2.SheetNum.ToString()){
 						gridMain.SetSelected(i,true);
 					}
 				}
@@ -387,7 +438,8 @@ namespace OpenDental {
 				MsgBox.Show(this,"Please select one completed form from the list above first.");
 				return;
 			}
-			long docNum=PIn.Long(_table.Rows[gridMain.SelectedIndices[0]]["DocNum"].ToString());
+			DataRow dataRow=(DataRow)gridMain.ListGridRows[gridMain.SelectedIndices[0]].Tag;
+			long docNum=PIn.Long(dataRow["DocNum"].ToString());
 			if(docNum!=0) {
 				//document=Documents.GetByNum(docNum);
 				//Pdf importing broke with dot net 4.0 and was enver reimplemented.
@@ -400,8 +452,8 @@ namespace OpenDental {
 				MsgBox.Show(this,"PDFs cannot be imported into the database.");
 				return;
 			}
-			long sheetNum=PIn.Long(_table.Rows[gridMain.SelectedIndices[0]]["SheetNum"].ToString());
-			long eFormNum=PIn.Long(_table.Rows[gridMain.SelectedIndices[0]]["EFormNum"].ToString());
+			long sheetNum=PIn.Long(dataRow["SheetNum"].ToString());
+			long eFormNum=PIn.Long(dataRow["EFormNum"].ToString());
 			Sheet sheet=null;
 			if(sheetNum!=0) {
 				sheet=Sheets.GetSheet(sheetNum);
@@ -412,11 +464,8 @@ namespace OpenDental {
 			}
 			//if(ODBuild.IsDebug() || PrefC.IsODHQ) {
 				//this is for testing the new automatic import
-
-
-
-			//	MsgBox.Show(this,"Done");
-			//	return;
+				//	MsgBox.Show(this,"Done");
+				//	return;
 			//}
 			EForm eForm=null;
 			if(eFormNum!=0){
@@ -432,8 +481,9 @@ namespace OpenDental {
 		/// <summary>Event handler for closing FormSheetFillEdit when it is non-modal.</summary>
 		private void FormSheetFillEdit_FormClosing(object sender,FormClosingEventArgs e) {
 			if(((FormSheetFillEdit)sender).DialogResult==DialogResult.OK || ((FormSheetFillEdit)sender).DidChangeSheet) {
-				FillGrid();
+				FillGrid(refreshFromDb:true);
 			}
 		}
+
 	}
 }

@@ -625,7 +625,8 @@ namespace OpenDental {
 				return;
 			};
 			if(_patient==null || _patient.PatNum!=e.PatNumNew){//patient changed
-				RefreshModuleDataPatient(e.PatNumNew);
+				RefreshModuleDataPatient(e.PatNumNew);//this clears selected appt because pt changed.
+				contrApptPanel.SelectedAptNum=e.AptNumNew;//reselect appt
 				if(_patient.PatStatus==PatientStatus.Deleted) {
 					Patient patientOld=Patients.GetPat(e.PatNumNew);
 					_patient.PatStatus=PatientStatus.Archived;
@@ -2238,7 +2239,7 @@ namespace OpenDental {
 					if(ApptIsNull(appointment)) { return; }
 					Appointment aptOld=appointment.Copy();
 					Patient patient=Patients.GetPat(appointment.PatNum);
-					string message=PatComm.BuildConfirmMessage(ContactMethod.TextMessage,patient,appointment.DateTimeAskedToArrive,appointment.AptDateTime,appointment.ClinicNum);
+					string message=PatComm.BuildConfirmMessage(ContactMethod.TextMessage,patient,appointment);
 					bool wasTextSent=GlobalFormOpenDental.SendTextMessage(patient.PatNum,message);
 					if(wasTextSent) {
 						long newStatus=PrefC.GetLong(PrefName.ConfirmStatusTextMessaged);
@@ -3236,8 +3237,11 @@ namespace OpenDental {
 			SetArrivalsLoaded(arrivals);
 		}
 
-		///<summary>Fills PatCur from the database.</summary>
+		///<summary>Fills PatCur from the database. If a patient change occurs, any selected appointment will be cleared.</summary>
 		public void RefreshModuleDataPatient(long patNum){
+			if(_patient!=null && _patient.PatNum!=patNum) {//if patient changed
+				contrApptPanel.SelectedAptNum=-1;
+			}
 			if(patNum==0) {
 				_patient=null;
 				return;

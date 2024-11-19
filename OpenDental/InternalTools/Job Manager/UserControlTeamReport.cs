@@ -50,6 +50,7 @@ namespace OpenDental.InternalTools.Job_Manager {
 			InitializeDateFilter();
 			InitializeTeamFilter();
 			InitializeGridColumns();
+			checkNoLogsThirtyDays.Checked=true;
 		}
 
 		private void InitializeDateFilter() {

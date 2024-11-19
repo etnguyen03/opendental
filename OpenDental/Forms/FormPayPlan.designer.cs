@@ -868,6 +868,7 @@ namespace OpenDental {
 			this.labelSignature.TabIndex = 193;
 			this.labelSignature.Text = "Signature";
 			this.labelSignature.TextAlign = System.Drawing.ContentAlignment.BottomLeft;
+			this.labelSignature.Visible = false;
 			// 
 			// signatureBoxWrapper
 			// 

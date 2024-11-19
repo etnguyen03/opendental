@@ -629,12 +629,14 @@ namespace OpenDentBusiness{
 				return;
 			}
 			List<ClaimProc> listClaimProcsSorted=claimProcArray.ToList();
-			listClaimProcsSorted=listClaimProcsSorted.FindAll(x=>x.Status!=ClaimProcStatus.Supplemental && x.Status!=ClaimProcStatus.Received && x.Status!=ClaimProcStatus.CapComplete)
-				.OrderByDescending(x=>x.DateCP).ToList();			
-			if(listClaimProcsSorted.IsNullOrEmpty() || totalPayAmt<0) {
+			listClaimProcsSorted=listClaimProcsSorted.FindAll(x=>!x.Status.In(ClaimProcStatus.Supplemental,ClaimProcStatus.Received,ClaimProcStatus.CapComplete))
+				.OrderByDescending(x=>x.DateCP).ToList();
+			double existingAsTotalPayments=listClaimProcsSorted.FindAll(x => x.ProcNum==0).Sum(x => x.InsPayAmt);
+			listClaimProcsSorted.RemoveAll(x => x.ProcNum==0);
+			if(listClaimProcsSorted.IsNullOrEmpty() || totalPayAmt<=existingAsTotalPayments) {
 				return;
 			}
-			double remainingAlotment=totalPayAmt;//The user entered value (pool) of cash we are going to fill the claim procs with
+			double remainingAlotment=totalPayAmt-existingAsTotalPayments;//The user entered value (pool) of cash we are going to fill the claim procs with
 			//Shorten the list of Procedures down to only the ones with associated Claim Procs
 			List<Procedure> listProceduresAssociatedtoClaims=listProcedures.FindAll(x => listClaimProcsSorted.Select(y => y.ProcNum).ToList().Contains(x.ProcNum));
 			List<double> listSupplementalPayments=new List<double>();

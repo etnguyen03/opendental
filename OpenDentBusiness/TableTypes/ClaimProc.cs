@@ -63,7 +63,7 @@ namespace OpenDentBusiness{
 		///<summary>Date that it was changed to status received or supplemental.  It is usually attached to a claimPayment at that point, but not if user forgets.  This is still the date that it becomes important financial data.  Only applies if Received or Supplemental.  Otherwise, the date is disregarded.  User may never edit. Important in audit trail.</summary>
 		public DateTime DateEntry;
 		///<summary>Assigned when claim is created as a way to order the procs showing on a claim.  Indireclty goes out in X12 loop 2400.
-		///Used in Canadian eclaims (field F07).</summary>
+		///Used in Canadian eclaims (field F07). One based index. Is zero for total payments.</summary>
 		public byte LineNumber;
 		///<summary>-1 if blank.  Not sure why we need to allow -1.  Calculated automatically.  User cannot edit, but can use DedEstOverride instead.</summary>
 		public double DedEst;

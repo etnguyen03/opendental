@@ -482,9 +482,13 @@ namespace OpenDental {
 				MobileAppDevices.SetPatNum(MobileAppDevice.MobileAppDeviceNum,patNum);
 				if(patNum>0) {
 					MobileNotifications.CI_CheckinPatient(patNum,MobileAppDevice.MobileAppDeviceNum);
+					string logText=Lan.g(this,"Patient loaded to device ")+"'"+MobileAppDevice.DeviceName+"'"+Lan.g(this," with DeviceID ")+"'"+MobileAppDevice.UniqueID+"'.";
+					SecurityLogs.MakeLogEntry(EnumPermType.MobileNotification,patNum,logText);
 				}
 				else {
 					MobileNotifications.CI_GoToCheckin(MobileAppDevice.MobileAppDeviceNum);
+					string logText=Lan.g(this,"Patient cleared from device ")+"'"+MobileAppDevice.DeviceName+"'"+Lan.g(this," with DeviceID ")+"'"+MobileAppDevice.UniqueID+"'.";
+					SecurityLogs.MakeLogEntry(EnumPermType.MobileNotification,MobileAppDevice.PatNum,logText);
 				}
 			}
 		}

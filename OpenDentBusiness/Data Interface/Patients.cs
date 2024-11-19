@@ -5907,28 +5907,28 @@ namespace OpenDentBusiness {
 		}
 
 		///<summary>Builds a confirmation message string based on the appropriate preference, given patient, and given date.</summary>
-		public static string BuildConfirmMessage(ContactMethod contactMethod,Patient pat,DateTime dateTimeAskedToArrive,DateTime apptDateTime,long clinicNumApt) {
+		public static string BuildConfirmMessage(ContactMethod contactMethod,Patient pat,Appointment appt) {
 			string template=contactMethod switch {
 				ContactMethod.Email=>PrefC.GetString(PrefName.ConfirmEmailMessage),
 				ContactMethod.TextMessage=>PrefC.GetString(PrefName.ConfirmTextMessage),
 				ContactMethod.Mail=>PrefC.GetString(PrefName.ConfirmPostcardMessage),
 				_=>PrefC.GetString(PrefName.ConfirmTextMessage),
 			};
-			return BuildAppointmentMessage(pat,dateTimeAskedToArrive,apptDateTime,clinicNumApt,template);
+			return BuildAppointmentMessage(pat,appt,template);
 		}
 
-		///<summary>Builds an appointment information message string based on the given template, given patient, and given date.</summary>
-		public static string BuildAppointmentMessage(Patient pat,DateTime dateTimeAskedToArrive,DateTime apptDateTime,long clinicNumApt
+		///<summary>Builds an appointment information message string based on the given patient, appointment, and template. Changes here should match the behavior of eConfirmations. </summary>
+		public static string BuildAppointmentMessage(Patient pat,Appointment appt
 			,string template="[NameF]:  [date] at [time]",bool isEmail=false) {
-			DateTime dateTime=apptDateTime;
-			if(dateTimeAskedToArrive.Year>1880) {
-				dateTime=dateTimeAskedToArrive;
+			DateTime dateTime=appt.AptDateTime;
+			if(appt.DateTimeAskedToArrive.Year>1880) {
+				dateTime=appt.DateTimeAskedToArrive;
 			}
 			if(pat!=null) {
 				string name=Patients.GetNameFirstOrPreferred(pat.FName,pat.Preferred);
 				Clinic clinic=null;//Null clinic will default to practice name in TagReplacer.
-				if(clinicNumApt>0) {
-					clinic=Clinics.GetClinic(clinicNumApt);
+				if(appt.ClinicNum>0) {
+					clinic=Clinics.GetClinic(appt.ClinicNum);
 				}
 				else if(pat.ClinicNum>0){
 					clinic=Clinics.GetClinic(pat.ClinicNum);
@@ -5937,7 +5937,7 @@ namespace OpenDentBusiness {
 				AutoCommObj autoCommObj=new AutoCommObj();
 				autoCommObj.NameF=pat.FName;
 				autoCommObj.NamePreferredOrFirst=name;
-				autoCommObj.ProvNum=pat.PriProv;
+				autoCommObj.ProvNum=appt.ProvNum;
 				template=tagReplacer.ReplaceTags(template,autoCommObj,clinic,isEmail);
 			}
 			template=template.Replace("[date]",dateTime.ToString(PrefC.PatientCommunicationDateFormat)); //[date] and [time] aren't considered in ReplaceTags

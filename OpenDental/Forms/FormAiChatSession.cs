@@ -239,20 +239,28 @@ namespace OpenDental {
 		}
 
 		private void butEndSession_Click(object sender,EventArgs e) {
+			if(TryEndSession()) {
+				WebChatSessions.EndSession(_openAiChatSession.ChatSession.WebChatSessionNum);
+				DialogResult=DialogResult.OK;
+				Close();
+			}
+		}
+
+		///<summary>Prompts for input if not already ended.
+		///Return true if the session exists, was not already ended and the user confirmed they want to end it, otherwise false.</summary>
+		private bool TryEndSession() {
+			if(_openAiChatSession.ChatSession==null) {
+				return false;
+			}
 			//Refresh the session in case the session ended in less than the last signal interval.
 			_openAiChatSession.ChatSession=WebChatSessions.GetOne(_openAiChatSession.ChatSession.WebChatSessionNum);
-			if(_openAiChatSession.ChatSession.DateTend.Year>1880) { //session has already ended. Will not send second End Session message
+			if(_openAiChatSession.ChatSession.DateTend.Year>1880) {//session has already ended. Will not send second End Session message
 				FillMessageThread();
 				SetTabColor();
 				butEndSession.Enabled=false;
-				return;
+				return false;
 			}
-			if(!MsgBox.Show(this,MsgBoxButtons.YesNo,"Permanently end the session for everyone?")) {
-				return;
-			}
-			WebChatSessions.EndSession(_openAiChatSession.ChatSession.WebChatSessionNum);
-			DialogResult=DialogResult.OK;
-			Close();
+			return MsgBox.Show(this, MsgBoxButtons.YesNo, "Permanently end the session for everyone?");
 		}
 
 		private void butTakeOwnership_Click(object sender,EventArgs e) {
@@ -356,9 +364,8 @@ namespace OpenDental {
 		}
 
 		private void FormWebChatSession_FormClosing(object sender,FormClosingEventArgs e) {
-			if(_openAiChatSession.ChatSession!=null) { 
-				WebChatSession webChatSessionOld=_openAiChatSession.ChatSession.Clone();
-				WebChatSessions.Update(_openAiChatSession.ChatSession,webChatSessionOld);
+			if(TryEndSession()) {
+				WebChatSessions.EndSession(_openAiChatSession.ChatSession.WebChatSessionNum);
 			}
 			_actionClose?.Invoke();
 		}

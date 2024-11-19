@@ -3205,7 +3205,7 @@ namespace OpenDental {
 
 		///<summary>Sets the textSurcharge to a ReadOnly state when necessary.</summary>
 		private void SetSurchargeTextFieldReadOnly() {
-			if(_payment.PaymentSource!=CreditCardSource.None || _payment.PayNote.ToLower().Contains("void")) {
+			if(_payment.PaymentSource!=CreditCardSource.None || (_payment.PayNote!=null && _payment.PayNote.ToLower().Contains("void"))) {
 				textSurcharge.ReadOnly=true;
 			}
 		}
