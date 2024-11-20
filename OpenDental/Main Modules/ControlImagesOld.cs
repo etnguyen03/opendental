@@ -282,7 +282,9 @@ namespace OpenDental {
 				return;
 			}
 			if(ODBuild.IsThinfinity()) {//Not necessary for ODWebView2 control as user can both view the pdf inside of OD and outside of OD simultaneously.
-				_cloudIframe.HideIframe(Handle);
+				if(!IsDisposed && !pictureBoxMain.IsDisposed) {
+					_cloudIframe?.HideIframe(pictureBoxMain.Handle);
+				}
 			}
 			if(PrefC.AtoZfolderUsed==DataStorageType.InDatabase) {
 				MsgBox.Show(this,"Images stored directly in database. Export file in order to open with external program.");
@@ -1286,9 +1288,9 @@ namespace OpenDental {
 			}
 			else if(ODBuild.IsThinfinity()) {
 				_cloudIframe=new CloudIframe();
-				_cloudIframe.HideIframe(Handle);
+				_cloudIframe.HideIframe(pictureBoxMain.Handle);
 				_cloudIframe.Bounds=pictureBoxMain.Bounds;
-				LayoutManager.Add(_cloudIframe,this);
+				LayoutManager.Add(_cloudIframe,pictureBoxMain);
 			}
 			contextTree.MenuItems.Clear();
 			contextTree.MenuItems.Add("Print",new System.EventHandler(menuTree_Click));
@@ -1554,7 +1556,9 @@ namespace OpenDental {
 				return;
 			}
 			pictureBoxMain.Visible=true;
-			_cloudIframe?.HideIframe(Handle);
+			if(!IsDisposed && !pictureBoxMain.IsDisposed) {
+				_cloudIframe?.HideIframe(pictureBoxMain.Handle);
+			}
 			if(_odWebView2!=null) {
 				_odWebView2.Visible=false;
 			}
@@ -3290,8 +3294,8 @@ namespace OpenDental {
 				else {
 					_odWebView2FilePath=pdfFilePath;
 					if(ODBuild.IsThinfinity()) {
-						_cloudIframe.ShowIframe(Handle);
-						_cloudIframe.DisplayFile(Handle,_odWebView2FilePath);
+						_cloudIframe.ShowIframe(pictureBoxMain.Handle);
+						_cloudIframe.DisplayFile(pictureBoxMain.Handle,_odWebView2FilePath);
 						_isExportable=true;
 						return;
 					}

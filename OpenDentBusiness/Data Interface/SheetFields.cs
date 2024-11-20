@@ -221,6 +221,8 @@ namespace OpenDentBusiness{
 			return "";
 		}
 
+		///<summary>Parses the menu item options out of the sheet field passed in and returns values ready for display.
+		///Since these values can be manipulated for display purposes, any changes in this method need to be reflected in SetComboFieldValue().</summary>
 		public static List<string> GetComboMenuItems(SheetField sheetField){
 			Meth.NoCheckMiddleTierRole();
 			List<string> listStringsReturn=new List<string>();
@@ -235,7 +237,7 @@ namespace OpenDentBusiness{
 				listStringsReturn=listOptions[0].Split('|').ToList();//Will be an empty string if no '|' is present.
 			}
 			for(int i=0;i<listStringsReturn.Count;i++) {
-				//'&' is a special character in System.Windows.Forms.ContextMenu. We need to escapte all ampersands so that they are displayed correctly in the fill sheet window.
+				//'&' is a special character in System.Windows.Forms.ContextMenu. We need to escape all ampersands so that they are displayed correctly in the fill sheet window.
 				listStringsReturn[i]=listStringsReturn[i].Replace("&","&&");
 				//'-' by itself is a special character in System.Windows.Forms.ContextMenu. We need to escapte it so that it is displayed correctly in the fill sheet window.
 				if(listStringsReturn[i]=="-") {
@@ -245,6 +247,8 @@ namespace OpenDentBusiness{
 			return listStringsReturn;
 		}
 
+		///<summary>Parses the selected option passed in and sets the sheet field's FieldValue accordingly.
+		///Since the selected option may have been manipulated for display purposes, any changes in this method need to be reflected in GetComboMenuItems().</summary>
 		public static void SetComboFieldValue(SheetField sheetField,string selectedOption){
 			Meth.NoCheckMiddleTierRole();
 			string stringAll="";
@@ -255,8 +259,11 @@ namespace OpenDentBusiness{
 			else{//Incorrect format.
 				stringAll=listOptions[0];
 			}
-			//If there are any double && signs, we need to set them back to single & symbols so that they display correctly after a user makes a selection
+			//If there are any double && signs, we need to set them back to single & symbols. If the option is a single hyphen, we would have added a & symbol to the front of it in order to get the context menu to add it as an option. We need to remove either of these additional symbols after selection so that they display correctly. See method GetComboMenuItems() just above.
 			string fieldVal=selectedOption.Replace("&&","&")+";"+stringAll;
+			if(selectedOption=="&-") {
+				fieldVal=selectedOption.Replace("&-","-")+";"+stringAll;
+			}
 			sheetField.FieldValue=fieldVal;
 		}
 

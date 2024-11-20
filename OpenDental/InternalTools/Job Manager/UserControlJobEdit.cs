@@ -921,7 +921,6 @@ namespace OpenDental.InternalTools.Job_Manager {
 				_listPriorities.ForEach(x => comboPriority.Items.Add(x.ItemName));
 				_listPriorities.ForEach(x => comboPriorityTesting.Items.Add(x.ItemName));
 			}
-			this.Enabled=false;//disable control while it is filled.
 			_isOverride=false;
 			IsChanged=false;
 			if(job==null) {
@@ -1016,7 +1015,6 @@ namespace OpenDental.InternalTools.Job_Manager {
 			if(job!=null) {//re-enable control after we have loaded the job.
 				JobNotifications.DeleteForJobAndUser(job.JobNum,Security.CurUser.UserNum);
 				Signalods.SetInvalid(InvalidType.Jobs, KeyType.Job,job.JobNum);
-				this.Enabled=true;
 			}
 			if(jobPrev==null || jobPrev.JobNum!=job.JobNum) {
 				textJobEditor.ResizeTextFields();

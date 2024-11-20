@@ -168,6 +168,7 @@
         <EnumValue name="PerioEditCopy">257 - Allow users to copy perio charts in the Perio Chart window.</EnumValue>
         <EnumValue name="EFormEdit">259 - Uses date restrictions but no global lock date. Also used in audit trail to log importing.</EnumValue>
         <EnumValue name="EFormDelete">260 - Allows deleting eForms when they're attached to patients. No date restrictions.</EnumValue>
+        <EnumValue name="MobileNotification">261 - Used for logging only. Can be used to log whenever mobile notifications are inserted into the database.</EnumValue>
       </Enumeration>
     </column>
     <column order="4" name="PermType" type="smallint(6)">
@@ -177,6 +178,7 @@
         <EnumValue name="PerioEditCopy">257 - Allow users to copy perio charts in the Perio Chart window.</EnumValue>
         <EnumValue name="EFormEdit">259 - Uses date restrictions but no global lock date. Also used in audit trail to log importing.</EnumValue>
         <EnumValue name="EFormDelete">260 - Allows deleting eForms when they're attached to patients. No date restrictions.</EnumValue>
+        <EnumValue name="MobileNotification">261 - Used for logging only. Can be used to log whenever mobile notifications are inserted into the database.</EnumValue>
       </Enumeration>
     </column>
   </table>
@@ -270,6 +272,7 @@
         <EnumValue name="PerioEditCopy">257 - Allow users to copy perio charts in the Perio Chart window.</EnumValue>
         <EnumValue name="EFormEdit">259 - Uses date restrictions but no global lock date. Also used in audit trail to log importing.</EnumValue>
         <EnumValue name="EFormDelete">260 - Allows deleting eForms when they're attached to patients. No date restrictions.</EnumValue>
+        <EnumValue name="MobileNotification">261 - Used for logging only. Can be used to log whenever mobile notifications are inserted into the database.</EnumValue>
       </Enumeration>
     </column>
     <column order="1" name="PermType" type="smallint(6)">
@@ -279,6 +282,7 @@
         <EnumValue name="PerioEditCopy">257 - Allow users to copy perio charts in the Perio Chart window.</EnumValue>
         <EnumValue name="EFormEdit">259 - Uses date restrictions but no global lock date. Also used in audit trail to log importing.</EnumValue>
         <EnumValue name="EFormDelete">260 - Allows deleting eForms when they're attached to patients. No date restrictions.</EnumValue>
+        <EnumValue name="MobileNotification">261 - Used for logging only. Can be used to log whenever mobile notifications are inserted into the database.</EnumValue>
       </Enumeration>
     </column>
   </table>
@@ -567,6 +571,7 @@
         <EnumValue name="LicenseAccept">258 - For audit trail only. Logs when a license is accepted by a user.</EnumValue>
         <EnumValue name="EFormEdit">259 - Uses date restrictions but no global lock date. Also used in audit trail to log importing.</EnumValue>
         <EnumValue name="EFormDelete">260 - Allows deleting eForms when they're attached to patients. No date restrictions.</EnumValue>
+        <EnumValue name="MobileNotification">261 - Used for logging only. Can be used to log whenever mobile notifications are inserted into the database.</EnumValue>
       </Enumeration>
     </column>
   </table>
@@ -864,6 +869,7 @@
         <EnumValue name="LicenseAccept">258 - For audit trail only. Logs when a license is accepted by a user.</EnumValue>
         <EnumValue name="EFormEdit">259 - Uses date restrictions but no global lock date. Also used in audit trail to log importing.</EnumValue>
         <EnumValue name="EFormDelete">260 - Allows deleting eForms when they're attached to patients. No date restrictions.</EnumValue>
+        <EnumValue name="MobileNotification">261 - Used for logging only. Can be used to log whenever mobile notifications are inserted into the database.</EnumValue>
       </Enumeration>
     </column>
   </table>

@@ -2660,7 +2660,7 @@
     </column>
     <column order="26" name="LineNumber" type="tinyint">
       <summary>Assigned when claim is created as a way to order the procs showing on a claim.  Indireclty goes out in X12 loop 2400.
-            Used in Canadian eclaims (field F07).</summary>
+            Used in Canadian eclaims (field F07). One based index. Is zero for total payments.</summary>
     </column>
     <column order="27" name="DedEst" type="double">
       <summary>-1 if blank.  Not sure why we need to allow -1.  Calculated automatically.  User cannot edit, but can use DedEstOverride instead.</summary>
@@ -8391,6 +8391,7 @@
         <EnumValue name="LicenseAccept">258 - For audit trail only. Logs when a license is accepted by a user.</EnumValue>
         <EnumValue name="EFormEdit">259 - Uses date restrictions but no global lock date. Also used in audit trail to log importing.</EnumValue>
         <EnumValue name="EFormDelete">260 - Allows deleting eForms when they're attached to patients. No date restrictions.</EnumValue>
+        <EnumValue name="MobileNotification">261 - Used for logging only. Can be used to log whenever mobile notifications are inserted into the database.</EnumValue>
       </Enumeration>
     </column>
     <column order="5" name="FKey" type="bigint(20)">
@@ -15876,6 +15877,7 @@
         <EnumValue name="LicenseAccept">258 - For audit trail only. Logs when a license is accepted by a user.</EnumValue>
         <EnumValue name="EFormEdit">259 - Uses date restrictions but no global lock date. Also used in audit trail to log importing.</EnumValue>
         <EnumValue name="EFormDelete">260 - Allows deleting eForms when they're attached to patients. No date restrictions.</EnumValue>
+        <EnumValue name="MobileNotification">261 - Used for logging only. Can be used to log whenever mobile notifications are inserted into the database.</EnumValue>
       </Enumeration>
     </column>
     <column order="2" name="UserNum" type="bigint(20)" fk="userod">

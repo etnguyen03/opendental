@@ -240,7 +240,9 @@ Here is the desired behavior:
 				return;
 			}
 			//ODCloud does not use _odWebView2
-			_cloudIframe.HideIframe(Handle);
+			if(!IsDisposed && _cloudIframe!=null && !_cloudIframe.IsDisposed) {
+				_cloudIframe.HideIframe(Handle);
+			}
 		}
 
 		///<summary>Deletes the specified document from the database and refreshes the tree view. Set securityCheck false when creating a new document that might get cancelled.  Document is passed in because it might not be in the tree if the image folder it belongs to is now hidden.</summary>
@@ -542,7 +544,9 @@ Here is the desired behavior:
 		public bool HideWebBrowser() {
 			if(ODBuild.IsThinfinity()) {
 				//ODCloud uses _cloudIframe instead of _odWebView2
-				_cloudIframe.HideIframe(Handle);
+				if(!IsDisposed && _cloudIframe!=null && !_cloudIframe.IsDisposed) {
+					_cloudIframe.HideIframe(Handle);
+				}
 			}
 			return true;
 		}
@@ -1048,7 +1052,9 @@ Here is the desired behavior:
 		public void SelectTreeNode2(NodeTypeAndKey nodeTypeAndKey,string localPathImportedCloud="") {
 			_pointTranslation=new Point();
 			panelMain.Visible=true;
-			_cloudIframe?.HideIframe(Handle);
+			if(!IsDisposed && _cloudIframe!=null && !_cloudIframe.IsDisposed) {
+				_cloudIframe?.HideIframe(Handle);
+			}
 			if(_odWebView2!=null) {
 				_odWebView2.Visible=false;
 			}
