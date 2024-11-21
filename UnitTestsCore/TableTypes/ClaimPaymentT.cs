@@ -9,7 +9,7 @@ namespace UnitTestsCore {
 	public class ClaimPaymentT {
 
 		///<summary>Creates a ClaimPayment. Does not attach to claimprocs. Use daysPrevious to set the SecDateTEdit to the past.</summary>
-		public static ClaimPayment CreateClaimPayment(DateTime checkDate,double checkAmt,string checkNum,string bankBranch,string note,string carrierName,DateTime dateIssued,long payType,long payGroup,int daysPrevious) {
+		public static ClaimPayment CreateClaimPayment(DateTime checkDate,double checkAmt,string checkNum,string bankBranch,string note,string carrierName,DateTime dateIssued,long payType,long payGroup,int daysPrevious,bool isPartial=false) {
 			ClaimPayment claimPayment=new ClaimPayment() {
 				CheckDate=checkDate,
 				CheckAmt=checkAmt,
@@ -20,6 +20,7 @@ namespace UnitTestsCore {
 				DepositNum=0,
 				CarrierName=carrierName,
 				DateIssued=dateIssued,
+				IsPartial=isPartial,
 				PayType=payType,
 				PayGroup=payGroup
 			};
@@ -64,9 +65,19 @@ namespace UnitTestsCore {
 		}
 
 		///<summary>Updates List of ClaimProcs to contain the ClaimPaymentNum.</summary>
-		public static void AttachClaimPaymentToClaimProcs(List<ClaimProc> listClaimProcs, long claimPaymentNum) {
+		public static void AttachClaimProcsToClaimPayment(List<ClaimProc> listClaimProcs,long claimPaymentNum,int paymentRow=0) {
+			if(paymentRow==0) {
+				List<ClaimProc> listClaimProcsOnSameClaimPayment=ClaimProcs.GetClaimProcsForClaimPayment(claimPaymentNum);
+				if(listClaimProcsOnSameClaimPayment.Count>0) {
+					paymentRow=listClaimProcsOnSameClaimPayment.Select(x=>x.PaymentRow).Max()+1;
+				}
+				else {
+					paymentRow=1;
+				}
+			}
 			for(int i=0;i<listClaimProcs.Count;i++) {
 				listClaimProcs[i].ClaimPaymentNum=claimPaymentNum;
+				listClaimProcs[i].PaymentRow=paymentRow;
 				listClaimProcs[i].DateInsFinalized=DateTime.Now;
 				ClaimProcs.Update(listClaimProcs[i]);
 			}

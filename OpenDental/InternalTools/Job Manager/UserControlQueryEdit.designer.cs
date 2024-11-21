@@ -916,6 +916,7 @@
 			this.butParentPick.Size = new System.Drawing.Size(23, 20);
 			this.butParentPick.TabIndex = 315;
 			this.butParentPick.Text = "...";
+			this.butParentPick.Click += new System.EventHandler(this.butParentPick_Click);
 			// 
 			// textParent
 			// 

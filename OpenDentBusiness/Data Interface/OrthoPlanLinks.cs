@@ -52,6 +52,15 @@ namespace OpenDentBusiness{
 			string command=$"SELECT * FROM orthoplanlink WHERE orthoplanlink.OrthoCaseNum IN({string.Join(",",listOrthoCaseNums)})";
 			return Crud.OrthoPlanLinkCrud.SelectMany(command);
 		}
+
+		///<summary>Gets one OrthoPlanLink of the requested type if one is found on the supplied PayPlan(num).</summary>
+		public static OrthoPlanLink GetOrthoPlanLinkOfType(OrthoPlanLinkType orthoPlanLinkType,long payPlanNum) {
+			if(RemotingClient.MiddleTierRole==MiddleTierRole.ClientMT) {
+				return Meth.GetObject<OrthoPlanLink>(MethodBase.GetCurrentMethod(),orthoPlanLinkType,payPlanNum);
+			}
+			string command=$"SELECT * FROM orthoplanlink WHERE LinkType={POut.Enum<OrthoPlanLinkType>(orthoPlanLinkType)} AND FKey={POut.Long(payPlanNum)}";
+			return Crud.OrthoPlanLinkCrud.SelectOne(command);
+		}
 		#endregion Get Methods
 
 		#region Insert

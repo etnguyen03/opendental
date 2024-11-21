@@ -334,6 +334,8 @@ namespace OpenDental {
 				node.Nodes.Add(node2);
 				node2=SetNode(EnumPermType.PatientEdit);
 				node.Nodes.Add(node2);
+				node2=SetNode(EnumPermType.SuperFamilyDisband);
+				node.Nodes.Add(node2);
 			treePermissions.Nodes.Add(node);
 			#endregion
 			#region Account Module
@@ -467,6 +469,8 @@ namespace OpenDental {
 				node2=SetNode(EnumPermType.PatAllergyListEdit);
 				node.Nodes.Add(node2);
 				node2=SetNode(EnumPermType.PatProblemListEdit);
+				node.Nodes.Add(node2);
+				node2=SetNode(EnumPermType.ChartViewsEdit);
 				node.Nodes.Add(node2);
 			treePermissions.Nodes.Add(node);
 			#endregion

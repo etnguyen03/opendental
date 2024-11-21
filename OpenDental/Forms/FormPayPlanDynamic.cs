@@ -27,11 +27,12 @@ namespace OpenDental {
 		private PayPlan _payPlanOld;
 		private bool _isSigOldValid;
 		private bool _isLoading=true;
-		///<summary>List of procedures that should be attached to a pay plan if it is new.</summary>
-		private List<Procedure>_listProceduresForNewPayPlan;
+		///<summary>List of procedures that should be attached to a pay plan if it is new. The only time a list of Procedures should be supplied for a New PayPlan is when it's an OrthoCase.</summary>
+		public List<Procedure> ListOrthoCaseProcsForNewPayPlan;
 		///<summary>Will be false if pay plan was opened from another window</summary>
 		bool _hasGoToButtons;
 		private bool _isHeadingPrinted;
+		private bool _isForNewOrthoCase;
 		private int _pagesPrinted;
 		#endregion
 		#region Properties
@@ -43,25 +44,29 @@ namespace OpenDental {
 		#endregion
 
 		///<summary></summary>
-		public FormPayPlanDynamic(PayPlan payPlan,bool hasGoToButtons=true,List<Procedure> listProceduresForNewPayPlan=null) {
+		public FormPayPlanDynamic(PayPlan payPlan,bool hasGoToButtons=true) {
 			InitializeComponent();
 			InitializeLayoutManager();
 			_dynamicPaymentPlanData=PayPlanEdit.GetDynamicPaymentPlanModuleData(payPlan.Copy());
 			_payPlanOld=_dynamicPaymentPlanData.PayPlan.Copy();
 			_hasGoToButtons=hasGoToButtons;
-			_listProceduresForNewPayPlan=listProceduresForNewPayPlan;
 			Lan.F(this);
 		}
 
 		private void FormPayPlanDynamic_Load(object sender,System.EventArgs e) {
+			if(ListOrthoCaseProcsForNewPayPlan!=null) {
+				_isForNewOrthoCase=true;
+			}
 			#region Set Data
 			PayPlanEdit.IssueChargesDueForDynamicPaymentPlans(
 				new List<PayPlan>{_payPlanOld},
 				new LogWriter(LogLevel.Information,"")
 			);
 			LoadPayDataFromDB();
-			if(_dynamicPaymentPlanData.PayPlan.IsNew && !_listProceduresForNewPayPlan.IsNullOrEmpty()) {
-				AddProcedures(_listProceduresForNewPayPlan);//Add procs to production list if pay plan is new.
+			if(_dynamicPaymentPlanData.PayPlan.IsNew && !ListOrthoCaseProcsForNewPayPlan.IsNullOrEmpty()) {
+				List<long> listProcNums=ListOrthoCaseProcsForNewPayPlan.ConvertAll(x=>x.ProcNum);
+				List<AccountEntry> listAccountEntries=PayPlanEdit.GetAccountEntriesUnattachedToDynamicPaymentPlan(_dynamicPaymentPlanData).FindAll(x=>listProcNums.Contains(x.ProcNum));
+				AddProcedures(listAccountEntries);
 			}
 			#endregion
 			#region Fill and Set UI Fields
@@ -103,6 +108,13 @@ namespace OpenDental {
 				butGoToPat.Visible=false;
 			}
 			checkExcludePast.Checked=PrefC.GetBool(PrefName.PayPlansExcludePastActivity);
+			radioTpTreatAsComplete.Enabled=true;
+			OrthoPlanLink orthoPlanLink=OrthoPlanLinks.GetOrthoPlanLinkOfType(OrthoPlanLinkType.PatPayPlan,_dynamicPaymentPlanData.PayPlan.PayPlanNum);
+			if(_isForNewOrthoCase //new ortho case or existing ortho case with TPOption set to 'Await Complete'
+				|| (orthoPlanLink!=null && _dynamicPaymentPlanData.PayPlan.DynamicPayPlanTPOption==DynamicPayPlanTPOptions.AwaitComplete)) {
+				radioTpAwaitComplete.Checked=true; //Select this because it's the only valid option for Ortho cases.
+				radioTpTreatAsComplete.Enabled=false; //Disable this as it will cause issues if used with Ortho cases.
+			}
 			#endregion
 			if(PrefC.GetBool(PrefName.PayPlansUseSheets)) {
 				Sheet sheet=null;
@@ -627,41 +639,6 @@ namespace OpenDental {
 			FillProduction();
 		}
 
-		///<summary>Creates pay plan links and pay plan production entries for the list of procs passed in.</summary>
-		private void AddProcedures(List<Procedure> listProcs) {
-			int countSkipped=0;
-			List<long> listProcNums=listProcs.Select(x => x.ProcNum).ToList();
-			List<PayPlanCharge> listPayPlanChargesCreditsForProcs=PayPlanCharges.GetPatientPayPlanCreditsForProcs(listProcNums);
-			List<PayPlanLink> listPayPlanLinksForProcs=PayPlanLinks.GetForFKeysAndLinkType(listProcNums,PayPlanLinkType.Procedure);
-			PaymentEdit.ConstructResults constructResults=PaymentEdit.ConstructAndLinkChargeCredits(_dynamicPaymentPlanData.Family.GetPatNums(),_dynamicPaymentPlanData.Patient.PatNum,
-				new List<PaySplit>(),new Payment(),new List<AccountEntry>(),isIncomeTxfr:true);
-			for(int i=0;i<listProcs.Count;i++) {
-				if(listPayPlanChargesCreditsForProcs.Select(x => x.ProcNum).Contains(listProcs[i].ProcNum)
-					|| listPayPlanLinksForProcs.Select(x => x.FKey).Contains(listProcs[i].ProcNum)
-					|| _dynamicPaymentPlanData.ListPayPlanLinks.Exists(x => x.LinkType==PayPlanLinkType.Procedure && x.FKey==listProcs[i].ProcNum))
-				{
-					countSkipped++;
-					continue;
-				}
-				AccountEntry accountEntry=constructResults.ListAccountEntries.FirstOrDefault(x => x.GetType()==typeof(Procedure) && x.PriKey==listProcs[i].ProcNum);
-				if(accountEntry==null || accountEntry.AmountEnd==0) {
-					continue;//Don't warn the user because there just isn't any value for the specified procedure.
-				}
-				PayPlanLink payPlanLinkCreditAdding=new PayPlanLink() {
-					PayPlanNum=_dynamicPaymentPlanData.PayPlan.PayPlanNum,
-					LinkType=PayPlanLinkType.Procedure,
-					FKey=listProcs[i].ProcNum
-				};
-				_dynamicPaymentPlanData.ListPayPlanLinks.Add(payPlanLinkCreditAdding);
-				_dynamicPaymentPlanData.ListPayPlanProductionEntries.Add(new PayPlanProductionEntry(listProcs[i],payPlanLinkCreditAdding,null,null,null,amountOriginal:accountEntry.AmountEnd));
-			}
-			textTotalPrincipal.Text=_sumAttachedProduction.ToString("f");
-			FillProduction();
-			if(countSkipped>0) {
-				MsgBox.Show(this,"Procedures can only be attached to one payment plan at a time.");
-			}
-		}
-
 		private void butAddProd_Click(object sender,EventArgs e) {
 			using FormProdSelect formProdSelect=new FormProdSelect(_dynamicPaymentPlanData);
 			if(formProdSelect.ShowDialog()!=DialogResult.OK) {
@@ -670,7 +647,12 @@ namespace OpenDental {
 			if(formProdSelect.ListAccountEntriesSelected.IsNullOrEmpty()) {
 				return;
 			}
-			_dynamicPaymentPlanData=PayPlanEdit.AddProductionToDynamicPaymentPlan(formProdSelect.ListAccountEntriesSelected,_dynamicPaymentPlanData);
+			AddProcedures(formProdSelect.ListAccountEntriesSelected);
+		}
+
+		///<summary>Creates pay plan links and pay plan production entries for the list of account entries passed in and updates textTotalPrinciapal in the UI. Calls FillProduction().</summary>
+		private void AddProcedures(List<AccountEntry> listAccountEntries) {
+			_dynamicPaymentPlanData=PayPlanEdit.AddProductionToDynamicPaymentPlan(listAccountEntries,_dynamicPaymentPlanData);
 			textTotalPrincipal.Text=_sumAttachedProduction.ToString("f");
 			FillProduction();
 		}

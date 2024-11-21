@@ -369,71 +369,86 @@ namespace OpenDentBusiness{
 			}
 		}
 
-		/// <summary>Sets the overrides for a claimproc when the procedure is linked to an orthocase. All overrides for orthocases are set to zero,
-		/// save for the InsEstTotalOverride for primary insurance, which is set to orthoCase.FeeIns/orthoCase.Fee*proc.ProcFeeTotal. Effectively,
-		/// this takes the total percent that insurance is covering for the orthocase and multiplies it by the fee for the current proc. If the fee is
-		/// a visit, this number may be rounded up or down so that the total of estimates for procedures linked to the orthocase is not disimilar to
-		/// the orthoCase.FeeIns once all procedures for the orthocase are complete.</summary>
+		/// <summary>Sets the overrides for primary and/or secondary insurance ClaimProcs when the procedure is linked to an OrthoCase. 
+		/// All overrides for OrthoCases are set to zero, save for the InsEstTotalOverride and InsPayEst.
+		/// These fields are set to the procedure's fee multiplied by the percent that insurance covers for the OrthoCase. For the OrthoCase's final visit,
+		/// this estimate may be adjusted up or down so that the total of estimates for all procedures linked to the OrthoCase
+		/// is not dissimilar to the total insurance coverage for the OrthoCase once it is complete.</summary>
 		public static void ComputeEstimatesByOrthoCase(Procedure procedure,OrthoProcLink orthoProcLink,OrthoCase orthoCase,OrthoSchedule orthoSchedule
-			,bool saveToDb,List<ClaimProc> listClaimProcs,List<ClaimProc> listClaimProcsToUpdate,List<PatPlan> listPatPlans
+			,bool saveToDb,List<ClaimProc> listClaimProcsAll,List<ClaimProc> listClaimProcsToUpdate,List<PatPlan> listPatPlans
 			,List<OrthoProcLink> listOrthoProcLinksForCase)
 		{
 			Meth.NoCheckMiddleTierRole();
-			for(int i=0;i<listClaimProcsToUpdate.Count;i++){
-				if(listClaimProcsToUpdate[i].ProcNum!=procedure.ProcNum) {
-					continue;
+			//Iterate through each claimproc to update, only process claimProcs that have the correct/desired ProcNum.
+			List<ClaimProc> listClaimProcsToUpdateFiltered=listClaimProcsToUpdate.FindAll(x => x.ProcNum==procedure.ProcNum);
+			for(int i=0;i<listClaimProcsToUpdateFiltered.Count;i++) {
+				//Reset all insurance-related overrides for the current claimproc.
+				ZeroOutClaimProcOverrides(listClaimProcsToUpdateFiltered[i]);
+				//Reset all insurance-related overrides for the original copy of the claimproc (from listClaimProcsAll).
+				ClaimProc claimProcCopy=listClaimProcsAll.Find(x => x.ClaimProcNum==listClaimProcsToUpdateFiltered[i].ClaimProcNum);
+				ZeroOutClaimProcOverrides(claimProcCopy);
+				//If the claim is new/hasn't been created yet, set the procedure's date.
+				if(listClaimProcsToUpdateFiltered[i].ClaimNum==0) {
+					listClaimProcsToUpdateFiltered[i].ProcDate=procedure.ProcDate;
+					claimProcCopy.ProcDate=procedure.ProcDate;
 				}
-				PatPlan patPlan=PatPlans.GetFromList(listPatPlans,listClaimProcsToUpdate[i].InsSubNum);
-				listClaimProcsToUpdate[i].AllowedOverride=0;
-				listClaimProcsToUpdate[i].CopayOverride=0;
-				listClaimProcsToUpdate[i].DedEstOverride=0;
-				listClaimProcsToUpdate[i].PercentOverride=0;
-				listClaimProcsToUpdate[i].PaidOtherInsOverride=0;
-				listClaimProcsToUpdate[i].InsEstTotalOverride=0;
-				listClaimProcsToUpdate[i].WriteOffEstOverride=0;
-				if(listClaimProcsToUpdate[i].ClaimNum==0){
-					listClaimProcsToUpdate[i].ProcDate=procedure.ProcDate;
-				}
+				//Get patient's insurance plan.
+				PatPlan patPlan=PatPlans.GetFromList(listPatPlans,listClaimProcsToUpdateFiltered[i].InsSubNum);
 				//Only primary and secondary insurance claimprocs get a nonzero override.
 				if(patPlan==null || patPlan.Ordinal>2) {
-					continue;
+					continue; //Skip claimprocs not linked to primary or secondary insurance plans.
 				}
-				double feeIns;
-				if(patPlan.Ordinal==1) {
-					feeIns=orthoCase.FeeInsPrimary;
-				}
-				else {//At this point, if ordinal is not 1, it must be 2.
-					feeIns=orthoCase.FeeInsSecondary;
-				}
-				listClaimProcsToUpdate[i].InsEstTotalOverride=Math.Round(feeIns/orthoCase.Fee*procedure.ProcFeeTotal*100)/100;
-				//Need to update this in our list here as well.
-				listClaimProcs.Find(x => x.ClaimProcNum==listClaimProcsToUpdate[i].ClaimProcNum && x.InsSubNum==patPlan.InsSubNum)
-					.InsEstTotalOverride=listClaimProcsToUpdate[i].InsEstTotalOverride;
-				//If proc is a visit we may need to adjust the estimate so that estimates for all linked procs end up equalling orthoCase.FeeIns.
-				if(orthoProcLink.ProcLinkType==OrthoProcType.Visit && !CompareDouble.IsZero(listClaimProcsToUpdate[i].InsEstTotalOverride)) {
-					//Number of visits planned for the OrthoCase
-					int plannedVisitsCount=OrthoSchedules.CalculatePlannedVisitsCount(orthoSchedule.BandingAmount,orthoSchedule.DebondAmount
-					,orthoSchedule.VisitAmount,orthoCase.Fee);
-					//Number of visits completed for the OrthoCase
-					int visitCount=listOrthoProcLinksForCase.FindAll(x => x.ProcLinkType==OrthoProcType.Visit).Count;
-					//Sum of all InsEstTotalOverrides for a list claimprocs for procedures that have OrthoProcLinks, excluding the debond procedure.
-					List<long> listProcNumsNoDebond=listOrthoProcLinksForCase.FindAll(x=>x.ProcLinkType!=OrthoProcType.Debond).Select(x=>x.ProcNum).ToList();
-					List<ClaimProc> listClaimProcsForSum=listClaimProcs.FindAll(x=>listProcNumsNoDebond.Contains(x.ProcNum) && x.InsSubNum==patPlan.InsSubNum);
-					double sumClaimProcEstimates=listClaimProcsForSum.Sum(x => x.InsEstTotalOverride);
-					//Rounded to ensure that we have a dollar value to the nearest hundredth.
-					sumClaimProcEstimates=Math.Round(sumClaimProcEstimates*100)/100;
-					double insEstimateForDebond=Math.Round(feeIns/orthoCase.Fee*orthoSchedule.DebondAmount*100)/100;
-					//If the number of visits planned for the ortho case have been completed, and the sum of claimproc estimate overrides does not equal
-					//the orthoCase.FeeIns minus the estimate that will be applied to the claimproc for the debond proc, 
-					//adjust the current claimproc up or down accordingly so that all estimates will equal orthoCase.FeeIns.
-					if(visitCount>=plannedVisitsCount && !CompareDouble.IsEqual(sumClaimProcEstimates,feeIns-insEstimateForDebond)) {
-						listClaimProcsToUpdate[i].InsEstTotalOverride+=feeIns-(sumClaimProcEstimates+insEstimateForDebond);
+				//Determine which insurance fee estimate to use based on the plan's Ordinal.
+				double feeIns=(patPlan.Ordinal==1) ? orthoCase.FeeInsPrimary : orthoCase.FeeInsSecondary;
+				//Compute the insurance estimate override based on procedure and ortho case fees.
+				double insuranceCoverageRatio=feeIns/orthoCase.Fee;
+				double insPayForProc=insuranceCoverageRatio*procedure.ProcFeeTotal;
+				//TL;DR: If proc is a visit we may need to adjust the estimate so that estimates for all linked procs end up equalling FeeIns.
+				//Long version: If we have completed all the visits, then check to make sure the original amount quoted to the patient is the same
+				// as the number we're coming up with. The reason these might differ is because of rounding errors that (might) creep into our math
+				// due to running this code - and thus rounding - every time they complete a visit or make an adjustment to the ortho case. So we
+				// add up all the completed stuff (bonding, visits, etc.) and compare it's sum to the original price, and if we're off (usually by
+				// no more than a cent or 2), we just adjust this final calculation to make sure they all match/add-up.
+				if(orthoProcLink.ProcLinkType==OrthoProcType.Visit) {
+					//Get number of planned visits for the OrthoCase
+					int plannedVisitsCount=OrthoSchedules.CalculatePlannedVisitsCount(orthoSchedule.BandingAmount,orthoSchedule.DebondAmount,orthoSchedule.VisitAmount,orthoCase.Fee);
+					//Number of completed visits for the OrthoCase
+					int completedVisitsCount=listOrthoProcLinksForCase.FindAll(x => x.ProcLinkType==OrthoProcType.Visit).Count;
+					//If the number of visits planned for the ortho case have been completed and the sum of claimproc estimate overrides does not
+					// equal the adjusted FeeIns (FeeIns minus the estimate that will be applied to the claimproc for the debond proc), then adjust
+					// the current claimproc so that all estimates will equal FeeIns.
+					if(completedVisitsCount>=plannedVisitsCount) {
+						//Calculate the sum of insurance estimate overrides (InsEstTotalOverrides) for all linked procedures (excluding debond):
+						double sumClaimProcEstimates=listClaimProcsAll.FindAll(x=>x.InsSubNum==patPlan.InsSubNum && listOrthoProcLinksForCase.Any(y=>y.ProcNum==x.ProcNum && y.ProcLinkType!=OrthoProcType.Debond)).Sum(x=>x.InsEstTotalOverride);
+						//Get debond estimate for next calculation.
+						double insEstimateForDebond=insuranceCoverageRatio*orthoSchedule.DebondAmount;
+						//Do the adjustment
+						insPayForProc=feeIns-(sumClaimProcEstimates+insEstimateForDebond);
 					}
 				}
+				//Round amount since we're dealing with currency here
+				insPayForProc=Math.Round(insPayForProc,2,MidpointRounding.AwayFromZero);
+				//Update members/values in memory
+				listClaimProcsToUpdateFiltered[i].InsPayEst=insPayForProc;
+				listClaimProcsToUpdateFiltered[i].InsEstTotalOverride=insPayForProc;
+				claimProcCopy.InsPayEst=insPayForProc;
+				claimProcCopy.InsEstTotalOverride=insPayForProc;
 			}
 			if(saveToDb) {
+				//Update members/values in db
 				UpdateMany(listClaimProcsToUpdate);
 			}
+		}
+
+		private static void ZeroOutClaimProcOverrides(ClaimProc claimProc) {
+			claimProc.AllowedOverride=0;
+			claimProc.CopayOverride=0;
+			claimProc.DedEstOverride=0;
+			claimProc.PercentOverride=0;
+			claimProc.PaidOtherInsOverride=0;
+			claimProc.InsEstTotalOverride=0;
+			claimProc.WriteOffEstOverride=0;
+			claimProc.InsPayEst=0;
 		}
 		#endregion
 
@@ -3094,6 +3109,16 @@ namespace OpenDentBusiness{
 			}
 			command+=" ORDER BY ClaimProcNum"
 				+" LIMIT "+POut.Int(offset)+", "+POut.Int(limit);
+			return ClaimProcCrud.SelectMany(command);
+		}
+
+		///<summary>Gets a list of ClaimProcs attached to a specific ClaimPayment from the db. Returns an empty list if not found.</summary>
+		public static List<ClaimProc> GetClaimProcsForClaimPayment(long claimPaymentNum) {
+			if(RemotingClient.MiddleTierRole==MiddleTierRole.ClientMT) {
+				return Meth.GetObject<List<ClaimProc>>(MethodBase.GetCurrentMethod(),claimPaymentNum);
+			}
+			string command="SELECT * from claimproc"
+				+" WHERE ClaimPaymentNum="+POut.Long(claimPaymentNum);
 			return ClaimProcCrud.SelectMany(command);
 		}
 

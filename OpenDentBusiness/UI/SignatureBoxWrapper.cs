@@ -80,6 +80,8 @@ In the save click:
 
 In FormClosing:
 	signatureBoxWrapper?.SetTabletState(0);
+	//signatureBoxWrapper?.Dispose(); is not needed here but is needed wherever you do not have it placed on a form.
+	//    Example: when temporarily instantiating it for placing an image on a sheet.
 */
 	///<summary>See the notes at the top of this file. Must always be exactly 362x79.</summary>
 	public partial class SignatureBoxWrapper:UserControl {

@@ -685,23 +685,24 @@ namespace OpenDentBusiness {
 			return gitBranchName;
 		}
 
-		///<summary>Generates a string formatted as "(<TopLevelParent>) - <CustomerPatNum> - JobTitle".
-		///Used exclusively for Query Jobs (for now).</summary>
+		///<summary>Generates a string formatted as "(TopLevelParent) - [X]JobNum - PatNum - JobTitle". Used exclusively for Query Jobs (for now).</summary>
 		public static string GetQueryTitle(Job job) {
 			if(job==null) {
 				return "";
 			}
-			Job topParent=Jobs.GetOne(job.TopParentNum);
 			string topParentStr="";
-			if(topParent?.Category==JobCategory.Project) {
-				topParentStr=$"({ topParent.JobNum }) - ";
+			if(job.TopParentNum!=job.JobNum) {
+				Job topParent=Jobs.GetOne(job.TopParentNum);
+				if(topParent?.Category==JobCategory.Project) {
+					topParentStr=$"({ topParent.JobNum }) - ";
+				}
 			}
-			string patNumCustomer="No PatNum ";
+			string patNumCustomer="";
 			long customerNum=job.ListJobQuotes.Find(x=>x.JobNum==job.JobNum)?.PatNum??0;
 			if(customerNum>0) {
 				patNumCustomer=$"{ customerNum } - ";
 			}
-			return topParentStr+patNumCustomer+job.Title;
+			return topParentStr+patNumCustomer+job.ToString();
 		}
 
 		public class JobEmail {

@@ -34,13 +34,19 @@ namespace OpenDentBusiness {
 		///<summary>Pass this an old Procedure and an updated one. Links the Procedure to an OrthoCase if needed. Updates dates for the OrthoCase
 		///if the Procedure.ProcDate has changed for Procedures already linked. Returns the OrthoProcLink.<summary>
 		public static OrthoProcLink CreateOrUpdateOrthoProcLink(Procedure procedureOld,Procedure procedure) {
-			OrthoProcLink orthoProcLink=OrthoProcLinks.GetByProcNum(procedure.ProcNum);
+			OrthoProcLink orthoProcLink=null;
 			if(procedureOld.ProcStatus!=ProcStat.C && procedure.ProcStatus==ProcStat.C) {
+				//If procedure's status has changed from not-Complete to Completed, create new link to return...
 				OrthoCaseProcedureLinker orthoCaseProcedureLinker=CreateOneForPatient(procedure.PatNum);
 				orthoProcLink=orthoCaseProcedureLinker.LinkProcedureToActiveOrthoCaseIfNeeded(procedure);
 			}
-			else if(orthoProcLink!=null && procedureOld.ProcDate!=procedure.ProcDate) {
-				OrthoCases.UpdateDatesByLinkedProc(orthoProcLink,procedure);
+			if(orthoProcLink==null) {
+				//...otherwise grab existing link.
+				orthoProcLink=OrthoProcLinks.GetByProcNum(procedure.ProcNum);
+				if(orthoProcLink!=null && procedureOld.ProcDate!=procedure.ProcDate) {
+					//if existing link successfully found and the dates don't match: update the link before returning it.
+					OrthoCases.UpdateDatesByLinkedProc(orthoProcLink,procedure);
+				}
 			}
 			return orthoProcLink;
 		}

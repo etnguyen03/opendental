@@ -669,6 +669,8 @@ namespace OpenDentBusiness{
 				//case EnumPermType.EFormEdit:
 				case EnumPermType.EFormDelete:
 				//case EnumPermType.MobileNotification:
+				case EnumPermType.ChartViewsEdit:
+				//case EnumPermType.SuperFamilyDisband:
 				return false;//Does not have audit Trail if uncommented.
 			}
 			if(!PrefC.IsODHQ && enumPermType.In(

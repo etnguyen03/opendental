@@ -2076,6 +2076,9 @@ namespace OpenDental{
 		}
 
 		private void ToolButDisbandSuper_Click() {
+			if(!Security.IsAuthorized(EnumPermType.SuperFamilyDisband,false)) {
+				return;
+			}
 			if(_patient.SuperFamily==0) {
 				return;
 			}

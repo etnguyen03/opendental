@@ -166,7 +166,7 @@ namespace OpenDental.InternalTools.Job_Manager {
 				}
 			}
 			checkIsActive.Checked=job.ListJobActiveLinks.Exists(x => x.UserNum==Security.CurUser.UserNum && x.DateTimeEnd==DateTime.MinValue);
-			checkIsActive.Enabled=!job.PhaseCur.In(JobPhase.Cancelled,JobPhase.Complete,JobPhase.Documentation) && JobPermissions.IsAuthorized(JobPerm.Concept,true);
+			checkIsActive.Enabled=!job.PhaseCur.In(JobPhase.Cancelled,JobPhase.Complete) && (JobPermissions.IsAuthorized(JobPerm.Concept,true) || JobPermissions.HasQueryPermission());
 			Job parent=Jobs.GetOne(_jobCur.ParentNum);
 			textParent.Text=parent!=null?parent.JobNum.ToString():"";
 			textQuoteHours.Text=quote.Hours.ToString();
@@ -365,7 +365,7 @@ namespace OpenDental.InternalTools.Job_Manager {
 			gridRoles.ListGridRows.Add(CreateGridRowForRole("Definer/Expert",_jobCur.UserNumExpert));
 			gridRoles.ListGridRows.Add(CreateGridRowForRole("Writer/Engineer",_jobCur.UserNumEngineer));
 			gridRoles.ListGridRows.Add(CreateGridRowForRole("Submitter",_jobCur.UserNumConcept));
-			gridRoles.ListGridRows.Add(CreateGridRowForRole("Quoter/Estimater",_jobCur.UserNumQuoter));
+			gridRoles.ListGridRows.Add(CreateGridRowForRole("Quoter/Estimator",_jobCur.UserNumQuoter));
 			gridRoles.ListGridRows.Add(CreateGridRowForRole("Apprv Quote/Estimate",_jobCur.UserNumCustContact));
 			gridRoles.ListGridRows.Add(CreateGridRowForRole("Reviewer",_jobCur.UserNumTester));
 			gridRoles.ListGridRows.Add(CreateGridRowForRole("Documenter",_jobCur.UserNumDocumenter));
@@ -607,7 +607,7 @@ namespace OpenDental.InternalTools.Job_Manager {
 			comboPriority.Enabled=false;
 			butParentPick.Visible=false;
 			butParentRemove.Visible=false;
-			gridQuotes.HasAddButton=JobPermissions.IsAuthorized(JobPerm.Quote,true)
+			gridQuotes.HasAddButton=(JobPermissions.IsAuthorized(JobPerm.Quote,true) || JobPermissions.HasQueryPermission(JobPerm.QueryCoordinator))
 				&& _jobOld?.PhaseCur!=JobPhase.Complete && _jobOld?.PhaseCur!=JobPhase.Cancelled;
 			if(_jobCur==null) {
 				return;
@@ -649,6 +649,8 @@ namespace OpenDental.InternalTools.Job_Manager {
 					butParentRemove.Visible=true;
 					break;
 				case JobPhase.Documentation:
+					comboPriority.Enabled=true;
+					break;
 				case JobPhase.Complete:
 				case JobPhase.Cancelled:
 					break;
@@ -760,7 +762,7 @@ namespace OpenDental.InternalTools.Job_Manager {
 			actionMenu.MenuItems.Add(new MenuItem((_jobCur.UserNumEngineer==0 ? "A" : "Rea")+"ssign Engineer",actionMenu_AssignEngineerClick) { Enabled=perm||JobPermissions.IsAuthorized(JobPerm.QueryCoordinator,true) });
 			actionMenu.MenuItems.Add(new MenuItem((_jobCur.UserNumTester==0 ? "A" : "Rea")+"ssign Reviewer",actionMenu_AssignReviewerClick) { Enabled=perm||JobPermissions.IsAuthorized(JobPerm.QueryCoordinator,true) });
 			actionMenu.MenuItems.Add(new MenuItem("Send back to Quote",actionMenu_RequestQuoteClick) { Enabled=perm });
-			actionMenu.MenuItems.Add(new MenuItem("Send to Documentation",actionMenu_AssignDocumenterClick) { Enabled=perm });
+			actionMenu.MenuItems.Add(new MenuItem("Send to Documentation",actionMenu_SendToDocumentation_Click) { Enabled=perm });
 			if(_jobCur.IsApprovalNeeded) {
 				actionMenu.MenuItems.Add(new MenuItem("Mark as In-Review",actionMenu_AssignReviewerClick) { Enabled=perm });
 			}
@@ -966,7 +968,7 @@ namespace OpenDental.InternalTools.Job_Manager {
 				return;
 			}
 			long userNumDocumenter=_jobCur.UserNumDocumenter;
-			if(userNumDocumenter==0 && PickUserByJobPermission("Pick Documenter", JobPerm.QueryCoordinator, out userNumDocumenter, _jobCur.UserNumDocumenter, JobPermissions.IsAuthorized(JobPerm.QueryCoordinator,true,Security.CurUser.UserNum), false)) {
+			if(!PickUserByJobPermission("Pick Documenter", JobPerm.QueryCoordinator, out userNumDocumenter, _jobCur.UserNumDocumenter, JobPermissions.IsAuthorized(JobPerm.QueryCoordinator,true,Security.CurUser.UserNum), false)) {
 				return;
 			}
 			_jobCur.UserNumDocumenter=userNumDocumenter;
@@ -1738,7 +1740,8 @@ namespace OpenDental.InternalTools.Job_Manager {
 			if(!JobPermissions.IsAuthorized(JobPerm.Concept,true)
 				&& !JobPermissions.IsAuthorized(JobPerm.NotifyCustomer,true)
 				&& !JobPermissions.IsAuthorized(JobPerm.FeatureManager,true)
-				&& !JobPermissions.IsAuthorized(JobPerm.Documentation,true))
+				&& !JobPermissions.IsAuthorized(JobPerm.Documentation,true)
+				&& !JobPermissions.HasQueryPermission())
 			{
 				return;
 			}

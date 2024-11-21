@@ -9,6 +9,8 @@ using OpenDental.UI;
 using OpenDentBusiness;
 using CodeBase;
 using System.Collections.Generic;
+using OpenDental.Thinfinity;
+using System.Linq;
 
 namespace OpenDental{
 	/// <summary>By default, shows all active accounts. Can be found at Manage->Accounting.</summary>
@@ -79,7 +81,8 @@ namespace OpenDental{
 			ToolBarMain.Buttons.Clear();
 			ToolBarMain.Buttons.Add(new ODToolBarButton(Lan.g(this,"Add"),EnumIcons.Add,"","Add"));
 			ToolBarMain.Buttons.Add(new ODToolBarButton(Lan.g(this,"Edit"),1,Lan.g(this,"Edit Selected Account"),"Edit"));
-			ToolBarMain.Buttons.Add(new ODToolBarButton(Lan.g(this,"Export"),2,Lan.g(this,"Export the Chart of Accounts"),"Export"));
+			ToolBarMain.Buttons.Add(new ODToolBarButton(Lan.g(this,"Export .txt"),2,Lan.g(this,"Export the Chart of Accounts as a tab delimited .txt file"),"Export .txt"));
+			ToolBarMain.Buttons.Add(new ODToolBarButton(Lan.g(this,"Export .csv"),2,Lan.g(this,"Export the Chart of Accounts as a comma delimited .csv file"),"Export .csv"));
 		}
 		private void menuItemLock_Click(object sender,EventArgs e) {
 			if(!Security.IsAuthorized(EnumPermType.SecurityAdmin)) {
@@ -115,8 +118,11 @@ namespace OpenDental{
 				case "Edit":
 					Edit_Click();
 					break;
-				case "Export":
-					Export_Click();
+				case "Export .txt":
+					Export_Click("\t");
+					break;
+				case "Export .csv":
+					Export_Click(",");
 					break;
 			}
 		}
@@ -194,12 +200,124 @@ namespace OpenDental{
 			}
 		}
 
-		private void Export_Click() {
-			gridMain.Export(gridMain.Title);
-			//string msg=gridMain.Export(null,new List<Tuple<string,string>>() { Tuple.Create(labelDate.Text,PIn.Date(textDate.Text).ToShortDateString()) });
-			//if(!string.IsNullOrEmpty(msg)) {
-			//	MsgBox.Show(this,msg);
-			//}
+		///<summary>Takes in either a comma or tab delimiter to determine if the export should be .csv or .txt. Passing in a comma is for .csv and passing in a tab is for .txt.</summary>
+		private void Export_Click(string delimiter) {
+			if(gridMain.ListGridRows.Count==0) {
+				MessageBox.Show(Lan.g(this,"Nothing to export"));
+				return;
+			}
+			string filePath;
+			if(!ODBuild.IsThinfinity() && ODCloudClient.IsAppStream) {
+				filePath=ODFileUtils.CombinePaths(Path.GetTempPath(),"ODAccountExport.xls");
+			}
+			else {
+				saveFileDialog=new SaveFileDialog();
+				saveFileDialog.AddExtension=true;
+				saveFileDialog.FilterIndex=0;
+				if(delimiter=="\t") {
+					saveFileDialog.Filter="Text files(*.txt)|*.txt|All files(*.*)|*.*";
+				}
+				else {
+					saveFileDialog.Filter="CSV files(*.csv)|*.csv|All files(*.*)|*.*";
+				}
+				saveFileDialog.FileName=gridMain.Title;
+				if(ODEnvironment.IsCloudServer) {
+					if(saveFileDialog.ShowDialog()!=DialogResult.OK) { 
+						return;
+					}
+					if(saveFileDialog.FileName.IsNullOrEmpty()) {
+						MsgBox.Show("Failed to save the file.");
+						return;
+					}
+					filePath=ODFileUtils.CombinePaths(Path.GetTempPath(),saveFileDialog.FileName.Split('\\').Last());
+				}
+				else {
+					Cursor=Cursors.WaitCursor;//Checking the directory can take time, so set cursor to loading wheel
+					if(!Directory.Exists(PrefC.GetString(PrefName.ExportPath))) {
+						try {
+							Directory.CreateDirectory(PrefC.GetString(PrefName.ExportPath));
+							saveFileDialog.InitialDirectory=PrefC.GetString(PrefName.ExportPath);
+						}
+						catch {
+							//initialDirectory will be blank
+						}
+					}
+					else{
+						saveFileDialog.InitialDirectory=PrefC.GetString(PrefName.ExportPath);
+					}
+					Cursor=Cursors.Default;
+					if(saveFileDialog.ShowDialog()!=DialogResult.OK) {
+						saveFileDialog.Dispose();
+						return;
+					}
+					filePath=saveFileDialog.FileName;
+					saveFileDialog.Dispose();
+				}
+			}
+			StreamWriter streamWriter=null;
+			try {
+				streamWriter=new StreamWriter(filePath,false);
+			}
+			catch {
+				MessageBox.Show(Lan.g(this,"File in use by another program.  Close and try again."));
+				return;
+			}
+			String line="";
+			for(int i=0;i<gridMain.Columns.Count;i++) {
+				string columnCaption=gridMain.Columns[i].Heading;
+				//Check for columns that start with special characters that spreadsheet programs treat differently than simply displaying them.
+				if(columnCaption.StartsWith("-") || columnCaption.StartsWith("=")) {
+					//Adding a space to the beginning of the cell will trick the spreadsheet program into not treating it uniquely.
+					columnCaption=" "+columnCaption;
+				}
+				line+=columnCaption;
+				if(i<gridMain.Columns.Count-1) {
+					line+=delimiter;
+				}
+			}
+			try {
+				streamWriter.WriteLine(line);
+			}
+			catch {
+				MessageBox.Show(Lan.g(this,"File in use by another program.  Close and try again."));
+				return;
+			}
+			string cell;
+			for(int i=0;i<gridMain.ListGridRows.Count;i++) {
+				line="";
+				for(int j=0;j<gridMain.Columns.Count;j++) {
+					cell=gridMain.ListGridRows[i].Cells[j].Text;
+					cell=cell.Replace("\r","");
+					cell=cell.Replace("\n","");
+					cell=cell.Replace("\t","");
+					cell=cell.Replace("\"","");
+					if(delimiter=="," && cell.Contains(",")) {
+						cell='"'+cell+'"';//Surround with quotes so Excel does not split into two cells
+					}
+					line+=cell;
+					if(j<gridMain.Columns.Count-1) {
+						line+=delimiter;
+					}
+				}
+				try {
+					streamWriter.WriteLine(line);
+				}
+				catch {
+					MessageBox.Show(Lan.g(this,"File in use by another program.  Close and try again."));
+					return;
+				}
+			}
+			streamWriter.Close();
+			streamWriter.Dispose();
+			if(ODBuild.IsThinfinity()) {
+				ThinfinityUtils.ExportForDownload(filePath);
+			}
+			else if(ODCloudClient.IsAppStream) {
+				CloudClientL.ExportForCloud(filePath);
+			}
+			else {
+				MessageBox.Show(Lan.g(this,"File created successfully"));
+			}
 		}
 
 		private void gridMain_CellDoubleClick(object sender,ODGridClickEventArgs e) {

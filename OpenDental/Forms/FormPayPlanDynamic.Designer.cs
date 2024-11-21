@@ -98,6 +98,7 @@ namespace OpenDental {
 			this.label2 = new System.Windows.Forms.Label();
 			this.tabControl1 = new OpenDental.UI.TabControl();
 			this.tabSchedule = new OpenDental.UI.TabPage();
+			this.butAddCharge = new OpenDental.UI.Button();
 			this.checkUngrouped = new OpenDental.UI.CheckBox();
 			this.textBalanceSum = new OpenDental.ValidDouble();
 			this.checkExcludePast = new OpenDental.UI.CheckBox();
@@ -120,7 +121,6 @@ namespace OpenDental {
 			this.butSendToDevice = new OpenDental.UI.Button();
 			this.warningIntegrity1 = new OpenDental.UI.WarningIntegrity();
 			this.textNote = new OpenDental.ODtextBox();
-			this.butAddCharge = new OpenDental.UI.Button();
 			this.groupTerms.SuspendLayout();
 			this.groupTreatmentPlanned.SuspendLayout();
 			this.groupBoxFrequency.SuspendLayout();
@@ -364,9 +364,9 @@ namespace OpenDental {
 			// 
 			this.groupTreatmentPlanned.Controls.Add(this.radioTpTreatAsComplete);
 			this.groupTreatmentPlanned.Controls.Add(this.radioTpAwaitComplete);
-			this.groupTreatmentPlanned.Location = new System.Drawing.Point(193, 210);
+			this.groupTreatmentPlanned.Location = new System.Drawing.Point(161, 210);
 			this.groupTreatmentPlanned.Name = "groupTreatmentPlanned";
-			this.groupTreatmentPlanned.Size = new System.Drawing.Size(161, 110);
+			this.groupTreatmentPlanned.Size = new System.Drawing.Size(193, 110);
 			this.groupTreatmentPlanned.TabIndex = 202;
 			this.groupTreatmentPlanned.Text = "Handle Treatment Planned";
 			// 
@@ -374,17 +374,17 @@ namespace OpenDental {
 			// 
 			this.radioTpTreatAsComplete.Location = new System.Drawing.Point(6, 54);
 			this.radioTpTreatAsComplete.Name = "radioTpTreatAsComplete";
-			this.radioTpTreatAsComplete.Size = new System.Drawing.Size(148, 32);
+			this.radioTpTreatAsComplete.Size = new System.Drawing.Size(184, 32);
 			this.radioTpTreatAsComplete.TabIndex = 1;
 			this.radioTpTreatAsComplete.TabStop = true;
-			this.radioTpTreatAsComplete.Text = "Procedure as complete";
+			this.radioTpTreatAsComplete.Text = "Treat procedure as complete";
 			this.radioTpTreatAsComplete.UseVisualStyleBackColor = true;
 			// 
 			// radioTpAwaitComplete
 			// 
 			this.radioTpAwaitComplete.Location = new System.Drawing.Point(7, 20);
 			this.radioTpAwaitComplete.Name = "radioTpAwaitComplete";
-			this.radioTpAwaitComplete.Size = new System.Drawing.Size(147, 35);
+			this.radioTpAwaitComplete.Size = new System.Drawing.Size(183, 35);
 			this.radioTpAwaitComplete.TabIndex = 0;
 			this.radioTpAwaitComplete.TabStop = true;
 			this.radioTpAwaitComplete.Text = "Await procedure completion";
@@ -487,7 +487,7 @@ namespace OpenDental {
 			this.groupBoxFrequency.Controls.Add(this.radioWeekly);
 			this.groupBoxFrequency.Location = new System.Drawing.Point(8, 210);
 			this.groupBoxFrequency.Name = "groupBoxFrequency";
-			this.groupBoxFrequency.Size = new System.Drawing.Size(181, 110);
+			this.groupBoxFrequency.Size = new System.Drawing.Size(150, 110);
 			this.groupBoxFrequency.TabIndex = 9;
 			this.groupBoxFrequency.Text = "Charge Frequency";
 			// 
@@ -516,7 +516,7 @@ namespace OpenDental {
 			// 
 			this.radioOrdinalWeekday.Location = new System.Drawing.Point(5, 51);
 			this.radioOrdinalWeekday.Name = "radioOrdinalWeekday";
-			this.radioOrdinalWeekday.Size = new System.Drawing.Size(174, 19);
+			this.radioOrdinalWeekday.Size = new System.Drawing.Size(142, 19);
 			this.radioOrdinalWeekday.TabIndex = 2;
 			this.radioOrdinalWeekday.TabStop = true;
 			this.radioOrdinalWeekday.Text = "Specific day of month";
@@ -526,7 +526,7 @@ namespace OpenDental {
 			// 
 			this.radioEveryOtherWeek.Location = new System.Drawing.Point(5, 33);
 			this.radioEveryOtherWeek.Name = "radioEveryOtherWeek";
-			this.radioEveryOtherWeek.Size = new System.Drawing.Size(156, 19);
+			this.radioEveryOtherWeek.Size = new System.Drawing.Size(130, 19);
 			this.radioEveryOtherWeek.TabIndex = 1;
 			this.radioEveryOtherWeek.TabStop = true;
 			this.radioEveryOtherWeek.Text = "Every other week";
@@ -817,6 +817,19 @@ namespace OpenDental {
 			this.tabSchedule.Tag = "gridCharges[OpenDental.UI.ODGrid]";
 			this.tabSchedule.Text = "Schedule";
 			// 
+			// butAddCharge
+			// 
+			this.butAddCharge.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+			this.butAddCharge.Icon = OpenDental.UI.EnumIcons.Add;
+			this.butAddCharge.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			this.butAddCharge.Location = new System.Drawing.Point(576, 463);
+			this.butAddCharge.Name = "butAddCharge";
+			this.butAddCharge.Size = new System.Drawing.Size(73, 22);
+			this.butAddCharge.TabIndex = 201;
+			this.butAddCharge.Text = "Add";
+			this.butAddCharge.Visible = false;
+			this.butAddCharge.Click += new System.EventHandler(this.butAddCharge_Click);
+			// 
 			// checkUngrouped
 			// 
 			this.checkUngrouped.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
@@ -1074,19 +1087,6 @@ namespace OpenDental {
 			this.textNote.TabIndex = 3;
 			this.textNote.TabStop = false;
 			this.textNote.Text = "";
-			// 
-			// butAddCharge
-			// 
-			this.butAddCharge.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-			this.butAddCharge.Icon = OpenDental.UI.EnumIcons.Add;
-			this.butAddCharge.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			this.butAddCharge.Location = new System.Drawing.Point(576, 463);
-			this.butAddCharge.Name = "butAddCharge";
-			this.butAddCharge.Size = new System.Drawing.Size(73, 22);
-			this.butAddCharge.TabIndex = 201;
-			this.butAddCharge.Text = "Add";
-			this.butAddCharge.Visible = false;
-			this.butAddCharge.Click += new System.EventHandler(this.butAddCharge_Click);
 			// 
 			// FormPayPlanDynamic
 			// 

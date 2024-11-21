@@ -3409,6 +3409,7 @@ namespace OpenDentBusiness {
 			BlueBookEstimateData blueBookEstimateData=null,
 			List<long> listApptNums=null) 
 		{
+			Meth.NoCheckMiddleTierRole();
 			if(PrefC.GetBool(PrefName.EnterpriseHygProcUsePriProvFee) && ProcedureCodes.GetProcCode(proc.CodeNum).IsHygiene) {
 				if(listApptNums==null) {
 					listApptNums=new List<long>();
@@ -3430,7 +3431,6 @@ namespace OpenDentBusiness {
 					}
 				}
 			}
-			Meth.NoCheckMiddleTierRole();
 			//If an orthoCase or an orthProcLink was passed in with the other orthocase related data left null, we must get that data.
 			if(orthoProcLink!=null || orthoCase!=null) {
 				long orthoCaseNum=0;

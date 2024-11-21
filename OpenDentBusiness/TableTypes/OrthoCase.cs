@@ -4,7 +4,7 @@ using System.ComponentModel;
 
 namespace OpenDentBusiness{
 
-	///<summary>A central table for all accural systems. </summary>
+	///<summary>Holds financial and timing information for a single ortho case. For procs linked to Orthocases, estimates are calculated based off of orthocase info, not insurance info. The orthocase numbers are automatically placed into InsPayEst and InsEstTotalOverride in Procedures.ComputeEstimates(), taking control from insurance. Procedure fees are calculated based on orthocase info, not fee schedules. All overrides (fees and insurance) are performed when the procedure is set complete.</summary>
 	[Serializable]
 	public class OrthoCase:TableBase {
 		///<summary>Primary key</summary>

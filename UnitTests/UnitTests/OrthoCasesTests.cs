@@ -283,7 +283,52 @@ namespace UnitTests.OrthoCases_Tests {
 			Assert.AreEqual(visitClaimProc.WriteOffEstOverride,0);
 			Assert.AreEqual(visitClaimProc.InsEstTotalOverride,36);
 		}
-	}
+	
+		///<summary>Make Sure that ClaimProc overrides for OrthoCase visits that need to be adjusted are set correctly</summary>
+		[TestMethod]
+		public void ClaimProcs_ComputeEstimatesByOrthoCase_AdjustVisitsCorrectly() {
+			Prefs.UpdateString(PrefName.OrthoBandingCodes,"D8080");
+			Prefs.UpdateString(PrefName.OrthoDebondCodes,"D8070");
+			Prefs.UpdateString(PrefName.OrthoVisitCodes,"D8060");
+			Patient pat=PatientT.CreatePatient(MethodBase.GetCurrentMethod().Name);
+			PatPlan patPlan=PatPlanT.CreatePatPlan(1,pat.PatNum,0);
+			Procedure bandingProc=ProcedureT.CreateProcedure(pat,"D8080",ProcStat.C,"",0);
+			Procedure visitProc1=ProcedureT.CreateProcedure(pat,"D8060",ProcStat.C,"",0);
+			Procedure visitProc2=ProcedureT.CreateProcedure(pat,"D8060",ProcStat.C,"",0);
+			Procedure visitProc3=ProcedureT.CreateProcedure(pat,"D8060",ProcStat.C,"",0);
+			Procedure debondProc=ProcedureT.CreateProcedure(pat,"D8070",ProcStat.C,"",0);
+			//Should result in one visit for 27 (ins 13.50), one adjusted down to 23 (ins 11.50), and one for 0 (ins 0).
+			long orthoCaseNum=OrthoCaseT.CreateOrthoCase(pat.PatNum,200,100,0,100,DateTime.Today,false,DateTime.Today.AddMonths(12),100,50,27,bandingProc);
+			OrthoCase orthoCase=OrthoCases.GetOne(orthoCaseNum);
+			OrthoPlanLink schedulePlanLink=OrthoPlanLinks.GetOneForOrthoCaseByType(orthoCaseNum,OrthoPlanLinkType.OrthoSchedule);
+			OrthoSchedule orthoSchedule=OrthoSchedules.GetOne(schedulePlanLink.FKey);
+			OrthoCaseProcedureLinker orthoCaseProcedureLinker=OrthoCaseProcedureLinker.CreateOneForPatient(pat.PatNum);
+			List<Procedure> listAllProcs=new List<Procedure>(){bandingProc,visitProc1,visitProc2,visitProc3,debondProc };
+			List<OrthoProcLink> listAllOrthoProcLinks=new List<OrthoProcLink>();
+			List<ClaimProc> listAllClaimProcs=new List<ClaimProc>();
+			for(int i=0;i<listAllProcs.Count;i++) {
+				Procedure proc=listAllProcs[i];
+				ClaimProc claimProc=ClaimProcT.CreateClaimProc(pat.PatNum,proc.ProcNum,0,0,proc.ProcDate,1,1,1);
+				listAllClaimProcs.Add(claimProc);
+				OrthoProcLink link=orthoCaseProcedureLinker.LinkProcedureToActiveOrthoCaseIfNeeded(proc);
+				listAllOrthoProcLinks.Add(link);
+				ClaimProcs.ComputeEstimatesByOrthoCase(proc,link,orthoCase,orthoSchedule,true,listAllClaimProcs,
+					new List<ClaimProc>{ claimProc },new List<PatPlan>{patPlan},listAllOrthoProcLinks);
+			}
+			ClaimProc claimProcToAssert=ClaimProcs.GetOneClaimProc(listAllClaimProcs[0].ClaimProcNum);
+			Assert.AreEqual(50, claimProcToAssert.InsEstTotalOverride);
+			claimProcToAssert=ClaimProcs.GetOneClaimProc(listAllClaimProcs[1].ClaimProcNum);
+			Assert.AreEqual(13.5, claimProcToAssert.InsEstTotalOverride);
+			claimProcToAssert=ClaimProcs.GetOneClaimProc(listAllClaimProcs[2].ClaimProcNum);
+			Assert.AreEqual(11.5, claimProcToAssert.InsEstTotalOverride);
+			claimProcToAssert=ClaimProcs.GetOneClaimProc(listAllClaimProcs[3].ClaimProcNum);
+			Assert.AreEqual(0, claimProcToAssert.InsEstTotalOverride);
+			claimProcToAssert=ClaimProcs.GetOneClaimProc(listAllClaimProcs[4].ClaimProcNum);
+			Assert.AreEqual(25, claimProcToAssert.InsEstTotalOverride);
+		}
+	} 
 }
+	
+
 
 

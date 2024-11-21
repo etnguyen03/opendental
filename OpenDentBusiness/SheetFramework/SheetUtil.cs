@@ -168,6 +168,10 @@ namespace OpenDentBusiness{
 				{
 					continue;
 				}
+				//Everything below here is either:
+				//1.To expand any field.
+				//or 2. To shrink one of the six fieldNames listed above.
+				//Critically, any shrinking of most fields has been skipped.
 				int heightOld=field.Height;
 				int amountOfGrowth=calcH-field.Height;
 				field.Height=calcH;
@@ -672,7 +676,7 @@ namespace OpenDentBusiness{
 			affectedFields.ForEach(field => field.YPos+=amountOfGrowth);
 		}
 
-		///<summary>When a sheet field shrinks, we need to move all fields below it up to fill the gap that was left. fieldToRemove.Height should be manipulated to the new and desired height before calling this method heightOld needs to be the height of fieldToRemove BEFORE manipulating it's Height property due to the shrink.</summary>
+		///<summary>When a sheet field shrinks, we need to move all fields below it up to fill the gap that was left. fieldToRemove.Height should be manipulated to the new and desired height before calling this method heightOld needs to be the height of fieldToRemove BEFORE manipulating its Height property due to the shrink.</summary>
 		public static void MoveAllUpBelowThis(Sheet sheet,SheetField sheetFieldToRemove,int heightOld) {
 			//We only want to move fields up as much as needed.
 			//If there is a field on the same horizontal plane, then nothing needs to move.
@@ -956,7 +960,7 @@ namespace OpenDentBusiness{
 			return odGrid.SheetPrintHeight;
 		}
 
-		///<summary>Recursive.  Only for text sheet fields.</summary>
+		///<summary>Recursive.  Only for StaticText, OutputText, and InputField. Calculates if a field would spill across the lower border of a page. If so, it creates a second field and splits text between the two. It then sets the height of the first field to be shorter, sets the second field to be the right length, and sets the y pos of the second field to the top of the next page. The second field does not get added to the database.</summary>
 		private static void CalculateHeightsPageBreakForText(SheetField field,Sheet sheet) {
 			FontStyle fontstyle=FontStyle.Regular;
 			if(field.FontIsBold) {
@@ -964,12 +968,13 @@ namespace OpenDentBusiness{
 			}
 			Font font=new Font(field.FontName,field.FontSize,fontstyle);
 			int bottomCurPage=SheetPrinting.BottomCurPage(field.YPos,sheet,out int pageCount);
-			int textBoxHeight=bottomCurPage-field.YPos;//the max height that the new text box can be in order to fit on the current page.
-			HeightAndChars heightAndChars=GraphicsHelper.MeasureStringH(field.FieldValue,font,field.Width,textBoxHeight,field.TextAlign);
-			//adjust the height of the text box to accomodate PDFs if the field has a growth behavior other than None
+			int heightMaxToFit=bottomCurPage-field.YPos;//the max height that the new text box can be in order to fit on the current page.
+			int heightCalculated=GraphicsHelper.MeasureStringH(field.FieldValue,font,field.Width,heightMaxToFit,field.TextAlign).Height;
+			//Adjust the height of the text box if the field has a growth behavior other than None
 			//If "field.Height < calcH" is ever removed then MoveAllUpBelowThis() would need to be considered below.
-			if(field.GrowthBehavior!=GrowthBehaviorEnum.None && field.Height < heightAndChars.Height) {
-				int amtGrowth=heightAndChars.Height-field.Height;
+			if(field.GrowthBehavior!=GrowthBehaviorEnum.None && field.Height < heightCalculated) {//there is more text than will fit in current field height
+				//make the field bigger
+				int amtGrowth=heightCalculated-field.Height;
 				field.Height+=amtGrowth;
 				if(field.GrowthBehavior==GrowthBehaviorEnum.DownLocal) {
 					MoveAllDownWhichIntersect(sheet,field,amtGrowth);
@@ -986,23 +991,19 @@ namespace OpenDentBusiness{
 			if(field.YPos+field.Height<=bottomCurPage) {
 				return;
 			}
-			//field extends beyond the bottom of the current page, so we will split the text box in between lines, not through the middle of text
-			//if the height of one line is greater than the printable height of the page, don't try to split between lines (only for huge fonts)
-			if(font.Height+2 > (sheet.HeightPage-60-topMargin) || field.FieldValue.Length==0) {
+			//Field extends beyond the bottom of the current page, so we will split the text box in between lines, not through the middle of text.
+			int bottomMargin=60;
+			if(font.Height+2 > (sheet.HeightPage-bottomMargin-topMargin) || field.FieldValue.Length==0) {
+				//This tests an extreme edge case where the font is bigger than the entire page.
 				return;
 			}
-			textBoxHeight-=textBoxHeight%font.Height;
-			//example:29%14=1. Subtracting 1 makes it integer multiple height.
-			//Any Remaining height will carry over to the next page.
-			//g.MeasureString() overestimates the number of characters that fit when the height allows for a non-integer number of lines.
-			//figure out how many lines of text will fit on the current page
-			heightAndChars=GraphicsHelper.MeasureStringH(field.FieldValue,font,field.Width,textBoxHeight,field.TextAlign);
+			//Calculate how many characters we can fit before the page break
+			int charsCalculated=GraphicsHelper.MeasureStringH(field.FieldValue,font,field.Width,heightMaxToFit,field.TextAlign).Chars;
 			//if no lines of text will fit on current page or textboxClip's height is smaller than one line, move the entire text box to the next page
-			if(heightAndChars.Chars==0 || textBoxHeight < (font.Height+2)) {
+			//We use (heightMaxToFit*0.96f) so that we have a conservative approach to how much room is left similar to MeasureStringH().
+			if(charsCalculated==0 || (heightMaxToFit*0.96f) < (font.Height+2)) {
 				int moveAmount=bottomCurPage+1-field.YPos;
-				field.Height+=moveAmount;
 				MoveAllDownWhichIntersect(sheet,field,moveAmount);
-				field.Height-=moveAmount;
 				field.YPos+=moveAmount;
 				//recursive call
 				CalculateHeightsPageBreakForText(field,sheet);
@@ -1011,16 +1012,27 @@ namespace OpenDentBusiness{
 			//get ready to copy text from the current field to a copy of the field that will be moved down.
 			SheetField fieldNew;
 			fieldNew=field.Copy();
-			field.Height=heightAndChars.Height;
-			fieldNew.Height-=heightAndChars.Height;//reduce the size of the new text box by the height of the text removed
-			fieldNew.YPos+=heightAndChars.Height;//move the new field down the amount of the removed text to maintain the distance between all fields below
-			fieldNew.FieldValue=field.FieldValue.Substring(heightAndChars.Chars);
-			field.FieldValue=field.FieldValue.Substring(0,heightAndChars.Chars);
-			int moveAmountNew=bottomCurPage+1-fieldNew.YPos;
-			fieldNew.Height+=moveAmountNew;
-			MoveAllDownWhichIntersect(sheet,fieldNew,moveAmountNew);
-			fieldNew.Height-=moveAmountNew;
-			fieldNew.YPos+=moveAmountNew;
+			fieldNew.FieldValue=field.FieldValue.Substring(charsCalculated);//new field has the "end" of the old field text.
+			field.FieldValue=field.FieldValue.Substring(0,charsCalculated);//original field gets the "first" part of the field text.
+			//The top field after the split will be the remaining length on the page, so after the split, the combined heights will be
+			//larger than the original field height, so get the original for later reference.
+			int heightFieldBeforeSplit=field.Height;
+			field.Height=heightCalculated;
+			//Use int.MaxValue for the heightAvail so that there is no restrictions.  We just need the height.  We'll deal with whether or not it fits on the next recursive iteration.
+			fieldNew.Height=GraphicsHelper.MeasureStringH(fieldNew.FieldValue,font,field.Width,int.MaxValue,field.TextAlign).Height;
+			fieldNew.YPos+=heightCalculated;//move the new field down the amount of the height of the field above the page break to maintain the distance between all fields below
+			//We must calculate the additional height that is used now that they are split
+			int heightCombinedFieldsAfterSplit=fieldNew.Height+field.Height;
+			int heightGrowthAfterSplit=heightCombinedFieldsAfterSplit-heightFieldBeforeSplit;
+			//MoveAllDownWhichIntersect() takes in the field prior to growth, so it is expecting that the bottom of fieldNew is the same as the bottom of the original unsplit field.
+			//That means that the height growth isn't expected to be included in the fieldNew's height yet, so subtract for now and add back after
+			fieldNew.Height-=heightGrowthAfterSplit;
+			//The amountOfGrowth parameter for MoveAllDownWhichIntersect(), should include the extra height of the new field, and also plus 1 to account for the field's YPos moving
+			//from the bottom of the above page to the top of the below page
+			MoveAllDownWhichIntersect(sheet,fieldNew,heightGrowthAfterSplit+1);
+			fieldNew.Height+=heightGrowthAfterSplit;
+			//Add 1 to account for the field's YPos moving from the bottom of the above page to the top of the below page
+			fieldNew.YPos+=1;
 			sheet.SheetFields.Add(fieldNew);
 			//recursive call
 			CalculateHeightsPageBreakForText(fieldNew,sheet);

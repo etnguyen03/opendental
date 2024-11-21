@@ -252,7 +252,7 @@ namespace OpenDental {
 		}
 
 		private void butChartViewAdd_Click(object sender,EventArgs e) {
-			if(!Security.IsAuthorized(EnumPermType.Setup)) {
+			if(!Security.IsAuthorized(EnumPermType.ChartViewsEdit)) {
 				return;
 			}
 			int selectedIndex=gridChartViews.GetSelectedIndex();
@@ -341,7 +341,7 @@ namespace OpenDental {
 		}
 
 		private void MoveChartView(Direction direction) {
-			if(!Security.IsAuthorized(EnumPermType.Setup)) {
+			if(!Security.IsAuthorized(EnumPermType.ChartViewsEdit)) {
 				return;
 			}
 			if(gridChartViews.SelectedIndices.Length==0) {
@@ -467,7 +467,7 @@ namespace OpenDental {
 		}
 
 		private void ChartViewsDoubleClicked(ODGridClickEventArgs e) {
-			if(!Security.IsAuthorized(EnumPermType.Setup)) {
+			if(!Security.IsAuthorized(EnumPermType.ChartViewsEdit)) {
 				return;
 			}
 			using FormChartView formChartView=new FormChartView();

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using CodeBase;
+using OpenDental.InternalTools.Job_Manager;
 using OpenDental.UI;
 using OpenDentBusiness;
 
@@ -342,9 +343,16 @@ namespace OpenDental {
 			FillActiveTabGrid();
 		}
 
-		private void menuGoToAccountQueries_Click(object sender,EventArgs e) {
+		private void menuGoToChartQueries_Click(object sender,EventArgs e) {
 			try {
-				GlobalFormOpenDental.GoToModule(EnumModuleType.Chart,patNum:((Job)gridQueries.ListGridRows[gridQueries.SelectedIndices[0]].Tag).ListJobQuotes[0].PatNum);
+				long patNum;
+				if(((MenuItem)sender).Tag is Job job) {
+					patNum=job.ListJobQuotes[0].PatNum;
+				}
+				else {
+					patNum=((Job)gridQueries.ListGridRows[gridQueries.SelectedIndices[0]].Tag).ListJobQuotes[0].PatNum;
+				}
+				GlobalFormOpenDental.GoToModule(EnumModuleType.Chart,patNum:patNum);
 			}
 			catch(Exception ex) {
 				MsgBox.Show(this, "Please select a job.");
@@ -899,7 +907,21 @@ namespace OpenDental {
 					&& (string.IsNullOrEmpty(textVersionText.Text) || x.JobVersion.ToLower().Contains(textVersionText.Text.ToLower()))
 					&& (string.IsNullOrEmpty(textSearch.Text) || x.ToString().ToLower().Contains(textSearch.Text.ToLower())))
 				.OrderBy(x=>Userods.GetUser(x.UserNumTester)?.UserName??"ZZZ")
-				.ThenBy(x=>_listCategoriesSorted.IndexOf((int)x.Category))
+				//This is the reverse order of the actual priority of different categories of jobs
+				//Purposefully put in this order so they appear correctly in the list for testing.
+				.ThenBy(x=>x.Category==JobCategory.NeedNoApproval)
+				.ThenBy(x=>x.Category==JobCategory.SpecialProject)
+				.ThenBy(x=>x.Category==JobCategory.Query)
+				.ThenBy(x=>x.Category==JobCategory.MarketingDesign)
+				.ThenBy(x=>x.Category==JobCategory.Conversion)
+				.ThenBy(x=>x.Category==JobCategory.UnresolvedIssue)
+				.ThenBy(x=>x.Category==JobCategory.ProgramBridge)
+				.ThenBy(x=>x.Category==JobCategory.Research)
+				.ThenBy(x=>x.Category==JobCategory.HqRequest)
+				.ThenBy(x=>x.Category==JobCategory.Bug)
+				.ThenBy(x=>x.Category==JobCategory.InternalRequest)
+				.ThenBy(x=>x.Category==JobCategory.Feature)
+				.ThenBy(x=>x.Category==JobCategory.Enhancement)
 				.ThenBy(x=>_listJobPriorities.Find(y=>y.DefNum==x.PriorityTesting)?.ItemOrder??1000)
 				.ToList();
 			//Make a dictionary separated by users.
@@ -1417,7 +1439,7 @@ namespace OpenDental {
 							ColorBackG=jobPriority.ItemColor,
 							ColorText=(job.Priority==_defNumIsUrgent) ? Color.White : Color.Black,
 						},
-						new GridCell(job.UserNumEngineer==0 ? "-" : Userods.GetName(job.UserNumEngineer)),
+						new GridCell(job.OwnerNumForQuery==0 ? "-" : Userods.GetName(job.OwnerNumForQuery)),
 						new GridCell(job.ToString()) { ColorBackG=GetGridCellBackgroundColor(job) }
 						) {
 						Tag=job,

@@ -177,7 +177,7 @@
 			// 
 			this.menuGoToAccountQueries.Index = 0;
 			this.menuGoToAccountQueries.Text = "Go To Account";
-			this.menuGoToAccountQueries.Click += new System.EventHandler(this.menuGoToAccountQueries_Click);
+			this.menuGoToAccountQueries.Click += new System.EventHandler(this.menuGoToChartQueries_Click);
 			// 
 			// timerSearch
 			// 

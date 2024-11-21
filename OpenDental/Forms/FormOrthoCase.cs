@@ -898,7 +898,8 @@ namespace OpenDental {
 				CreateNewPayPlan();
 			}
 			List<Procedure> listProcedures=ListAllCompletedProcs();
-			using FormPayPlanDynamic formPayPlanDynamic=new FormPayPlanDynamic(_payPlanPatient,false,listProcedures);
+			using FormPayPlanDynamic formPayPlanDynamic=new FormPayPlanDynamic(_payPlanPatient,false);
+			formPayPlanDynamic.ListOrthoCaseProcsForNewPayPlan=listProcedures;
 			formPayPlanDynamic.ShowDialog();
 			if(formPayPlanDynamic.DialogResult==DialogResult.Cancel && _payPlanPatient.IsNew) {
 				try {

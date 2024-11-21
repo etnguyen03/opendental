@@ -117,6 +117,21 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="label2.Text" xml:space="preserve">
+    <value>1. Treatment Plan a banding procedure.
+2. Visit and debonding procedures do not need to be treatment planned ahead of time
+3. Attach the Banding Procedure to this Ortho Case. (or check the Transfer box)
+4. Fill in the numbers below.
+5. As you do this, the Ortho Schedule grid at the right will fill with estimates.
+6. Once you close this window, you will not be able to edit the numbers.
+7. At any point from here on, create a Payment Plan if desired.
+8. Save this Ortho Case.
+9. Set procedures complete as patient is seen.
+10. Create claims as needed.</value>
+  </data>
+  <data name="label4.Text" xml:space="preserve">
+    <value>The purpose of an Ortho Case is to organize incremental billing to insurance throughout the duration of an ortho case. The numbers entered in the various boxes below will automatically set the fees and estimates of procedures as they are set complete. Visit procedures are typically created and set complete as the patient comes in, and the Ortho Case automatically sets the fees on those procedures. When the debond is completed, it will deactivate this Ortho Case and there will be no further automation of procedure fees.</value>
+  </data>
   <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   <data name="$this.Icon" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>

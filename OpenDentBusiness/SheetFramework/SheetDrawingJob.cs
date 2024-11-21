@@ -1062,7 +1062,7 @@ namespace OpenDentBusiness {
 				sigImage=GetSigPPHelper(sheet,field);
 			}
 			else {
-				SignatureBoxWrapper wrapper=new SignatureBoxWrapper();
+				using SignatureBoxWrapper wrapper=new SignatureBoxWrapper();
 				wrapper.Width=field.Width;
 				wrapper.Height=field.Height;
 				if(field.FieldValue.Length>0) {//a signature is present
@@ -1703,7 +1703,7 @@ namespace OpenDentBusiness {
 			PayPlan payPlan=(PayPlan)SheetParameter.GetParamByName(sheet.Parameters,"payplan").ParamValue;
 			string keyData=(string)SheetParameter.GetParamByName(sheet.Parameters,"keyData").ParamValue;
 			if(payPlan.Signature!="") {
-				SignatureBoxWrapper sigBoxWrapper=new SignatureBoxWrapper();
+				using SignatureBoxWrapper sigBoxWrapper=new SignatureBoxWrapper();
 				sigBoxWrapper.FillSignature(payPlan.SigIsTopaz,keyData,payPlan.Signature);
 				if(sigBoxWrapper.GetNumberOfTabletPoints(payPlan.SigIsTopaz)!=0) {
 					return sigBoxWrapper.GetSigImage();
@@ -1716,7 +1716,7 @@ namespace OpenDentBusiness {
 			TreatPlan treatPlan=(TreatPlan)SheetParameter.GetParamByName(sheet.Parameters,"TreatPlan").ParamValue;
 			bool sigIsTopaz=treatPlan.SigIsTopaz;
 			if(field.FieldType==SheetFieldType.SigBox && treatPlan.Signature!="") {
-				SignatureBoxWrapper sigBoxWrapper=new SignatureBoxWrapper();
+				using SignatureBoxWrapper sigBoxWrapper=new SignatureBoxWrapper();
 				sigBoxWrapper.SignatureMode=SignatureBoxWrapper.SigMode.TreatPlan;
 				string keyData=TreatPlans.GetKeyDataForSignatureHash(treatPlan,treatPlan.ListProcTPs);
 				sigBoxWrapper.FillSignature(sigIsTopaz,keyData,treatPlan.Signature);
@@ -1731,7 +1731,7 @@ namespace OpenDentBusiness {
 				}
 			}
 			else if(field.FieldType==SheetFieldType.SigBoxPractice && treatPlan.SignaturePractice!="") {
-				SignatureBoxWrapper sigBoxWrapper=new SignatureBoxWrapper();
+				using SignatureBoxWrapper sigBoxWrapper=new SignatureBoxWrapper();
 				sigBoxWrapper.SignatureMode=SignatureBoxWrapper.SigMode.TreatPlan;
 				string keyData=TreatPlans.GetKeyDataForSignatureHash(treatPlan,treatPlan.ListProcTPs);
 				sigBoxWrapper.FillSignature(sigIsTopaz,keyData,treatPlan.SignaturePractice);

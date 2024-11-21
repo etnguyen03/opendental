@@ -2605,6 +2605,10 @@ namespace OpenDental{
 				listProceduresGridSelected[i].PlannedAptNum=_appointment.AptNum;
 			}
 			Appointments.SetProcDescript(_appointment,listProceduresGridSelected);
+			//There is an edge case to handle: Completed appt is set back to Scheduled and procedures are set back to TP.
+			//This temporarily sets AptNums on the procs to 0 which clears the appointment.ProcDescript.
+			//_appointmentOld.ProcDescript must be updated to match db or synch will fail.
+			_appointmentOld.ProcDescript=Appointments.GetOneApt(_appointmentOld.AptNum).ProcDescript;
 			#endregion Update ProcDescript for Appt
 			#region Provider change and fee change check
 			//Determines if we would like to update ProcFees when a provider changes, considers PrefName.ProcFeeUpdatePrompt.

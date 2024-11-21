@@ -1,8 +1,6 @@
-using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Reflection;
-using System.Text;
 using System.Windows.Forms;
 using System.Linq;
 
@@ -141,6 +139,8 @@ namespace OpenDentBusiness{
 			}
 			Crud.JobPermissionCrud.Delete(jobRoleNum);
 		}
+
+		///<summary>If no JobPerm is supplied, returns true if the user has JobPerm.QueryTech, QueryCoordinator, or SeniorCoordinator. If a JobPerm is supplied, will return true if the user has that permission 'or better'. i.e. if you supply QueryCoordinator, it will return true if the user has QueryCoordinator or SeniorQueryCoordinator permission, but false if they only have QueryTech.</summary>
 
 		public static bool HasQueryPermission(JobPerm minPermReq=JobPerm.QueryTech,long userNum=-1) {
 			Meth.NoCheckMiddleTierRole();

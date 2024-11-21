@@ -597,7 +597,7 @@ namespace OpenDentBusiness{
 						INNER JOIN payplan ON payplanlink.PayPlanNum=payplan.PayPlanNum
 						INNER JOIN procedurelog ON procedurelog.ProcNum=payplanlink.FKey
 							AND payplanlink.LinkType={POut.Int((int)PayPlanLinkType.Procedure)}
-							AND (procedurelog.ProcStatus={POut.Int((int)ProcStat.C)} OR payplan.dynamicPayPlanTPOption={POut.Int((int)DynamicPayPlanTPOptions.TreatAsComplete)})
+							AND procedurelog.ProcStatus={POut.Int((int)ProcStat.C)}
 						LEFT JOIN (
 							SELECT SUM(adjustment.AdjAmt) AdjAmt,adjustment.ProcNum,adjustment.PatNum,adjustment.ProvNum,adjustment.ClinicNum
 							FROM adjustment ";

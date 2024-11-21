@@ -1045,7 +1045,7 @@ namespace OpenDentBusiness{
 			Meth.NoCheckMiddleTierRole();
 			List<ProcedureCode> listProcedureCodes=ProcedureCodes.GetAllCodes();//Ordered by D-code.
 			string[] arrayProcedureCodeTreatAreasLines=CDT.Class1.GetProcedureCodeTreatAreas()//~850 rows
-				.Split("\r\n",StringSplitOptions.RemoveEmptyEntries);
+				.Split(new char[] {'\r','\n'},StringSplitOptions.RemoveEmptyEntries);
 			string[] arrayProcCodeTreatArea;
 			int countProcCodesUpdated=0;
 			for(int i=0;i<arrayProcedureCodeTreatAreasLines.Length;i++) {

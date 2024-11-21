@@ -2442,6 +2442,32 @@ namespace OpenDentBusiness {
 			//End I56390
 		}//End of 24_3_20
 
+		private static void To24_3_24(){
+			//Start I56394
+			string command;
+			DataTable table;
+			command="SELECT DISTINCT UserGroupNum FROM grouppermission WHERE PermType=8";//Setup
+			table=Db.GetTable(command);
+			long groupNum;
+			for(int i=0;i<table.Rows.Count;i++) {
+				groupNum=PIn.Long(table.Rows[i]["UserGroupNum"].ToString());
+				command="INSERT INTO grouppermission (UserGroupNum,PermType) "
+					+"VALUES("+POut.Long(groupNum)+",262)";//ChartViewsEdit
+				Db.NonQ(command);
+			}
+			//End I56394
+			//Start I58122
+			//Add SuperFamilyDisband to everyone------------------------------------------------------
+			command="SELECT DISTINCT UserGroupNum FROM grouppermission";
+			table=Db.GetTable(command);
+			for(int i=0;i<table.Rows.Count;i++) {
+				groupNum=PIn.Long(table.Rows[i]["UserGroupNum"].ToString());
+				command="INSERT INTO grouppermission (UserGroupNum,PermType) "
+					+"VALUES("+POut.Long(groupNum)+",263)";//SuperFamilyDisband
+				Db.NonQ(command);
+			}
+			//End I58122
+		}//End of 24_3_24
 
 	}
 }

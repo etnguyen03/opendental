@@ -9,12 +9,9 @@ namespace OpenDental {
 /*
 The purpose of the MouseWatcher is to handle an edge case in Windows.
 If a user has their taskbar hidden, then it would normally show when they hover at the bottom of the screen.
-But it's a known Windows issue that a maximized window can block this.
-We already built a workaround years ago into FormODBase.
-That code notices if the mouse is at the bottom of the screen when any form is maximized and it manually pops open the taskbar.
-But if a modal dialog is sitting on top of a maximized window, then that code does not get hit.
-This MouseWatcher class is to handle that edge case.
-We also decided that it is good enough to replace the similar code in FormODBase.
+But it's a known Windows issue that a maximized window like OD can block this.
+We already built a workaround years ago into FormODBase, but we replaced it with this MouseWatcher
+	because a modal dialog sitting on top of a maximized window did not cause the code in that spot to get hit.
 
 This is a performance critical class. 
 We cache as many things as possible to reduce api calls,
@@ -25,7 +22,7 @@ and we hide as many calculations as possible behind inexpensive early return che
 		///<summary>Delegates are often stored in a static field because passing a method directly could result in the method being garbage collected. By keeping a static reference,the program ensures the method remains alive for the duration of the hook.</summary>
 		private static readonly DelegateLowLevelMouseProc _delegateLowLevelMouseProc=HookCallback;
 		private static IntPtr _intPtrHookID=IntPtr.Zero;
-		///<summary>Cache for the taskbar window handle to avoid repeated FindWindow() calls.</summary>
+		///<summary>Cache for the taskbar window handle of the primary monitor to avoid repeated FindWindow() calls.</summary>
 		private static IntPtr _intPtrTaskbarWnd=IntPtr.Zero;
 		///<summary>We remember which window had focus so that when they move away from task bar we can assign focus back to that window.</summary>
 		private static IntPtr _intPtrCachedForegroundWindow=IntPtr.Zero;
@@ -47,11 +44,11 @@ and we hide as many calculations as possible behind inexpensive early return che
 				TaskbarState taskbarState=(TaskbarState)SHAppBarMessage((int)TaskBarCommand.ABM_GETSTATE,ref aPPBARDATA);
 				bool isAutoHideEnabled=(taskbarState & TaskbarState.ABS_AUTOHIDE)!=0;
 				if(!isAutoHideEnabled) {
-					return; //No need to hook if if auto-hide is disabled.
+					return; //No need to hook if auto-hide is disabled.
 					//If user hides taskbar after starting OD, then this watcher will not be running and user will still have the issue.
 				}
 			}
-			_intPtrTaskbarWnd=FindWindow("Shell_TrayWnd",null); //Get and cache taskbar handle. FindWindow returns IntPtr.Zero on fail.
+			_intPtrTaskbarWnd=FindWindow("Shell_TrayWnd",null); //Get and cache taskbar handle. This will always be the "primary" taskbar. i.e.: the taskbar on the primary monitor. FindWindow returns IntPtr.Zero on fail.
 			if(_intPtrTaskbarWnd==IntPtr.Zero) {
 				return; //No need to hook if if we couldn't find the taskbar.
 			}
@@ -78,38 +75,62 @@ and we hide as many calculations as possible behind inexpensive early return che
 		}
 
 		private static IntPtr HookCallback(int nCode,IntPtr wParam,IntPtr lParam) {
-			if(nCode<0 || wParam!=(IntPtr)WM_MOUSEMOVE) {
+			if(nCode<0 || wParam!=(IntPtr)WM_MOUSEMOVE) { //Verify that event is an actual mouse movement.
 				return CallNextHookEx(_intPtrHookID,nCode,wParam,lParam);
 			}
+			//Normal windows behavior is for the taskbar to unhide only on the monitor that the mouse is on.
+			//Scenario 1: OD is on mon1. Mouse moves to bottom. Our code causes taskbar to show on mon1.
+			//Scenario 2: OD is on mon2. Mouse moves to bottom. We don't need any code. Windows already works fine.
+			//That means that our code is only needed for monitor 1.
+			//About 6 kickouts down, we test to see if we are in scenario 2 and kickout before doing anything.
 			if(_intPtrTaskbarWnd==IntPtr.Zero) { //True=>Taskbar handle is invalid (Maybe explorer.exe crashed?)
 				_intPtrTaskbarWnd=FindWindow("Shell_TrayWnd",null); //Reinitialize taskbar handle if it's invalid
 				return CallNextHookEx(_intPtrHookID,nCode,wParam,lParam); //Return here in case it's still invalid.
 			}
 			Point cursorPosition=Cursor.Position;
 			Screen screenMouseLocation=Screen.FromPoint(cursorPosition);
-			if(cursorPosition.Y<screenMouseLocation.Bounds.Bottom-(_heightTaskbar*3)) { //Mouse isn't near bottom of it's screen
+			if(cursorPosition.Y<screenMouseLocation.Bounds.Bottom-(_heightTaskbar*1.8)) { //Mouse isn't near bottom of it's screen
 				return CallNextHookEx(_intPtrHookID,nCode,wParam,lParam);
 			}
-			IntPtr mainWindowHandle=Process.GetCurrentProcess().MainWindowHandle;
+			IntPtr mainWindowHandle=Process.GetCurrentProcess().MainWindowHandle; //Get handle for main form of OD app.
 			if(mainWindowHandle==IntPtr.Zero || !IsWindow(mainWindowHandle)) { //Safety check before Screen.FromHandle() call
 				return CallNextHookEx(_intPtrHookID,nCode,wParam,lParam);
 			}
-			Screen screenAppLocation=Screen.FromHandle(mainWindowHandle);
+			Screen screenAppLocation=Screen.FromHandle(mainWindowHandle); //Screen where main app window is currently located.
 			if(screenAppLocation.DeviceName!=screenMouseLocation.DeviceName) { //Mouse isn't on the same screen as our main form
+				//this is supposed to kick out if we are on monitor2, but it's failing for unknown reasons.
+				//Burton thinks it has something to do with aggregation of app windows into a single entity handle.
 				return CallNextHookEx(_intPtrHookID,nCode,wParam,lParam);
 			}
-			IntPtr intPtrActiveWindow=GetForegroundWindow();
-			if(intPtrActiveWindow!=_intPtrTaskbarWnd && intPtrActiveWindow!=_intPtrCachedForegroundWindow) {
-				_intPtrCachedForegroundWindow=intPtrActiveWindow; //Cache active/focused window
+			RECT rectTaskbar=new RECT(); //bounds of primary taskbar on primary screen.
+			if(!GetWindowRect(_intPtrTaskbarWnd,ref rectTaskbar)) { //Was not able to get taskbarInfo, specifically its 'bounds'.
+				return CallNextHookEx(_intPtrHookID,nCode,wParam,lParam);
+			}
+			//On multi-monitor set-ups, Windows manages each taskbar segment individually, but the taskbar (Shell_TrayWnd) is
+			// treated as a single entity by the system, even in multi-monitor setups where taskbars are extended.
+			//If we want to exert full control over all of the system's taskbar(s), we would need to enumerate the various taskbars
+			// when we start mousewatcher and map them to specific monitors, then use that map to determine which taskbar to show
+			// based on which screen the mouse is currently on. Not difficult, but not necessary for our MouseWatcher.
+			if(!(rectTaskbar.left<screenMouseLocation.Bounds.Right
+				&& rectTaskbar.right>screenMouseLocation.Bounds.Left
+				&& rectTaskbar.top<screenMouseLocation.Bounds.Bottom
+				&& rectTaskbar.bottom>screenMouseLocation.Bounds.Top))
+			{ //Primary Taskbar is not on the active screen. In other words, we are on monitor 2 (scenario 2 above)
+				return CallNextHookEx(_intPtrHookID,nCode,wParam,lParam);
 			}
 			bool isMouseAtBottom=cursorPosition.Y>=screenAppLocation.Bounds.Bottom-1; //Very bottom of screen (-1px)
 			bool isMouseAboveTaskbar=cursorPosition.Y<screenAppLocation.Bounds.Bottom-(_heightTaskbar*1.2); //Slightly above taskbar
 			bool hasValidCachedWindow=_intPtrCachedForegroundWindow!=IntPtr.Zero && IsWindow(_intPtrCachedForegroundWindow);
 			if(isMouseAtBottom) {
-				SetWindowToForeground(_intPtrTaskbarWnd);
+				IntPtr intPtrActiveWindow=GetForegroundWindow(); //grabs whichever window has focus, which could be another app floating over OD.
+				if(intPtrActiveWindow!=_intPtrTaskbarWnd) { //if not taskbar
+					_intPtrCachedForegroundWindow=intPtrActiveWindow; //Cache active/focused window
+				}
+				SetWindowToForeground(_intPtrTaskbarWnd); //Set taskbar visible.
 			}
 			else if(isMouseAboveTaskbar && hasValidCachedWindow) {
 				SetWindowToForeground(_intPtrCachedForegroundWindow);
+				_intPtrCachedForegroundWindow=IntPtr.Zero; //Release cache
 			}
 			return CallNextHookEx(_intPtrHookID,nCode,wParam,lParam);
 		}

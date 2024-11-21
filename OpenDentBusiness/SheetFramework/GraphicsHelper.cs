@@ -153,9 +153,10 @@ namespace OpenDentBusiness {
 			if(str.Trim()=="") {
 				return rectangle;//Nothing to draw.
 			}
+			//This method seems to only be used for printing.
 			//Screen is at 96 dpi (DIPs actually) and printer is at 100 dpi (device units actually)
 			//Font follows dpi, so fonts always draw 4% bigger on printers.
-			//We will increase the text width and height by 4% (by dividing by .96) to make wrapping identical.
+			//We will increase the text width and height by 4% to try to match font scaling.
 			//But this still doesn't make everything perfect.
 			//To be perfect, we would need to adjust positions of all elements by 4%.
 			//That would be a massive undertaking, affecting the drawing logic at all levels.
@@ -163,7 +164,8 @@ namespace OpenDentBusiness {
 			//We can't do g.ScaleTransform() because that would also scale the font size, so it wouldn't fix the wrap.
 			//Shrinking the font size by 4% wouldn't work because fonts scale incrementally instead of smoothly.
 			//The remaining imperfection will only be noticeable when a tall section of text spills down too close to the next element.
-			RectangleF rectangleActual=new RectangleF(rectangle.X,rectangle.Y,(rectangle.Width/0.96f),(rectangle.Height/0.96f));
+			//We also made some tweaks to MeasureStringH, further down on this page, to give large fields 4% more vertical space.
+			RectangleF rectangleActual=new RectangleF(rectangle.X,rectangle.Y,(rectangle.Width*1.04f),(rectangle.Height*1.04f));
 			StringFormat stringFormat=new StringFormat();
 			//The overload for DrawString that takes a StringFormat will cause the tabs '\t' to be ignored.
 			//In order for the tabs to not get ignored, we have to tell StringFormat how many pixels each tab should be.
@@ -445,26 +447,47 @@ namespace OpenDentBusiness {
 		}
 
 		///<summary>This function is critical for measuring dynamic text fields on sheets when displaying or printing. Measures the size of a text string when displayed on screen.  This also differs from the regular MeasureString in that it will correctly measure trailing carriage returns as requiring additional lines.</summary>
-		public static HeightAndChars MeasureStringH(string text,Font font,int width,int heightAvail,HorizontalAlignment align) {
+		public static HeightAndChars MeasureStringH(string text,Font font,int widthAvail,int heightAvail,HorizontalAlignment horizontalAlignment) {
+			//DrawString (further up in this file) has 4% error which becomes a problem for very tall fields when printing.
+			//Layout appears 4% bigger on the screen than when printing, but fonts appear bigger when printing.
+			//GDI cannot handle printing to screen at 96 dpi and printer at 100 dpi. See notes over in that method.
+			//Only solution is to change this measurement method.
+			//In this new algorithm below, we make our local available size smaller so that charactersFitted will be fewer.
+			//But we want the height returned to be not adjusted.
+			//This can result in a little bit of extra white space below large fields  and the last line can wrap in the middle of the line.
+			//This is also used to calculate growth behavior on layout.
 			Bitmap bitmap=new Bitmap(100,100);//only used for measurements.
 			bitmap.SetResolution(96,96);
 			Graphics g=Graphics.FromImage(bitmap);
-			SizeF sizeF=new SizeF(width,heightAvail);
 			StringFormat stringFormat=new StringFormat();
 			stringFormat.Trimming=StringTrimming.Word;
 			stringFormat.Alignment=StringAlignment.Near;
-			if(align==HorizontalAlignment.Center) {
+			if(horizontalAlignment==HorizontalAlignment.Center) {
 				stringFormat.Alignment=StringAlignment.Center;
 			}
-			else if(align==HorizontalAlignment.Right) {
+			else if(horizontalAlignment==HorizontalAlignment.Right) {
 				stringFormat.Alignment=StringAlignment.Far;
 			}
-			SizeF sizeFFit=g.MeasureString(text,font,sizeF,stringFormat,out int charactersFitted,out int linesFilled);//don't care about linesFilled
+			//These three lines are just to get charactersFitted
+			SizeF sizeFSmall=new SizeF(widthAvail*0.96f,heightAvail*0.96f);
+			sizeFSmall.Height-=sizeFSmall.Height%font.GetHeight(96);
+			//example:29%14=1. Subtracting 1 makes it integer multiple height.
+			//g.MeasureString() calculates how many characters fit based upon an exact font height.
+			//In order to stay consistent with g.MeasureString(), we must use GetHeight() instead of font.Height because font.Height rounds up and GetHieght() doesn't.
+			//We use 96 dpi for GetHeight() in order to match the 96 dpi used above.
+			//This is all necessary because g.MeasureString() overestimates the number of characters that fit when the height allows for a non-integer number of lines.
+			//e.g. If the sizeFSmall.Height was tall enough for 7.1 lines, g.MeasureString would try to fit 8 when we really would want just 7 since that's how many full
+			//lines we could actually fit.
+			//figure out how many lines of text will fit on the current page
+			g.MeasureString(text,font,sizeFSmall,stringFormat,out int charactersFitted,out int linesFilled);//don't care about linesFilled
+			//These two lines are just for height
+			SizeF sizeF=new SizeF(widthAvail,heightAvail);
+			SizeF sizeFFit=g.MeasureString(text,font,sizeF,stringFormat,out int charactersFitted2,out int linesFilled2);
 			bitmap.Dispose();
 			g.Dispose();
 			HeightAndChars heightAndChars= new HeightAndChars();
 			heightAndChars.Chars=charactersFitted;
-			heightAndChars.Height=(int)Math.Floor(sizeFFit.Height);
+			heightAndChars.Height=(int)Math.Floor(sizeFFit.Height);//round down because you can't use that fraction of a pixel.
 			return heightAndChars;
 		}
 

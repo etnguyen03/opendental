@@ -820,6 +820,12 @@ namespace OpenDentBusiness{
 		///<summary>261 - Used for logging only. Can be used to log whenever mobile notifications are inserted into the database.</summary>
 		[Description("Mobile Notifications")]
 		MobileNotification,
+		///<summary>262 - Allows users to move chart views up and down, and add new chart views</summary>
+		[Description("Chart View Edit")]
+		ChartViewsEdit,
+		///<summary>263 - Allows disbanding of Super Families.</summary>
+		[Description("Super Family Disband")]
+		SuperFamilyDisband,
 	}
 }
 

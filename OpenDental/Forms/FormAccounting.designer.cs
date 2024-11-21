@@ -48,6 +48,7 @@ namespace OpenDental {
 			this.gridMain = new OpenDental.UI.GridOD();
 			this.ToolBarMain = new OpenDental.UI.ToolBarOD();
 			this.menuMain = new OpenDental.UI.MenuOD();
+			this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
 			this.SuspendLayout();
 			// 
 			// imageListMain
@@ -165,5 +166,6 @@ namespace OpenDental {
 		private Label labelDate;
 		private OpenDental.UI.Button butToday;
 		private OpenDental.UI.MenuOD menuMain;
+		private SaveFileDialog saveFileDialog;
 	}
 }
