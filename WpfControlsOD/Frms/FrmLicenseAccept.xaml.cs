@@ -22,11 +22,18 @@ namespace OpenDental {
 			_licenseTitle=licenseTitle;
 			InitializeComponent();
 			Load+=Frm_Load;
+			PreviewKeyDown+=FrmLicenseAccept_PreviewKeyDown;
 		}
 
 		private void Frm_Load(object sender, EventArgs e) {
 			Lang.F(this);
 			textLicenseContent.Text=_licenseContent;
+		}
+
+		private void FrmLicenseAccept_PreviewKeyDown(object sender,KeyEventArgs e) {
+			if(butAccept.IsAltKey(Key.A,e)) {
+				butAccept_Click(this,new EventArgs());
+			}
 		}
 
 		private void butAccept_Click(object sender, EventArgs e) {

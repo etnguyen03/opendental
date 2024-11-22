@@ -8392,6 +8392,8 @@
         <EnumValue name="EFormEdit">259 - Uses date restrictions but no global lock date. Also used in audit trail to log importing.</EnumValue>
         <EnumValue name="EFormDelete">260 - Allows deleting eForms when they're attached to patients. No date restrictions.</EnumValue>
         <EnumValue name="MobileNotification">261 - Used for logging only. Can be used to log whenever mobile notifications are inserted into the database.</EnumValue>
+        <EnumValue name="ChartViewsEdit">262 - Allows users to move chart views up and down, and add new chart views</EnumValue>
+        <EnumValue name="SuperFamilyDisband">263 - Allows disbanding of Super Families.</EnumValue>
       </Enumeration>
     </column>
     <column order="5" name="FKey" type="bigint(20)">
@@ -11128,7 +11130,7 @@
     </column>
   </table>
   <table name="orthocase">
-    <summary>A central table for all accural systems. </summary>
+    <summary>Holds financial and timing information for a single ortho case. For procs linked to Orthocases, estimates are calculated based off of orthocase info, not insurance info. The orthocase numbers are automatically placed into InsPayEst and InsEstTotalOverride in Procedures.ComputeEstimates(), taking control from insurance. Procedure fees are calculated based on orthocase info, not fee schedules. All overrides (fees and insurance) are performed when the procedure is set complete.</summary>
     <column order="0" name="OrthoCaseNum" type="bigint(20)">
       <summary>Primary key</summary>
     </column>
@@ -15878,6 +15880,8 @@
         <EnumValue name="EFormEdit">259 - Uses date restrictions but no global lock date. Also used in audit trail to log importing.</EnumValue>
         <EnumValue name="EFormDelete">260 - Allows deleting eForms when they're attached to patients. No date restrictions.</EnumValue>
         <EnumValue name="MobileNotification">261 - Used for logging only. Can be used to log whenever mobile notifications are inserted into the database.</EnumValue>
+        <EnumValue name="ChartViewsEdit">262 - Allows users to move chart views up and down, and add new chart views</EnumValue>
+        <EnumValue name="SuperFamilyDisband">263 - Allows disbanding of Super Families.</EnumValue>
       </Enumeration>
     </column>
     <column order="2" name="UserNum" type="bigint(20)" fk="userod">
