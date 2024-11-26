@@ -1371,7 +1371,7 @@ namespace OpenDental {
 						return;
 					}
 					if(payPlanCharge.ChargeType!=PayPlanChargeType.Debit) {
-						MsgBox.Show(this,"You can only select payment plans charges that are debits.");
+						MsgBox.Show(this,"You can only select payment plan Charges.");
 						gridAccount.SetAll(false);
 						return;
 					}

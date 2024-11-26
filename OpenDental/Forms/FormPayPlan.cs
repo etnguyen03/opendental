@@ -524,7 +524,7 @@ namespace OpenDental{
 				if(!MsgBox.Show(this,MsgBoxButtons.OKCancel,"Replace existing amortization schedule?")) {
 					return;
 				}
-				_listPayPlanCharges.RemoveAll(x => x.ChargeType==PayPlanChargeType.Debit); //for version 1, debits are the only chargetype available.
+				_listPayPlanCharges.RemoveAll(x => x.ChargeType==PayPlanChargeType.Debit); //for version 1, ChargeDue is the only chargetype available.
 			}
 			CreateOrRecalculateScheduleCharges(false);
 			//fill signature. most likely will invalidate the signature if new schedule was created
@@ -1086,11 +1086,11 @@ namespace OpenDental{
 				}
 				_listAdjustments.Add(adjustment);
 			}
-			//add negative tx credit offset to tx credits if there is a completed amount
+			//add negative production offset to tx credits if there is a completed amount
 			if(PIn.Double(textCompletedAmt.Text)>0) {
 				PayPlanCharge payPlanChargeTxOffset=new PayPlanCharge() {
 					ChargeDate=DateTime.Now.Date,
-					ChargeType=PayPlanChargeType.Credit,//needs to be saved as a credit to show in Tx Form
+					ChargeType=PayPlanChargeType.Credit,//needs to be saved as production to show in Tx Form
 					Guarantor=_patient.PatNum,
 					Note=Lan.g(this,"Adjustment"),
 					PatNum=_patient.PatNum,
@@ -1289,11 +1289,11 @@ namespace OpenDental{
 			_payPlan.PlanCategory=comboCategory.GetSelectedDefNum();
 			//PlanNum set already
 			if(IsInsPayPlan) { //if insurance payment plan, remove all other credits and create one credit for the completed amt.
-				_listPayPlanCharges.RemoveAll(x => x.ChargeType==PayPlanChargeType.Credit);//remove all credits
+				_listPayPlanCharges.RemoveAll(x => x.ChargeType==PayPlanChargeType.Credit);//remove all production
 				PayPlanCharge payPlanChargeAdd=new PayPlanCharge();
 				payPlanChargeAdd.ChargeDate=PIn.Date(textDate.Text);
 				payPlanChargeAdd.ChargeType=PayPlanChargeType.Credit;
-				payPlanChargeAdd.Guarantor=_payPlan.Guarantor; //credits always show in the account of the patient that the payplan was for.
+				payPlanChargeAdd.Guarantor=_payPlan.Guarantor; //production always show in the account of the patient that the payplan was for.
 				payPlanChargeAdd.Interest=0;
 				payPlanChargeAdd.Note=Lan.g(this,"Expected Payments from")+" "+textInsPlan.Text;
 				payPlanChargeAdd.PatNum=_payPlan.PatNum;

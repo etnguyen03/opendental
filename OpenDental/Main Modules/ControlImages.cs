@@ -3752,7 +3752,7 @@ namespace OpenDental{
 				return;
 			}
 			if(_deviceController.ImgDeviceControlType==EnumImgDeviceControlType.TwainMulti){
-				AcquireMulti();
+				AcquireMulti(imagingDevice.Description);
 				if(GetMountShowing().AdjModeAfterSeries) {
 					SetCropPanAdj(EnumCropPanAdj.Adj);
 					LayoutControls();
@@ -3788,7 +3788,7 @@ namespace OpenDental{
 		}
 
 		///<summary></summary>
-		private void AcquireMulti(){
+		private void AcquireMulti(string deviceDescription=""){
 			if(!EZTwain.OpenSource(_deviceController.TwainName)){
 				return; 
 			}
@@ -3796,16 +3796,39 @@ namespace OpenDental{
 			if(!_deviceController.ShowTwainUI){
 				EZTwain.SetHideUI(true);
 			}
-			do{
+			bool isDexis=false;
+			if(deviceDescription.ToLower().Contains("dexis")) {
+				//Dexis GxTwain will import images to mounts in the reverse order that it displayed them.
+				//Example: images 1, 2, and 3 will get placed in a list.
+				//Then, for example, if current mount position is 3, 
+				//they would be imported in order 3, 2, 1 into mount positions 3, 4, 5.
+				//This lets the bitmap loading code know to look for the next available mount slot starting at the MountItem with the largest ItemOrder instead of the smallest.
+				isDexis=true;
+			}
+			List<Bitmap> listBitMapsDexis=new List<Bitmap>();
+			while(true) {
 				IntPtr hdib=EZTwain.Acquire(ParentForm.Handle);
 				if(hdib==IntPtr.Zero) {
 					break;
 				}
 				Bitmap bitmap=(Bitmap)EZTwain.DIB_ToImage(hdib);
-				PlaceAcquiredBitmapInUI(bitmap);
+				if(isDexis) {
+					//make a copy to avoid complications with DIB_Free
+					listBitMapsDexis.Add((Bitmap)bitmap.Clone());
+					bitmap?.Dispose();
+				}
+				else {//Not Dexis so images are ordered correctly
+					PlaceAcquiredBitmapInUI(bitmap);
+				}
 				EZTwain.DIB_Free(hdib);
-			} 
-			while(!EZTwain.IsDone());
+				if(EZTwain.IsDone()) {
+					break;
+				}
+			}
+			//if not Dexis, this list will be empty and not run
+			for(int i=listBitMapsDexis.Count-1;i >= 0;i--) {//Iterate through the list backwords to correctly place the mounts
+				PlaceAcquiredBitmapInUI(listBitMapsDexis[i]);
+			}
 			EZTwain.CloseSource();
 			_deviceController=null;
 			//when user cancels, we will keep panelAcquire open so that they can do things like retake

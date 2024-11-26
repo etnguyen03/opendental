@@ -550,7 +550,7 @@ namespace CodeBase {
 					try {
 						//if available return the request result
 						_response=Utilities.ODCloudDcvExtension.Instance.GetResponse(args.FileIdentifier);
-						if (_response==null) {
+						if(_response==null) {
 							throw new ODException();
 						}
 						_hasReceivedResponse=true;
@@ -564,6 +564,7 @@ namespace CodeBase {
 				}
 			}
 			if(doShowProgressBar) {
+				Thread.Sleep(100);
 				ODProgress.ShowAction(waitForResponse);
 			}
 			else {

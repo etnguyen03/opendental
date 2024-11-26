@@ -334,7 +334,7 @@ namespace OpenDentBusiness{
 				if(chargeList[i].ChargeDate>DateTime.Today){//not due yet
 					continue;
 				}
-				if(chargeList[i].ChargeType!=PayPlanChargeType.Debit) { //for v1, debits are the only ChargeType.
+				if(chargeList[i].ChargeType!=PayPlanChargeType.Debit) { //for v1, debits(0) are the only ChargeType.
 					continue;
 				}
 				retVal+=chargeList[i].Principal+chargeList[i].Interest;
@@ -415,7 +415,7 @@ namespace OpenDentBusiness{
 				listPayPlanChargesForPlan=listPayPlanCharges.Where(x => x.PayPlanNum==payPlanNum).Select(x => x.Copy()).ToList();
 			}
 			PayPlan payPlan=GetOne(payPlanNum);
-			amtTotal+=listPayPlanChargesForPlan.Where(x => x.ChargeType==PayPlanChargeType.Debit)//Only consider existing debit charges
+			amtTotal+=listPayPlanChargesForPlan.Where(x => x.ChargeType==PayPlanChargeType.Debit)//Only consider existing charges due
 				.Sum(x => x.Principal + x.Interest);//Add up everything that has been charged (interest included) to amtTotal.
 			if(payPlan.IsDynamic) { //If this payplan is dynamic add the amount of expected charges.
 				Family family=Patients.GetFamily(payPlan.PatNum);
@@ -452,7 +452,7 @@ namespace OpenDentBusiness{
 				if(chargeList[i].PayPlanNum!=payPlanNum){
 					continue;
 				}
-				if(chargeList[i].ChargeType!=PayPlanChargeType.Debit) { //for v1, debits are the only ChargeType.
+				if(chargeList[i].ChargeType!=PayPlanChargeType.Debit) { //for v1, debits(0/ChargeDue) are the only ChargeType.
 					continue;
 				}
 				//For this charge, first apply payment to interest
@@ -486,7 +486,7 @@ namespace OpenDentBusiness{
 				if(chargeList[i].PayPlanNum!=payPlanNum){
 					continue;
 				}
-				if(chargeList[i].ChargeType!=PayPlanChargeType.Debit) { //for v1, debits are the only ChargeType.
+				if(chargeList[i].ChargeType!=PayPlanChargeType.Debit) { //for v1, debits(0/ChargeDue) are the only ChargeType.
 					continue;
 				}
 				retVal+=chargeList[i].Principal;
@@ -907,7 +907,7 @@ namespace OpenDentBusiness{
 			int countDebits=0;
 			for(int i=0;i<listPayPlanCharges.Count;i++) {
 				if(listPayPlanCharges[i].ChargeType==PayPlanChargeType.Credit) {
-					continue;//don't include credits when calculating the total loan cost, but do include adjustments
+					continue;//don't include production when calculating the total loan cost, but do include adjustments
 				}
 				countDebits++;
 				if(listPayPlanCharges[i].ChargeType==PayPlanChargeType.Debit && listPayPlanCharges[i].Principal >= 0) {//Not an adjustment

@@ -520,7 +520,7 @@ namespace OpenDentBusiness {
 			this.AmountOriginal=(CompareDecimal.IsZero(payPlanProdEntry.AmountOverride) ? payPlanProdEntry.AmountOriginal : payPlanProdEntry.AmountOverride);
 			this.AmountEnd=this.AmountOriginal;
 			this.ClinicNum=payPlanProdEntry.ClinicNum;
-			//Dynamic payment plans create faux account entry debits from PayPlanCharge objects so always set ChargeType to Credit.
+			//Dynamic payment plans create faux account entry ChargesDue from PayPlanCharge objects so always set ChargeType to Production.
 			this.ChargeType=PayPlanChargeType.Credit;
 			this.Date=payPlanProdEntry.ProductionDate;
 			this.Guarantor=0;

@@ -243,7 +243,7 @@ namespace OpenDentBusiness {
 			List<DataRow> rows=new List<DataRow>();
 			string command="SELECT ChargeDate,Interest,Note,PayPlanChargeNum,Principal,ProvNum,PatNum,SecDateTEntry "
 				+"FROM payplancharge "
-				+"WHERE PayPlanNum="+POut.Long(payPlanNum)+" AND ChargeType="+POut.Int((int)PayPlanChargeType.Debit);//for v1, debits are the only ChargeType
+				+"WHERE PayPlanNum="+POut.Long(payPlanNum)+" AND ChargeType="+POut.Int((int)PayPlanChargeType.Debit);//for v1, ChargesDue are the only ChargeType
 			DataTable rawCharge=dcon.GetTable(command);
 			DateTime dateT;
 			decimal principal;
@@ -2051,15 +2051,15 @@ namespace OpenDentBusiness {
 					dataRow["balanceDouble"]=0;//fill this later
 					dataRow["chargesDouble"]=0;
 					amt=PIn.Decimal(rawPayPlan2.Rows[i]["Principal"].ToString());
-					if(chargetype==PayPlanChargeType.Debit) {//show principle amount as a charge if it's a debit chargeType.
+					if(chargetype==PayPlanChargeType.Debit) {//show principle amount as a charge if it's a ChargeDue chargeType.
 						amt+=PIn.Decimal(rawPayPlan2.Rows[i]["Interest"].ToString());
 						dataRow["chargesDouble"]=amt;
 						dataRow["charges"]=amt.ToString("n");
 						dataRow["creditsDouble"]=0;
 						dataRow["credits"]="";
 					}
-					else if(chargetype==PayPlanChargeType.Credit) {//show principle amount as a credit if it's a credit chargeType.
-						if(statement.StatementType==StmtType.LimitedStatement) {//Not interested in credits for limited statements.
+					else if(chargetype==PayPlanChargeType.Credit) {//show principle amount as production if it's a Production chargeType.
+						if(statement.StatementType==StmtType.LimitedStatement) {//Not interested in production for limited statements.
 							continue;
 						}
 						dataRow["chargesDouble"]=0;
@@ -2098,7 +2098,7 @@ namespace OpenDentBusiness {
 					dataRow["PayNum"]=0;
 					dataRow["PayPlanNum"]=PIn.Long(rawPayPlan2.Rows[i]["PayPlanNum"].ToString());
 					dataRow["PayPlanChargeNum"]=rawPayPlan2.Rows[i]["PayPlanChargeNum"].ToString();
-					dataRow["ProcCode"]=Lans.g("AccountModule","PayPln:")+" "+chargetype;
+					dataRow["ProcCode"]=Lans.g("AccountModule","PayPln:")+" "+chargetype.GetDescription();
 					dataRow["ProcNum"]="0";
 					dataRow["ProcNumLab"]="";
 					dataRow["procsOnObj"]=rawPayPlan2.Rows[i]["ProcNum"].ToString();
@@ -2173,7 +2173,7 @@ namespace OpenDentBusiness {
 					dataRow["PayNum"]=0;
 					dataRow["PayPlanNum"]=PIn.Long(rawPayPlan3.Rows[i]["PayPlanNum"].ToString());
 					dataRow["PayPlanChargeNum"]=rawPayPlan3.Rows[i]["PayPlanChargeNum"].ToString();
-					dataRow["ProcCode"]=Lans.g("AccountModule","PayPln:")+" "+PIn.Enum<PayPlanChargeType>(rawPayPlan3.Rows[i]["ChargeType"].ToString());
+					dataRow["ProcCode"]=Lans.g("AccountModule","PayPln:")+" "+PIn.Enum<PayPlanChargeType>(rawPayPlan3.Rows[i]["ChargeType"].ToString()).GetDescription();
 					dataRow["ProcNum"]="0";
 					dataRow["ProcNumLab"]="";
 					dataRow["procsOnObj"]=rawPayPlan3.Rows[i]["ProcNum"].ToString();
@@ -2253,7 +2253,7 @@ namespace OpenDentBusiness {
 					dataRow["PayNum"]=0;
 					dataRow["PayPlanNum"]=PIn.Long(tablePayPlanLinks.Rows[i]["PayPlanNum"].ToString());
 					dataRow["PayPlanChargeNum"]=0;//may need to make a new functional column here?
-					dataRow["ProcCode"]=Lans.g("AccountModule","PayPln:")+" Credit";
+					dataRow["ProcCode"]=Lans.g("AccountModule","PayPln:")+" "+PayPlanChargeType.Credit.GetDescription();
 					dataRow["ProcNum"]="0";
 					dataRow["ProcNumLab"]="";
 					dataRow["procsOnObj"]=procNum;

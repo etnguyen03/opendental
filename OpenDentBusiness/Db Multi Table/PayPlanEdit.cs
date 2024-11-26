@@ -1531,7 +1531,7 @@ namespace OpenDentBusiness {
 			#endregion
 			#region Insert Principal Charges and Transfer Payment
 			//Create Principal Charges and Synchronize Payment Splits
-			if(!listPrincipalChargeSplits.IsNullOrEmpty()) { 
+			if(!listPrincipalChargeSplits.IsNullOrEmpty()) {
 				for(int i=0;i<listPrincipalChargeSplits.Count;i++) {
 					PayPlanCharges.Insert(listPrincipalChargeSplits[i].PayPlanChargeCur);
 					listPrincipalChargeSplits[i].ListPaySplitsToTransfer.Where(x=>x.UnearnedType==0)
@@ -1834,7 +1834,7 @@ namespace OpenDentBusiness {
 			charge.ChargeType=PayPlanChargeType.Debit;
 			charge.LinkType=payPlanProductionEntry.LinkType;
 			charge.FKey=payPlanProductionEntry.PriKey;
-			charge.ProcNum=payPlanProductionEntry.GetProcNum();
+			charge.ProcNum=0; //ProcNum should be 0 when PayPlanChargeType is ChargeDue
 			charge.PatNum=payPlanProductionEntry.PatNum;
 			charge.ProvNum=payPlanProductionEntry.ProvNum;
 			charge.ClinicNum=payPlanProductionEntry.ClinicNum;

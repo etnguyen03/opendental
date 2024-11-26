@@ -1303,11 +1303,21 @@ namespace OpenDental {
 			//We only alter the lab procedure(s), not the regular procedure.
 			Procedure procedureLab=null;
 			Procedure procedureOld;
+			bool isAttachedToClaim=false;
+			List<ClaimProc> listClaimProcsLab=ClaimProcs.RefreshForProcs(listProcNumsLab);
 			for(int i=0;i<listProcNumsLab.Count;i++) {
 				procedureLab=Procedures.GetOneProc(listProcNumsLab[i],false);
+				listClaimProcsForProc=listClaimProcsLab.FindAll(x => x.ProcNum==listProcNumsLab[i]);
+				if(Procedures.IsAttachedToClaim(procedureLab,listClaimProcsForProc)) {
+					isAttachedToClaim=true;
+					continue;
+				}
 				procedureOld=procedureLab.Copy();
 				procedureLab.ProcNumLab=listProcNumsReg[0];
 				Procedures.Update(procedureLab,procedureOld);
+			}
+			if(isAttachedToClaim){
+				MsgBox.Show(this,"Skipped attaching one or more lab procedures because they are on a claim.");
 			}
 			if(procedureLab!=null) {
 				CanadianLabFeeHelper(procedureLab.ProcNumLab);
@@ -5614,6 +5624,14 @@ namespace OpenDental {
 			if(listProcNumsReg.Count>1) {
 				if(!isSilent) {
 					MsgBox.Show(this,"Only one of the selected procedures may be a regular non-lab procedure as defined in Procedure Codes.");
+				}
+				return false;
+			}
+			List<long> listProcNumsLabAttached=Procedures.GetCanadianLabFees(listProcNumsReg[0]).Select(x => x.ProcNum).ToList();
+			listProcNumsLabAttached=listProcNumsLabAttached.Union(listProcNumsLab).ToList();
+			if(listProcNumsLabAttached.Count>2) {
+				if(!isSilent) {
+					MsgBox.Show(this,"Only two lab procedures can be attached to a procedure at a time.");
 				}
 				return false;
 			}

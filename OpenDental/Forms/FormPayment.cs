@@ -261,6 +261,7 @@ namespace OpenDental {
 			if(_payment.MerchantFee>0) {
 				labelSurchargeFee.Visible=true;
 				textSurcharge.Visible=true;
+				SetSurchargeTextFieldReadOnly();
 			}
 			textSurcharge.Text=_payment.MerchantFee.ToString("F");
 			_listDefsPaymentType=Defs.GetDefsForCategory(DefCat.PaymentTypes,true);
@@ -3009,6 +3010,9 @@ namespace OpenDental {
 			_payment.BankBranch=textBankBranch.Text;
 			_payment.PayNote=textNote.Text;
 			_payment.IsRecurringCC=checkRecurring.Checked;
+			if(_payment.PaymentSource==CreditCardSource.None) {
+				_payment.MerchantFee=PIn.Double(textSurcharge.Text);
+			}
 			if((PIn.Double(textAmount.Text)==0 && listPayType.SelectedIndex==-1) || checkPayTypeNone.Checked) {
 				_payment.PayType=0;
 			}

@@ -813,6 +813,9 @@ namespace OpenDental.InternalTools.Job_Manager {
 		///<summary>Helper method that fills the grid passed in with the corresponding job notes.
 		///This is here because right now every grid that displays JobNotes shows them the same way.</summary>
 		private void FillGridWithJobNotes(GridOD grid,List<JobNote> listJobNotes) {
+			//Check if the scroll bar is at the bottom
+			//>= in case it's sligthly passed the max.  This can happen when the scrollbar is already at the bottom and then the down arrow is clicked.
+			bool isScrollMax = grid.ScrollValue>=grid.ScrollMaximum-grid.ScrollLargeChange;
 			grid.BeginUpdate();
 			grid.Columns.Clear();
 			grid.Columns.Add(new GridColumn(Lan.g(this,"Date Time"),120));
@@ -830,6 +833,10 @@ namespace OpenDental.InternalTools.Job_Manager {
 				grid.ListGridRows.Add(row);
 			}
 			grid.EndUpdate();
+			//If scroll bar was already at the bottom, scroll to the new bottom
+			if(isScrollMax) {
+				grid.ScrollToEnd();
+			}
 			grid.ScrollValue=grid.ScrollValue;//this forces scroll value to reset if it's > allowed max.
 		}
 
@@ -1002,6 +1009,8 @@ namespace OpenDental.InternalTools.Job_Manager {
 				textEditorDocumentation.MainText=_jobCur.Documentation;
 			}
 			FillAllGrids();
+			gridNotes.ScrollToEnd();
+			gridTestingNotes.ScrollToEnd();
 			IsChanged=false;
 			CheckPermissions();
 			//This needs to be after CheckPermissions
@@ -1012,7 +1021,7 @@ namespace OpenDental.InternalTools.Job_Manager {
 				textJobEditor.SetListJobRequirements(new List<JobRequirement>());
 			}
 			CreateViewLog(jobPrev);
-			if(job!=null) {//re-enable control after we have loaded the job.
+			if(job!=null) {
 				JobNotifications.DeleteForJobAndUser(job.JobNum,Security.CurUser.UserNum);
 				Signalods.SetInvalid(InvalidType.Jobs, KeyType.Job,job.JobNum);
 			}

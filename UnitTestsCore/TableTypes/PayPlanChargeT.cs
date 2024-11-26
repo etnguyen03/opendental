@@ -29,7 +29,7 @@ namespace UnitTestsCore {
 			PayPlanCharge txOffset=new PayPlanCharge() {
 				ClinicNum=clinicNum,
 				ChargeDate=DateTime.Now.Date,
-				ChargeType=PayPlanChargeType.Credit,//needs to be saved as a credit to show in Tx Form
+				ChargeType=PayPlanChargeType.Credit,//needs to be saved as a Production to show in Tx Form
 				Guarantor=patNum,
 				Note="Adjustment",
 				PatNum=patNum,

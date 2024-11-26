@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.ComponentModel;
 using System.Xml.Serialization;
 using Newtonsoft.Json;
 using CodeBase;
@@ -36,10 +37,10 @@ namespace OpenDentBusiness{
 		public long ProvNum;
 		///<summary>FK to clinic.ClinicNum.  Since there is no ClincNum field at the payplan level, the clinic must be the same for all payplancharges.  It's initially assigned using the patient clinic.  Payments applied should be to this clinic, although the current user interface does not help with this.</summary>
 		public long ClinicNum;
-		///<summary>Enum:PayPlanChargeType The charge type of the payment plan. 0 - Debit, 1 - Credit.  Only relevant for those on Payment Plan Version 2.</summary>
+		///<summary>Enum:PayPlanChargeType The charge type of the payment plan. 0 - ChargeDue, 1 - Production.  Only relevant for those on Payment Plan Version 2, not Dynamic Payment Plans.</summary>
 		public PayPlanChargeType ChargeType;
 		///<summary>FK to procedurelog.ProcNum.  The procedure that this payplancharge is attached to.  Only applies to credits.
-		///Always 0 for debits.  Can be 0 for credits not attached to a procedure.</summary>
+		///Always 0 for ChargeDue.  Can be 0 for production not attached to a procedure.</summary>
 		public long ProcNum;
 		///<summary>DateTime payplancharge was added to the payplan. Not editable by user.</summary>
 		[CrudColumn(SpecialType=CrudSpecialColType.DateTEntry)]
@@ -49,7 +50,7 @@ namespace OpenDentBusiness{
 		public DateTime SecDateTEdit;
 		///<summary>FK to statement.StatementNum.  Only used when the statement in an invoice.</summary>
 		public long StatementNum;
-		///<summary>Only present for dynamic payment plans. Contains FKey of the link type.</summary>
+		///<summary>Only present for dynamic payment plans. Contains FKey of the link type. ProcNum, AdjNum, or OrthoCaseNum. Since one ChargeDue can be split to multiple procedures, multiple rows are created in that case. In UI, these would be grouped by due date unless user checked ungroup box.</summary>
 		public long FKey;
 		///<summary>Enum:PayPlanLinkType Only present for dynamic payment plans. </summary>
 		public PayPlanLinkType LinkType;
@@ -90,19 +91,33 @@ namespace OpenDentBusiness{
 		public PayPlanCharge Copy(){
 			return (PayPlanCharge)this.MemberwiseClone();
 		}
-
-
 	}
+
+	///<summary>Jordan-I would like to change this enum, but it would break the API.</summary>
 	public enum PayPlanChargeType {
-		///<summary>0 - Debit</summary>
+		///<summary>0</summary>
+		[Description("Charge Due")]
 		Debit,
-		///<summary>1 - Credit</summary>
+		///<summary>1 -  The production can be either Procedure, Adjust, or Ortho. Only used for PPv2, not DPPs.</summary>
+		[Description("Production")]
 		Credit
 	}
 }
 
 
-
+/*
+Allen, Omar, and Jordan had a meeting on 2024-11-15 to try to understand the schema.
+Payplans original version used this table for charges only. The production was stored on the payplan table as a single number.
+When payplans version 2 was added, the ChargeType column was added.
+	Credits (1): Production (Procedures, Orthos, Adjusts)
+	Debits (0): The charges due
+Then, Dynamic Payment Plans (DPP) were added.
+PayPlanLink was added for Credits (Production). The old ChargeType column does not use Credits for DPPs.
+Omar's research showed that old Payment Plans didn't have a way to view all productions, instead relied on the ProcNum column of associated PayPlanCharges.
+Unclear if ProcNum is still used since DPPs have no Credits. Probably not.
+PayPlanLink.AmountOverride allows user to lock the amount of a production entry so it won't change. Otherwise, if you change a proc fee, the PayPlanLink uses that number.
+Allen says Sean is an expert
+*/
 
 
 

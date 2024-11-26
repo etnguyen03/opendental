@@ -225,6 +225,14 @@ namespace OpenDental {
 				MsgBox.Show(this,"Cannot make Rigorous transfers once another process has started.");
 				return;
 			}
+			//Warn the user.  Make sure they read it and understand what they are doing.
+			if(datePickerAsOfDate.Value<datePickerIncomeTransferDate.Value) {
+				if(!MsgBox.Show(this,MsgBoxButtons.YesNo,"Strange behavior may occur if this tool is ran multiple times while the As of Date predates the Income Transfer Date.\r\n\r\n"
+					+"Would you like to continue?"))
+				{
+					return;
+				}
+			}
 			if(_threadRigorousBalancer==null) {
 				if(!IsValidIncomeTransferUI()) {
 					return;
@@ -265,6 +273,14 @@ namespace OpenDental {
 			if(AreOtherThreadsRunning(_threadFifoBalancer)) {
 				MsgBox.Show(this,"Cannot make FIFO transfers once another process has started.");
 				return;
+			}
+			//Warn the user.  Make sure they read it and understand what they are doing.
+			if(datePickerAsOfDate.Value<datePickerIncomeTransferDate.Value) {
+				if(!MsgBox.Show(this,MsgBoxButtons.YesNo,"Strange behavior may occur if this tool is ran multiple times while the As of Date predates the Income Transfer Date.\r\n\r\n"
+					+"Would you like to continue?"))
+				{
+					return;
+				}
 			}
 			if(_threadFifoBalancer==null) {
 				if(!IsValidIncomeTransferUI()) {

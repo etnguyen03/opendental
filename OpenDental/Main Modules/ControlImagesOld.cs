@@ -2009,22 +2009,32 @@ namespace OpenDental {
 					}
 				}
 			}
-			OpenFileDialog openFileDialog=new OpenFileDialog();
-			openFileDialog.Multiselect=true;
-			if(Prefs.GetContainsKey(nameof(PrefName.UseAlternateOpenFileDialogWindow)) && PrefC.GetBool(PrefName.UseAlternateOpenFileDialogWindow)){//Hidden pref, almost always false.
-				//We don't know why this makes any difference but people have mentioned this will stop some hanging issues.
-				//https://stackoverflow.com/questions/6718148/windows-forms-gui-hangs-when-calling-openfiledialog-showdialog
-				openFileDialog.ShowHelp=true;
+			List<string> fileNames=new List<string>();
+			if(ODCloudClient.IsAppStream) {
+				string fileName=ODCloudClient.ImportFileForCloud();
+				if(fileName.IsNullOrEmpty()) {
+					return; //User cancelled out of import
+				}
+				fileNames.Add(fileName);
 			}
-			if(_ehrAmendment!=null) {
-				openFileDialog.Multiselect=false;//this image module control is reused in formEHR for amendments. If so, EhrAmendmentCur!=null and we should only allow single select.
-			}
-			if(openFileDialog.ShowDialog()!=DialogResult.OK) {
-				return;
-			}
-			string[] fileNames=openFileDialog.FileNames;
-			if(fileNames.Length<1) {
-				return;
+			else{
+				OpenFileDialog openFileDialog=new OpenFileDialog();
+				openFileDialog.Multiselect=true;
+				if(Prefs.GetContainsKey(nameof(PrefName.UseAlternateOpenFileDialogWindow)) && PrefC.GetBool(PrefName.UseAlternateOpenFileDialogWindow)) {//Hidden pref, almost always false.
+					//We don't know why this makes any difference but people have mentioned this will stop some hanging issues.
+					//https://stackoverflow.com/questions/6718148/windows-forms-gui-hangs-when-calling-openfiledialog-showdialog
+					openFileDialog.ShowHelp=true;
+				}
+				if(_ehrAmendment!=null) {
+					openFileDialog.Multiselect=false;//This image module control is reused in formEHR for amendments. If so, EhrAmendmentCur!=null and we should only allow single select.
+				}
+				if(openFileDialog.ShowDialog()!=DialogResult.OK) {
+					return;
+				}
+				fileNames=openFileDialog.FileNames.ToList();
+				if(fileNames.Count<1) {
+					return;
+				}
 			}
 			NodeIdTag nodeIdTag=new NodeIdTag();
 			bool copied=true;
@@ -2034,13 +2044,13 @@ namespace OpenDental {
 				if(CloudStorage.IsCloudStorage) {
 					actionCloseUploadProgress=ODProgress.Show(startingMessage:Lan.g("ContrImages","Uploading..."));
 				}
-				for(int i=0;i<fileNames.Length;i++) {
+				for(int i=0;i<fileNames.Count;i++) {
 					try {
 						eob=ImageStore.ImportEobAttach(fileNames[i],_claimPaymentNum);
 					}
 					catch(Exception ex) {
 						actionCloseUploadProgress?.Invoke();
-						MessageBox.Show(Lan.g(this,"Unable to copy file, May be in use: ")+ex.Message+": "+openFileDialog.FileName);
+						MessageBox.Show(Lan.g(this,"Unable to copy file, May be in use: ")+ex.Message+": "+fileNames[i]);
 						copied = false;
 					}
 				}
@@ -2049,7 +2059,7 @@ namespace OpenDental {
 					FillTree(false);
 				}
 				if(eob!=null) {
-					SelectTreeNode(GetTreeNode(MakeIdEob(eob.EobAttachNum)),fileNames[fileNames.Length-1]);
+					SelectTreeNode(GetTreeNode(MakeIdEob(eob.EobAttachNum)),fileNames[fileNames.Count-1]);
 				}
 			}
 			else if(_ehrAmendment!=null) {
@@ -2058,7 +2068,7 @@ namespace OpenDental {
 				if(CloudStorage.IsCloudStorage) {
 					actionCloseUploadProgress=ODProgress.Show(startingMessage:Lan.g("ContrImages","Uploading..."));
 				}
-				for(int i=0;i<fileNames.Length;i++) {
+				for(int i=0;i<fileNames.Count;i++) {
 					try {
 						_ehrAmendment=ImageStore.ImportAmdAttach(fileNames[i],_ehrAmendment);
 						SelectTreeNode(null);
@@ -2066,7 +2076,7 @@ namespace OpenDental {
 					}
 					catch(Exception ex) {
 						actionCloseUploadProgress?.Invoke();
-						MessageBox.Show(Lan.g(this,"Unable to copy file, May be in use: ")+ex.Message+": "+openFileDialog.FileName);
+						MessageBox.Show(Lan.g(this,"Unable to copy file, May be in use: ")+ex.Message+": "+fileNames[i]);
 						copied = false;
 					}
 				}
@@ -2075,7 +2085,7 @@ namespace OpenDental {
 					FillTree(false);
 				}
 				if(_ehrAmendment!=null) {
-					SelectTreeNode(GetTreeNode(MakeIdAmd(_ehrAmendment.EhrAmendmentNum)),fileNames[fileNames.Length-1]);
+					SelectTreeNode(GetTreeNode(MakeIdAmd(_ehrAmendment.EhrAmendmentNum)),fileNames[fileNames.Count-1]);
 				}
 			}
 			else {//regular Images module
@@ -2084,13 +2094,13 @@ namespace OpenDental {
 				if(CloudStorage.IsCloudStorage) {
 					actionCloseUploadProgress=ODProgress.Show(startingMessage:Lan.g("ContrImages","Uploading..."));
 				}
-				for(int i=0;i<fileNames.Length;i++) {
+				for(int i=0;i<fileNames.Count;i++) {
 					try {
 						doc=ImageStore.Import(fileNames[i],GetCurrentCategory(),_patient);//Makes log
 					}
 					catch(Exception ex) {
 						actionCloseUploadProgress?.Invoke();
-						MessageBox.Show(Lan.g(this,"Unable to copy file, May be in use: ")+ex.Message+": "+openFileDialog.FileName);
+						MessageBox.Show(Lan.g(this,"Unable to copy file, May be in use: ")+ex.Message+": "+fileNames[i]);
 						copied = false;
 					}
 					if(copied) {
@@ -2113,7 +2123,7 @@ namespace OpenDental {
 				actionCloseUploadProgress?.Invoke();
 				//Reselect the last successfully added node when necessary.
 				if(doc!=null && !MakeIdDoc(doc.DocNum).Equals(nodeIdTag)) {
-					SelectTreeNode(GetTreeNode(MakeIdDoc(doc.DocNum)),fileNames[fileNames.Length-1]);
+					SelectTreeNode(GetTreeNode(MakeIdDoc(doc.DocNum)),fileNames[fileNames.Count-1]);
 				}
 				FillTree(true);
 			}

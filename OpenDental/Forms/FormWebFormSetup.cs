@@ -497,7 +497,7 @@ namespace OpenDental {
 					return;
 				}
 			}
-			string unlinkWebForm=Lan.g(this," Click 'Preferences' in the eServices Automated Messaging window to change web form selections.");
+			string unlinkWebForm=Lan.g(this,"Click 'Preferences' in the eServices Automated Messaging window to change web form selections.");
 			//check if any web form to be deleted is linked to ApptNewPatientThankYouWebSheetDefID ClinicPref by WebSheetDefID
 			if(PrefC.HasClinicsEnabled) {
 				List<ClinicPref> listClinicPrefs=ClinicPrefs.GetPrefAllClinics(PrefName.ApptNewPatientThankYouWebSheetDefID,includeDefault:false);
@@ -541,10 +541,25 @@ namespace OpenDental {
 				}
 			}
 			//check if any web form to be deleted is linked to ApptNewPatientThankYouWebSheetDefID Pref by WebSheetDefID
-			long webSheetDefID=PrefC.GetLong(PrefName.ApptNewPatientThankYouWebSheetDefID);
-			if(listWebForms_SheetDefs.Any(x => x.WebSheetDefID==webSheetDefID)) {
-				MsgBox.Show(Lan.g(this,"Cannot delete New Patient Thank-You Web Form '")+listWebForms_SheetDefs.Find(x => x.WebSheetDefID==webSheetDefID).Description+Lan.g(this,"'. Unlink this form before continuing.\r\n\r\n")+unlinkWebForm);
-					return;
+			List<long> listApptNewPatientThankYouWebSheetDefIDs=PrefC.GetString(PrefName.ApptNewPatientThankYouWebSheetDefID)
+				.Split(",",StringSplitOptions.RemoveEmptyEntries)
+				.Select(x => PIn.Long(x))
+				.ToList();
+			//Find the WebSheetDefIDs that are not okay to delete.
+			List<long> listWebSheetDefIDsInUse=listWebForms_SheetDefs
+				.Select(x => x.WebSheetDefID)
+				.Intersect(listApptNewPatientThankYouWebSheetDefIDs)
+				.ToList();
+			if(listWebSheetDefIDsInUse.Count>0) {
+				List<string> listWebFormDescriptions=listWebForms_SheetDefs
+					.FindAll(x => listWebSheetDefIDsInUse.Any(y => y==x.WebSheetDefID))
+					.Select(z => z.Description)
+					.ToList();
+				MsgBox.Show(Lan.g(this,"Cannot delete New Patient Thank-You Web Form(s):")+"\r\n  "
+					+string.Join("\r\n  ",listWebFormDescriptions)+"\r\n"
+					+Lan.g(this,"Unlink the shown form(s) before continuing.")+"\r\n\r\n"
+					+unlinkWebForm);
+				return;
 			}
 			Cursor=Cursors.WaitCursor;
 			for(int i=0;i<listWebForms_SheetDefs.Count;i++) {

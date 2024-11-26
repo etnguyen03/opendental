@@ -815,7 +815,7 @@ namespace OpenDental {
 			this.tabSchedule.Size = new System.Drawing.Size(669, 488);
 			this.tabSchedule.TabIndex = 0;
 			this.tabSchedule.Tag = "gridCharges[OpenDental.UI.ODGrid]";
-			this.tabSchedule.Text = "Schedule";
+			this.tabSchedule.Text = "Charges Due";
 			// 
 			// butAddCharge
 			// 

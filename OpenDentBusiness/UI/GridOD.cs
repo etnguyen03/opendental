@@ -709,6 +709,25 @@ using OpenDental.UI;
 			}
 		}
 
+		///<summary>Gets the large change value for the vertical scrollbar.</summary>
+		[Browsable(false)]
+		[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+		public int ScrollLargeChange {
+			get {
+				return vScroll.LargeChange;
+			}
+		}
+
+		///<summary>Gets the maximum value of the vertical scrollbar.</summary>
+		[Browsable(false)]
+		[DefaultValue(100)]
+		[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+		public int ScrollMaximum {
+			get {
+				return vScroll.Maximum;
+			}
+		}
+
 		///<summary>Gets or sets the value of the vertical scrollbar.  Does all error checking and invalidates.</summary>
 		[Browsable(false)]
 		[DefaultValue(0)]
