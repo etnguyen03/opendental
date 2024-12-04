@@ -28,7 +28,7 @@ namespace OpenDentBusiness {
 		public int MaxWidth;
 		///<summary>FKey to eformdef.EFormDefNum. This is only used alongside the eClipboardSheetDef table to determine if the patient has filled out that form yet. It's also used with the RevID to prefill fields that don't use a DbLink by pulling from a previous form. I think this also requires using the ReportableName for those fields.</summary>
 		public long EFormDefNum;
-		///<summary>Enum:EnumEFormStatus 0-None, 1-ReadyForPatientFill, 2-Filled, 3-Imported. In the None status, the office might be filling in the tooth number on a consent form. In the ReadyForPatientFill status, it will show in eClipboard. Sheets uses ShowInTerminal for this purpose. Once the patient has filled it, the status is changed to Filled. Sheets uses IsWebForm for this purpose. A Filled eForm will then be imported automatically and the status changed to Imported. If the import process could not match to a known patient, then this status will be UnmatchedToPatient and the PatNum will remain 0 until user matches it.</summary>
+		///<summary>Enum:EnumEFormStatus 0-None, 1-ShowInEClipboard, 2-Filled, 3-Imported. In the None status, the office might be filling in the tooth number on a consent form. In the ReadyForPatientFill status, it will show in eClipboard. Sheets uses ShowInTerminal for this purpose. Once the patient has filled it, the status is changed to Filled. Sheets uses IsWebForm for this purpose. A Filled eForm will then be imported automatically and the status changed to Imported. If the import process could not match to a known patient, then this status will be UnmatchedToPatient and the PatNum will remain 0 until user matches it.</summary>
 		public EnumEFormStatus Status;
 		///<summary>Revision ID. Used to determine in conjunction with PrefillStatus for eClipboardSheetDef to determine whether to show a patient a new form or have them update their last filled out form. Must match up with EFormDef RevID to show a previously filled out form.</summary>
 		public int RevID;
@@ -73,16 +73,16 @@ namespace OpenDentBusiness {
 	}
 
 	//<summary>These are the different internal eForm types that show up on the left grid of FrmEFormDefs. For example, we might have two different internal eForms called PatientRegistration and PatientLetter but they would both have an EnumEFormType set to PatientForm.</summary>
-	//public enum EnumEFormInternalType {
-		//<summary>0 - Patient Registration Form. eformdef.EnumEFormType will be set to PatientForm.</summary>
-		//[Description("Patient Registration")]
-		//PatientRegistration,
-		/* Will be added when we actually have these forms saved in the resource folder.
-		///<summary>1 - Medical History Form. eformdef.EnumEFormType will be set to MedicalHistory.</summary>
+	public enum EnumEFormInternalType {
+		///<summary>0 - Demo. Not used.</summary>
+		Demo,
+		///<summary>1 - Patient Registration Form. eformdef.EnumEFormType will be set to PatientForm.</summary>
+		[Description("Patient Registration")]
+		PatientRegistration,
+		///<summary>2 - Medical History Form. eformdef.EnumEFormType will be set to MedicalHistory.</summary>
 		[Description("Medical History")]
 		MedicalHist,
-		///<summary>2 - Consent Form. eformdef.EnumEFormType will be set to Consent.</summary>
+		///<summary>3 - Consent Form. eformdef.EnumEFormType will be set to Consent.</summary>
 		Consent
-		*/
-	//}
+	}
 }

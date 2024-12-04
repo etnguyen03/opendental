@@ -345,6 +345,8 @@ namespace OpenDentBusiness{
 			}
 			bool useDefault=ClinicPrefs.GetBool(PrefName.EClipboardUseDefaults,appointment.ClinicNum);
 			List<EClipboardSheetDef> listEClipboardSheetDefsToCreate=EClipboardSheetDefs.GetForClinic(useDefault ? 0 : appointment.ClinicNum);
+			//This list can hold sheets and eForms. Lets remove all forms that are not sheets since this method is only for creating sheets.
+			listEClipboardSheetDefsToCreate.RemoveAll(x=>x.SheetDefNum==0);
 			if(listEClipboardSheetDefsToCreate.Count==0) { //There aren't any sheets to create here
 				return 0;
 			}

@@ -102,6 +102,8 @@
     <Compile Include="TableTypes\CentralManagerT.cs" />
     <Compile Include="TableTypes\ClaimPaymentT.cs" />
     <Compile Include="TableTypes\ClaimTrackingT.cs" />
+    <Compile Include="TableTypes\EFormDefT.cs" />
+    <Compile Include="TableTypes\EFormT.cs" />
     <Compile Include="TableTypes\LabTurnaroundT.cs" />
     <Compile Include="TableTypes\LanguagePatT.cs" />
     <Compile Include="TableTypes\CodeGroupT.cs" />

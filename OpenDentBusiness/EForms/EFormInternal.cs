@@ -13,22 +13,30 @@ namespace OpenDentBusiness {
 
 		public static List<EFormDef> GetAllInternal() {
 			List<EFormDef> listEFormDefs=new List<EFormDef>();
-			//Unlike sheets, we don't bother to have an enum for our internal types. 
-			//Instead, they are just listed here for loading up in the setup window.
-			EFormDef eFormDef;
-			eFormDef=GetEFormFromResource(Properties.Resources.EFormPatientRegistration);
-			listEFormDefs.Add(eFormDef);
-			eFormDef=GetEFormFromResource(Properties.Resources.EFormMedicalHistory);
-			listEFormDefs.Add(eFormDef);
-			eFormDef=GetEFormFromResource(Properties.Resources.EFormExtractionConsent);
-			listEFormDefs.Add(eFormDef);
+			listEFormDefs.Add(GetEFormDef(EnumEFormInternalType.PatientRegistration));
+			listEFormDefs.Add(GetEFormDef(EnumEFormInternalType.MedicalHist));
+			listEFormDefs.Add(GetEFormDef(EnumEFormInternalType.Consent));
 			//Only show the internal Demo EForm in Debug mode.
 			//I think maybe this is no longer useful.
 			//if(ODBuild.IsDebug()) {
-			//	eFormDef=GetEFormFromResource(Properties.Resources.EFormDemo);
-			//	listEFormDefs.Add(eFormDef);
+			//	listEFormDefs.Add(GetEFormDef(EnumEFormInternalType.Demo));
 			//}
 			return listEFormDefs;
+		}
+
+		public static EFormDef GetEFormDef(EnumEFormInternalType eformInternalType) {
+			switch(eformInternalType) {
+				case EnumEFormInternalType.Demo:
+					return GetEFormFromResource(Properties.Resources.EFormDemo);
+				case EnumEFormInternalType.PatientRegistration:
+					return GetEFormFromResource(Properties.Resources.EFormPatientRegistration);
+				case EnumEFormInternalType.MedicalHist:
+					return GetEFormFromResource(Properties.Resources.EFormMedicalHistory);
+				case EnumEFormInternalType.Consent:
+					return GetEFormFromResource(Properties.Resources.EFormExtractionConsent);
+				default:
+					throw new ApplicationException("Invalid EnumEFormInternalType:"+eformInternalType.ToString());
+			}
 		}
 
 		private static EFormDef GetEFormFromResource(string xmlDoc) {
@@ -52,7 +60,5 @@ namespace OpenDentBusiness {
 			eFormDef.EFormDefNum=0;
 			return eFormDef;
 		}
-		
-
 	}
 }

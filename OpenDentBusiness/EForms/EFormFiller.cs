@@ -453,7 +453,7 @@ namespace OpenDentBusiness {
 		}
 
 		///<summary>Takes a list of replacements and actually performs the replacement within all the Sheet fields.</summary>
-		private static void ReplaceStaticTextFields(List<StaticTextReplacement> listStaticTextReplacements,EForm eForm,Patient patient,Family family){
+		public static void ReplaceStaticTextFields(List<StaticTextReplacement> listStaticTextReplacements,EForm eForm,Patient patient,Family family){
 			for(int f=0;f<eForm.ListEFormFields.Count;f++){
 				if(eForm.ListEFormFields[f].FieldType!=EnumEFormFieldType.Label) {
 					continue;

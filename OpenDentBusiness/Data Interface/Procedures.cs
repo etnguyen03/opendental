@@ -506,6 +506,9 @@ namespace OpenDentBusiness {
 			if(RemotingClient.MiddleTierRole==MiddleTierRole.ClientMT) {
 				return Meth.GetObject<List<ProcQueued>>(MethodBase.GetCurrentMethod(),listClaimProcQueueds);
 			}
+			if(listClaimProcQueueds.IsNullOrEmpty()) {
+				return new List<ProcQueued>();
+			}
 			List<long> listProcNums=listClaimProcQueueds.Select(x=>x.ProcNum).ToList();
 			string command="SELECT ProcNum,CodeNum,IcdVersion,DiagnosticCode,DiagnosticCode2,DiagnosticCode3,DiagnosticCode4" +
 				" FROM procedurelog WHERE ProcNum IN ("+string.Join(",",listProcNums)+")";

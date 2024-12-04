@@ -3333,7 +3333,7 @@ namespace OpenDentBusiness{
 			Db.NonQ(command);
 		}
 
-		///<summary>The defNumApptConfirmed will be a DefNum or 0.  Inserts an invalid appointment signalod.</summary>
+		///<summary>The defNumApptConfirmed will be a DefNum or 0.  Inserts an invalid appointment signalod. If createSheetsForCheckin is true, it will create both sheets and eForms.</summary>
 		public static void SetConfirmed(Appointment appointment,long defNumApptConfirmed,bool createSheetsForCheckin=true) {
 			if(RemotingClient.MiddleTierRole==MiddleTierRole.ClientMT) {
 				Meth.GetVoid(MethodBase.GetCurrentMethod(),appointment,defNumApptConfirmed,createSheetsForCheckin);
@@ -3345,8 +3345,10 @@ namespace OpenDentBusiness{
 			command+=",SecurityHash='"+POut.String(appointment.SecurityHash)+"'";
 			if(PrefC.GetLong(PrefName.AppointmentTimeArrivedTrigger)==defNumApptConfirmed) {
 				command+=",DateTimeArrived="+POut.DateT(DateTime.Now);
+				//createSheetsForCheckin will create sheets and eForms.
 				if(createSheetsForCheckin) {
-				   Sheets.CreateSheetsForCheckIn(appointment);
+					Sheets.CreateSheetsForCheckIn(appointment);
+					EForms.CreateEFormForCheckIn(appointment);
 				}
 			}
 			else if(PrefC.GetLong(PrefName.AppointmentTimeSeatedTrigger)==defNumApptConfirmed){
@@ -3398,6 +3400,7 @@ namespace OpenDentBusiness{
 			}
 			if(appointment.Confirmed!=appointmentOld.Confirmed && appointment.Confirmed==PrefC.GetLong(PrefName.AppointmentTimeArrivedTrigger)) {
 				Sheets.CreateSheetsForCheckIn(appointment);
+				EForms.CreateEFormForCheckIn(appointment);
 			}
 			if(isSuccess && !suppressHistory) {//Something actually changed.
 				HistAppointments.CreateHistoryEntry(appointment.AptNum,HistAppointmentAction.Changed);

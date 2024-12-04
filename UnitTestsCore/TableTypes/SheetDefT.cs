@@ -40,7 +40,7 @@ namespace UnitTestsCore {
 			if(!createEClipboardRule) {
 				return sheetDef;
 			}
-			var existingAll=EClipboardSheetDefs.Refresh();
+			var existingAll=EClipboardSheetDefs.Refresh().FindAll(x => x.SheetDefNum > 0);
 			var existingClinic=existingAll.FindAll(x => x.ClinicNum==clinicNum);
 			int items=0;
 			existingClinic.ForEach(x => { x.ItemOrder=++items; });
@@ -48,12 +48,16 @@ namespace UnitTestsCore {
 				ClinicNum=clinicNum,
 				ResubmitInterval=TimeSpan.FromDays(days),
 				SheetDefNum=sheetDef.SheetDefNum,
+				EFormDefNum=0, //Always 0 for Sheets
 				ItemOrder=++items,
 				PrefillStatus=PrefillStatuses.New,
 				MinAge=minAge,
 				MaxAge=maxAge,
 			});
+			//Removes any EClipboardSheetDefs that are not Sheets (that means EForms rules will be deleted).
 			EClipboardSheetDefs.Sync(existingAll,EClipboardSheetDefs.Refresh());
+			EFormDefs.RefreshCache();
+			EFormFieldDefs.RefreshCache();
 			SheetDefs.RefreshCache();
 			SheetFieldDefs.RefreshCache();
 			return sheetDef;

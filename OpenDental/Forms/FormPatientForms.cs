@@ -295,7 +295,7 @@ namespace OpenDental {
 			}
 			EFormDef eFormDef=frmEFormPicker.EFormDefSelected;
 			//fields already attached
-			EForm eForm=EForms.CreateEFormFromEFormDef(eFormDef,PatNum);//sets IsNew=true
+			EForm eForm=EForms.CreateEFormFromEFormDef(eFormDef,PatNum,EnumEFormStatus.None);//sets IsNew=true
 			eForm.DateTimeShown=DateTime.Now;
 			EFormFiller.FillFields(eForm);
 			EForms.TranslateFields(eForm,_patient.Language);

@@ -8,6 +8,7 @@ namespace OpenDentBusiness {
 	///<summary>Individual fields for the EForm. Each field generally includes a label and a value. Links to a EFormDef by FKey to eformdef.EFormDefNum.
 	///NOTE: If any new fields get added to this class and EFormField, make sure to add them to the methods EFormFields.FromDef and EFormFields.ToDef</summary>
 	[Serializable]
+	[CrudTable(IsSynchable = true)]
 	public class EFormFieldDef:TableBase {
 		///<summary>Primary key.</summary>
 		[CrudColumn(IsPriKey=true)]

@@ -98,6 +98,15 @@ namespace OpenDentBusiness{
 		}
 		#endregion Cache Pattern
 
+		///<summary>Gets all EFormFieldDef from the database for a specific EFormsDef.</summary>
+		public static List<EFormFieldDef> GetForEFormDef(long eFormDefNum) {
+			if(RemotingClient.MiddleTierRole==MiddleTierRole.ClientMT) {
+				return Meth.GetObject<List<EFormFieldDef>>(MethodBase.GetCurrentMethod(),eFormDefNum);
+			}
+			string command="SELECT * FROM eformfielddef WHERE EFormDefNum="+POut.Long(eFormDefNum);
+			return Crud.EFormFieldDefCrud.SelectMany(command);
+		}
+
 		///<summary></summary>
 		public static long Insert(EFormFieldDef eFormFieldDef){
 			if(RemotingClient.MiddleTierRole==MiddleTierRole.ClientMT){
@@ -124,6 +133,18 @@ namespace OpenDentBusiness{
 			}
 			LanguagePats.DeleteForEFormFieldDef(eFormFieldDefNum);
 			Crud.EFormFieldDefCrud.Delete(eFormFieldDefNum);
+		}
+
+		///<summary>Inserts, updates, or deletes database rows to match supplied list. Must always pass in eFormDefNum.
+		///This function uses a DB comparison rather than a stale list because we are not worried about concurrency of a single EForm and enhancing the
+		///functions that call this would take a lot of restructuring.</summary>
+		public static void Sync(List<EFormFieldDef> listEFormFieldDefs,long eFormDefNum) {
+			if(RemotingClient.MiddleTierRole==MiddleTierRole.ClientMT) {
+				Meth.GetVoid(MethodBase.GetCurrentMethod(),listEFormFieldDefs,eFormDefNum);//never pass DB list through the web service
+				return;
+			}
+			List<EFormFieldDef> listEFormFieldDefsDB=GetForEFormDef(eFormDefNum);
+			Crud.EFormFieldDefCrud.Sync(listEFormFieldDefs,listEFormFieldDefsDB);
 		}
 
 		//We can't do this. We must instead loop through them because we need to delete any LanguagePats

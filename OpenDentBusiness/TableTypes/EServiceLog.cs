@@ -60,6 +60,8 @@ namespace OpenDentBusiness {
 		SmsMtSentNum,
 		///<summary>7 SmsMtTerminated Number</summary>
 		SmsMtTerminatedNum,
+		///<summary>8 EForm Number.</summary>
+		EFormNum,
 	}
 
 	///<summary>List of some possible eService Actions.</summary>
@@ -505,8 +507,8 @@ namespace OpenDentBusiness {
 		[Description("QR scan window success")]
 		[EServiceLogType(eServiceType.EClipboard,eServiceType.ODTouch)]
 		ECQRScanOk,
-		/// <summary>95 - EClipboard - Error: Failed to submit sheet</summary>
-		[Description("Failed to submit sheet")]
+		/// <summary>95 - EClipboard - Error: Failed to submit sheet or eForm</summary>
+		[Description("Failed to submit sheet or eForm")]
 		[EServiceLogType(eServiceType.EClipboard)]
 		ECSubmitSheetFailed,
 		///<summary>96 - Web Forms Form Downloaded.</summary>
