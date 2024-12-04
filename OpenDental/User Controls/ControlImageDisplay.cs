@@ -3264,7 +3264,7 @@ Here is the desired behavior:
 						//StringFormat stringFormat=new StringFormat();
 						//stringFormat.
 						SizeF sizeF=g.MeasureString(_listImageDraws[idxHover].Details,font,300);//,stringFormat
-						Size sizePanel=new Size(LayoutManager.Scale((int)sizeF.Width+10),LayoutManager.Scale((int)sizeF.Height+10));
+						Size sizePanel=new Size(LayoutManager.Scale((int)sizeF.Width+11),LayoutManager.Scale((int)sizeF.Height+11));
 						LayoutManager.MoveSize(panelHover,sizePanel);
 						labelHover.Text=_listImageDraws[idxHover].Details;
 						//Set text color to white on darker background colors. See https://stackoverflow.com/a/19360086/.

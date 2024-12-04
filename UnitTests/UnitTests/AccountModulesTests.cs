@@ -59,7 +59,7 @@ namespace UnitTests.AccountModules_Tests {
 			paySplitCopy.SplitAmt=1200;
 			List<AccountEntry> listAccountEntries=AccountModules.GetListUnpaidAccountCharges(new List<Procedure>() { procedure },new List<Adjustment>(),
 				new List<PaySplit>() { paySplit },new List<ClaimProc>(),new List<PayPlanCharge>(),new List<ClaimProc>(),CreditCalcType.AllocatedOnly,
-				new List<PaySplit>() { paySplitCopy });
+				new List<PayPlanLink>(),new List<PaySplit>() { paySplitCopy });
 			Assert.AreEqual(1,listAccountEntries.Count);
 			Assert.AreEqual(2000,listAccountEntries.First().AmountOriginal);
 			Assert.AreEqual(800,listAccountEntries.First().AmountEnd);//Should be $800 instead of $200.

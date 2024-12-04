@@ -19,6 +19,7 @@ namespace OpenDental{
 		private List<PaySplit> _listPaySplits;
 		private List<Adjustment> _listAdjustments;
 		private List<PayPlanCharge> _listPayPlanCharges;
+		private List<PayPlanLink> _listPayPlanlinks;
 		private List<ClaimProc> _listClaimProcsInsPayAsTotals;
 		private List<ClaimProc> _listClaimProcs;
 		private List<AccountEntry> _listAccountEntries;
@@ -84,6 +85,10 @@ namespace OpenDental{
 			}
 			_listClaimProcsInsPayAsTotals=ClaimProcs.GetByTotForPats(new List<long> { _patNum });
 			_listClaimProcs=ClaimProcs.GetForProcs(_listProcedures.Select(x => x.ProcNum).ToList());
+			_listPayPlanlinks=PayPlanLinks.GetForFKeysAndLinkType(_listProcedures.Select(x => x.ProcNum).ToList(),PayPlanLinkType.Procedure);
+			if(_doShowAdjustments) {
+				_listPayPlanlinks.AddRange(PayPlanLinks.GetForFKeysAndLinkType(_listAdjustments.Select(x => x.AdjNum).ToList(),PayPlanLinkType.Adjustment));
+			}
 			labelUnallocated.Visible=_doShowUnallocatedLabel;
 			if(PrefC.GetInt(PrefName.RigorousAdjustments)==(int)RigorousAdjustments.DontEnforce) {
 				radioIncludeAllCredits.Checked=true;
@@ -110,8 +115,8 @@ namespace OpenDental{
 			else {
 				creditCalcType= CreditCalcType.ExcludeAll;
 			}
-			_listAccountEntries=AccountModules.GetListUnpaidAccountCharges(_listProcedures, _listAdjustments,
-				_listPaySplits, _listClaimProcs, _listPayPlanCharges, _listClaimProcsInsPayAsTotals, creditCalcType, ListPaySplits);
+			_listAccountEntries=AccountModules.GetListUnpaidAccountCharges(_listProcedures,_listAdjustments,
+				_listPaySplits,_listClaimProcs,_listPayPlanCharges,_listClaimProcsInsPayAsTotals,creditCalcType,_listPayPlanlinks,ListPaySplits);
 			List<Def> listDefsPosAdj=Defs.GetPositiveAdjTypes();
 			gridMain.BeginUpdate();
 			gridMain.Columns.Clear();

@@ -898,11 +898,40 @@ namespace OpenDentBusiness{
 				return Meth.GetObject<List<ClaimProc>>(MethodBase.GetCurrentMethod(),listClaimNums);
 			}
 			listClaimNums=listClaimNums.Distinct().ToList();
-			List <string> listClaimNumStrs=listClaimNums.Select(x => POut.Long(x)).ToList();
 			string command=
 				"SELECT * FROM claimproc "
-				+"WHERE ClaimNum IN("+String.Join(",",listClaimNumStrs)+")";
+				+"WHERE ClaimNum IN("+String.Join(",",listClaimNums)+")";
 			return Crud.ClaimProcCrud.SelectMany(command);
+		}
+
+		///<summary>Grabs columns specifically needed for Claims.GetQueueList() for the sake of speed enhancement.</summary>
+		public static List<ClaimProcQueued> GetClaimProcQueuedsForClaims(List<long> listClaimNums) {
+			if(listClaimNums.Count==0) {
+				return new List<ClaimProcQueued>();
+			}
+			if(RemotingClient.MiddleTierRole==MiddleTierRole.ClientMT) {
+				return Meth.GetObject<List<ClaimProcQueued>>(MethodBase.GetCurrentMethod(),listClaimNums);
+			}
+			string command="SELECT ClaimProcNum,ProcNum,ClaimNum" +
+				" FROM claimproc WHERE ClaimNum IN ("+string.Join(",",listClaimNums)+")";
+			DataTable table=Db.GetTable(command);
+			List<ClaimProcQueued> listClaimProcQueueds=new List<ClaimProcQueued>();
+			for(int i=0;i<table.Rows.Count;i++) {
+				DataRow dataRow=table.Rows[i];
+				ClaimProcQueued claimProcQueued=new ClaimProcQueued();
+				claimProcQueued.ClaimProcNum=PIn.Long(dataRow["ClaimProcNum"].ToString());
+				claimProcQueued.ProcNum=PIn.Long(dataRow["ProcNum"].ToString());
+				claimProcQueued.ClaimNum=PIn.Long(dataRow["ClaimNum"].ToString());
+				listClaimProcQueueds.Add(claimProcQueued);
+			}
+			return listClaimProcQueueds;
+		}
+		
+		///<summary>Bite-Sized ClaimProc class for speed enhancement</summary>
+		public class ClaimProcQueued {
+			public long ClaimProcNum;
+			public long ProcNum;
+			public long ClaimNum;
 		}
 
 		///<summary>Gets a list of ClaimProcs with status of estimate.</summary>
@@ -3546,6 +3575,8 @@ namespace OpenDentBusiness{
 			return insPayAmt;
 		}
 	}
+
+	
 
 
 }

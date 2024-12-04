@@ -12543,16 +12543,16 @@
       <summary>FK to clinic.ClinicNum.  Since there is no ClincNum field at the payplan level, the clinic must be the same for all payplancharges.  It's initially assigned using the patient clinic.  Payments applied should be to this clinic, although the current user interface does not help with this.</summary>
     </column>
     <column order="10" name="ChargeType" type="tinyint(4)">
-      <summary>Enum:PayPlanChargeType The charge type of the payment plan. 0 - Debit, 1 - Credit.  Only relevant for those on Payment Plan Version 2.</summary>
+      <summary>Enum:PayPlanChargeType The charge type of the payment plan. 0 - ChargeDue, 1 - Production.  Only relevant for those on Payment Plan Version 2, not Dynamic Payment Plans.</summary>
       <Enumeration name="PayPlanChargeType">
-        <summary></summary>
-        <EnumValue name="Debit">0 - Debit</EnumValue>
-        <EnumValue name="Credit">1 - Credit</EnumValue>
+        <summary>Jordan-I would like to change this enum, but it would break the API.</summary>
+        <EnumValue name="Debit">0</EnumValue>
+        <EnumValue name="Credit">1 -  The production can be either Procedure, Adjust, or Ortho. Only used for PPv2, not DPPs.</EnumValue>
       </Enumeration>
     </column>
     <column order="11" name="ProcNum" type="bigint(20)" fk="procedurelog">
       <summary>FK to procedurelog.ProcNum.  The procedure that this payplancharge is attached to.  Only applies to credits.
-            Always 0 for debits.  Can be 0 for credits not attached to a procedure.</summary>
+            Always 0 for ChargeDue.  Can be 0 for production not attached to a procedure.</summary>
     </column>
     <column order="12" name="SecDateTEntry" type="datetime">
       <summary>DateTime payplancharge was added to the payplan. Not editable by user.</summary>
@@ -12564,7 +12564,7 @@
       <summary>FK to statement.StatementNum.  Only used when the statement in an invoice.</summary>
     </column>
     <column order="15" name="FKey" type="bigint(20)">
-      <summary>Only present for dynamic payment plans. Contains FKey of the link type.</summary>
+      <summary>Only present for dynamic payment plans. Contains FKey of the link type. ProcNum, AdjNum, or OrthoCaseNum. Since one ChargeDue can be split to multiple procedures, multiple rows are created in that case. In UI, these would be grouped by due date unless user checked ungroup box.</summary>
     </column>
     <column order="16" name="LinkType" type="tinyint(4)">
       <summary>Enum:PayPlanLinkType Only present for dynamic payment plans. </summary>

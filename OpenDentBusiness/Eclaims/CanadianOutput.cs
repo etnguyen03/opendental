@@ -522,6 +522,9 @@ namespace OpenDentBusiness.Eclaims {
 				if(ack==null) {//For those claims sent that didn't receive a response (i.e. when there is an exception while sending a claim).
 					continue;
 				}
+				if(ack.AckCode=="R") {
+					continue;
+				}
 				string messageText=EtransMessageTexts.GetMessageText(ack.EtransMessageTextNum);
 				if(messageText=="") {
 					continue;
@@ -534,8 +537,15 @@ namespace OpenDentBusiness.Eclaims {
 					ex.DoNothing();
 					continue;
 				}
-				CCDField transRefNum=messageData.GetFieldById("G01");
-				if(transRefNum!=null && transRefNum.valuestr==claim.CanadaTransRefNum && listEtrans[i].DateTimeTrans>originalEtransDateTime) {
+				string transRefNum="";
+				CCDField ccdFieldTransRefNum=messageData.GetFieldById("G01");
+				if(ccdFieldTransRefNum!=null) {
+					transRefNum=ccdFieldTransRefNum.valuestr;
+					if(transRefNum.Trim()=="") {
+						transRefNum="";//In Canadian.SendClaim() when a TransRefNum containing all spaces is received in the response, the TransRefNum is simplified to empty string.
+					}
+				}
+				if(transRefNum==claim.CanadaTransRefNum && listEtrans[i].DateTimeTrans>originalEtransDateTime) {
 					officeSequenceNumber=PIn.Int(messageData.GetFieldById("A02").valuestr);
 					originalEtransDateTime=listEtrans[i].DateTimeTrans;
 				}

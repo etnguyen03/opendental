@@ -75,7 +75,7 @@ namespace OpenDental {
 			this.butCombine.Size = new System.Drawing.Size(80, 24);
 			this.butCombine.TabIndex = 8;
 			this.butCombine.Text = "Co&mbine";
-			this.toolTip1.SetToolTip(this.butCombine, "Combines multiple Employers");
+			this.toolTip1.SetToolTip(this.butCombine, "Combines multiple Carriers");
 			this.butCombine.Click += new System.EventHandler(this.butCombine_Click);
 			// 
 			// butItransUpdateCarriers

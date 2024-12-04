@@ -2484,12 +2484,6 @@ End of Checklist================================================================
 			ShowPatientEditEmail();
 		}
 
-		private void textEmail_KeyUp(object sender,KeyEventArgs e) {
-			if(textEmail.Text.Length>=100) {
-				ShowPatientEditEmail();
-			}
-		}
-
 		private void textReferredFrom_DoubleClick(object sender,EventArgs e) {
 			FrmReferralsPatient frmReferralsPatient=new FrmReferralsPatient();
 			frmReferralsPatient.PatNum=Patient.PatNum;

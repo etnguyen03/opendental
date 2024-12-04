@@ -3051,6 +3051,11 @@ namespace OpenDentBusiness {
 						}
 						break;
 					case "payPlanAmtDueValue":
+						//Don't fill payPlanAmtDueValue field for limited statements.
+						if(Stmt.StatementType==StmtType.LimitedStatement) {
+							field.FieldValue="N/A";
+							break;
+						}
 						DataTable tableMisc=dataSet.Tables["misc"];
 						if(tableMisc==null){
 							tableMisc=new DataTable();	

@@ -496,15 +496,45 @@ namespace OpenDentBusiness {
 			if(listClaimProc.Count==0) {
 				return new List<Procedure>();
 			}
-			string command="SELECT * FROM procedurelog WHERE ProcNum IN (";
-			for(int i=0;i<listClaimProc.Count;i++) {
-				if(i>0) {
-					command+=",";
-				}
-				command+=listClaimProc[i].ProcNum;
-			}
-			command+=")";
+			List<long> listProcNums=listClaimProc.Select(x=>x.ProcNum).ToList();
+			string command="SELECT * FROM procedurelog WHERE ProcNum IN ("+string.Join(",",listProcNums)+")";
 			return Crud.ProcedureCrud.SelectMany(command);
+		}
+
+		///<summary>Grabs columns specifically needed for Claims.GetQueueList() for the sake of speed enhancement.</summary>
+		public static List<ProcQueued> GetProcQueuedsFromClaimProcQueueds(List<ClaimProcs.ClaimProcQueued> listClaimProcQueueds) {
+			if(RemotingClient.MiddleTierRole==MiddleTierRole.ClientMT) {
+				return Meth.GetObject<List<ProcQueued>>(MethodBase.GetCurrentMethod(),listClaimProcQueueds);
+			}
+			List<long> listProcNums=listClaimProcQueueds.Select(x=>x.ProcNum).ToList();
+			string command="SELECT ProcNum,CodeNum,IcdVersion,DiagnosticCode,DiagnosticCode2,DiagnosticCode3,DiagnosticCode4" +
+				" FROM procedurelog WHERE ProcNum IN ("+string.Join(",",listProcNums)+")";
+			DataTable table=Db.GetTable(command);
+			List<ProcQueued> listProcForIcds=new List<ProcQueued>();
+			for(int i=0;i<table.Rows.Count;i++) {
+				DataRow dataRow=table.Rows[i];
+				ProcQueued procForIcd=new ProcQueued();
+				procForIcd.ProcNum=PIn.Long(dataRow["ProcNum"].ToString());
+				procForIcd.CodeNum=PIn.Long(dataRow["CodeNum"].ToString());
+				procForIcd.IcdVersion=PIn.Int(dataRow["IcdVersion"].ToString());
+				procForIcd.DiagnosticCode=PIn.String(dataRow["DiagnosticCode"].ToString());
+				procForIcd.DiagnosticCode2=PIn.String(dataRow["DiagnosticCode2"].ToString());
+				procForIcd.DiagnosticCode3=PIn.String(dataRow["DiagnosticCode3"].ToString());
+				procForIcd.DiagnosticCode4=PIn.String(dataRow["DiagnosticCode4"].ToString());
+				listProcForIcds.Add(procForIcd);
+			}
+			return listProcForIcds;
+		}
+
+		///<summary>Bite-Sized Procedure class for speed enhancement</summary>
+		public class ProcQueued {
+			public long ProcNum;
+			public long CodeNum;
+			public int IcdVersion;
+			public string DiagnosticCode;
+			public string DiagnosticCode2;
+			public string DiagnosticCode3;
+			public string DiagnosticCode4;
 		}
 
 		///<summary>Gets a list of TP procedures that are attached to scheduled appointments that are not flagged as CPOE.</summary>
@@ -5910,6 +5940,7 @@ namespace OpenDentBusiness {
 		public List<Adjustment> Adjustments=new List<Adjustment>();
 		public List<PaySplit> PaySplits= new List<PaySplit>();
 		public List<ClaimProc> ClaimProcs = new List<ClaimProc>();
+		///<summary>Represents pay plan credits for both patient payment plans and dynamic payment plans. For dynamic payment plans, only the principal field is populated.</summary>
 		public List<PayPlanCharge> PayPlanCredits = new List<PayPlanCharge>();
 		public List<ProcAttachTypes> ExcludedTypes = new List<ProcAttachTypes>();
 		public List<PaySplit> SplitsCur = new List<PaySplit>();

@@ -445,19 +445,12 @@ namespace OpenDentBusiness{
 			if(customTracking>0) {
 				listWhereAnds.Add("claim.CustomTracking="+POut.Long(customTracking)+" ");
 			}
-			string icd9Command=@"IFNULL((SELECT COUNT(*)
-						FROM procedurelog
-						INNER JOIN claimproc ON claimproc.ProcNum=procedurelog.ProcNum
-						WHERE procedurelog.IcdVersion=9
-						AND (procedurelog.DiagnosticCode!='' OR procedurelog.DiagnosticCode2!='' OR procedurelog.DiagnosticCode3!='' 
-							OR procedurelog.DiagnosticCode4!='')
-						AND claimproc.ClaimNum=claim.ClaimNum
-						),FALSE) HasIcd9 ";
+			//Removed subselect query for HasIcd9 because we're grabbing all of the claims and claimprocs in the code anyway.
+			//Much less punishing to offices that don't have medical procedures.
 			string command=$@"SELECT claim.ClaimNum,carrier.NoSendElect,claim.ClaimStatus,carrier.CarrierName,patient.PatNum,carrier.ElectID,claim.MedType,
 				claim.DateService,claim.ClinicNum,claim.CustomTracking,claim.ProvTreat,claim.SecDateTEdit,
 				{DbHelper.Concat("patient.LName","', '","patient.FName","IF(patient.MiddleI='','',CONCAT(' ',patient.MiddleI))")} patName,
-				(SELECT MIN(patplan.Ordinal) FROM patplan WHERE patplan.PatNum=claim.PatNum AND patplan.InsSubNum=claim.InsSubNum) Ordinal,
-				{icd9Command}
+				(SELECT MIN(patplan.Ordinal) FROM patplan WHERE patplan.PatNum=claim.PatNum AND patplan.InsSubNum=claim.InsSubNum) Ordinal
 				FROM claim
 				LEFT JOIN patient ON patient.PatNum=claim.PatNum
 				LEFT JOIN insplan ON claim.PlanNum=insplan.PlanNum
@@ -465,14 +458,20 @@ namespace OpenDentBusiness{
 				WHERE {string.Join("AND ",listWhereAnds)}
 				ORDER BY claim.DateService,patient.LName,patient.FName";
 			Dictionary<long,DataRow> dictionaryClaimRows=Db.GetTable(command).Select().GroupBy(x => PIn.Long(x["ClaimNum"].ToString())).ToDictionary(x => x.Key,x => x.First());
-			List<ClaimProc> listClaimProcs=ClaimProcs.RefreshForClaims(dictionaryClaimRows.Keys.ToList());
-			Dictionary<long,string> dictionaryProcCodeStrs=Procedures.GetProcsFromClaimProcs(listClaimProcs)
-				.ToDictionary(x => x.ProcNum,x => ProcedureCodes.GetStringProcCode(x.CodeNum));
-			Dictionary<long,string> dictionaryProcCodeStrsPerClaim=listClaimProcs
+			List<ClaimProcs.ClaimProcQueued> listClaimProcQueueds=ClaimProcs.GetClaimProcQueuedsForClaims(dictionaryClaimRows.Keys.ToList());
+			List<Procedures.ProcQueued> listProcQueueds=Procedures.GetProcQueuedsFromClaimProcQueueds(listClaimProcQueueds);
+			Dictionary<long,string> dictionaryProcCodeStrs=listProcQueueds.ToDictionary(x => x.ProcNum,x => ProcedureCodes.GetStringProcCode(x.CodeNum));
+			Dictionary<long,string> dictionaryProcCodeStrsPerClaim=listClaimProcQueueds
 				.Where(x => dictionaryProcCodeStrs.ContainsKey(x.ProcNum) && !string.IsNullOrEmpty(dictionaryProcCodeStrs[x.ProcNum]))
 				.GroupBy(x => x.ClaimNum,x => dictionaryProcCodeStrs[x.ProcNum])
 				.ToDictionary(x => x.Key,x => string.Join(", ",x));
-			return dictionaryClaimRows.Select(x => {
+			//Get all of the ProcNums and decide if they meet "HasIcd9" criteria of IcdVersion 9 and at least one populated diagnostic code.
+			List<long> listProcNumsWithIcd9=listProcQueueds.FindAll(x=>x.IcdVersion==9 
+				&& !string.IsNullOrWhiteSpace(x.DiagnosticCode+x.DiagnosticCode2+x.DiagnosticCode3+x.DiagnosticCode4)
+			).Select(x=>x.ProcNum).ToList();
+			//Group the ClaimNums with their associated ProcNums.
+			List<long> listClaimNumsWithIcd9=listClaimProcQueueds.FindAll(x=>listProcNumsWithIcd9.Contains(x.ProcNum)).Select(x=>x.ClaimNum).Distinct().ToList();
+			ClaimSendQueueItem[] claimSendQueueItemArray=dictionaryClaimRows.Select(x => {
 				ClaimSendQueueItem claimSendQueueItem = new ClaimSendQueueItem();
 				claimSendQueueItem.ClaimNum           =x.Key;
 				claimSendQueueItem.NoSendElect        =PIn.Enum<NoSendElectType>(x.Value["NoSendElect"].ToString());
@@ -487,12 +486,13 @@ namespace OpenDentBusiness{
 				claimSendQueueItem.DateService        =PIn.Date(x.Value["DateService"].ToString());
 				claimSendQueueItem.ClinicNum          =PIn.Long(x.Value["ClinicNum"].ToString());
 				claimSendQueueItem.CustomTracking     =PIn.Long(x.Value["CustomTracking"].ToString());
-				claimSendQueueItem.HasIcd9            =PIn.Bool(x.Value["HasIcd9"].ToString());
+				claimSendQueueItem.HasIcd9            =listClaimNumsWithIcd9.Contains(PIn.Long(x.Value["ClaimNum"].ToString()));
 				claimSendQueueItem.ProvTreat          =PIn.Long(x.Value["ProvTreat"].ToString());
 				claimSendQueueItem.ProcedureCodeString=dictionaryProcCodeStrsPerClaim.TryGetValue(x.Key,out string procCodeStr)?procCodeStr:"";
 				claimSendQueueItem.SecDateTEdit       =PIn.Date(x.Value["SecDateTEdit"].ToString());
 				return claimSendQueueItem;
 			}).ToArray();
+			return claimSendQueueItemArray;
 		}
 
 		///<summary>Supply claimnums. Called from X12 to begin the sorting process on claims going to one clearinghouse.</summary>

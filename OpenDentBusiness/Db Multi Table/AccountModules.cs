@@ -3248,7 +3248,7 @@ namespace OpenDentBusiness {
 		///Sets the Tag object of each AccountEntry to its corresponding procedure, payplancharge, or adjustment.  Type check accordingly.</summary>
 		public static List<AccountEntry> GetListUnpaidAccountCharges(List<Procedure> listProcs,List<Adjustment> listAdjs,List<PaySplit> listPaySplits,
 			List<ClaimProc> listClaimProcs,List<PayPlanCharge> listPayPlanCharges,List<ClaimProc> listInsPayTot,CreditCalcType calcType,
-			List<PaySplit> listSplitsCur=null) 
+			List<PayPlanLink> listPayPlanLinks,List<PaySplit> listSplitsCur=null)
 		{
 			Meth.NoCheckMiddleTierRole();
 			//Prefer the SplitAmt for splits in memory instead of the SplitAmt found within the database.
@@ -3295,6 +3295,33 @@ namespace OpenDentBusiness {
 					entryCur.AmountAvailable-=amtToRemove;
 					entryCur.AmountEnd-=amtToRemove;
 					creditTotal-=amtToRemove;
+				}
+			}
+			//Dynamic payment plans are forced to have links directly to production.
+			//Manipulate the AmountEnd of the corresponding production entries.
+			for(int i=0;i<listPayPlanLinks.Count;i++) {
+				AccountEntry accountEntry=null;
+				if(listPayPlanLinks[i].LinkType==PayPlanLinkType.Adjustment) {
+					accountEntry=listAccountEntries.Find(x => x.GetType()==typeof(Adjustment) && x.AdjNum==listPayPlanLinks[i].FKey);
+				}
+				else if(listPayPlanLinks[i].LinkType==PayPlanLinkType.Procedure) {
+					accountEntry=listAccountEntries.Find(x => x.GetType()==typeof(ProcExtended) && x.PriKey==listPayPlanLinks[i].FKey);
+				}
+				if(accountEntry==null) {
+					continue;
+				}
+				decimal principal=accountEntry.AmountEnd;
+				if(listPayPlanLinks[i].AmountOverride > 0) {
+					principal=Math.Min((Decimal)listPayPlanLinks[i].AmountOverride,accountEntry.AmountEnd);
+				}
+				accountEntry.AmountEnd-=principal;
+				//Create a 'fake' PayPlanCharge to represent this credit for procedures for use in the breakdown calculations.
+				if(listPayPlanLinks[i].LinkType==PayPlanLinkType.Procedure && accountEntry!=null) {
+					ProcExtended procExtended=(ProcExtended)accountEntry.Tag;
+					//The 'fake' charge only needs to set the Principal field.
+					PayPlanCharge payPlanCharge=new PayPlanCharge();
+					payPlanCharge.Principal=(double)principal;
+					procExtended.PayPlanCredits.Add(payPlanCharge);
 				}
 			}
 			listAccountEntries=listAccountEntries.OrderBy(x => x.Date).ToList();

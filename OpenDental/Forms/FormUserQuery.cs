@@ -360,6 +360,7 @@ namespace OpenDental {
 					filePath=ODFileUtils.CombinePaths(Path.GetTempPath(),saveFileDialog2.FileName.Split('\\').Last());
 				}
 				else {
+					Cursor=Cursors.WaitCursor;//Checking the directory can take time, so set cursor to loading wheel
 					if(!Directory.Exists(PrefC.GetString(PrefName.ExportPath))) {
 						try {
 							Directory.CreateDirectory(PrefC.GetString(PrefName.ExportPath));
@@ -369,7 +370,10 @@ namespace OpenDental {
 							//initialDirectory will be blank
 						}
 					}
-					else saveFileDialog2.InitialDirectory=PrefC.GetString(PrefName.ExportPath);
+					else {
+						saveFileDialog2.InitialDirectory=PrefC.GetString(PrefName.ExportPath);
+					}
+					Cursor=Cursors.Default;
 					if(saveFileDialog2.ShowDialog()!=DialogResult.OK) {
 						saveFileDialog2.Dispose();
 						return;

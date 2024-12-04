@@ -2469,5 +2469,22 @@ namespace OpenDentBusiness {
 			//End I58122
 		}//End of 24_3_24
 
+		private static void To24_3_27(){
+			//Start B58322
+			string command="SELECT COUNT(*) FROM program WHERE ProgName='Pearl'";
+			long countRows=Db.GetLong(command);
+			if(countRows>1) {
+				command="SELECT MIN(ProgramNum) FROM program WHERE ProgName='Pearl'";
+				long programNum=Db.GetLong(command);
+				command="DELETE FROM toolbutitem WHERE ProgramNum="+POut.Long(programNum);
+				Db.NonQ(command);
+				command="DELETE FROM programproperty WHERE ProgramNum="+POut.Long(programNum);
+				Db.NonQ(command);
+				command="DELETE FROM program WHERE ProgramNum="+POut.Long(programNum);
+				Db.NonQ(command);
+			}
+			//End B58322
+		}//End of 24_3_27
+
 	}
 }

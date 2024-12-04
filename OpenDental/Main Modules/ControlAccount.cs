@@ -336,7 +336,7 @@ namespace OpenDental {
 			menuItemPasteAttachment.Enabled=true;
 			menuItemAttachmentHistory.Enabled=true;
 			Clearinghouse clearingHouse=new Clearinghouse();
-			int countClaim=listIdxRowsSelected.Select(x => table.Rows[x]["ClaimNum"].ToString()).Count(y => y!="0");
+			int countClaim=listIdxRowsSelected.Count(x => table.Rows[x]["ProcCode"].ToString()=="Claim");//See AccountModules.GetAccount() Claims region
 			//Must be exactly 1 claim selected.
 			if(countClaim==1) {
 				clearingHouse=GetClearingHouseForClaim();

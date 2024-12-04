@@ -2156,13 +2156,13 @@ namespace OpenDental{
 				ToolBarMain.Buttons.Add(toolBarButton);
 			}
 			ToolBarMain.Buttons.Add(new ODToolBarButton(Lan.g(this,"Popups"),-1,Lan.g(this,"Edit popups for this patient"),"Popups"));
-			if(PrefC.IsODHQ || ODBuild.IsDebug()) {
-				ODToolBarButton odToolbarButton=new ODToolBarButton(Lan.g(this,"MouseWatcher"),-1,Lan.g(this,"Only used temporarily at HQ. Toggle MouseWatcher on/off. You can completely ignore this button unless you are trying to test the mouse watcher."),"MouseWatcher");
-				if(MouseWatcher.IsRunning) {
-					odToolbarButton.IsRed=true;
-				}
-				ToolBarMain.Buttons.Add(odToolbarButton);
-			}
+			//if(PrefC.IsODHQ || ODBuild.IsDebug()) {
+			//	ODToolBarButton odToolbarButton=new ODToolBarButton(Lan.g(this,"MouseWatcher"),-1,Lan.g(this,"Only used temporarily at HQ. Toggle MouseWatcher on/off. You can completely ignore this button unless you are trying to test the mouse watcher."),"MouseWatcher");
+			//	if(MouseWatcher.IsRunning) {
+			//		odToolbarButton.IsRed=true;
+			//	}
+			//	ToolBarMain.Buttons.Add(odToolbarButton);
+			//}
 			ProgramL.LoadToolBar(ToolBarMain,EnumToolBar.MainToolbar);
 			Plugins.HookAddCode(this,"FormOpenDental.LayoutToolBar_end");
 			ToolBarMain.Invalidate();
@@ -2448,9 +2448,9 @@ namespace OpenDental{
 					case "Popups":
 						toolButPopups_Click();
 						break;
-					case "MouseWatcher":
-						toolButMouseWatcher_Click();
-						break;
+					//case "MouseWatcher":
+					//	toolButMouseWatcher_Click();
+					//	break;
 				}
 			}
 			else if(e.Button.Tag.GetType()==typeof(Program)) {
@@ -3085,16 +3085,16 @@ namespace OpenDental{
 			formPopupsForFam.ShowDialog();
 		}
 
-		private void toolButMouseWatcher_Click() {
-			if(MouseWatcher.IsRunning) {
-				MouseWatcher.Stop();
-				ToolBarMain.Buttons["MouseWatcher"].IsRed=false;
-			}
-			else {
-				MouseWatcher.Start(forceStart:true);
-				ToolBarMain.Buttons["MouseWatcher"].IsRed=true;
-			}
-		}
+		//private void toolButMouseWatcher_Click() {
+		//	if(MouseWatcher.IsRunning) {
+		//		MouseWatcher.Stop();
+		//		ToolBarMain.Buttons["MouseWatcher"].IsRed=false;
+		//	}
+		//	else {
+		//		MouseWatcher.Start(forceStart:true);
+		//		ToolBarMain.Buttons["MouseWatcher"].IsRed=true;
+		//	}
+		//}
 		#endregion ToolBar
 
 		#region SMS Text Messaging

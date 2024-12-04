@@ -540,7 +540,6 @@ namespace OpenDental{
 			this.textEmail.Name = "textEmail";
 			this.textEmail.Size = new System.Drawing.Size(249, 20);
 			this.textEmail.TabIndex = 2;
-			this.textEmail.KeyUp += new System.Windows.Forms.KeyEventHandler(this.textEmail_KeyUp);
 			this.textEmail.Leave += new System.EventHandler(this.textBox_Leave);
 			// 
 			// groupBox2

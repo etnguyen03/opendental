@@ -266,8 +266,10 @@ namespace OpenDental {
 				return;
 			}
 			//If invalid characters, then a messagebox pops up in RefreshTable.
-			//Clicking enter in that window triggers KeyUp here.  Unclear why, but this solves it.
-			if(e.KeyCode==Keys.Enter) {
+			//Any key that was pressed in that messagebox window to close it uses keydown.
+			//The corresponding key up will hit here because this is the control with focus.
+			//We want to ignore those keys here.
+			if(e.KeyCode==Keys.Enter || e.KeyCode==Keys.Escape || e.KeyCode==Keys.Back) {
 				return;
 			}
 			RefreshTable();
