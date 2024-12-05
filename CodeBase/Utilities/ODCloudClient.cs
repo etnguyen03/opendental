@@ -148,7 +148,13 @@ namespace CodeBase {
 		}
 
 		public static string GetClipboardImageFromODCloudClient(bool doShowProgressBar=false) {
-			string resultData=SendToODCloudClientSynchronously(new ODCloudClientData(),CloudClientAction.GetClipboardImage,doShowProgressBar:doShowProgressBar);
+			string resultData=null;
+			try {
+				resultData=SendToODCloudClientSynchronously(new ODCloudClientData(),CloudClientAction.GetClipboardImage,doShowProgressBar:doShowProgressBar);
+			}
+			catch(Exception ex) {
+				ODMessageBox.Show(ex.Message);
+			}
 			if(resultData.IsNullOrEmpty()) {
 				return null;
 			}

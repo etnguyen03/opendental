@@ -1284,8 +1284,15 @@ Only used once in Imaging module.
 				contextMenu.IsOpen=true;
 			}
 			for(int i = 0;i<contextMenu.Items.Count;i++) {
-				if(contextMenu.Items[i] is MenuItem menuItem && menuItem.Name=="Print") {
-					menuItem.IsEnabled=PrintOptionEnabled;
+				if(contextMenu.Items[i] is MenuItem menuItem) { 
+					if(menuItem.Name=="Print") {
+						menuItem.IsEnabled=PrintOptionEnabled;
+					}
+					else if(menuItem.Name=="Tasks") {
+						bool enableTasksMenuItem=_nodeObjTagSelected!=null && _nodeObjTagSelected.MountNum==0;
+						//Mounts cannot be attached to tasks so we need to disable the 'Tasks' menu option since it doesn't do anything when a mount is selected.
+						menuItem.IsEnabled=enableTasksMenuItem;
+					}
 				}
 			}
 		}

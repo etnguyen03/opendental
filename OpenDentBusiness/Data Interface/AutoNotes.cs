@@ -213,8 +213,9 @@ namespace OpenDentBusiness {
 			ThinfinityUtils.ExportForDownload(path,json);
 			}
 			else if(ODCloudClient.IsAppStream) {
-				File.WriteAllText(path,json);
-				ODCloudClient.ExportForAppStream(path);
+				string combinedPath=ODFileUtils.CombinePaths(PrefC.GetTempFolderPath(), Path.GetFileName(path));
+				File.WriteAllText(combinedPath,json);
+				ODCloudClient.ExportForAppStream(combinedPath);
 			}
 			else {
 				File.WriteAllText(path,json);

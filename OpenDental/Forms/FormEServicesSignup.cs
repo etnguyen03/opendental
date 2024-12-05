@@ -50,7 +50,12 @@ namespace OpenDental {
 					Process.Start(_signupOut.SignupPortalUrl);
 				}
 				else if(ODCloudClient.IsAppStream) {
-					ODCloudClient.LaunchFileWithODCloudClient(_signupOut.SignupPortalUrl);
+					try {
+						ODCloudClient.LaunchFileWithODCloudClient(_signupOut.SignupPortalUrl);
+					}
+					catch(Exception ex) {
+						MessageBox.Show(ex.Message);
+					}
 				}
 				DialogResult=DialogResult.Abort;
 				return;

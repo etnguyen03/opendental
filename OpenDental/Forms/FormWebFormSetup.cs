@@ -217,7 +217,13 @@ namespace OpenDental {
 			for(int i=0;i<stringArrayLines.Length;i++){
 				ODException.SwallowAnyException(() => { 
 					if(!ODBuild.IsThinfinity() && ODCloudClient.IsAppStream) {
-						ODCloudClient.LaunchFileWithODCloudClient(stringArrayLines[i]);
+						try {
+							ODCloudClient.LaunchFileWithODCloudClient(stringArrayLines[i]);
+						}
+						catch(Exception ex) {
+							MessageBox.Show(ex.Message);
+							return;
+						}
 					}
 					else {
 						System.Diagnostics.Process.Start(stringArrayLines[i]);

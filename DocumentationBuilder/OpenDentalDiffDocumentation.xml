@@ -47,7 +47,7 @@
       <summary>FKey to eformdef.EFormDefNum. This is only used alongside the eClipboardSheetDef table to determine if the patient has filled out that form yet. It's also used with the RevID to prefill fields that don't use a DbLink by pulling from a previous form. I think this also requires using the ReportableName for those fields.</summary>
     </column>
     <column order="8" name="Status" type="tinyint(4)">
-      <summary>Enum:EnumEFormStatus 0-None, 1-ReadyForPatientFill, 2-Filled, 3-Imported. In the None status, the office might be filling in the tooth number on a consent form. In the ReadyForPatientFill status, it will show in eClipboard. Sheets uses ShowInTerminal for this purpose. Once the patient has filled it, the status is changed to Filled. Sheets uses IsWebForm for this purpose. A Filled eForm will then be imported automatically and the status changed to Imported. If the import process could not match to a known patient, then this status will be UnmatchedToPatient and the PatNum will remain 0 until user matches it.</summary>
+      <summary>Enum:EnumEFormStatus 0-None, 1-ShowInEClipboard, 2-Filled, 3-Imported. In the None status, the office might be filling in the tooth number on a consent form. In the ReadyForPatientFill status, it will show in eClipboard. Sheets uses ShowInTerminal for this purpose. Once the patient has filled it, the status is changed to Filled. Sheets uses IsWebForm for this purpose. A Filled eForm will then be imported automatically and the status changed to Imported. If the import process could not match to a known patient, then this status will be UnmatchedToPatient and the PatNum will remain 0 until user matches it.</summary>
       <Enumeration name="EnumEFormStatus">
         <summary></summary>
         <EnumValue name="None">0 - If a form is added manually in OD proper and then filled out by the patient in OD proper, it will remain this status unless it gets imported.</EnumValue>
@@ -146,6 +146,7 @@
         <summary>Type associated with FKey value.</summary>
         <EnumValue name="SmsMtSentNum">6 SmsMtSent Number</EnumValue>
         <EnumValue name="SmsMtTerminatedNum">7 SmsMtTerminated Number</EnumValue>
+        <EnumValue name="EFormNum">8 EForm Number.</EnumValue>
       </Enumeration>
     </column>
   </table>

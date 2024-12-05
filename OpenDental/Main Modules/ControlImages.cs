@@ -1426,7 +1426,9 @@ namespace OpenDental{
 			SetDrawMode(EnumDrawMode.None);
 			panelDraw.Visible=false;
 			DisableAllToolBarButtons();
-			FillImageSelector(false);
+			//Maintain scrollbar location when a category is selected
+			bool isCategorySelected=imageSelector.GetSelectedType()==EnumImageNodeType.Category;
+			FillImageSelector(keepSelection:isCategorySelected);
 			//In case the image had a signature or note:
 			SetPanelNoteVisibility();
 			SetUnmountedBarVisibility();

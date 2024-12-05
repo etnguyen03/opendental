@@ -3009,6 +3009,8 @@ Here is the desired behavior:
 				menuItemRotateRight.Visible=true;
 				menuItemRotate180.Visible=true;
 			}
+			//Mounts cannot be attached to tasks, therefore we can hide the tasks menu item.
+			menuItemTasks.Visible=false;//Find Tasks
 			//if(_panCropMount==EnumPanCropMount.Pan/Adj){
 				//handled on mouse up
 			//}

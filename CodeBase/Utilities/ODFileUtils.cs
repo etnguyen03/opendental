@@ -176,8 +176,13 @@ namespace CodeBase {
 		///<param name="createDirIfNeeded">If included, will create the directory if it doesn't exist.</param>
 		public static Process ProcessStart(string path,string commandLineArgs="",bool doWaitForODCloudClientResponse=false,string createDirIfNeeded="",bool tryLaunch=false) {
 			if(ODEnvironment.IsCloudInstance) {
-				ODCloudClient.LaunchFileWithODCloudClient(path,commandLineArgs,doWaitForResponse:doWaitForODCloudClientResponse,
-					createDirIfNeeded:createDirIfNeeded,tryLaunch:tryLaunch);
+				try {
+					ODCloudClient.LaunchFileWithODCloudClient(path,commandLineArgs,doWaitForResponse:doWaitForODCloudClientResponse,
+						createDirIfNeeded:createDirIfNeeded,tryLaunch:tryLaunch);
+				}
+				catch(Exception ex) {
+					MessageBox.Show(ex.Message);
+				}
 				return null;
 			}
 			if(!string.IsNullOrEmpty(createDirIfNeeded) && !Directory.Exists(createDirIfNeeded)) {
@@ -217,7 +222,13 @@ namespace CodeBase {
 		///If using a THINFINITY compiled version of Open Dental, pass through to the odcloud client for File IO and to start the process locally. Throws exceptions.</summary>
 		public static Process WriteAllTextThenStart(string filePath,string fileText,string processPath,string commandLineArgs,bool doStartWithoutExtraFile=false) {
 			if(ODEnvironment.IsCloudInstance) {
-				ODCloudClient.LaunchFileWithODCloudClient(processPath,commandLineArgs,filePath,fileText,doWaitForResponse:true,doStartWithoutExtraFile:doStartWithoutExtraFile);
+				try {
+					ODCloudClient.LaunchFileWithODCloudClient(processPath,commandLineArgs,filePath,fileText,doWaitForResponse:true,doStartWithoutExtraFile:doStartWithoutExtraFile);
+				}
+				catch(Exception ex) {
+					ex.DoNothing();
+					return null;
+				}
 				return null;
 			}
 			else {
