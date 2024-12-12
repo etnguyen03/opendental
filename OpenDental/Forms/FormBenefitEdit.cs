@@ -47,7 +47,7 @@ namespace OpenDental {
 			codeGroupNone.GroupName=Lans.g(this,"None");
 			List<CodeGroup> listCodeGroups=new List<CodeGroup>();
 			listCodeGroups.Add(codeGroupNone);
-			listCodeGroups.AddRange(CodeGroups.GetDeepCopy(isShort:true));
+			listCodeGroups.AddRange(CodeGroups.GetDeepCopy());
 			comboCodeGroup.Items.Clear();
 			comboCodeGroup.Items.AddList(listCodeGroups,x => CodeGroups.GetGroupName(x));
 			comboCodeGroup.SetSelectedKey<CodeGroup>(BenefitCur.CodeGroupNum,x => x.CodeGroupNum,x => CodeGroups.GetGroupName(x));

@@ -1861,6 +1861,7 @@ namespace OpenDental {
 			for(int i=0;i<SheetCur.SheetFields.Count;i++) {
 				if(SheetCur.SheetFields[i].BitmapLoaded!=null) {
 					SheetCur.SheetFields[i].BitmapLoaded.Dispose();
+					SheetCur.SheetFields[i].BitmapLoaded=null;
 				}
 			}
 		}

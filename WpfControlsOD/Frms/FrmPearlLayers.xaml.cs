@@ -16,8 +16,6 @@ namespace OpenDental {
 	public partial class FrmPearlLayers : FrmODBase {
 		///<summary>List of EnumCategoryODs that are currently toggled on to be visible. Used in ControlImages.</summary>
 		public List<EnumCategoryOD> ListEnumCategoryODsShown=new List<EnumCategoryOD>();
-		///<summary>Used to refresh shown categories on ControlImages. Applied to click event of every checkbox.</summary>
-		public EventHandler EventRefreshControlImages=null;
 		///<summary>When set to false via the All Annotations checkbox, all Pearl annotations and toothparts are hidden from view.</summary>
 		public bool ShowPearlLayers=true;
 		///<summary>Used to set the starting location of the form.</summary>
@@ -28,6 +26,11 @@ namespace OpenDental {
 			InitializeComponent();
 			Load+=FrmPearlLayers_Load;
 		}
+		
+		///<summary>Used to delete Pearl annotations for the currently selected image.</summary>
+		public event EventHandler EventClickDeleteAnnotations;
+		///<summary>Used to refresh shown categories on ControlImages. Applied to click event of every checkbox.</summary>
+		public event EventHandler EventRefreshControlImages=null;
 
 		///<summary>Refreshes UI to reflect the state of ListEnumCategoryODsShown and ShowPearlLayers. Used to synchronize with docked window checkboxes.</summary>
 		public void RefreshUI() {
@@ -40,6 +43,7 @@ namespace OpenDental {
 		#region Event Handlers
 		private void FrmPearlLayers_Load(object sender, EventArgs e) {
 			Lang.F(this);
+			_formFrame.TopMost=true;
 			SetAllCheckBoxClickEventHandlers();
 			SetAllCheckBoxTags();
 			SetAllCheckBoxCheckeds();
@@ -49,6 +53,13 @@ namespace OpenDental {
 			radioHide.Checked=!ShowPearlLayers;
 			DisableGroupsIfHidingPearl();
 			_formFrame.Location=Location;
+			MenuItem menuItem=new MenuItem("Tools");
+			menuItem.Add(new MenuItem("Delete annotations for selected image",menuItemDeleteAnnotations_Click));
+			menuMain.Add(menuItem);
+		}
+
+		private void menuItemDeleteAnnotations_Click(object sender,EventArgs e) {
+			EventClickDeleteAnnotations?.Invoke(this,new EventArgs());
 		}
 
 		private void radioShow_Click(object sender,EventArgs e) {

@@ -1251,6 +1251,65 @@ namespace UnitTests.Appointments_Tests {
 		}
 
 		[TestMethod]
+		//[Documentation.Numbering(Documentation.EnumTestNum.ApptSearch_GetSearchResults_DefaultProvNoSched_ProvTimeOp_OneOp)]
+		[Documentation.VersionAdded("24.3")]
+		[Documentation.Description(@"Searches for an open blockout for an appointment with a specified appointment type to be scheduled on. There are two operatories for the practice to consider. The provider is the default provider for one operatory and the other operatory is not assigned to anyone. The provider is scheduled 8am-12:30pm for the next two days. On both days, the provider's operatory has a blockout from 9am-10am, and this blockout type is an allowed type for the appointment. Additionally, for both days, there is a blockout marked as 'Do not schedule'/'NS' on the other operatory from 8:30am-9:30am. There is a preexisting appointment in the provider's operatory for tomorrow from 9:10am-9:50am with provider time 9:15am-9:45am. The preference for 'Appointment Search Behavior' is set to ProviderTimeOperatory search logic, meaning it will look at operatory availability, not just provider time. The appointment we're trying to schedule is 30 minutes long, with provider time for the 20 minutes in the middle. Since there is not enough time left on the only allowed blockout for tomorrow, the search should have no results for tomorrow. There's no appointment on the blockout two days from now, however, so the search should return the time where the start of the blockout is in two days.")]
+		public void Appointments_GetSearchResults_NoSchedBlockoutOnOverflowOperatory() {
+			PrefT.UpdateInt(PrefName.AppointmentSearchBehavior,(int)SearchBehaviorCriteria.ProviderTimeOperatory);
+			Prefs.UpdateInt(PrefName.AppointmentTimeIncrement,5);
+			DateTime dateTomorrow=DateTime.Today.AddDays(1);
+			DateTime dateDayAfterTomorrow=DateTime.Today.AddDays(2);
+			//Create a patient, a provider scheduled for tomorrow and the day after, and an operatory for the schedules to go.
+			string suffix=MethodBase.GetCurrentMethod().Name;
+			Patient patient=PatientT.CreatePatient(suffix+"Pat");
+			long provNum=ProviderT.CreateProvider(suffix+"Prov");
+			Operatory operatoryProv=OperatoryT.CreateOperatory("op1",suffix+"1");//Provs not directly assinged to ops, they get assigned by schedule.
+			//Provider schedule for tomorrow (default first search day) from 8AM to 12:30PM
+			Schedule scheduleForProviderTomorrow=ScheduleT.CreateSchedule(dateTomorrow
+				,new DateTime(dateTomorrow.Year,dateTomorrow.Month,dateTomorrow.Day,8,0,0).TimeOfDay
+				,new DateTime(dateTomorrow.Year,dateTomorrow.Month,dateTomorrow.Day,12,30,0).TimeOfDay
+				,ScheduleType.Provider,provNum:provNum,listOpNums:new List<long>() {operatoryProv.OperatoryNum});
+			//Provider schedule for day after tomorrow from 8AM to 12:30PM
+			Schedule scheduleForProviderDayAfterTomorrow=ScheduleT.CreateSchedule(dateDayAfterTomorrow
+				,new DateTime(dateDayAfterTomorrow.Year,dateDayAfterTomorrow.Month,dateDayAfterTomorrow.Day,8,0,0).TimeOfDay
+				,new DateTime(dateDayAfterTomorrow.Year,dateDayAfterTomorrow.Month,dateDayAfterTomorrow.Day,12,30,0).TimeOfDay
+				,ScheduleType.Provider,provNum:provNum,listOpNums:new List<long>() {operatoryProv.OperatoryNum});
+			//Create a blockout type, and an appointment type that is associated to the blockout type.
+			long defNumBlockoutType=DefT.CreateDefinition(DefCat.BlockoutTypes,suffix).DefNum;
+			AppointmentType appointmentType=AppointmentTypeT.CreateAppointmentType(suffix+"ApptType",blockoutTypes:defNumBlockoutType.ToString());
+			//For the provider, schedule this blockout type in their operatory for tomorrow and the day after, both from 9AM-10AM.
+			ScheduleT.CreateSchedule(dateTomorrow,TestT.SetDateTime(dateTomorrow,hour:9),TestT.SetDateTime(dateTomorrow,hour:10)
+				,ScheduleType.Blockout,blockoutType:defNumBlockoutType,listOpNums:new List<long>() {operatoryProv.OperatoryNum});
+			ScheduleT.CreateSchedule(dateDayAfterTomorrow,TestT.SetDateTime(dateDayAfterTomorrow,hour:9),TestT.SetDateTime(dateDayAfterTomorrow,hour:10)
+				,ScheduleType.Blockout,blockoutType:defNumBlockoutType,listOpNums:new List<long>() {operatoryProv.OperatoryNum});
+			//For the provider's schedule tomorrow, fill the blockout in their operatory with a 40-minute appointment that starts at 9:10AM.
+			Appointment appointment=AppointmentT.CreateAppointment(patient.PatNum,TestT.SetDateT(dateTomorrow,hour:9,minute:10),
+				operatoryProv.OperatoryNum,provNum,pattern:"/XXXXXX/",appointmentTypeNum:appointmentType.AppointmentTypeNum);
+			//Create another operatory. The only schedule on this operatory should be a "Block appointment scheduling" blockout.
+			Operatory operatoryOverflow=OperatoryT.CreateOperatory("op2",suffix+"2");//provs not directly assinged to ops, they get assigned by schedule.
+			//Create a blockout type of type "NS", which means it is not allowed to have any appointments scheduled over it.
+			long defNumBlockoutTypeNoSched=DefT.CreateDefinition(DefCat.BlockoutTypes,suffix+"NS",BlockoutType.NoSchedule.GetDescription()).DefNum;
+			//On the overflow operatory, schedule the "NS" blockout type for tomorrow and the day after, both from 8:30AM-9:30AM.
+			ScheduleT.CreateSchedule(dateTomorrow,TestT.SetDateTime(dateTomorrow,hour:8,minute:30),TestT.SetDateTime(dateTomorrow,hour:9,minute:30)
+				,ScheduleType.Blockout,blockoutType:defNumBlockoutTypeNoSched,listOpNums:new List<long>() {operatoryOverflow.OperatoryNum});
+			ScheduleT.CreateSchedule(dateDayAfterTomorrow,TestT.SetDateTime(dateDayAfterTomorrow,hour:8,minute:30),TestT.SetDateTime(dateDayAfterTomorrow,hour:9,minute:30)
+				,ScheduleType.Blockout,blockoutType:defNumBlockoutTypeNoSched,listOpNums:new List<long>() {operatoryOverflow.OperatoryNum});
+			//Create a 30-minute appointment of the appointment type associated to the schedule-able blockout type. This is the appointment we'll be searching an opening for.
+			Appointment appointmentToSearchWith=AppointmentT.CreateAppointment(patient.PatNum,DateTime.Now.AddDays(-1),operatoryProv.OperatoryNum,provNum,pattern:"/XXXX/",appointmentTypeNum:appointmentType.AppointmentTypeNum);
+			//Create search criteria for the appointment trying to be scheduled.
+			TimeSpan timeBefore=TestT.SetDateTime(hour:16); //4PM
+			TimeSpan timeAfter=TestT.SetDateTime(); //8AM by default
+			//Run the search, mimicking the way the appointment module would on a view with both operatories, and with the appointment to search with on the pinboard.
+			List<long> listOpNums=new List<long>() {operatoryProv.OperatoryNum,operatoryOverflow.OperatoryNum};
+			List<ScheduleOpening> searchResults=ApptSearch.GetSearchResults(appointmentToSearchWith.AptNum,DateTime.Today,DateTime.Now.AddDays(3),new List<long>() {provNum},
+				listOpNums,new List<long>() { },timeBefore,timeAfter,listBlockoutTypes:new List<long>(){defNumBlockoutType});
+			//Compare results. We should not have any results for the first day since the provider and blockout are booked in the time frame specified.
+			Assert.AreEqual(0,searchResults.FindAll(x => x.DateTimeAvail.Date==dateTomorrow).Count);
+			//We should have a result for the day after, though. The provider's schedule starts at 8am, but since the blockout on their schedule starts at 9am, that's the time we want.
+			Assert.AreEqual(1,searchResults.FindAll(x => x.DateTimeAvail.Date==dateDayAfterTomorrow && x.DateTimeAvail.Hour==9 && x.OpNum==operatoryProv.OperatoryNum).Count);
+		}
+
+		[TestMethod]
 		[Documentation.Numbering(Documentation.EnumTestNum.ApptSearch_GetSearchResults_DefaultProvNoSched_ProvTimeOp_OneOp)]
 		[Documentation.VersionAdded("22.2")]
 		[Documentation.Description(@"Searches for available time slots in one operatory for one provider. There are two total operatories in the practice. The provider is the default provider for one operatory and the other operatory is not assigned to anyone. The provider is scheduled 8am-4pm for the next 10 days. There is an appointment in the provider's operatory for tomorrow from 8am-9am with provider time 8am-8:30am. The preference for 'Appointment Search Behavior' is set to ProviderTimeOperatory search logic. The first available time slot for tomorrow should be 9am. Since there are no preexisting appointments on subsequent days, the remaining 9 openings should all be 8am on their respective days.")]

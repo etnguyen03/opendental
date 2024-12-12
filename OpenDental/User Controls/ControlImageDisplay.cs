@@ -295,6 +295,7 @@ Here is the desired behavior:
 			if(IsDocumentShowing()){
 				EventFillTree?.Invoke(this,false);
 				ClearObjects();
+				_listImageDraws=ImageDraws.RefreshForDoc(document.DocNum);
 				SelectTreeNode2(null);
 				ThumbnailRefresh();
 				panelMain.Invalidate();
@@ -303,6 +304,7 @@ Here is the desired behavior:
 				//need to review with more situations.  What if item isn't filled yet?
 				_documentArrayShowing[_idxSelectedInMount]=null;
 				_bitmapArrayShowing[_idxSelectedInMount]=null;
+				_listImageDraws=ImageDraws.RefreshForMount(GetMountShowing().MountNum);
 				ThumbnailRefresh();
 				panelMain.Invalidate();
 			}
@@ -1552,6 +1554,7 @@ Here is the desired behavior:
 					return;
 				}
 			}
+			_listImageDraws=ImageDraws.RefreshForMount(_mountShowing.MountNum);
 			Mounts.Delete(_mountShowing);
 			Def defDocCategory = Defs.GetDef(DefCat.ImageCats,_mountShowing.DocCategory);
 			string logText = "Mount Deleted: "+_mountShowing.Description+" with category "
@@ -4014,6 +4017,11 @@ Here is the desired behavior:
 
 		/// <summary>Draws image draws on the passed in graphics object. Set xg if drawing on a PDF, otherwise set g.</summary>
 		private void DrawDrawings(float rotateText,Graphics g=null,XGraphics xg=null){
+			List<long> listDocNums=new List<long>();
+			if(IsMountShowing()) {
+				List<WpfControls.UI.UnmountedObj> listUnmountedObjs=GetUmountedObjs();
+				listDocNums=listUnmountedObjs.Select(x => x.Document_.DocNum).ToList();
+			}
 			for(int i=0;i<_listImageDraws.Count;i++){
 				if(!_showDrawingsOD && _listImageDraws[i].ImageAnnotVendor==EnumImageAnnotVendor.OpenDental){
 					continue;
@@ -4022,6 +4030,9 @@ Here is the desired behavior:
 					if(!_showDrawingsPearl || !_listPearlCategoriesShown.Contains(_listImageDraws[i].PearlLayer)) {
 						continue;
 					}
+				}
+				if(listDocNums.Contains(_listImageDraws[i].DocNum)) {
+					continue;//Don't draw drawings for unmounted documents.
 				}
 				if(g!=null && xg==null) {
 					DrawDrawing(rotateText,_listImageDraws[i],g);

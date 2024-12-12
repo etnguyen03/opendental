@@ -201,6 +201,9 @@ namespace OpenDentBusiness {
 		///<summary>39 - Alert that is created when a procedure or group note's signature is cleared by another user editing that note.</summary>
 		[Description("Procedure or Group Note's Signature Cleared")]
 		SignatureCleared,
+		///<summary>40 - Alert that is created when an error occurs while uploading an image to Pearl or processing Pearl results.</summary>
+		[Description("Pearl AI Imaging Error")]
+		Pearl,
 	}
 
 	///<summary>Represents the urgency of the alert.  Also determines the color for the menu item in the main menu.</summary>

@@ -181,7 +181,12 @@ namespace CodeBase {
 						createDirIfNeeded:createDirIfNeeded,tryLaunch:tryLaunch);
 				}
 				catch(Exception ex) {
+					#if !DOT_NET_CORE && !DOT_NET_STANDARD
 					MessageBox.Show(ex.Message);
+					return null;
+					#else
+					throw ex;
+					#endif
 				}
 				return null;
 			}

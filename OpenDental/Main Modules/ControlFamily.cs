@@ -2097,6 +2097,7 @@ namespace OpenDental{
 					);
 			}
 			Patients.DisbandSuperFamily(patientSuperHead.PatNum);
+			SecurityLogs.MakeLogEntry(EnumPermType.SuperFamilyDisband,_patient.PatNum,Lan.g(this,"The super family for")+" "+_patient.GetNameFL()+" "+Lan.g(this,"was disbanded."));
 			ModuleSelected(_patient.PatNum);
 		}
 

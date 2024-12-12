@@ -2888,7 +2888,7 @@ namespace OpenDentBusiness {
 			return emailMessageReply;
 		}
 
-		///<summary>Sets emailReply.ToAddress and emailRepl.FromAddress such that emailReply is a reply email to emailReceived.</summary>
+		///<summary>Sets emailReply.ToAddress and emailReply.FromAddress such that emailReply is a reply email to emailReceived.</summary>
 		public static void FillEmailAddressesForReply(EmailMessage emailMessageReply,EmailMessage emailMessageReceived,EmailAddress emailAddressSender,bool isReplyAll) {
 			emailMessageReply.ToAddress=ProcessInlineEncodedText(emailMessageReceived.FromAddress);
 			if(!isReplyAll) {
@@ -2901,7 +2901,7 @@ namespace OpenDentBusiness {
 				if(listStringEmails[i].ToLower().Contains(emailAddressSender.EmailUsername.ToLower())) {
 					continue;
 				}
-				if(listStringEmails[i].ToLower().Contains(emailAddressSender.SenderAddress.ToLower())) {
+				if(!emailAddressSender.SenderAddress.IsNullOrEmpty() && listStringEmails[i].ToLower().Contains(emailAddressSender.SenderAddress.ToLower())) {
 					continue;
 				}
 				//Since we are replying, remove our current email from list
@@ -2921,7 +2921,8 @@ namespace OpenDentBusiness {
 			List<string> temp=emailMessageReceived.CcAddress.Split(',')
 				.Select(x => ProcessInlineEncodedText(x).Trim())
 				.ToList()
-				.FindAll(x=>!x.ToLower().Contains(emailAddressSender.EmailUsername.ToLower()) && !x.ToLower().Contains(emailAddressSender.SenderAddress.ToLower()));
+				.FindAll(x=>!x.ToLower().Contains(emailAddressSender.EmailUsername.ToLower())
+					|| (!emailAddressSender.SenderAddress.IsNullOrEmpty() && !x.ToLower().Contains(emailAddressSender.SenderAddress.ToLower())));
 			//Loop through the email addresses, combining them into a comma separated list string.
 			for(int i=0; i<temp.Count;i++){
 				//First address

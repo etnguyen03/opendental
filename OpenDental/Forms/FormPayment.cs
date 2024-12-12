@@ -3812,6 +3812,7 @@ namespace OpenDental {
 							_payment.Receipt=receipt;
 						}
 						if(transType==PayConnectService.transType.VOID) {//Close FormPayment window now so the user will not have the option to hit Cancel
+							_payment.PaymentSource=CreditCardSource.PayConnect;
 							if(IsNew) {
 								if(!_wasCreditCardSuccessful) {
 									textNote.Text+=((textNote.Text=="")?"":Environment.NewLine)+resultNote;

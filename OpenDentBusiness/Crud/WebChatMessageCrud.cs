@@ -55,6 +55,7 @@ namespace OpenDentBusiness.Crud{
 				webChatMessage.MessageType      = (OpenDentBusiness.WebChatMessageType)PIn.Int(row["MessageType"].ToString());
 				webChatMessage.IpAddress        = PIn.String(row["IpAddress"].ToString());
 				webChatMessage.NeedsFollowUp    = PIn.Bool  (row["NeedsFollowUp"].ToString());
+				webChatMessage.AiAssistantIdNum = PIn.Long  (row["AiAssistantIdNum"].ToString());
 				retVal.Add(webChatMessage);
 			}
 			return retVal;
@@ -74,6 +75,7 @@ namespace OpenDentBusiness.Crud{
 			table.Columns.Add("MessageType");
 			table.Columns.Add("IpAddress");
 			table.Columns.Add("NeedsFollowUp");
+			table.Columns.Add("AiAssistantIdNum");
 			foreach(WebChatMessage webChatMessage in listWebChatMessages) {
 				table.Rows.Add(new object[] {
 					POut.Long  (webChatMessage.WebChatMessageNum),
@@ -84,6 +86,7 @@ namespace OpenDentBusiness.Crud{
 					POut.Int   ((int)webChatMessage.MessageType),
 					            webChatMessage.IpAddress,
 					POut.Bool  (webChatMessage.NeedsFollowUp),
+					POut.Long  (webChatMessage.AiAssistantIdNum),
 				});
 			}
 			return table;
@@ -100,7 +103,7 @@ namespace OpenDentBusiness.Crud{
 			if(useExistingPK) {
 				command+="WebChatMessageNum,";
 			}
-			command+="WebChatSessionNum,UserName,DateT,MessageText,MessageType,IpAddress,NeedsFollowUp) VALUES(";
+			command+="WebChatSessionNum,UserName,DateT,MessageText,MessageType,IpAddress,NeedsFollowUp,AiAssistantIdNum) VALUES(";
 			if(useExistingPK) {
 				command+=POut.Long(webChatMessage.WebChatMessageNum)+",";
 			}
@@ -111,7 +114,8 @@ namespace OpenDentBusiness.Crud{
 				+"'"+POut.String(webChatMessage.MessageText)+"',"
 				+    POut.Int   ((int)webChatMessage.MessageType)+","
 				+"'"+POut.String(webChatMessage.IpAddress)+"',"
-				+    POut.Bool  (webChatMessage.NeedsFollowUp)+")";
+				+    POut.Bool  (webChatMessage.NeedsFollowUp)+","
+				+    POut.Long  (webChatMessage.AiAssistantIdNum)+")";
 			if(useExistingPK) {
 				Db.NonQ(command);
 			}
@@ -132,7 +136,7 @@ namespace OpenDentBusiness.Crud{
 			if(useExistingPK) {
 				command+="WebChatMessageNum,";
 			}
-			command+="WebChatSessionNum,UserName,DateT,MessageText,MessageType,IpAddress,NeedsFollowUp) VALUES(";
+			command+="WebChatSessionNum,UserName,DateT,MessageText,MessageType,IpAddress,NeedsFollowUp,AiAssistantIdNum) VALUES(";
 			if(useExistingPK) {
 				command+=POut.Long(webChatMessage.WebChatMessageNum)+",";
 			}
@@ -143,7 +147,8 @@ namespace OpenDentBusiness.Crud{
 				+"'"+POut.String(webChatMessage.MessageText)+"',"
 				+    POut.Int   ((int)webChatMessage.MessageType)+","
 				+"'"+POut.String(webChatMessage.IpAddress)+"',"
-				+    POut.Bool  (webChatMessage.NeedsFollowUp)+")";
+				+    POut.Bool  (webChatMessage.NeedsFollowUp)+","
+				+    POut.Long  (webChatMessage.AiAssistantIdNum)+")";
 			if(useExistingPK) {
 				Db.NonQ(command);
 			}
@@ -162,7 +167,8 @@ namespace OpenDentBusiness.Crud{
 				+"MessageText      = '"+POut.String(webChatMessage.MessageText)+"', "
 				+"MessageType      =  "+POut.Int   ((int)webChatMessage.MessageType)+", "
 				+"IpAddress        = '"+POut.String(webChatMessage.IpAddress)+"', "
-				+"NeedsFollowUp    =  "+POut.Bool  (webChatMessage.NeedsFollowUp)+" "
+				+"NeedsFollowUp    =  "+POut.Bool  (webChatMessage.NeedsFollowUp)+", "
+				+"AiAssistantIdNum =  "+POut.Long  (webChatMessage.AiAssistantIdNum)+" "
 				+"WHERE WebChatMessageNum = "+POut.Long(webChatMessage.WebChatMessageNum);
 			Db.NonQ(command);
 		}
@@ -198,6 +204,10 @@ namespace OpenDentBusiness.Crud{
 				if(command!="") { command+=",";}
 				command+="NeedsFollowUp = "+POut.Bool(webChatMessage.NeedsFollowUp)+"";
 			}
+			if(webChatMessage.AiAssistantIdNum != oldWebChatMessage.AiAssistantIdNum) {
+				if(command!="") { command+=",";}
+				command+="AiAssistantIdNum = "+POut.Long(webChatMessage.AiAssistantIdNum)+"";
+			}
 			if(command=="") {
 				return false;
 			}
@@ -229,6 +239,9 @@ namespace OpenDentBusiness.Crud{
 				return true;
 			}
 			if(webChatMessage.NeedsFollowUp != oldWebChatMessage.NeedsFollowUp) {
+				return true;
+			}
+			if(webChatMessage.AiAssistantIdNum != oldWebChatMessage.AiAssistantIdNum) {
 				return true;
 			}
 			return false;

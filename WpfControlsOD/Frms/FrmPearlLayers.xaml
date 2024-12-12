@@ -6,21 +6,21 @@
              xmlns:local="clr-namespace:OpenDental"
              xmlns:ui="clr-namespace:WpfControls.UI"
              mc:Ignorable="d"
-             Width="190" Height="444" 
+             Width="190" Height="464" 
              Text="Show Pearl Layers" MinMaxBoxes="False" >
 	<Grid Background="#FFFCFDFE" >
-		<ui:GroupBox x:Name="groupShowPearl" Margin="9,11,0,0" Height="40" Width="172" Text="Show Pearl Annotations">
+		<ui:GroupBox x:Name="groupShowPearl" Margin="0,31,0,0" Height="40" Width="172" Text="Show Pearl Annotations" HorizontalAlignment="Center">
 			<ui:RadioButton x:Name="radioShow" Margin="7,17,0,0" Height="20" Width="50" Text="Show" Click="radioShow_Click"/>
 			<ui:RadioButton x:Name="radioHide" Margin="78,17,0,0" Height="20" Width="50" Text="Hide" Click="radioHide_Click"/>
 		</ui:GroupBox>
-		<ui:GroupBox x:Name="groupPathology" Margin="9,58,0,0" Height="119" Width="172" Text="Pathology" >
+		<ui:GroupBox x:Name="groupPathology" Margin="0,78,0,0" Height="119" Width="172" Text="Pathology" HorizontalAlignment="Center" >
 			<ui:CheckBox x:Name="checkPearlCalculus" Width="161" Height="19" Margin="7,20,0,0" Text="Calculus" />
 			<ui:CheckBox x:Name="checkPearlCariesProgressed" Width="161" Height="19" Margin="7,39,0,0" Text="Caries - Progressed" />
 			<ui:CheckBox x:Name="checkPearlCariesIncipient" Width="161" Height="19" Margin="7,59,0,0" Text="Caries - Incipient" />
 			<ui:CheckBox x:Name="checkPearlNotableMargin" Width="161" Height="19" Margin="7,78,0,0" Text="Notable Margins" />
 			<ui:CheckBox x:Name="checkPearlPeriapicalRadiolucency" Width="161" Height="19" Margin="7,97,0,0" Text="Periapical Radiolucencies" />
 		</ui:GroupBox>
-		<ui:GroupBox x:Name="groupNonPathology" Margin="9,184,0,0" Height="142" Width="172" Text="Non-Pathology" >
+		<ui:GroupBox x:Name="groupNonPathology" Margin="0,204,0,0" Height="142" Width="172" Text="Non-Pathology" HorizontalAlignment="Center" >
 			<ui:CheckBox x:Name="checkPearlBridge" Width="161" Height="19" Margin="7,20,0,0" Text="Bridges" />
 			<ui:CheckBox x:Name="checkPearlCrown" Width="161" Height="19" Margin="7,39,0,0" Text="Crowns" />
 			<ui:CheckBox x:Name="checkPearlFilling" Width="161" Height="19" Margin="7,59,0,0" Text="Fillings" />
@@ -28,7 +28,7 @@
 			<ui:CheckBox x:Name="checkPearlRootCanal" Width="161" Height="19" Margin="7,99,0,0" Text="Root Canals" />
 			<ui:CheckBox x:Name="checkPearlMeasurements" Width="161" Height="19" Margin="7,119,0,0" Text="Measurements" />
 		</ui:GroupBox>
-		<ui:GroupBox x:Name="groupToothPartsLegend" Margin="9,333,0,0" Height="103" Width="172" Text="Tooth Parts">
+		<ui:GroupBox x:Name="groupToothPartsLegend" Margin="0,353,0,0" Height="103" Width="172" Text="Tooth Parts" HorizontalAlignment="Center">
 			<ui:Label x:Name="labelBone" Margin="27,40,0,0" Height="18" Text="Bone" Width="44"/>
 			<ui:Label x:Name="labelEnamel" Margin="95,40,0,0" Height="18" Text="Enamel" Width="68"/>
 			<ui:Label x:Name="labelDentin" Margin="27,80,0,0" Height="18" Text="Dentin" Width="44"/>
@@ -43,5 +43,6 @@
 			<ui:Panel x:Name="panelColorRestoration" Width="20" Height="14" Margin="75,82,0,0" ColorBorder="Black"/>
 			<ui:CheckBox x:Name="checkPearlToothParts" Width="180" Height="19" Margin="7,18,0,0" Text="Tooth Parts" />
 		</ui:GroupBox>
+		<ui:Menu x:Name="menuMain" HorizontalAlignment="Stretch" />
 	</Grid>
 </local:FrmODBase>

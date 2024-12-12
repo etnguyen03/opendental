@@ -26,6 +26,9 @@ namespace OpenDentBusiness {
 		public string IpAddress;
 		///<summary>A flag that technicians can toggle to prevent customer questions from falling through the cracks.</summary>
 		public bool NeedsFollowUp;
+		///<summary>FK to webChatAiAssistant.WebChatAiAssistantNum
+		///Set when MessageType is AI, otherwise 0.</summary>
+		public long AiAssistantIdNum;
 	}
 
 	///<summary>Describes where the message was generated from.</summary>

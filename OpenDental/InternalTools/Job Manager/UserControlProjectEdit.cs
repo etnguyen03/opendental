@@ -348,7 +348,17 @@ namespace OpenDental.InternalTools.Job_Manager {
 				if(jobPhase==JobPhase.Complete) {
 					row.Cells.Add(listJobs[i].PhaseCur.ToString());
 				}
-				row.Cells.Add(listJobs[i].Category.ToString().Substring(0,1)+listJobs[i].JobNum);
+				gridCell=new GridCell(listJobs[i].Category.ToString().Substring(0,1)+listJobs[i].JobNum);
+				if(grid!=gridDocumentation && grid!=gridComplete) {
+					long ownerNum=listJobs[i].OwnerNum;
+					if(listJobs[i].Category==JobCategory.Query) {
+						ownerNum=listJobs[i].OwnerNumForQuery;
+					}
+					JobActiveLink activeLink=listJobs[i].ListJobActiveLinks.Find(x => x.UserNum==ownerNum && x.DateTimeEnd==DateTime.MinValue);
+					Color colorActiveLink=(activeLink==null) ? Color.Empty : Color.FromArgb(90,Color.Cyan);
+					gridCell.ColorBackG=colorActiveLink;
+				}
+				row.Cells.Add(gridCell);
 				gridCell=new GridCell(listJobs[i].Title);
 				if((jobPhase==JobPhase.Definition && listJobs[i].UserNumExpert==0) || (jobPhase==JobPhase.Development && listJobs[i].UserNumEngineer==0)) {
 					gridCell.ColorBackG=Color.Gold;

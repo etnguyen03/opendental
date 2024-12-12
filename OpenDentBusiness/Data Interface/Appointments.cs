@@ -3345,7 +3345,7 @@ namespace OpenDentBusiness{
 			command+=",SecurityHash='"+POut.String(appointment.SecurityHash)+"'";
 			if(PrefC.GetLong(PrefName.AppointmentTimeArrivedTrigger)==defNumApptConfirmed) {
 				command+=",DateTimeArrived="+POut.DateT(DateTime.Now);
-				//createSheetsForCheckin will create sheets and eForms.
+				//createSheetsForCheckin will create any eForms also.
 				if(createSheetsForCheckin) {
 					Sheets.CreateSheetsForCheckIn(appointment);
 					EForms.CreateEFormForCheckIn(appointment);

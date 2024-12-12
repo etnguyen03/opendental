@@ -27,13 +27,17 @@ namespace OpenDentBusiness {
 			//list of all openings for the given blockouts - list of providers is just provNum 0 for blockout purposes.
 			listOpeningForBlockout=GetSearchResults(apptNum,startDate,endDate,new List<long>() {0},listOpNums,listClinicNums,timeBefore,
 				timeAfter,listBlockoutTypes,true).OrderBy(x => x.DateTimeAvail).ToList();
-			HashSet<DateTime> hashSetDateTimeAvailOpeningForBlockout=new HashSet<DateTime>();
+			HashSet<HItem> hashSetHItems=new HashSet<HItem>();
 			for(int i=0;i<listOpeningForBlockout.Count;i++) {
-				hashSetDateTimeAvailOpeningForBlockout.Add(listOpeningForBlockout[i].DateTimeAvail);
+				HItem hItem=new HItem();
+				hItem.DateTimeAvailable=listOpeningForBlockout[i].DateTimeAvail;
+				hItem.OpNum=listOpeningForBlockout[i].OpNum;
+				hItem.ClinicNum=listOpeningForBlockout[i].ClinicNum;
+				hashSetHItems.Add(hItem);//silently fails if duplicate, which is exactly what we want.
 			}
 			//Get the first DateTime,OpNum,Clinic combo that are present in both the provider and blockout openings.
 			Dictionary<DateTime,List<ScheduleOpening>> dictOpeningsByDate=listOpeningsForProvs
-				.Where(x => hashSetDateTimeAvailOpeningForBlockout.Contains(x.DateTimeAvail))
+				.Where(x => hashSetHItems.Contains(new HItem{DateTimeAvailable=x.DateTimeAvail,ClinicNum=x.ClinicNum,OpNum=x.OpNum}))
 				.GroupBy(x => x.DateTimeAvail.Date)
 				.ToDictionary(x => x.Key,x => x.ToList());
 			//Only return one opening per day and limit the results by resultCount that was passed in.
@@ -44,6 +48,32 @@ namespace OpenDentBusiness {
 				}
 			}
 			return listOpenings;
+		}
+
+		[Serializable]
+		private class HItem {
+			public DateTime DateTimeAvailable=DateTime.MinValue;
+			public long OpNum=0;
+			public long ClinicNum=0;
+
+			public override bool Equals(object obj) {
+				HItem hItem=obj as HItem;
+				if(hItem==null) {
+					return false;
+				}
+				return (DateTimeAvailable.Equals(hItem.DateTimeAvailable) && OpNum==hItem.OpNum && ClinicNum==hItem.ClinicNum);
+			}
+
+			public override int GetHashCode() {
+				int retval=486187739;//Arbitrary prime number
+				int prime=104743;
+				unchecked {//Overflow is fine, just wrap around
+					retval+=DateTimeAvailable.GetHashCode()+prime*retval;
+					retval+=OpNum.GetHashCode()+prime*retval;
+					retval+=ClinicNum.GetHashCode()+prime*retval;
+					return retval;
+				}
+			}
 		}
 
 		///<summary>Gets time availability for appointment searching. Moved to business layer for unit tests.

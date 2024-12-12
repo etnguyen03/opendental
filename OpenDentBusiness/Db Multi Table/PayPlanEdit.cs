@@ -1955,7 +1955,12 @@ namespace OpenDentBusiness {
 		public static string ValidateDynamicPaymentPlanTerms(PayPlanTerms payPlanTerms,bool isNew,bool isLocked, bool doCheckApr,int linkedProdCount) {
 			Meth.NoCheckMiddleTierRole();
 			StringBuilder sb=new StringBuilder("");
-			if(payPlanTerms.PeriodPayment==0 && payPlanTerms.PayCount==0) {
+			//User has to enter a payment amount when creating a payplan with no linked prods
+			if(linkedProdCount==0 && payPlanTerms.PeriodPayment==0 && payPlanTerms.PayCount==0) {
+				sb.AppendLine(Lans.g("FormPayPlanDynamic","Please enter a payment amount."));
+			}
+			//User can enter either when creating a payplan with linked prods
+			else if(linkedProdCount!=0 && payPlanTerms.PeriodPayment==0 && payPlanTerms.PayCount==0) {
 				sb.AppendLine(Lans.g("FormPayPlanDynamic","Please enter a term or payment amount first."));
 			}
 			if(payPlanTerms.DateAgreement > DateTime_.Today.Date && !PrefC.GetBool(PrefName.FutureTransDatesAllowed)){
@@ -1967,7 +1972,7 @@ namespace OpenDentBusiness {
 			if(payPlanTerms.PayCount!=0 && payPlanTerms.PeriodPayment!=0){
 			  sb.AppendLine(Lans.g("FormPayPlanDynamic","Please choose either Number of Payments or Payment Amt."));
 			}
-			if(payPlanTerms.PeriodPayment==0 && payPlanTerms.PayCount < 1) {
+			if(linkedProdCount!=0 && payPlanTerms.PeriodPayment==0 && payPlanTerms.PayCount < 1) {
 				sb.AppendLine(Lans.g("FormPayPlanDynamic","Term cannot be less than 1."));
 			}
 			if(payPlanTerms.PrincipalAmount-payPlanTerms.DownPayment < 0) {

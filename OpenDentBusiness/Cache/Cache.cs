@@ -91,6 +91,10 @@ namespace OpenDentBusiness {
 					ds.Tables.Add(JobTeams.GetTableFromCache(doRefreshServerCache));
 					ds.Tables.Add(JobTeamUsers.GetTableFromCache(doRefreshServerCache));
 				}
+				if(listITypes.Contains(InvalidType.WebChatAiAssistants) || isAll) {
+					ODEvent.Fire(ODEventType.Cache,prefix+InvalidType.WebChatAiAssistants.ToString());
+					ds.Tables.Add(WebChatAiAssistants.GetTableFromCache(doRefreshServerCache));
+				}
 			}
 			//All cached public tables go here
 			if(listITypes.Contains(InvalidType.AccountingAutoPays) || isAll) {
@@ -477,6 +481,10 @@ namespace OpenDentBusiness {
 					ODEvent.Fire(ODEventType.Cache,suffix+InvalidType.JobTeams.ToString());
 					JobTeams.FillCacheFromTable(ds.Tables["JobTeam"]);
 					JobTeamUsers.FillCacheFromTable(ds.Tables["JobTeamUser"]);
+				}
+				if(listITypes.Contains(InvalidType.WebChatAiAssistants) || isAll) {
+					ODEvent.Fire(ODEventType.Cache,suffix+InvalidType.WebChatAiAssistants.ToString());
+					WebChatAiAssistants.FillCacheFromTable(ds.Tables["WebChatAssistant"]);
 				}
 			}
 			if(listITypes.Contains(InvalidType.AccountingAutoPays) || isAll) {
@@ -924,6 +932,7 @@ namespace OpenDentBusiness {
 			listInvalidTypes.Add(InvalidType.FlowActionDef);
 			listInvalidTypes.Add(InvalidType.FlowDefLink);
 			listInvalidTypes.Add(InvalidType.CodeGroups);
+			listInvalidTypes.Add(InvalidType.WebChatAiAssistants);
 			return listInvalidTypes;
 		}
 
@@ -972,6 +981,10 @@ namespace OpenDentBusiness {
 					ODEvent.Fire(ODEventType.Cache,prefix+InvalidType.JobTeams.ToString());
 					JobTeams.ClearCache();
 					JobTeamUsers.ClearCache();
+				}
+				if(listITypes.Contains(InvalidType.WebChatAiAssistants) || isAll) {
+					ODEvent.Fire(ODEventType.Cache,prefix+InvalidType.WebChatAiAssistants.ToString());
+					WebChatAiAssistants.ClearCache();
 				}
 			}
 			//All cached public tables go here

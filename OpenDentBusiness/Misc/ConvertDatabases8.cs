@@ -2484,7 +2484,16 @@ namespace OpenDentBusiness {
 				Db.NonQ(command);
 			}
 			//End B58322
-		}//End of 24_3_27
+		}//End of 
+
+		private static void To24_3_30() {
+			//Start B58344
+			string command="INSERT INTO alertcategory(IsHQCategory,InternalName,Description) VALUES('1','Programs','Program Link Alerts')";
+			long alertCatNum=Db.NonQ(command,true);
+			command="INSERT INTO alertcategorylink(AlertCategoryNum,AlertType) VALUES("+POut.Long(alertCatNum)+",40)";//Pearl
+			Db.NonQ(command);
+			//End B58344
+		}//End of 24_3_30
 
 	}
 }

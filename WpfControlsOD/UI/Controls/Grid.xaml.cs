@@ -2019,11 +2019,14 @@ using WpfControls.UI;
 			if(canvasView.ActualHeight<=0) {
 				return;
 			}
+			//All rows can be seen within the container, scrollV not needed.
 			if(_heightTotal<canvasView.ActualHeight) {
 				scrollV.Visibility=Visibility.Collapsed;
 				scrollV.Value=0;
+				scrollV.Maximum=0;
 				Canvas.SetTop(canvasMain,0);
 			}
+			//All rows can't be seen within the container, scrollV is needed.
 			else {
 				scrollV.Visibility=Visibility.Visible;
 				scrollV.Minimum = 0;

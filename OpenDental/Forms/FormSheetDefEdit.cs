@@ -410,12 +410,7 @@ namespace OpenDental {
 			if(!UpdateWebSheetDef()) {
 				return;
 			}
-			//If we added or subtracted any field defs, increment the revision ID
-			SheetDef sheetDefStored=SheetDefs.GetSheetDef(SheetDef_.SheetDefNum,false);
-			if(sheetDefStored!=null && sheetDefStored.SheetFieldDefs.Count!=SheetDef_.SheetFieldDefs.Count) {
-				SheetDef_.RevID++;
-			}
-			if(!PromptUpdateEClipboardSheetDefs()) {
+			if(!UpdateRevisionID()) {
 				return;
 			}
 			SheetDefs.InsertOrUpdate(SheetDef_);
@@ -2806,6 +2801,37 @@ namespace OpenDental {
 			bool isSuccess=WebFormL.TryAddOrUpdateSheetDef(this,SheetDef_,false,_listWebForms_SheetDefs);
 			Cursor=Cursors.Default;
 			return isSuccess;
+		}
+
+		///<summary>Updates the sheetdef's revision ID if any fielddef was added or removed from the sheet def or if any static text was changed. If the revision ID is increased, also handles prompting the user if they would like to force patient's to fill out this sheet def again. Returns true if sheetdef is ready to be saved. Returns false if user does not want to save sheet def changes and wants to remain on the form. </summary>
+		private bool UpdateRevisionID() {
+			SheetDef sheetDefStored=SheetDefs.GetSheetDef(SheetDef_.SheetDefNum,false);//Go to DB to get current copy of sheetdef.
+			if(sheetDefStored==null) {
+				//If this sheetdef is currently not in the DB, then it is a new sheetdef and therefore we do not need to update the revision ID.
+				return true;
+			}
+			bool staticTextWasChanged=false;
+			for(int i=0;i<SheetDef_.SheetFieldDefs.Count;i++) {//Iterate through field defs to find all static text fields.
+				if(SheetDef_.SheetFieldDefs[i].FieldType!=SheetFieldType.StaticText) {
+					continue;
+				}
+				SheetFieldDef sheetFieldDefOld=sheetDefStored.SheetFieldDefs.Find(x => x.SheetFieldDefNum==SheetDef_.SheetFieldDefs[i].SheetFieldDefNum);
+				if(sheetFieldDefOld==null) {
+					continue;
+				}
+				if(SheetDef_.SheetFieldDefs[i].FieldValue!=sheetFieldDefOld.FieldValue) {
+					staticTextWasChanged=true;//At least one static text field was changed so therefore we need to update the revision ID.
+					break;
+				}
+			}
+			//If we added/subtracted any field defs or changed any static text, increment the revision ID. 
+			if(sheetDefStored.SheetFieldDefs.Count!=SheetDef_.SheetFieldDefs.Count || staticTextWasChanged) {
+				SheetDef_.RevID++;
+				if(!PromptUpdateEClipboardSheetDefs()) {//Revision number changed, so prompt to generate the sheet again for patients who have already filled the previous version of this sheet.
+					return false;
+				}
+			}
+			return true;
 		}
 
 		///<summary>Gets run as part of OK click for validation.</summary>

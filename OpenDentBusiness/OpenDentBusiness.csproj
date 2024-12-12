@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="12.0">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -371,6 +371,7 @@
     <Compile Include="Crud\TransactionInvoiceCrud.cs" />
     <Compile Include="Crud\TreatPlanParamCrud.cs" />
     <Compile Include="Crud\UtmCrud.cs" />
+    <Compile Include="Crud\WebChatAiAssistantCrud.cs" />
     <Compile Include="Crud\WebChatMessageCrud.cs" />
     <Compile Include="Crud\WebChatNoteCrud.cs" />
     <Compile Include="Crud\WebChatPrefCrud.cs" />
@@ -638,6 +639,8 @@
     <Compile Include="InternalTools\OpenAi\Models\OAIFaqResponseFunctionArgs.cs" />
     <Compile Include="InternalTools\OpenAi\Models\OAIToolOutput.cs" />
     <Compile Include="InternalTools\Job Manager\Git.cs" />
+    <Compile Include="InternalTools\WebChat\TableTypes\WebChatAiAssistant.cs" />
+    <Compile Include="InternalTools\WebChat\WebChatAiAssistants.cs" />
     <Compile Include="SheetFramework\EnumStaticTextField.cs" />
     <Compile Include="Db Multi Table\ApptSearch.cs" />
     <Compile Include="Email\BasicEmailAddress.cs" />

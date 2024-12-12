@@ -75,7 +75,7 @@ namespace OpenDentBusiness.OpenAi {
 					var response=await OpenAiClient.Inst.GetListMessages(_thread.Id);
 					string aiResponse=response.Data.Last().Content.Last()?.Text?.Value ?? "";//FAQ assistant can return null when no answer is found.
 					if(isSavedToDb) {
-						InsertWebChatSessionMsg(aiResponse, WebChatMessageType.AI);
+						InsertWebChatSessionMsg(aiResponse,WebChatMessageType.AI,assistantId);
 					}
 					ListAiResponses.Add(aiResponse);
 					return null;//No errors
@@ -225,7 +225,19 @@ namespace OpenDentBusiness.OpenAi {
 
 		///<summary>Inserts a webChatMessage into HQ database.
 		///Automatically sets the message.UserName to Security.CurUser.UserName if msgType is Technician, otherwise blank for AI.</summary>
-		private WebChatMessage InsertWebChatSessionMsg(string msg,WebChatMessageType msgType) {
+		private WebChatMessage InsertWebChatSessionMsg(string msg,WebChatMessageType msgType,string assistantId=null) {
+			long assistantNum=0;
+			if(msgType==WebChatMessageType.AI && !assistantId.IsNullOrEmpty()) {
+				WebChatAiAssistant assistant=WebChatAiAssistants.GetFirstOrDefault((assistant) => assistant.AssistantId==assistantId);
+				if(assistant==null) {//No AI response has been recieved from this assistant before, create a new one.
+					assistantNum=WebChatAiAssistants.Insert(new WebChatAiAssistant() {
+						AssistantId=assistantId,
+					});
+				}
+				else {//We've seen this assistant before
+					assistantNum=assistant.WebChatAiAssistantNum;
+				}
+			}
 			WebChatMessage webChatMessage=new WebChatMessage() {
 				WebChatSessionNum=ChatSession.WebChatSessionNum,
 				DateT=MiscData.GetNowDateTime(),
@@ -233,6 +245,7 @@ namespace OpenDentBusiness.OpenAi {
 				MessageText=msg,
 				MessageType=msgType,
 				UserName=(msgType==WebChatMessageType.Technician)?Security.CurUser.UserName:"",
+				AiAssistantIdNum=assistantNum
 			};
 			webChatMessage.WebChatMessageNum=WebChatMessages.Insert(webChatMessage);
 			return webChatMessage;

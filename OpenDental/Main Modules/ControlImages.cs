@@ -286,6 +286,9 @@ namespace OpenDental{
 					}
 				}
 			}
+			if(!contextMenuForms.HasItems) {
+				contextMenuForms=null;
+			}
 			toolBarMain.Add(Lan.g(this,"Forms"),ToolBarForms_Click,toolBarButtonStyle:WpfControls.UI.ToolBarButtonStyle.DropDownButton,contextMenuDropDown:contextMenuForms);
 			WpfControls.ProgramL.LoadToolBar(toolBarMain,EnumToolBar.ImagingModule,ToolBarProgram_Click);
 			if(_listPearlCategoriesShown is null){//happens once on startup
@@ -886,16 +889,18 @@ namespace OpenDental{
 			_frmPearlLayers.ListEnumCategoryODsShown=_listPearlCategoriesShown;
 			_frmPearlLayers.ShowPearlLayers=_showDrawingsPearl;
 			//Tell frmPearlLayers how to refresh the display
-			_frmPearlLayers.EventRefreshControlImages=(s,e) => {
+			_frmPearlLayers.EventRefreshControlImages+=(s,e) => {
 				_listPearlCategoriesShown=_frmPearlLayers.ListEnumCategoryODsShown;
 				_showDrawingsPearl=_frmPearlLayers.ShowPearlLayers;
 				pearl_EventRefreshDisplay(s,e);
 			};
+			_frmPearlLayers.EventClickDeleteAnnotations+=pearl_EventClickDeleteAnnotations;
 			_frmPearlLayers.FormClosing+=(s,e) => {
 				_frmPearlLayers=null;
 			};
 			_frmPearlLayers.Location=this.PointToScreen(Point.Empty);
 			_frmPearlLayers.Location.Y+=50;//Place below toolbars
+			//_frmPearlLayers.Owner=(Form)this.Parent;
 			_frmPearlLayers.Show();
 			_frmPearlLayers.Activate();
 		}
@@ -1920,6 +1925,38 @@ namespace OpenDental{
 			}
 		}
 
+		///<summary>Deletes Pearl annotations for the currently shown document/mount item. Triggered from FrmPearlLayers.</summary>
+		private void pearl_EventClickDeleteAnnotations(object sender,EventArgs e) {
+			ControlImageDisplay controlImageDisplay=GetControlImageDisplaySelected();
+			if(controlImageDisplay==null) {
+				MessageBox.Show("No image selected.","Pearl AI");
+				return;
+			}
+			long docNum=-1;
+			bool isMountShowing=false;
+			if(controlImageDisplay.IsMountItemSelected()) {
+				isMountShowing=true;
+				int idx=GetIdxSelectedInMount();
+				docNum=GetDocumentShowing(idx).DocNum;
+			}
+			else if(controlImageDisplay.IsDocumentShowing()) {
+				docNum=GetDocumentShowing(0).DocNum;
+			}
+			if(docNum==-1) {
+				MessageBox.Show("No image selected.","Pearl AI");
+				return;
+			}
+			DialogResult dialogResult=MessageBox.Show("Delete annotations for the currently selected "+(isMountShowing ? "mount item" : "document")+"?","Pearl AI",MessageBoxButtons.YesNo);
+			if(dialogResult!=DialogResult.Yes) {
+				return;//User clicked 'No' or closed the popup
+			}
+			if(docNum!=-1) {
+				ImageDraws.DeleteByDocNumAndVendor(docNum,EnumImageAnnotVendor.Pearl);
+				PearlRequests.DeleteByDocNum(docNum);
+			}
+			pearl_EventRefreshDisplay(sender,e);
+		}
+
 		private void printDocument_PrintPage(object sender,System.Drawing.Printing.PrintPageEventArgs e) {
 			ControlImageDisplay controlImageDisplay=GetControlImageDisplaySelected();
 			if(controlImageDisplay is null){
@@ -1972,6 +2009,62 @@ namespace OpenDental{
 					SetIdxSelectedInMount(idx);
 				}
 			}
+			//The section below is only for Pearl and Better Diag.
+			//Our internal ImageDraws for mount items are tied to mounts, not docs, so DocNums are 0.
+			//For AI ImageDraws, we set both. Coord origin is still relative to mount.
+			#region Translate and scale drawings to new mount item
+			MountItem mountItemOld=e.MountItem_;
+			MountItem mountItemNew=controlImageDisplay.GetListMountItems()[idx];
+			List<ImageDraw> listImageDraws=ImageDraws.RefreshForDoc(e.Document_.DocNum);
+			if(listImageDraws.Count>0 && (mountItemOld.Xpos!=mountItemNew.Xpos || mountItemOld.Ypos!=mountItemNew.Ypos)) {
+				int bitmapWidth=e.BitmapImage_.PixelWidth;
+				int bitmapHeight=e.BitmapImage_.PixelHeight;
+				//Calculate scale of bitmap within old mount item
+				float scaleOld=ImageDraws.CalcBitmapScaleToFitMountItem(bitmapWidth,bitmapHeight,mountItemOld.Width,mountItemOld.Height);
+				//Calculate scale needed to make bitmap fit in new mount item.
+				float scale=ImageDraws.CalcBitmapScaleToFitMountItem((int)(bitmapWidth*scaleOld),(int)(bitmapHeight*scaleOld),mountItemNew.Width,mountItemNew.Height);
+				//Calculate padding used to make drawings centered in old mount item.
+				Point pointPaddingOld=ImageDraws.CalcBitmapPaddingToFitMountItem(bitmapWidth,bitmapHeight,mountItemOld.Width,mountItemOld.Height,scaleOld);
+				//Calculate padding needed to make drawings centered in new mount item.
+				Point pointPadding=ImageDraws.CalcBitmapPaddingToFitMountItem((int)(bitmapWidth*scaleOld),(int)(bitmapHeight*scaleOld),mountItemNew.Width,mountItemNew.Height,scale);
+				PointF pointFTranslateToOrigin=new PointF();
+				pointFTranslateToOrigin.X=-mountItemOld.Xpos;//Subtract old mount item position to return points to origin
+				pointFTranslateToOrigin.Y=-mountItemOld.Ypos;
+				pointFTranslateToOrigin.X-=pointPaddingOld.X;//Undo padding from old mount item
+				pointFTranslateToOrigin.Y-=pointPaddingOld.Y;
+				PointF pointFTranslateToMountItem=pointPadding;//Add padding for centering drawings on new mount item
+				pointFTranslateToMountItem.X+=mountItemNew.Xpos;//Translate to new mountItem's position
+				pointFTranslateToMountItem.Y+=mountItemNew.Ypos;
+				List<PointF> listPointFs;
+				for(int i=0;i<listImageDraws.Count;i++) {
+					listPointFs=listImageDraws[i].GetPoints();
+					if(listImageDraws[i].DrawType==ImageDrawType.Text) {
+						listPointFs=new List<PointF> { (PointF)listImageDraws[i].GetTextPoint() };
+					}
+					//Translate points to 0,0 so we can scale points properly
+					listPointFs=ImageDraws.TranslatePointsToMountItem(listPointFs,pointFTranslateToOrigin);
+					//Scale points to fit within the new mount item
+					listPointFs=ImageDraws.ScalePointsToMountItem(listPointFs,scale);
+					//Translate points to new mount item, with padding to center them.
+					listPointFs=ImageDraws.TranslatePointsToMountItem(listPointFs,pointFTranslateToMountItem);
+					if(listImageDraws[i].DrawType==ImageDrawType.Text) {
+						//If text has any negative coords, it will appear at 0,0, regardless if one of the coords is positive.
+						//Setting negative coords to 0 here to respect the other coord if it is valid, rather than showing at 0,0.
+						if(listPointFs[0].X<0) {
+							listPointFs[0]=new PointF(0,listPointFs[0].Y);
+						}
+						if(listPointFs[0].Y<0) {
+							listPointFs[0]=new PointF(listPointFs[0].X,0);
+						}
+						listImageDraws[i].SetLoc(Point.Round(listPointFs[0]));
+					}
+					else {
+						listImageDraws[i].SetDrawingSegment(listPointFs);
+					}
+					ImageDraws.Update(listImageDraws[i]);
+				}
+			}
+			#endregion Translate and scale drawings to new mount item
 			Document document=controlImageDisplay.GetDocumentShowing(idx);
 			if(document!=null){
 				//unmount the old document

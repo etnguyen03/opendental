@@ -73,6 +73,8 @@ Examples:
 		public MountItem MountItem_;
 		///<summary>PearlRequest used in polling.</summary>
 		private PearlRequest _pearlRequest;
+		///<summary>Used to track which user's machine sent the request so alerts can be displayed to a specific user.</summary>
+		private long _userNum;
 		///<summary>Used to trigger a UI refresh when the thread is complete.</summary>
 		public static event EventHandler EventRefreshDisplay;
 
@@ -101,6 +103,9 @@ Examples:
 					return null;//File couldn't be converted to bitmap
 				}
 			}
+			if(mountItem!=null && mountItem.ItemOrder==-1) {
+				return null;//Image is unmounted, don't send it for results.
+			}
 			Pearl pearl=new Pearl();
 			pearl.Patient_=patient;
 			if(mountItem!=null) {
@@ -115,6 +120,7 @@ Examples:
 			if(pearlRequest!=null && pearlRequest.RequestStatus!=EnumPearlStatus.TimedOut) {
 				return null;
 			}
+			pearl._userNum=Security.CurUser.UserNum;
 			return pearl;
 		}
 
@@ -140,7 +146,9 @@ Examples:
 		public void SendOnThread() {
 			ODThread oDThreadPearl=new ODThread(this.SendOnThreadWorker);
 			//Swallow all exceptions and allow thread to exit gracefully.
-			oDThreadPearl.AddExceptionHandler(new ODThread.ExceptionDelegate((Exception ex) => { }));
+			oDThreadPearl.AddExceptionHandler(new ODThread.ExceptionDelegate((Exception ex) => {
+				AlertUserOfError(ex.Message);
+			}));
 			oDThreadPearl.AddExitHandler(new ODThread.WorkerDelegate((o) => {
 				EventRefreshDisplay?.Invoke(this,new EventArgs());
 				Dispose();
@@ -163,7 +171,7 @@ Examples:
 				//Look for existing request for this document and skip uploading the image if one is found.
 				pearlRequest=PearlRequests.GetOneByDocNum(Document_.DocNum);
 				if(pearlRequest!=null) {
-					return;
+					throw new Exception("Image was already sent to Pearl");
 				}
 				//Send image to Pearl
 				string requestId=null;
@@ -177,13 +185,11 @@ Examples:
 						requestId=PearlApiClient.Inst.SendOneImageToPearl(Document_.DocNum,Bitmap_,Patient_);
 					}
 					catch(Exception ex) {
-						ODEvent.Fire(ODEventType.ProgressBar,"There was an error uploading an image:\r\n"+ex.Message);
-						return;
+						throw new Exception("There was an error uploading an image:\r\n"+ex.Message);
 					}
 				}
 				if(string.IsNullOrWhiteSpace(requestId)) {
-					ODEvent.Fire(ODEventType.ProgressBar,"An image failed to upload.");
-					return;
+					throw new Exception("An image failed to upload.");
 				}
 				pearlRequest=PearlRequests.GetOneByRequestId(requestId);
 			}
@@ -212,7 +218,7 @@ Examples:
 					if(!PearlRequests.IsRequestHandled(_pearlRequest)) {
 						PearlRequests.UpdateStatusForRequests(listPearlRequests,EnumPearlStatus.TimedOut);
 					}
-					return;
+					throw new Exception("Retrieving AI results for an image timed out.");
 				}
 				oDThread.Wait(pollRateMs);
 			}
@@ -341,7 +347,7 @@ Examples:
 				}
 				catch (Exception ex) {
 					//API error, we didn't get a result so we will try again on next polling loop.
-					ODEvent.Fire(ODEventType.ProgressBar,"There was an error polling an image:\r\n"+ex.Message);
+					throw new Exception("There was an error retrieving AI results for an image:\r\n"+ex.Message);
 				}
 			}
 			//Order matters for the checks below. We will weed out the negative results first and be left with complete (synonymous with success in Pearl's vocab).
@@ -374,25 +380,12 @@ Examples:
 			int width=bitmap.Width;
 			int height=bitmap.Height;
 			float scale=1f;
-			int paddingX=0;
-			int paddingY=0;
 			if(mountItem!=null) {
-				//Scale points when bitmap aspect ratio doesn't match mount item's aspect ratio. 
-				float ratioWtoHMountItem=(float)mountItem.Width/mountItem.Height;
-				float ratioWtoHBitmap=(float)bitmap.Width/bitmap.Height;
-				if(ratioWtoHBitmap > ratioWtoHMountItem) {
-					//The bitmap is wider in shape than the mount item. Scale points based on the width, as it is the limiting dimension.
-					scale=(float)mountItem.Width/bitmap.Width;
-					paddingY=(int)(mountItem.Height-(bitmap.Height * scale)) / 2;
-				}
-				else {
-					//The bitmap is taller in shape than the mount item. Scale points based on the height, as it is the limiting dimension.
-					scale=(float)mountItem.Height/bitmap.Height;
-					paddingX=(int)(mountItem.Width-(bitmap.Width*scale))/2;
-				}
-				//Add padding to line annotations up with centered image.
-				pointMountPos.X=mountItem.Xpos+paddingX;
-				pointMountPos.Y=mountItem.Ypos+paddingY;
+				scale=ImageDraws.CalcBitmapScaleToFitMountItem(bitmap.Width,bitmap.Height,mountItem.Width,mountItem.Height);
+				Point pointPadding=ImageDraws.CalcBitmapPaddingToFitMountItem(bitmap.Width,bitmap.Height,mountItem.Width,mountItem.Height,scale);
+				//Add padding to line annotations up with centered image in mount item.
+				pointMountPos.X=mountItem.Xpos+pointPadding.X;
+				pointMountPos.Y=mountItem.Ypos+pointPadding.Y;
 				width=(int)(width*scale);
 				height=(int)(height*scale);
 				mountNum=mountItem.MountNum;
@@ -496,6 +489,20 @@ Examples:
 				imageDraw.PearlLayer=ConditionToODCategory(listToothParts[i].condition_id);
 				ImageDraws.Insert(imageDraw);
 			}
+		}
+
+		///<summary>Used to communicate error information to the user through an alert.</summary>
+		private void AlertUserOfError(string details="") {
+			AlertItem alertItem=new AlertItem();
+			//ex: "Pearl AI Imaging Error: John Smith, Panos folder, SmithJohn23.jpg."
+			alertItem.Description=Patient_.GetNameFL()+", "+Defs.GetName(DefCat.ImageCats,Document_.DocCategory)+" folder, "+Document_.FileName+".\r\n";
+			alertItem.Actions=EnumTools.AddFlag(alertItem.Actions,ActionType.ShowItemValue,ActionType.Delete);//Let user see details and delete alert
+			alertItem.FormToOpen=FormType.None;
+			alertItem.ItemValue=details;
+			alertItem.Severity=SeverityType.Normal;
+			alertItem.Type=AlertType.Pearl;
+			alertItem.UserNum=_userNum;
+			AlertItems.Insert(alertItem);
 		}
 
 		#region ImageDraw helpers

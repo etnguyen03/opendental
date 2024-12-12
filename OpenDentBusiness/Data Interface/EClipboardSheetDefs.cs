@@ -145,7 +145,7 @@ namespace OpenDentBusiness{
 			if(RemotingClient.MiddleTierRole==MiddleTierRole.ClientMT){
 				return Meth.GetObject<List<EClipboardSheetDef>>(MethodBase.GetCurrentMethod(),sheetDefNum);
 			}
-			string command="SELECT * FROM eclipboardsheetdef WHERE SheetDefNum="+POut.Long(sheetDefNum)+" AND PrefillStatus = "+POut.Enum<PrefillStatuses>(PrefillStatuses.Once);
+			string command="SELECT * FROM eclipboardsheetdef WHERE SheetDefNum="+POut.Long(sheetDefNum)+" AND Frequency = "+POut.Enum<EnumEClipFreq>(EnumEClipFreq.Once);
 			return Crud.EClipboardSheetDefCrud.SelectMany(command);
 		}
 
@@ -166,7 +166,7 @@ namespace OpenDentBusiness{
 				return Meth.GetObject<List<EClipboardSheetDef>>(MethodBase.GetCurrentMethod(),listSheetDefNums, clinicNum);
 			}
 			string command="SELECT * FROM eclipboardsheetdef WHERE SheetDefNum IN ("+string.Join(",",listSheetDefNums)+") "
-				+"AND ClinicNum="+POut.Long(clinicNum)+" AND PrefillStatus = "+POut.Enum<PrefillStatuses>(PrefillStatuses.Once);
+				+"AND ClinicNum="+POut.Long(clinicNum)+" AND Frequency = "+POut.Enum<EnumEClipFreq>(EnumEClipFreq.Once);
 			return Crud.EClipboardSheetDefCrud.SelectMany(command);
 		}
 
@@ -175,12 +175,12 @@ namespace OpenDentBusiness{
 			Meth.NoCheckMiddleTierRole();
 			List<EClipboardSheetDef> listEClipboardSheetDefsRet=new List<EClipboardSheetDef>(listEClipboardSheetDefs);
 			List<long> listSheetDefNumsToRemove=new List<long>();
-			//Remove any sheet defs that are set to PrefillStatuses.Once and have been filled out or have a sheetdef filled out with a revision greathan or equal to the prefillstatusoverride revision id. 
-			listEClipboardSheetDefsRet.RemoveAll(x=>x.PrefillStatus==PrefillStatuses.Once && listSheetsCompleted.Any(y=>y.SheetDefNum==x.SheetDefNum && y.RevID >= x.PrefillStatusOverride));
+			//Remove any sheet defs that are set to EnumEClipFreq.Once and have been filled out or have a sheetdef filled out with a revision greathan or equal to the prefillstatusoverride revision id. 
+			listEClipboardSheetDefsRet.RemoveAll(x=>x.Frequency==EnumEClipFreq.Once && listSheetsCompleted.Any(y=>y.SheetDefNum==x.SheetDefNum && y.RevID >= x.PrefillStatusOverride));
 			//Remove any sheets in a EclipboardSheetDefs ignore list that are set to be filled out once.
 			for(int i = 0;i<listEClipboardSheetDefsRet.Count;i++) {
 				//If the prefill status is not set to once, then ignore lists are not used.
-				if(listEClipboardSheetDefsRet[i].PrefillStatus!=PrefillStatuses.Once) {
+				if(listEClipboardSheetDefsRet[i].Frequency!=EnumEClipFreq.Once) {
 					continue;
 				}
 				List<long> listSheetDefNumsIgnore=GetListIgnoreSheetDefNums(listEClipboardSheetDefsRet[i]);

@@ -331,6 +331,16 @@ How to:
 			}
 		}
 
+		public System.Windows.Forms.Form Owner {
+			get {
+				return _formFrame.Owner;
+			}
+			set {
+				_formFrame.Owner=value;
+			}
+		}
+
+
 		[Description("Shows in titlebar of window.")]
 		[Category("OD")]
 		[DefaultValue("Form")]

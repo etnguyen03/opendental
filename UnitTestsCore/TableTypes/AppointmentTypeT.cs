@@ -9,8 +9,8 @@ using System.Threading.Tasks;
 namespace UnitTestsCore {
 	public class AppointmentTypeT {
 
-		public static AppointmentType CreateAppointmentType(string appointmentTypeName,Color appointmentTypeColor=new Color(),string codeStr=""
-			,bool isHidden=false,int itemOrder=0,string pattern="")
+		public static AppointmentType CreateAppointmentType(string appointmentTypeName,Color appointmentTypeColor=new Color(),string codeStr="",bool isHidden=false,int itemOrder=0,
+			string pattern="",string codeStrRequired="",EnumRequiredProcCodesNeeded requiredProcCodesNeeded=EnumRequiredProcCodesNeeded.None,string blockoutTypes="")
 		{
 			AppointmentType appointmentType=new AppointmentType() {
 				AppointmentTypeName=appointmentTypeName,
@@ -19,6 +19,9 @@ namespace UnitTestsCore {
 				IsHidden=isHidden,
 				ItemOrder=itemOrder,
 				Pattern=pattern,
+				CodeStrRequired=codeStrRequired,
+				RequiredProcCodesNeeded=requiredProcCodesNeeded,
+				BlockoutTypes=blockoutTypes
 			};
 			AppointmentTypes.Insert(appointmentType);
 			AppointmentTypes.RefreshCache();

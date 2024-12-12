@@ -43,7 +43,7 @@ namespace OpenDentBusiness{
 		///because this column is used for altering text fields' positions in PDFs.</summary>
 		[CrudColumn(SpecialType=CrudSpecialColType.DateT)]
 		public DateTime DateTCreated;
-		///<summary>Revision ID. Gets updated any time a sheet field is added or deleted from a sheetdef (this includes any time a new language is added). Used to determine in conjunction with PrefillMode for eClipboard to determine whether to show a patient a new form or have them update their last filled out form. Must match up with Sheet RevID to show a previously filled out form.</summary>
+		///<summary>Revision ID. Gets updated any time a sheet field is added or deleted from a sheetdef (this includes any time a new language is added) or a static text field is changed. Used to determine in conjunction with PrefillMode for eClipboard to determine whether to show a patient a new form or have them update their last filled out form. Must match up with Sheet RevID to show a filled out form.</summary>
 		public int RevID;
 		///<summary>Indicates whether sheets created with this sheet def load with the "Save to Images" box checked</summary>
 		public bool AutoCheckSaveImage;
@@ -52,7 +52,6 @@ namespace OpenDentBusiness{
 		//But we will not fix.
 		///<summary>FK to definition.DefNum. Used to override the category that is selected when auto saving the sheet to the imaging module.  This allows users to choose the category that a sheet is saved to on a per sheet basis.</summary>
 		public long AutoCheckSaveImageDocCategory;
-
 		///<Summary>A collection of all parameters for this sheetdef.  There's usually only one parameter.  The first parameter will be a List long if it's a batch.  If a sheet has already been filled, saved to the database, and printed, then there is no longer any need for the parameters in order to fill the data.  So a retrieved sheet will have no parameters, signalling a skip in the fill phase.  There will still be parameters tucked away in the Field data in the database, but they won't become part of the sheet.</Summary>
 		[CrudColumn(IsNotDbColumn=true)]
 		[XmlIgnore]

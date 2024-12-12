@@ -472,14 +472,14 @@ namespace OpenDentBusiness {
 					payConnectResponse.Description=voidResponse.Status;
 					payConnectResponse.StatusCode="0";//0 indicates success
 					payConnectResponse.RefNumber=voidResponse.ReferenceId;
-					payConnectResponse.Amount=((decimal)voidResponse.AmountVoided)/100;//PayConnect sends amount as total cents, convert back to OD decimal amounts.
+					payConnectResponse.Amount=((decimal)voidResponse.Amount)/100;//PayConnect sends amount as total cents, convert back to OD decimal amounts.
 					payConnectResponse.AuthCode=voidResponse.AuthCode;
 					payConnectResponse.MerchantId=voidResponse.MerchantId.ToString();
 					payConnectResponse.PaymentToken=voidResponse.PaymentMethod.CardPaymentMethod.CardToken;
 					payConnectResponse.CardType=voidResponse.PaymentMethod.CardPaymentMethod.Network.ToString();
 					payConnectResponse.CardNumber=voidResponse.PaymentMethod.CardPaymentMethod.CardLast4Digits;
 					payConnectResponse.TransType=PayConnectResponse.TransactionType.Void;
-					payConnectResponse.AmountSurcharged=voidResponse.AmountSurcharged;
+					payConnectResponse.AmountSurcharged=((decimal)voidResponse.AmountSurcharged)/100;//PayConnect sends amount as total cents, convert back to OD decimal amounts.
 					payConnectResponse.CardHolder=voidResponse.PaymentMethod.CardPaymentMethod.CardHolder;
 					break;
 				case ResponseType.Refund:

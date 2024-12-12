@@ -1173,6 +1173,8 @@ namespace OpenDentBusiness {
 				//Row from db.  This deletes the "image file" also if it's stored in db.
 				Documents.Delete(documents[i]);
 				EClipboardImageCaptures.DeleteByDocNum(documents[i].DocNum);
+				ImageDraws.DeleteByDocNum(documents[i].DocNum);
+				PearlRequests.DeleteByDocNum(documents[i].DocNum);
 			}//end documents
 		}
 

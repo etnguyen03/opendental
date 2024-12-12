@@ -25,11 +25,8 @@ namespace OpenDental {
 			BrokenApptProcedure brokenApptProcs=(BrokenApptProcedure)PrefC.GetInt(PrefName.BrokenApptProcedure);
 			radioMissed.Enabled=brokenApptProcs.In(BrokenApptProcedure.Missed,BrokenApptProcedure.Both);
 			radioCancelled.Enabled=brokenApptProcs.In(BrokenApptProcedure.Cancelled,BrokenApptProcedure.Both);
-			if(radioMissed.Enabled && !radioCancelled.Enabled) {
-				radioMissed.Checked=true;
-			}
-			else if(!radioMissed.Enabled && radioCancelled.Enabled) {
-				radioMissed.Checked=true;
+			if(!radioMissed.Enabled && radioCancelled.Enabled) {
+				radioCancelled.Checked=true;
 			}
 		}
 

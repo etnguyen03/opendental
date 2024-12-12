@@ -18,7 +18,18 @@ namespace OpenDental {
 		public FrmApptBreakRequired() {
 			InitializeComponent();
 			Lang.F(this);
+			Load+=FrmApptBreakRequired_Load;
 			PreviewKeyDown+=FrmApptBreakRequired_PreviewKeyDown;
+		}
+
+		private void FrmApptBreakRequired_Load(object sender,EventArgs e) {
+			BrokenApptProcedure brokenApptProcedure=(BrokenApptProcedure)PrefC.GetInt(PrefName.BrokenApptProcedure);
+			if(brokenApptProcedure==BrokenApptProcedure.Missed) {
+				butCancelled.IsEnabled=false;
+			}
+			else if(brokenApptProcedure==BrokenApptProcedure.Cancelled) {
+				butMissed.IsEnabled=false;
+			}
 		}
 
 		private void FrmApptBreakRequired_PreviewKeyDown(object sender,KeyEventArgs e) {

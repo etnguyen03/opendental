@@ -99,6 +99,15 @@ namespace OpenDentBusiness{
 			Crud.PearlRequestCrud.Delete(pearlRequestNum);
 		}
 		*/
+		///<summary></summary>
+		public static void DeleteByDocNum(long docNum) {
+			if(RemotingClient.MiddleTierRole==MiddleTierRole.ClientMT) {
+				Meth.GetVoid(MethodBase.GetCurrentMethod(),docNum);
+				return;
+			}
+			string command="DELETE FROM pearlrequest WHERE DocNum="+POut.Long(docNum);
+			Db.NonQ(command);
+		}
 		#endregion Methods - Modify
 		#region Methods - Misc
 		///<summary>Returns whether the request has been processed by Pearl, either with success or error.</summary>

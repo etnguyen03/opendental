@@ -3280,7 +3280,7 @@ namespace OpenDentBusiness {
 				//get all unattached credits
 				decimal creditTotal=0;
 				creditTotal-=listAdjs.Where(x => x.ProcNum == 0 && x.AdjAmt <0).Sum(x => (decimal)x.AdjAmt); //negative adjustments are credits
-				creditTotal+=listPaySplits.Where(x => x.ProcNum == 0).Sum(x => (decimal)x.SplitAmt);
+				creditTotal+=listPaySplits.Where(x => x.ProcNum==0 && x.AdjNum==0).Sum(x => (decimal)x.SplitAmt);//Don't include paysplits attached to a procedure or an adjustment
 				creditTotal+=listInsPayTot.Where(x => x.ProcNum == 0).Sum(x => (decimal)x.InsPayAmt);
 				creditTotal+=listPayPlanCharges.Where(x => x.ProcNum == 0 && x.ChargeType == PayPlanChargeType.Credit).Sum(x => (decimal)x.Principal);
 				//apply unattached credits to account entries

@@ -533,14 +533,19 @@ namespace OpenDentBusiness{
 				listProvNums.Add(0); //add 0 so blockouts can be returned.
 			}
 			List<long> listBlockoutTypeDefNums=new List<long>();
-			//get a list of blockout types that are set to Do Not Schedule so we can filter them out later. 
-			//(The list of blockouts we don't want to show)
-			listBlockoutTypeDefNums=Defs.GetDefsForCategory(DefCat.BlockoutTypes,true)
-				.FindAll(x => x.ItemValue.Contains(BlockoutType.NoSchedule.GetDescription()))
-				.Select(x => x.DefNum).ToList();
-			//add the blockoutTypes that we specifically want to search for to the list so they will also be returned, will be 0 if not searching blockouts. 
-			//(The list of blockout scheds we want to show)
+			//at this point, listBlockoutTypes either contains a 0, or a specific set of type(s) that we want to restrict the search to.
 			listBlockoutTypeDefNums.AddRange(listBlockoutTypes);
+			//if it contains a zero, then we're looking at provider schedules, which may have "No Schedule" blockouts on them to consider.
+			if(listBlockoutTypes.Contains(0)) { 
+				//get a list of blockout types that are set to Do Not Schedule so we can filter them out later. 
+				//We do not add the NS blockouts if our initial list of blockout types did not include a provider schedule.
+				//   because blockouts can't overlap, so we don't care about the NS blockouts at all.
+				//(The list of blockouts we don't want to show)
+				List<long> listDefNumsBlockoutTypesDoNotSchedule=Defs.GetDefsForCategory(DefCat.BlockoutTypes,isShort:true)
+					.FindAll(x => x.ItemValue.Contains(BlockoutType.NoSchedule.GetDescription()))
+					.Select(x => x.DefNum).ToList();
+				listBlockoutTypeDefNums.AddRange(listDefNumsBlockoutTypesDoNotSchedule);
+			}
 			List<int> listSchedTypes=new List<int>();
 			listSchedTypes.Add((int)ScheduleType.Provider);
 			listSchedTypes.Add((int)ScheduleType.Blockout);
@@ -1490,6 +1495,9 @@ namespace OpenDentBusiness{
 				if(!listProvNumsFiltered.IsNullOrEmpty()) {
 					command+=$" schedule.ProvNum IN({ string.Join(",",listProvNumsFiltered)}) AND";
 				}
+				//listDefNumsBlockout could have one item 0, meaning it's not a blockout and we are looking for provider schedules.
+				//In that case, we added all the NoSched blockout types, and we will use those later.
+				//Or it could have a list of blockout types that we are restricting to.
 				command+=$@" schedule.BlockoutType IN ({string.Join(",",listDefNumsBlockout.Select(x => POut.Long(x)))})
 					AND schedule.SchedDate>={POut.Date(dateStart)}
 					AND schedule.SchedDate<={POut.Date(dateEnd)}

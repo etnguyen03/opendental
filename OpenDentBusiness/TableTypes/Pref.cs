@@ -128,7 +128,7 @@ namespace OpenDentBusiness {
 		AppointmentBubblesNoteLength,
 		///<summary>Reset calendar to today on clinic select.</summary>
 		AppointmentClinicTimeReset,
-		///<summary>Enum:SearchBehaviorCriteria 0=ProviderTime, 1=ProviderTimeOperatory</summary>
+		///<summary>Enum:SearchBehaviorCriteria 0=ProviderTime means based only on provider availability from the schedule., 1=ProviderTimeOperatory means based on provider schedule availability as well as the availabilty of their operatory (dynamic or directly assigned). This will prevent overlap of appointments.</summary>
 		AppointmentSearchBehavior,
 		AppointmentTimeArrivedTrigger,
 		AppointmentTimeDismissedTrigger,
