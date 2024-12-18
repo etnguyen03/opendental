@@ -227,7 +227,7 @@ namespace OpenDental {
 			//(Jordan-This is worded wrong. Base.FormClosing will still fire before Derived.FormClosing. Maybe they meant FormClosed?)
 			//The advantage is that HasClosed will only be true if ALL FormClosing events have fired for this form.
 			this.FormClosed+=ODForm_FormClosed;
-			Dispose(true);
+			//Dispose(true);//not the right place for this. Moved to where FormFrame.ShowDialog is called.
 		}
 
 		private void ODForm_FormClosed(object sender,FormClosedEventArgs e) {

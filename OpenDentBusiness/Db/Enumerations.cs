@@ -1216,18 +1216,6 @@ namespace OpenDentBusiness{
 	}
 
 	///<summary></summary>
-	public enum StatementMode{
-		///<summary>0</summary>
-		Mail,
-		///<summary>1</summary>
-		InPerson,
-		///<summary>2</summary>
-		Email,
-		///<summary>3</summary>
-		Electronic
-	}
-
-	///<summary></summary>
 	public enum DeletedObjectType{
 		///<summary>0</summary>
 		Appointment,

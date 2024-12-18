@@ -138,7 +138,7 @@ namespace OpenDental {
 			this.checkPayPlanRequireLockForAPR.Name = "checkPayPlanRequireLockForAPR";
 			this.checkPayPlanRequireLockForAPR.Size = new System.Drawing.Size(427, 17);
 			this.checkPayPlanRequireLockForAPR.TabIndex = 322;
-			this.checkPayPlanRequireLockForAPR.Text = "Require full lock to save a Payment Plan if there is an APR entered";
+			this.checkPayPlanRequireLockForAPR.Text = "Require permanent lock to save a Payment Plan if there is an APR entered";
 			// checkPayPlansExcludePastActivity
 			// 
 			this.checkPayPlansExcludePastActivity.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));

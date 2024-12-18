@@ -900,8 +900,8 @@ namespace OpenDental{
 			};
 			_frmPearlLayers.Location=this.PointToScreen(Point.Empty);
 			_frmPearlLayers.Location.Y+=50;//Place below toolbars
-			//_frmPearlLayers.Owner=(Form)this.Parent;
 			_frmPearlLayers.Show();
+			_frmPearlLayers.Owner=(Form)this.ParentForm;//Keeps _frmPearlLayers on top of OD, but not other windows
 			_frmPearlLayers.Activate();
 		}
 		
@@ -2539,6 +2539,13 @@ namespace OpenDental{
 			if(ODBuild.IsThinfinity() && Programs.GetListDisabledForWeb().Contains(program.ProgName)) {
 				MsgBox.Show("ProgramLinks","Bridge is not available while viewing through the web.");
 				return;//bridge is not available for web users at this time. 
+			}
+			if(program.ProgName==ProgramName.Pearl.ToString() //Pearl button pressed
+				&& !Programs.IsEnabled(program.ProgramNum) //Pearl disabled
+				&& ProgramProperties.GetFirstOrDefault(x => x.PropertyDesc=="Disable Advertising")?.PropertyValue!="1") //Pearl button not hidden
+			{
+				Process.Start("https://www.opendental.com/resources/redirects/redirectpearl.html");
+				return;
 			}
 			ControlImageDisplay controlImageDisplay=GetControlImageDisplaySelected();
 			if(controlImageDisplay==null) {

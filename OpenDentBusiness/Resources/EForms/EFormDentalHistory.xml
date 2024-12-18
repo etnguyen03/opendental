@@ -1,0 +1,2070 @@
+<?xml version="1.0" encoding="utf-8"?>
+<EFormDef xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <IsNew>false</IsNew>
+  <EFormDefNum>0</EFormDefNum>
+  <FormType>MedicalHistory</FormType>
+  <Description>Dental History</Description>
+  <DateTCreated>2024-12-06T10:27:10</DateTCreated>
+  <IsInternalHidden>false</IsInternalHidden>
+  <MaxWidth>600</MaxWidth>
+  <RevID>0</RevID>
+  <ShowLabelsBold>true</ShowLabelsBold>
+  <SpaceBelowEachField>20</SpaceBelowEachField>
+  <SpaceToRightEachField>20</SpaceToRightEachField>
+  <SaveImageCategory>0</SaveImageCategory>
+  <ListEFormFieldDefs>
+    <EFormFieldDef>
+      <IsNew>false</IsNew>
+      <EFormFieldDefNum>113</EFormFieldDefNum>
+      <EFormDefNum>0</EFormDefNum>
+      <FieldType>Label</FieldType>
+      <DbLink />
+      <ValueLabel>&lt;FlowDocument&gt;&lt;Paragraph TextIndent="0" Margin="0,0,0,0" TextAlignment="Center"&gt;&lt;Run FontWeight="Bold" FontSize="16.33"&gt;Dental History&lt;/Run&gt;&lt;/Paragraph&gt;&lt;/FlowDocument&gt;</ValueLabel>
+      <ItemOrder>0</ItemOrder>
+      <PickListVis />
+      <PickListDb />
+      <IsHorizStacking>false</IsHorizStacking>
+      <IsTextWrap>false</IsTextWrap>
+      <Width>0</Width>
+      <FontScale>100</FontScale>
+      <IsRequired>false</IsRequired>
+      <ConditionalParent />
+      <ConditionalValue />
+      <LabelAlign>TopLeft</LabelAlign>
+      <SpaceBelow>20</SpaceBelow>
+      <ReportableName />
+      <IsLocked>false</IsLocked>
+      <Border>None</Border>
+      <IsWidthPercentage>false</IsWidthPercentage>
+      <MinWidth>0</MinWidth>
+      <WidthLabel>0</WidthLabel>
+      <SpaceToRight>20</SpaceToRight>
+    </EFormFieldDef>
+    <EFormFieldDef>
+      <IsNew>false</IsNew>
+      <EFormFieldDefNum>114</EFormFieldDefNum>
+      <EFormDefNum>4</EFormDefNum>
+      <FieldType>TextField</FieldType>
+      <DbLink>FName</DbLink>
+      <ValueLabel>First Name</ValueLabel>
+      <ItemOrder>1</ItemOrder>
+      <PickListVis />
+      <PickListDb />
+      <IsHorizStacking>false</IsHorizStacking>
+      <IsTextWrap>false</IsTextWrap>
+      <Width>50</Width>
+      <FontScale>100</FontScale>
+      <IsRequired>true</IsRequired>
+      <ConditionalParent />
+      <ConditionalValue />
+      <LabelAlign>TopLeft</LabelAlign>
+      <SpaceBelow>-1</SpaceBelow>
+      <ReportableName />
+      <IsLocked>false</IsLocked>
+      <Border>ThreeD</Border>
+      <IsWidthPercentage>true</IsWidthPercentage>
+      <MinWidth>150</MinWidth>
+      <WidthLabel>0</WidthLabel>
+      <SpaceToRight>20</SpaceToRight>
+    </EFormFieldDef>
+    <EFormFieldDef>
+      <IsNew>false</IsNew>
+      <EFormFieldDefNum>115</EFormFieldDefNum>
+      <EFormDefNum>4</EFormDefNum>
+      <FieldType>TextField</FieldType>
+      <DbLink>LName</DbLink>
+      <ValueLabel>Last Name</ValueLabel>
+      <ItemOrder>2</ItemOrder>
+      <PickListVis />
+      <PickListDb />
+      <IsHorizStacking>true</IsHorizStacking>
+      <IsTextWrap>false</IsTextWrap>
+      <Width>50</Width>
+      <FontScale>100</FontScale>
+      <IsRequired>true</IsRequired>
+      <ConditionalParent />
+      <ConditionalValue />
+      <LabelAlign>TopLeft</LabelAlign>
+      <SpaceBelow>20</SpaceBelow>
+      <ReportableName />
+      <IsLocked>false</IsLocked>
+      <Border>ThreeD</Border>
+      <IsWidthPercentage>true</IsWidthPercentage>
+      <MinWidth>150</MinWidth>
+      <WidthLabel>0</WidthLabel>
+      <SpaceToRight>20</SpaceToRight>
+    </EFormFieldDef>
+    <EFormFieldDef>
+      <IsNew>false</IsNew>
+      <EFormFieldDefNum>116</EFormFieldDefNum>
+      <EFormDefNum>4</EFormDefNum>
+      <FieldType>DateField</FieldType>
+      <DbLink>Birthdate</DbLink>
+      <ValueLabel>Date of Birth</ValueLabel>
+      <ItemOrder>3</ItemOrder>
+      <PickListVis />
+      <PickListDb />
+      <IsHorizStacking>false</IsHorizStacking>
+      <IsTextWrap>false</IsTextWrap>
+      <Width>50</Width>
+      <FontScale>100</FontScale>
+      <IsRequired>true</IsRequired>
+      <ConditionalParent />
+      <ConditionalValue />
+      <LabelAlign>TopLeft</LabelAlign>
+      <SpaceBelow>20</SpaceBelow>
+      <ReportableName />
+      <IsLocked>false</IsLocked>
+      <Border>ThreeD</Border>
+      <IsWidthPercentage>true</IsWidthPercentage>
+      <MinWidth>0</MinWidth>
+      <WidthLabel>0</WidthLabel>
+      <SpaceToRight>20</SpaceToRight>
+    </EFormFieldDef>
+    <EFormFieldDef>
+      <IsNew>false</IsNew>
+      <EFormFieldDefNum>117</EFormFieldDefNum>
+      <EFormDefNum>4</EFormDefNum>
+      <FieldType>TextField</FieldType>
+      <DbLink />
+      <ValueLabel>Reason for your visit today</ValueLabel>
+      <ItemOrder>4</ItemOrder>
+      <PickListVis />
+      <PickListDb />
+      <IsHorizStacking>false</IsHorizStacking>
+      <IsTextWrap>true</IsTextWrap>
+      <Width>0</Width>
+      <FontScale>100</FontScale>
+      <IsRequired>false</IsRequired>
+      <ConditionalParent />
+      <ConditionalValue />
+      <LabelAlign>TopLeft</LabelAlign>
+      <SpaceBelow>20</SpaceBelow>
+      <ReportableName />
+      <IsLocked>false</IsLocked>
+      <Border>ThreeD</Border>
+      <IsWidthPercentage>false</IsWidthPercentage>
+      <MinWidth>0</MinWidth>
+      <WidthLabel>0</WidthLabel>
+      <SpaceToRight>20</SpaceToRight>
+    </EFormFieldDef>
+    <EFormFieldDef>
+      <IsNew>false</IsNew>
+      <EFormFieldDefNum>118</EFormFieldDefNum>
+      <EFormDefNum>4</EFormDefNum>
+      <FieldType>DateField</FieldType>
+      <DbLink />
+      <ValueLabel>Date of Last Dental Visit</ValueLabel>
+      <ItemOrder>5</ItemOrder>
+      <PickListVis />
+      <PickListDb />
+      <IsHorizStacking>false</IsHorizStacking>
+      <IsTextWrap>false</IsTextWrap>
+      <Width>50</Width>
+      <FontScale>100</FontScale>
+      <IsRequired>false</IsRequired>
+      <ConditionalParent />
+      <ConditionalValue />
+      <LabelAlign>TopLeft</LabelAlign>
+      <SpaceBelow>-1</SpaceBelow>
+      <ReportableName />
+      <IsLocked>false</IsLocked>
+      <Border>ThreeD</Border>
+      <IsWidthPercentage>true</IsWidthPercentage>
+      <MinWidth>150</MinWidth>
+      <WidthLabel>0</WidthLabel>
+      <SpaceToRight>20</SpaceToRight>
+    </EFormFieldDef>
+    <EFormFieldDef>
+      <IsNew>false</IsNew>
+      <EFormFieldDefNum>119</EFormFieldDefNum>
+      <EFormDefNum>4</EFormDefNum>
+      <FieldType>DateField</FieldType>
+      <DbLink />
+      <ValueLabel>Last Dental Cleaning</ValueLabel>
+      <ItemOrder>6</ItemOrder>
+      <PickListVis />
+      <PickListDb />
+      <IsHorizStacking>true</IsHorizStacking>
+      <IsTextWrap>false</IsTextWrap>
+      <Width>50</Width>
+      <FontScale>100</FontScale>
+      <IsRequired>false</IsRequired>
+      <ConditionalParent />
+      <ConditionalValue />
+      <LabelAlign>TopLeft</LabelAlign>
+      <SpaceBelow>-1</SpaceBelow>
+      <ReportableName />
+      <IsLocked>false</IsLocked>
+      <Border>ThreeD</Border>
+      <IsWidthPercentage>true</IsWidthPercentage>
+      <MinWidth>150</MinWidth>
+      <WidthLabel>0</WidthLabel>
+      <SpaceToRight>20</SpaceToRight>
+    </EFormFieldDef>
+    <EFormFieldDef>
+      <IsNew>false</IsNew>
+      <EFormFieldDefNum>120</EFormFieldDefNum>
+      <EFormDefNum>4</EFormDefNum>
+      <FieldType>DateField</FieldType>
+      <DbLink />
+      <ValueLabel>Last Full Mouth X-rays</ValueLabel>
+      <ItemOrder>7</ItemOrder>
+      <PickListVis />
+      <PickListDb />
+      <IsHorizStacking>false</IsHorizStacking>
+      <IsTextWrap>false</IsTextWrap>
+      <Width>50</Width>
+      <FontScale>100</FontScale>
+      <IsRequired>false</IsRequired>
+      <ConditionalParent />
+      <ConditionalValue />
+      <LabelAlign>TopLeft</LabelAlign>
+      <SpaceBelow>-1</SpaceBelow>
+      <ReportableName />
+      <IsLocked>false</IsLocked>
+      <Border>ThreeD</Border>
+      <IsWidthPercentage>true</IsWidthPercentage>
+      <MinWidth>150</MinWidth>
+      <WidthLabel>0</WidthLabel>
+      <SpaceToRight>20</SpaceToRight>
+    </EFormFieldDef>
+    <EFormFieldDef>
+      <IsNew>false</IsNew>
+      <EFormFieldDefNum>121</EFormFieldDefNum>
+      <EFormDefNum>4</EFormDefNum>
+      <FieldType>DateField</FieldType>
+      <DbLink />
+      <ValueLabel>Last Bitewing X-rays</ValueLabel>
+      <ItemOrder>8</ItemOrder>
+      <PickListVis />
+      <PickListDb />
+      <IsHorizStacking>true</IsHorizStacking>
+      <IsTextWrap>false</IsTextWrap>
+      <Width>50</Width>
+      <FontScale>100</FontScale>
+      <IsRequired>false</IsRequired>
+      <ConditionalParent />
+      <ConditionalValue />
+      <LabelAlign>TopLeft</LabelAlign>
+      <SpaceBelow>-1</SpaceBelow>
+      <ReportableName />
+      <IsLocked>false</IsLocked>
+      <Border>ThreeD</Border>
+      <IsWidthPercentage>true</IsWidthPercentage>
+      <MinWidth>150</MinWidth>
+      <WidthLabel>0</WidthLabel>
+      <SpaceToRight>20</SpaceToRight>
+    </EFormFieldDef>
+    <EFormFieldDef>
+      <IsNew>false</IsNew>
+      <EFormFieldDefNum>122</EFormFieldDefNum>
+      <EFormDefNum>4</EFormDefNum>
+      <FieldType>TextField</FieldType>
+      <DbLink />
+      <ValueLabel>What was done at your last dental visit?</ValueLabel>
+      <ItemOrder>9</ItemOrder>
+      <PickListVis />
+      <PickListDb />
+      <IsHorizStacking>false</IsHorizStacking>
+      <IsTextWrap>false</IsTextWrap>
+      <Width>0</Width>
+      <FontScale>100</FontScale>
+      <IsRequired>false</IsRequired>
+      <ConditionalParent />
+      <ConditionalValue />
+      <LabelAlign>TopLeft</LabelAlign>
+      <SpaceBelow>20</SpaceBelow>
+      <ReportableName />
+      <IsLocked>false</IsLocked>
+      <Border>ThreeD</Border>
+      <IsWidthPercentage>false</IsWidthPercentage>
+      <MinWidth>0</MinWidth>
+      <WidthLabel>0</WidthLabel>
+      <SpaceToRight>20</SpaceToRight>
+    </EFormFieldDef>
+    <EFormFieldDef>
+      <IsNew>false</IsNew>
+      <EFormFieldDefNum>123</EFormFieldDefNum>
+      <EFormDefNum>4</EFormDefNum>
+      <FieldType>TextField</FieldType>
+      <DbLink />
+      <ValueLabel>Previous Dentist Name</ValueLabel>
+      <ItemOrder>10</ItemOrder>
+      <PickListVis />
+      <PickListDb />
+      <IsHorizStacking>false</IsHorizStacking>
+      <IsTextWrap>false</IsTextWrap>
+      <Width>50</Width>
+      <FontScale>100</FontScale>
+      <IsRequired>false</IsRequired>
+      <ConditionalParent />
+      <ConditionalValue />
+      <LabelAlign>TopLeft</LabelAlign>
+      <SpaceBelow>-1</SpaceBelow>
+      <ReportableName />
+      <IsLocked>false</IsLocked>
+      <Border>ThreeD</Border>
+      <IsWidthPercentage>true</IsWidthPercentage>
+      <MinWidth>150</MinWidth>
+      <WidthLabel>0</WidthLabel>
+      <SpaceToRight>20</SpaceToRight>
+    </EFormFieldDef>
+    <EFormFieldDef>
+      <IsNew>false</IsNew>
+      <EFormFieldDefNum>124</EFormFieldDefNum>
+      <EFormDefNum>4</EFormDefNum>
+      <FieldType>TextField</FieldType>
+      <DbLink />
+      <ValueLabel>Previous Dentist Phone</ValueLabel>
+      <ItemOrder>11</ItemOrder>
+      <PickListVis />
+      <PickListDb />
+      <IsHorizStacking>true</IsHorizStacking>
+      <IsTextWrap>false</IsTextWrap>
+      <Width>50</Width>
+      <FontScale>100</FontScale>
+      <IsRequired>false</IsRequired>
+      <ConditionalParent />
+      <ConditionalValue />
+      <LabelAlign>TopLeft</LabelAlign>
+      <SpaceBelow>20</SpaceBelow>
+      <ReportableName />
+      <IsLocked>false</IsLocked>
+      <Border>ThreeD</Border>
+      <IsWidthPercentage>true</IsWidthPercentage>
+      <MinWidth>150</MinWidth>
+      <WidthLabel>0</WidthLabel>
+      <SpaceToRight>20</SpaceToRight>
+    </EFormFieldDef>
+    <EFormFieldDef>
+      <IsNew>false</IsNew>
+      <EFormFieldDefNum>125</EFormFieldDefNum>
+      <EFormDefNum>4</EFormDefNum>
+      <FieldType>TextField</FieldType>
+      <DbLink />
+      <ValueLabel>Previous Dentist Address</ValueLabel>
+      <ItemOrder>12</ItemOrder>
+      <PickListVis />
+      <PickListDb />
+      <IsHorizStacking>false</IsHorizStacking>
+      <IsTextWrap>false</IsTextWrap>
+      <Width>0</Width>
+      <FontScale>100</FontScale>
+      <IsRequired>false</IsRequired>
+      <ConditionalParent />
+      <ConditionalValue />
+      <LabelAlign>TopLeft</LabelAlign>
+      <SpaceBelow>20</SpaceBelow>
+      <ReportableName />
+      <IsLocked>false</IsLocked>
+      <Border>ThreeD</Border>
+      <IsWidthPercentage>false</IsWidthPercentage>
+      <MinWidth>0</MinWidth>
+      <WidthLabel>0</WidthLabel>
+      <SpaceToRight>20</SpaceToRight>
+    </EFormFieldDef>
+    <EFormFieldDef>
+      <IsNew>false</IsNew>
+      <EFormFieldDefNum>126</EFormFieldDefNum>
+      <EFormDefNum>4</EFormDefNum>
+      <FieldType>PageBreak</FieldType>
+      <DbLink />
+      <ValueLabel />
+      <ItemOrder>13</ItemOrder>
+      <PickListVis />
+      <PickListDb />
+      <IsHorizStacking>false</IsHorizStacking>
+      <IsTextWrap>false</IsTextWrap>
+      <Width>0</Width>
+      <FontScale>100</FontScale>
+      <IsRequired>false</IsRequired>
+      <ConditionalParent />
+      <ConditionalValue />
+      <LabelAlign>TopLeft</LabelAlign>
+      <SpaceBelow>20</SpaceBelow>
+      <ReportableName />
+      <IsLocked>false</IsLocked>
+      <Border>ThreeD</Border>
+      <IsWidthPercentage>false</IsWidthPercentage>
+      <MinWidth>0</MinWidth>
+      <WidthLabel>0</WidthLabel>
+      <SpaceToRight>20</SpaceToRight>
+    </EFormFieldDef>
+    <EFormFieldDef>
+      <IsNew>false</IsNew>
+      <EFormFieldDefNum>127</EFormFieldDefNum>
+      <EFormDefNum>4</EFormDefNum>
+      <FieldType>RadioButtons</FieldType>
+      <DbLink />
+      <ValueLabel>How do you feel about dental treatment?</ValueLabel>
+      <ItemOrder>14</ItemOrder>
+      <PickListVis>Relaxed|A little uneasy|Tense|Anxious|Very Anxious</PickListVis>
+      <PickListDb>||||</PickListDb>
+      <IsHorizStacking>false</IsHorizStacking>
+      <IsTextWrap>false</IsTextWrap>
+      <Width>0</Width>
+      <FontScale>100</FontScale>
+      <IsRequired>false</IsRequired>
+      <ConditionalParent />
+      <ConditionalValue />
+      <LabelAlign>TopLeft</LabelAlign>
+      <SpaceBelow>20</SpaceBelow>
+      <ReportableName />
+      <IsLocked>false</IsLocked>
+      <Border>ThreeD</Border>
+      <IsWidthPercentage>false</IsWidthPercentage>
+      <MinWidth>0</MinWidth>
+      <WidthLabel>0</WidthLabel>
+      <SpaceToRight>20</SpaceToRight>
+    </EFormFieldDef>
+    <EFormFieldDef>
+      <IsNew>false</IsNew>
+      <EFormFieldDefNum>128</EFormFieldDefNum>
+      <EFormDefNum>4</EFormDefNum>
+      <FieldType>RadioButtons</FieldType>
+      <DbLink />
+      <ValueLabel>Have you ever had a bad experience at the dentist?</ValueLabel>
+      <ItemOrder>15</ItemOrder>
+      <PickListVis>Yes|No</PickListVis>
+      <PickListDb>|</PickListDb>
+      <IsHorizStacking>false</IsHorizStacking>
+      <IsTextWrap>false</IsTextWrap>
+      <Width>0</Width>
+      <FontScale>100</FontScale>
+      <IsRequired>false</IsRequired>
+      <ConditionalParent />
+      <ConditionalValue />
+      <LabelAlign>TopLeft</LabelAlign>
+      <SpaceBelow>20</SpaceBelow>
+      <ReportableName />
+      <IsLocked>false</IsLocked>
+      <Border>ThreeD</Border>
+      <IsWidthPercentage>false</IsWidthPercentage>
+      <MinWidth>0</MinWidth>
+      <WidthLabel>0</WidthLabel>
+      <SpaceToRight>20</SpaceToRight>
+    </EFormFieldDef>
+    <EFormFieldDef>
+      <IsNew>false</IsNew>
+      <EFormFieldDefNum>129</EFormFieldDefNum>
+      <EFormDefNum>4</EFormDefNum>
+      <FieldType>TextField</FieldType>
+      <DbLink />
+      <ValueLabel>Please explain</ValueLabel>
+      <ItemOrder>16</ItemOrder>
+      <PickListVis />
+      <PickListDb />
+      <IsHorizStacking>false</IsHorizStacking>
+      <IsTextWrap>true</IsTextWrap>
+      <Width>0</Width>
+      <FontScale>100</FontScale>
+      <IsRequired>false</IsRequired>
+      <ConditionalParent>Have you ever had a bad experience at the dentist?</ConditionalParent>
+      <ConditionalValue>Yes</ConditionalValue>
+      <LabelAlign>TopLeft</LabelAlign>
+      <SpaceBelow>20</SpaceBelow>
+      <ReportableName />
+      <IsLocked>false</IsLocked>
+      <Border>ThreeD</Border>
+      <IsWidthPercentage>false</IsWidthPercentage>
+      <MinWidth>0</MinWidth>
+      <WidthLabel>0</WidthLabel>
+      <SpaceToRight>20</SpaceToRight>
+    </EFormFieldDef>
+    <EFormFieldDef>
+      <IsNew>false</IsNew>
+      <EFormFieldDefNum>130</EFormFieldDefNum>
+      <EFormDefNum>4</EFormDefNum>
+      <FieldType>RadioButtons</FieldType>
+      <DbLink />
+      <ValueLabel>On a scale of 1-10, how would you rate your smile? (10 being the best)</ValueLabel>
+      <ItemOrder>17</ItemOrder>
+      <PickListVis>1|2|3|4|5|6|7|8|9|10</PickListVis>
+      <PickListDb>|||||||||</PickListDb>
+      <IsHorizStacking>false</IsHorizStacking>
+      <IsTextWrap>false</IsTextWrap>
+      <Width>0</Width>
+      <FontScale>100</FontScale>
+      <IsRequired>false</IsRequired>
+      <ConditionalParent />
+      <ConditionalValue />
+      <LabelAlign>TopLeft</LabelAlign>
+      <SpaceBelow>20</SpaceBelow>
+      <ReportableName />
+      <IsLocked>false</IsLocked>
+      <Border>ThreeD</Border>
+      <IsWidthPercentage>false</IsWidthPercentage>
+      <MinWidth>0</MinWidth>
+      <WidthLabel>0</WidthLabel>
+      <SpaceToRight>20</SpaceToRight>
+    </EFormFieldDef>
+    <EFormFieldDef>
+      <IsNew>false</IsNew>
+      <EFormFieldDefNum>131</EFormFieldDefNum>
+      <EFormDefNum>4</EFormDefNum>
+      <FieldType>RadioButtons</FieldType>
+      <DbLink />
+      <ValueLabel>Are you happy with the appearence of your teeth?</ValueLabel>
+      <ItemOrder>18</ItemOrder>
+      <PickListVis>Yes|No</PickListVis>
+      <PickListDb>|</PickListDb>
+      <IsHorizStacking>false</IsHorizStacking>
+      <IsTextWrap>false</IsTextWrap>
+      <Width>0</Width>
+      <FontScale>100</FontScale>
+      <IsRequired>false</IsRequired>
+      <ConditionalParent />
+      <ConditionalValue />
+      <LabelAlign>TopLeft</LabelAlign>
+      <SpaceBelow>20</SpaceBelow>
+      <ReportableName />
+      <IsLocked>false</IsLocked>
+      <Border>ThreeD</Border>
+      <IsWidthPercentage>false</IsWidthPercentage>
+      <MinWidth>0</MinWidth>
+      <WidthLabel>0</WidthLabel>
+      <SpaceToRight>20</SpaceToRight>
+    </EFormFieldDef>
+    <EFormFieldDef>
+      <IsNew>false</IsNew>
+      <EFormFieldDefNum>132</EFormFieldDefNum>
+      <EFormDefNum>4</EFormDefNum>
+      <FieldType>TextField</FieldType>
+      <DbLink />
+      <ValueLabel>Please explain</ValueLabel>
+      <ItemOrder>19</ItemOrder>
+      <PickListVis />
+      <PickListDb />
+      <IsHorizStacking>false</IsHorizStacking>
+      <IsTextWrap>true</IsTextWrap>
+      <Width>0</Width>
+      <FontScale>100</FontScale>
+      <IsRequired>false</IsRequired>
+      <ConditionalParent>Are you happy with the appearence of your teeth?</ConditionalParent>
+      <ConditionalValue>No</ConditionalValue>
+      <LabelAlign>TopLeft</LabelAlign>
+      <SpaceBelow>20</SpaceBelow>
+      <ReportableName />
+      <IsLocked>false</IsLocked>
+      <Border>ThreeD</Border>
+      <IsWidthPercentage>false</IsWidthPercentage>
+      <MinWidth>0</MinWidth>
+      <WidthLabel>0</WidthLabel>
+      <SpaceToRight>20</SpaceToRight>
+    </EFormFieldDef>
+    <EFormFieldDef>
+      <IsNew>false</IsNew>
+      <EFormFieldDefNum>133</EFormFieldDefNum>
+      <EFormDefNum>4</EFormDefNum>
+      <FieldType>RadioButtons</FieldType>
+      <DbLink />
+      <ValueLabel>Would you like your teeth to be whiter?</ValueLabel>
+      <ItemOrder>20</ItemOrder>
+      <PickListVis>Yes|No</PickListVis>
+      <PickListDb>|</PickListDb>
+      <IsHorizStacking>false</IsHorizStacking>
+      <IsTextWrap>false</IsTextWrap>
+      <Width>0</Width>
+      <FontScale>100</FontScale>
+      <IsRequired>false</IsRequired>
+      <ConditionalParent />
+      <ConditionalValue />
+      <LabelAlign>TopLeft</LabelAlign>
+      <SpaceBelow>20</SpaceBelow>
+      <ReportableName />
+      <IsLocked>false</IsLocked>
+      <Border>ThreeD</Border>
+      <IsWidthPercentage>false</IsWidthPercentage>
+      <MinWidth>0</MinWidth>
+      <WidthLabel>0</WidthLabel>
+      <SpaceToRight>20</SpaceToRight>
+    </EFormFieldDef>
+    <EFormFieldDef>
+      <IsNew>false</IsNew>
+      <EFormFieldDefNum>134</EFormFieldDefNum>
+      <EFormDefNum>4</EFormDefNum>
+      <FieldType>RadioButtons</FieldType>
+      <DbLink />
+      <ValueLabel>Would you like your teeth to be straighter?</ValueLabel>
+      <ItemOrder>21</ItemOrder>
+      <PickListVis>Yes|No</PickListVis>
+      <PickListDb>|</PickListDb>
+      <IsHorizStacking>false</IsHorizStacking>
+      <IsTextWrap>false</IsTextWrap>
+      <Width>0</Width>
+      <FontScale>100</FontScale>
+      <IsRequired>false</IsRequired>
+      <ConditionalParent />
+      <ConditionalValue />
+      <LabelAlign>TopLeft</LabelAlign>
+      <SpaceBelow>20</SpaceBelow>
+      <ReportableName />
+      <IsLocked>false</IsLocked>
+      <Border>ThreeD</Border>
+      <IsWidthPercentage>false</IsWidthPercentage>
+      <MinWidth>0</MinWidth>
+      <WidthLabel>0</WidthLabel>
+      <SpaceToRight>20</SpaceToRight>
+    </EFormFieldDef>
+    <EFormFieldDef>
+      <IsNew>false</IsNew>
+      <EFormFieldDefNum>135</EFormFieldDefNum>
+      <EFormDefNum>4</EFormDefNum>
+      <FieldType>PageBreak</FieldType>
+      <DbLink />
+      <ValueLabel />
+      <ItemOrder>22</ItemOrder>
+      <PickListVis />
+      <PickListDb />
+      <IsHorizStacking>false</IsHorizStacking>
+      <IsTextWrap>false</IsTextWrap>
+      <Width>0</Width>
+      <FontScale>100</FontScale>
+      <IsRequired>false</IsRequired>
+      <ConditionalParent />
+      <ConditionalValue />
+      <LabelAlign>TopLeft</LabelAlign>
+      <SpaceBelow>20</SpaceBelow>
+      <ReportableName />
+      <IsLocked>false</IsLocked>
+      <Border>ThreeD</Border>
+      <IsWidthPercentage>false</IsWidthPercentage>
+      <MinWidth>0</MinWidth>
+      <WidthLabel>0</WidthLabel>
+      <SpaceToRight>20</SpaceToRight>
+    </EFormFieldDef>
+    <EFormFieldDef>
+      <IsNew>false</IsNew>
+      <EFormFieldDefNum>136</EFormFieldDefNum>
+      <EFormDefNum>4</EFormDefNum>
+      <FieldType>TextField</FieldType>
+      <DbLink />
+      <ValueLabel>How often do you have dental examinations?</ValueLabel>
+      <ItemOrder>23</ItemOrder>
+      <PickListVis />
+      <PickListDb />
+      <IsHorizStacking>false</IsHorizStacking>
+      <IsTextWrap>true</IsTextWrap>
+      <Width>0</Width>
+      <FontScale>100</FontScale>
+      <IsRequired>false</IsRequired>
+      <ConditionalParent>Are you under the care of another physician?</ConditionalParent>
+      <ConditionalValue>Yes</ConditionalValue>
+      <LabelAlign>TopLeft</LabelAlign>
+      <SpaceBelow>20</SpaceBelow>
+      <ReportableName />
+      <IsLocked>false</IsLocked>
+      <Border>ThreeD</Border>
+      <IsWidthPercentage>false</IsWidthPercentage>
+      <MinWidth>0</MinWidth>
+      <WidthLabel>0</WidthLabel>
+      <SpaceToRight>20</SpaceToRight>
+    </EFormFieldDef>
+    <EFormFieldDef>
+      <IsNew>false</IsNew>
+      <EFormFieldDefNum>137</EFormFieldDefNum>
+      <EFormDefNum>4</EFormDefNum>
+      <FieldType>TextField</FieldType>
+      <DbLink />
+      <ValueLabel>How often do you brush your teeth?</ValueLabel>
+      <ItemOrder>24</ItemOrder>
+      <PickListVis />
+      <PickListDb />
+      <IsHorizStacking>false</IsHorizStacking>
+      <IsTextWrap>false</IsTextWrap>
+      <Width>50</Width>
+      <FontScale>100</FontScale>
+      <IsRequired>false</IsRequired>
+      <ConditionalParent />
+      <ConditionalValue />
+      <LabelAlign>TopLeft</LabelAlign>
+      <SpaceBelow>-1</SpaceBelow>
+      <ReportableName />
+      <IsLocked>false</IsLocked>
+      <Border>ThreeD</Border>
+      <IsWidthPercentage>true</IsWidthPercentage>
+      <MinWidth>150</MinWidth>
+      <WidthLabel>0</WidthLabel>
+      <SpaceToRight>20</SpaceToRight>
+    </EFormFieldDef>
+    <EFormFieldDef>
+      <IsNew>false</IsNew>
+      <EFormFieldDefNum>138</EFormFieldDefNum>
+      <EFormDefNum>4</EFormDefNum>
+      <FieldType>TextField</FieldType>
+      <DbLink />
+      <ValueLabel>How often do you floss?</ValueLabel>
+      <ItemOrder>25</ItemOrder>
+      <PickListVis />
+      <PickListDb />
+      <IsHorizStacking>true</IsHorizStacking>
+      <IsTextWrap>false</IsTextWrap>
+      <Width>50</Width>
+      <FontScale>100</FontScale>
+      <IsRequired>false</IsRequired>
+      <ConditionalParent />
+      <ConditionalValue />
+      <LabelAlign>TopLeft</LabelAlign>
+      <SpaceBelow>20</SpaceBelow>
+      <ReportableName />
+      <IsLocked>false</IsLocked>
+      <Border>ThreeD</Border>
+      <IsWidthPercentage>true</IsWidthPercentage>
+      <MinWidth>150</MinWidth>
+      <WidthLabel>0</WidthLabel>
+      <SpaceToRight>20</SpaceToRight>
+    </EFormFieldDef>
+    <EFormFieldDef>
+      <IsNew>false</IsNew>
+      <EFormFieldDefNum>139</EFormFieldDefNum>
+      <EFormDefNum>4</EFormDefNum>
+      <FieldType>RadioButtons</FieldType>
+      <DbLink />
+      <ValueLabel>Have you ever used or are you currently using topical fluoride?</ValueLabel>
+      <ItemOrder>26</ItemOrder>
+      <PickListVis>Yes|No</PickListVis>
+      <PickListDb>|</PickListDb>
+      <IsHorizStacking>false</IsHorizStacking>
+      <IsTextWrap>false</IsTextWrap>
+      <Width>0</Width>
+      <FontScale>100</FontScale>
+      <IsRequired>false</IsRequired>
+      <ConditionalParent />
+      <ConditionalValue />
+      <LabelAlign>TopLeft</LabelAlign>
+      <SpaceBelow>20</SpaceBelow>
+      <ReportableName />
+      <IsLocked>false</IsLocked>
+      <Border>ThreeD</Border>
+      <IsWidthPercentage>false</IsWidthPercentage>
+      <MinWidth>0</MinWidth>
+      <WidthLabel>0</WidthLabel>
+      <SpaceToRight>20</SpaceToRight>
+    </EFormFieldDef>
+    <EFormFieldDef>
+      <IsNew>false</IsNew>
+      <EFormFieldDefNum>140</EFormFieldDefNum>
+      <EFormDefNum>4</EFormDefNum>
+      <FieldType>TextField</FieldType>
+      <DbLink />
+      <ValueLabel>What other dental aids do you use? (Interplak/water flosser, toothpick, etc.)</ValueLabel>
+      <ItemOrder>27</ItemOrder>
+      <PickListVis />
+      <PickListDb />
+      <IsHorizStacking>false</IsHorizStacking>
+      <IsTextWrap>true</IsTextWrap>
+      <Width>0</Width>
+      <FontScale>100</FontScale>
+      <IsRequired>false</IsRequired>
+      <ConditionalParent />
+      <ConditionalValue />
+      <LabelAlign>TopLeft</LabelAlign>
+      <SpaceBelow>20</SpaceBelow>
+      <ReportableName />
+      <IsLocked>false</IsLocked>
+      <Border>ThreeD</Border>
+      <IsWidthPercentage>false</IsWidthPercentage>
+      <MinWidth>0</MinWidth>
+      <WidthLabel>0</WidthLabel>
+      <SpaceToRight>20</SpaceToRight>
+    </EFormFieldDef>
+    <EFormFieldDef>
+      <IsNew>false</IsNew>
+      <EFormFieldDefNum>141</EFormFieldDefNum>
+      <EFormDefNum>4</EFormDefNum>
+      <FieldType>RadioButtons</FieldType>
+      <DbLink />
+      <ValueLabel>Do you have any dental problems now?</ValueLabel>
+      <ItemOrder>28</ItemOrder>
+      <PickListVis>Yes|No</PickListVis>
+      <PickListDb>|</PickListDb>
+      <IsHorizStacking>false</IsHorizStacking>
+      <IsTextWrap>false</IsTextWrap>
+      <Width>0</Width>
+      <FontScale>100</FontScale>
+      <IsRequired>false</IsRequired>
+      <ConditionalParent />
+      <ConditionalValue />
+      <LabelAlign>TopLeft</LabelAlign>
+      <SpaceBelow>20</SpaceBelow>
+      <ReportableName />
+      <IsLocked>false</IsLocked>
+      <Border>ThreeD</Border>
+      <IsWidthPercentage>false</IsWidthPercentage>
+      <MinWidth>0</MinWidth>
+      <WidthLabel>0</WidthLabel>
+      <SpaceToRight>20</SpaceToRight>
+    </EFormFieldDef>
+    <EFormFieldDef>
+      <IsNew>false</IsNew>
+      <EFormFieldDefNum>142</EFormFieldDefNum>
+      <EFormDefNum>4</EFormDefNum>
+      <FieldType>TextField</FieldType>
+      <DbLink />
+      <ValueLabel>Please describe</ValueLabel>
+      <ItemOrder>29</ItemOrder>
+      <PickListVis />
+      <PickListDb />
+      <IsHorizStacking>false</IsHorizStacking>
+      <IsTextWrap>true</IsTextWrap>
+      <Width>0</Width>
+      <FontScale>100</FontScale>
+      <IsRequired>false</IsRequired>
+      <ConditionalParent>Do you have any dental problems now?</ConditionalParent>
+      <ConditionalValue>Yes</ConditionalValue>
+      <LabelAlign>TopLeft</LabelAlign>
+      <SpaceBelow>20</SpaceBelow>
+      <ReportableName />
+      <IsLocked>false</IsLocked>
+      <Border>ThreeD</Border>
+      <IsWidthPercentage>false</IsWidthPercentage>
+      <MinWidth>0</MinWidth>
+      <WidthLabel>0</WidthLabel>
+      <SpaceToRight>20</SpaceToRight>
+    </EFormFieldDef>
+    <EFormFieldDef>
+      <IsNew>false</IsNew>
+      <EFormFieldDefNum>143</EFormFieldDefNum>
+      <EFormDefNum>4</EFormDefNum>
+      <FieldType>PageBreak</FieldType>
+      <DbLink />
+      <ValueLabel />
+      <ItemOrder>30</ItemOrder>
+      <PickListVis />
+      <PickListDb />
+      <IsHorizStacking>false</IsHorizStacking>
+      <IsTextWrap>false</IsTextWrap>
+      <Width>0</Width>
+      <FontScale>100</FontScale>
+      <IsRequired>false</IsRequired>
+      <ConditionalParent />
+      <ConditionalValue />
+      <LabelAlign>TopLeft</LabelAlign>
+      <SpaceBelow>20</SpaceBelow>
+      <ReportableName />
+      <IsLocked>false</IsLocked>
+      <Border>ThreeD</Border>
+      <IsWidthPercentage>false</IsWidthPercentage>
+      <MinWidth>0</MinWidth>
+      <WidthLabel>0</WidthLabel>
+      <SpaceToRight>20</SpaceToRight>
+    </EFormFieldDef>
+    <EFormFieldDef>
+      <IsNew>false</IsNew>
+      <EFormFieldDefNum>144</EFormFieldDefNum>
+      <EFormDefNum>4</EFormDefNum>
+      <FieldType>Label</FieldType>
+      <DbLink />
+      <ValueLabel>&lt;FlowDocument&gt;&lt;Paragraph&gt;&lt;Run FontFamily="ArialNarrow-Bold" FontWeight="Bold" FontSize="13.225" xml:space="preserve"&gt;Are any of your teeth sensitive to any of the following? &lt;/Run&gt;&lt;Run FontWeight="Bold" FontSize="13.225"&gt;Please check all that apply.&lt;/Run&gt;&lt;/Paragraph&gt;&lt;/FlowDocument&gt;</ValueLabel>
+      <ItemOrder>31</ItemOrder>
+      <PickListVis />
+      <PickListDb />
+      <IsHorizStacking>false</IsHorizStacking>
+      <IsTextWrap>false</IsTextWrap>
+      <Width>0</Width>
+      <FontScale>100</FontScale>
+      <IsRequired>false</IsRequired>
+      <ConditionalParent />
+      <ConditionalValue />
+      <LabelAlign>TopLeft</LabelAlign>
+      <SpaceBelow>20</SpaceBelow>
+      <ReportableName />
+      <IsLocked>false</IsLocked>
+      <Border>None</Border>
+      <IsWidthPercentage>false</IsWidthPercentage>
+      <MinWidth>0</MinWidth>
+      <WidthLabel>0</WidthLabel>
+      <SpaceToRight>20</SpaceToRight>
+    </EFormFieldDef>
+    <EFormFieldDef>
+      <IsNew>false</IsNew>
+      <EFormFieldDefNum>145</EFormFieldDefNum>
+      <EFormDefNum>4</EFormDefNum>
+      <FieldType>CheckBox</FieldType>
+      <DbLink />
+      <ValueLabel>Hot</ValueLabel>
+      <ItemOrder>32</ItemOrder>
+      <PickListVis />
+      <PickListDb />
+      <IsHorizStacking>false</IsHorizStacking>
+      <IsTextWrap>false</IsTextWrap>
+      <Width>50</Width>
+      <FontScale>100</FontScale>
+      <IsRequired>false</IsRequired>
+      <ConditionalParent />
+      <ConditionalValue />
+      <LabelAlign>TopLeft</LabelAlign>
+      <SpaceBelow>-1</SpaceBelow>
+      <ReportableName />
+      <IsLocked>false</IsLocked>
+      <Border>ThreeD</Border>
+      <IsWidthPercentage>true</IsWidthPercentage>
+      <MinWidth>150</MinWidth>
+      <WidthLabel>0</WidthLabel>
+      <SpaceToRight>20</SpaceToRight>
+    </EFormFieldDef>
+    <EFormFieldDef>
+      <IsNew>false</IsNew>
+      <EFormFieldDefNum>146</EFormFieldDefNum>
+      <EFormDefNum>4</EFormDefNum>
+      <FieldType>CheckBox</FieldType>
+      <DbLink />
+      <ValueLabel>Cold</ValueLabel>
+      <ItemOrder>33</ItemOrder>
+      <PickListVis />
+      <PickListDb />
+      <IsHorizStacking>true</IsHorizStacking>
+      <IsTextWrap>false</IsTextWrap>
+      <Width>50</Width>
+      <FontScale>100</FontScale>
+      <IsRequired>false</IsRequired>
+      <ConditionalParent />
+      <ConditionalValue />
+      <LabelAlign>TopLeft</LabelAlign>
+      <SpaceBelow>20</SpaceBelow>
+      <ReportableName />
+      <IsLocked>false</IsLocked>
+      <Border>ThreeD</Border>
+      <IsWidthPercentage>true</IsWidthPercentage>
+      <MinWidth>150</MinWidth>
+      <WidthLabel>0</WidthLabel>
+      <SpaceToRight>20</SpaceToRight>
+    </EFormFieldDef>
+    <EFormFieldDef>
+      <IsNew>false</IsNew>
+      <EFormFieldDefNum>147</EFormFieldDefNum>
+      <EFormDefNum>4</EFormDefNum>
+      <FieldType>CheckBox</FieldType>
+      <DbLink />
+      <ValueLabel>Sweets</ValueLabel>
+      <ItemOrder>34</ItemOrder>
+      <PickListVis />
+      <PickListDb />
+      <IsHorizStacking>false</IsHorizStacking>
+      <IsTextWrap>false</IsTextWrap>
+      <Width>50</Width>
+      <FontScale>100</FontScale>
+      <IsRequired>false</IsRequired>
+      <ConditionalParent />
+      <ConditionalValue />
+      <LabelAlign>TopLeft</LabelAlign>
+      <SpaceBelow>-1</SpaceBelow>
+      <ReportableName />
+      <IsLocked>false</IsLocked>
+      <Border>ThreeD</Border>
+      <IsWidthPercentage>true</IsWidthPercentage>
+      <MinWidth>150</MinWidth>
+      <WidthLabel>0</WidthLabel>
+      <SpaceToRight>20</SpaceToRight>
+    </EFormFieldDef>
+    <EFormFieldDef>
+      <IsNew>false</IsNew>
+      <EFormFieldDefNum>148</EFormFieldDefNum>
+      <EFormDefNum>4</EFormDefNum>
+      <FieldType>CheckBox</FieldType>
+      <DbLink />
+      <ValueLabel>Biting or Chewing</ValueLabel>
+      <ItemOrder>35</ItemOrder>
+      <PickListVis />
+      <PickListDb />
+      <IsHorizStacking>true</IsHorizStacking>
+      <IsTextWrap>false</IsTextWrap>
+      <Width>50</Width>
+      <FontScale>100</FontScale>
+      <IsRequired>false</IsRequired>
+      <ConditionalParent />
+      <ConditionalValue />
+      <LabelAlign>TopLeft</LabelAlign>
+      <SpaceBelow>20</SpaceBelow>
+      <ReportableName />
+      <IsLocked>false</IsLocked>
+      <Border>ThreeD</Border>
+      <IsWidthPercentage>true</IsWidthPercentage>
+      <MinWidth>150</MinWidth>
+      <WidthLabel>0</WidthLabel>
+      <SpaceToRight>20</SpaceToRight>
+    </EFormFieldDef>
+    <EFormFieldDef>
+      <IsNew>false</IsNew>
+      <EFormFieldDefNum>149</EFormFieldDefNum>
+      <EFormDefNum>4</EFormDefNum>
+      <FieldType>Label</FieldType>
+      <DbLink />
+      <ValueLabel>&lt;FlowDocument&gt;&lt;Paragraph&gt;&lt;Run FontWeight="Bold" FontSize="13.225"&gt;Do you have or have you ever had any of the following dental conditions? Please check all that apply.&lt;/Run&gt;&lt;/Paragraph&gt;&lt;/FlowDocument&gt;</ValueLabel>
+      <ItemOrder>36</ItemOrder>
+      <PickListVis />
+      <PickListDb />
+      <IsHorizStacking>false</IsHorizStacking>
+      <IsTextWrap>false</IsTextWrap>
+      <Width>0</Width>
+      <FontScale>100</FontScale>
+      <IsRequired>false</IsRequired>
+      <ConditionalParent />
+      <ConditionalValue />
+      <LabelAlign>TopLeft</LabelAlign>
+      <SpaceBelow>20</SpaceBelow>
+      <ReportableName />
+      <IsLocked>false</IsLocked>
+      <Border>None</Border>
+      <IsWidthPercentage>false</IsWidthPercentage>
+      <MinWidth>0</MinWidth>
+      <WidthLabel>0</WidthLabel>
+      <SpaceToRight>20</SpaceToRight>
+    </EFormFieldDef>
+    <EFormFieldDef>
+      <IsNew>false</IsNew>
+      <EFormFieldDefNum>150</EFormFieldDefNum>
+      <EFormDefNum>4</EFormDefNum>
+      <FieldType>CheckBox</FieldType>
+      <DbLink />
+      <ValueLabel>Active decay of teeth or gums</ValueLabel>
+      <ItemOrder>37</ItemOrder>
+      <PickListVis />
+      <PickListDb />
+      <IsHorizStacking>false</IsHorizStacking>
+      <IsTextWrap>false</IsTextWrap>
+      <Width>50</Width>
+      <FontScale>100</FontScale>
+      <IsRequired>false</IsRequired>
+      <ConditionalParent />
+      <ConditionalValue />
+      <LabelAlign>TopLeft</LabelAlign>
+      <SpaceBelow>-1</SpaceBelow>
+      <ReportableName />
+      <IsLocked>false</IsLocked>
+      <Border>ThreeD</Border>
+      <IsWidthPercentage>true</IsWidthPercentage>
+      <MinWidth>150</MinWidth>
+      <WidthLabel>0</WidthLabel>
+      <SpaceToRight>20</SpaceToRight>
+    </EFormFieldDef>
+    <EFormFieldDef>
+      <IsNew>false</IsNew>
+      <EFormFieldDefNum>151</EFormFieldDefNum>
+      <EFormDefNum>4</EFormDefNum>
+      <FieldType>CheckBox</FieldType>
+      <DbLink />
+      <ValueLabel>Areas of food traps</ValueLabel>
+      <ItemOrder>38</ItemOrder>
+      <PickListVis />
+      <PickListDb />
+      <IsHorizStacking>true</IsHorizStacking>
+      <IsTextWrap>false</IsTextWrap>
+      <Width>50</Width>
+      <FontScale>100</FontScale>
+      <IsRequired>false</IsRequired>
+      <ConditionalParent />
+      <ConditionalValue />
+      <LabelAlign>TopLeft</LabelAlign>
+      <SpaceBelow>20</SpaceBelow>
+      <ReportableName />
+      <IsLocked>false</IsLocked>
+      <Border>ThreeD</Border>
+      <IsWidthPercentage>true</IsWidthPercentage>
+      <MinWidth>150</MinWidth>
+      <WidthLabel>0</WidthLabel>
+      <SpaceToRight>20</SpaceToRight>
+    </EFormFieldDef>
+    <EFormFieldDef>
+      <IsNew>false</IsNew>
+      <EFormFieldDefNum>152</EFormFieldDefNum>
+      <EFormDefNum>4</EFormDefNum>
+      <FieldType>CheckBox</FieldType>
+      <DbLink />
+      <ValueLabel>Bad breath</ValueLabel>
+      <ItemOrder>39</ItemOrder>
+      <PickListVis />
+      <PickListDb />
+      <IsHorizStacking>false</IsHorizStacking>
+      <IsTextWrap>false</IsTextWrap>
+      <Width>50</Width>
+      <FontScale>100</FontScale>
+      <IsRequired>false</IsRequired>
+      <ConditionalParent />
+      <ConditionalValue />
+      <LabelAlign>TopLeft</LabelAlign>
+      <SpaceBelow>-1</SpaceBelow>
+      <ReportableName />
+      <IsLocked>false</IsLocked>
+      <Border>ThreeD</Border>
+      <IsWidthPercentage>true</IsWidthPercentage>
+      <MinWidth>150</MinWidth>
+      <WidthLabel>0</WidthLabel>
+      <SpaceToRight>20</SpaceToRight>
+    </EFormFieldDef>
+    <EFormFieldDef>
+      <IsNew>false</IsNew>
+      <EFormFieldDefNum>153</EFormFieldDefNum>
+      <EFormDefNum>4</EFormDefNum>
+      <FieldType>CheckBox</FieldType>
+      <DbLink />
+      <ValueLabel>Bleeding gums</ValueLabel>
+      <ItemOrder>40</ItemOrder>
+      <PickListVis />
+      <PickListDb />
+      <IsHorizStacking>true</IsHorizStacking>
+      <IsTextWrap>false</IsTextWrap>
+      <Width>50</Width>
+      <FontScale>100</FontScale>
+      <IsRequired>false</IsRequired>
+      <ConditionalParent />
+      <ConditionalValue />
+      <LabelAlign>TopLeft</LabelAlign>
+      <SpaceBelow>20</SpaceBelow>
+      <ReportableName />
+      <IsLocked>false</IsLocked>
+      <Border>ThreeD</Border>
+      <IsWidthPercentage>true</IsWidthPercentage>
+      <MinWidth>150</MinWidth>
+      <WidthLabel>0</WidthLabel>
+      <SpaceToRight>20</SpaceToRight>
+    </EFormFieldDef>
+    <EFormFieldDef>
+      <IsNew>false</IsNew>
+      <EFormFieldDefNum>154</EFormFieldDefNum>
+      <EFormDefNum>4</EFormDefNum>
+      <FieldType>CheckBox</FieldType>
+      <DbLink />
+      <ValueLabel>Broken filling</ValueLabel>
+      <ItemOrder>41</ItemOrder>
+      <PickListVis />
+      <PickListDb />
+      <IsHorizStacking>false</IsHorizStacking>
+      <IsTextWrap>false</IsTextWrap>
+      <Width>50</Width>
+      <FontScale>100</FontScale>
+      <IsRequired>false</IsRequired>
+      <ConditionalParent />
+      <ConditionalValue />
+      <LabelAlign>TopLeft</LabelAlign>
+      <SpaceBelow>-1</SpaceBelow>
+      <ReportableName />
+      <IsLocked>false</IsLocked>
+      <Border>ThreeD</Border>
+      <IsWidthPercentage>true</IsWidthPercentage>
+      <MinWidth>150</MinWidth>
+      <WidthLabel>0</WidthLabel>
+      <SpaceToRight>20</SpaceToRight>
+    </EFormFieldDef>
+    <EFormFieldDef>
+      <IsNew>false</IsNew>
+      <EFormFieldDefNum>155</EFormFieldDefNum>
+      <EFormDefNum>4</EFormDefNum>
+      <FieldType>CheckBox</FieldType>
+      <DbLink />
+      <ValueLabel>Cavities</ValueLabel>
+      <ItemOrder>42</ItemOrder>
+      <PickListVis />
+      <PickListDb />
+      <IsHorizStacking>true</IsHorizStacking>
+      <IsTextWrap>false</IsTextWrap>
+      <Width>50</Width>
+      <FontScale>100</FontScale>
+      <IsRequired>false</IsRequired>
+      <ConditionalParent />
+      <ConditionalValue />
+      <LabelAlign>TopLeft</LabelAlign>
+      <SpaceBelow>20</SpaceBelow>
+      <ReportableName />
+      <IsLocked>false</IsLocked>
+      <Border>ThreeD</Border>
+      <IsWidthPercentage>true</IsWidthPercentage>
+      <MinWidth>150</MinWidth>
+      <WidthLabel>0</WidthLabel>
+      <SpaceToRight>20</SpaceToRight>
+    </EFormFieldDef>
+    <EFormFieldDef>
+      <IsNew>false</IsNew>
+      <EFormFieldDefNum>156</EFormFieldDefNum>
+      <EFormDefNum>4</EFormDefNum>
+      <FieldType>CheckBox</FieldType>
+      <DbLink />
+      <ValueLabel>Clicking or popping of jaw</ValueLabel>
+      <ItemOrder>43</ItemOrder>
+      <PickListVis />
+      <PickListDb />
+      <IsHorizStacking>false</IsHorizStacking>
+      <IsTextWrap>false</IsTextWrap>
+      <Width>50</Width>
+      <FontScale>100</FontScale>
+      <IsRequired>false</IsRequired>
+      <ConditionalParent />
+      <ConditionalValue />
+      <LabelAlign>TopLeft</LabelAlign>
+      <SpaceBelow>-1</SpaceBelow>
+      <ReportableName />
+      <IsLocked>false</IsLocked>
+      <Border>ThreeD</Border>
+      <IsWidthPercentage>true</IsWidthPercentage>
+      <MinWidth>150</MinWidth>
+      <WidthLabel>0</WidthLabel>
+      <SpaceToRight>20</SpaceToRight>
+    </EFormFieldDef>
+    <EFormFieldDef>
+      <IsNew>false</IsNew>
+      <EFormFieldDefNum>157</EFormFieldDefNum>
+      <EFormDefNum>4</EFormDefNum>
+      <FieldType>CheckBox</FieldType>
+      <DbLink>problem:Cold Sores/Blisters</DbLink>
+      <ValueLabel>Cold sores/blisters</ValueLabel>
+      <ItemOrder>44</ItemOrder>
+      <PickListVis />
+      <PickListDb />
+      <IsHorizStacking>true</IsHorizStacking>
+      <IsTextWrap>false</IsTextWrap>
+      <Width>50</Width>
+      <FontScale>100</FontScale>
+      <IsRequired>false</IsRequired>
+      <ConditionalParent />
+      <ConditionalValue />
+      <LabelAlign>TopLeft</LabelAlign>
+      <SpaceBelow>20</SpaceBelow>
+      <ReportableName />
+      <IsLocked>false</IsLocked>
+      <Border>ThreeD</Border>
+      <IsWidthPercentage>true</IsWidthPercentage>
+      <MinWidth>150</MinWidth>
+      <WidthLabel>0</WidthLabel>
+      <SpaceToRight>20</SpaceToRight>
+    </EFormFieldDef>
+    <EFormFieldDef>
+      <IsNew>false</IsNew>
+      <EFormFieldDefNum>158</EFormFieldDefNum>
+      <EFormDefNum>4</EFormDefNum>
+      <FieldType>CheckBox</FieldType>
+      <DbLink />
+      <ValueLabel>Difficulty opening wide</ValueLabel>
+      <ItemOrder>45</ItemOrder>
+      <PickListVis />
+      <PickListDb />
+      <IsHorizStacking>false</IsHorizStacking>
+      <IsTextWrap>false</IsTextWrap>
+      <Width>50</Width>
+      <FontScale>100</FontScale>
+      <IsRequired>false</IsRequired>
+      <ConditionalParent />
+      <ConditionalValue />
+      <LabelAlign>TopLeft</LabelAlign>
+      <SpaceBelow>-1</SpaceBelow>
+      <ReportableName />
+      <IsLocked>false</IsLocked>
+      <Border>ThreeD</Border>
+      <IsWidthPercentage>true</IsWidthPercentage>
+      <MinWidth>150</MinWidth>
+      <WidthLabel>0</WidthLabel>
+      <SpaceToRight>20</SpaceToRight>
+    </EFormFieldDef>
+    <EFormFieldDef>
+      <IsNew>false</IsNew>
+      <EFormFieldDefNum>159</EFormFieldDefNum>
+      <EFormDefNum>4</EFormDefNum>
+      <FieldType>CheckBox</FieldType>
+      <DbLink />
+      <ValueLabel>Dry mouth</ValueLabel>
+      <ItemOrder>46</ItemOrder>
+      <PickListVis />
+      <PickListDb />
+      <IsHorizStacking>true</IsHorizStacking>
+      <IsTextWrap>false</IsTextWrap>
+      <Width>50</Width>
+      <FontScale>100</FontScale>
+      <IsRequired>false</IsRequired>
+      <ConditionalParent />
+      <ConditionalValue />
+      <LabelAlign>TopLeft</LabelAlign>
+      <SpaceBelow>20</SpaceBelow>
+      <ReportableName />
+      <IsLocked>false</IsLocked>
+      <Border>ThreeD</Border>
+      <IsWidthPercentage>true</IsWidthPercentage>
+      <MinWidth>150</MinWidth>
+      <WidthLabel>0</WidthLabel>
+      <SpaceToRight>20</SpaceToRight>
+    </EFormFieldDef>
+    <EFormFieldDef>
+      <IsNew>false</IsNew>
+      <EFormFieldDefNum>160</EFormFieldDefNum>
+      <EFormDefNum>4</EFormDefNum>
+      <FieldType>CheckBox</FieldType>
+      <DbLink />
+      <ValueLabel>Facial surgery</ValueLabel>
+      <ItemOrder>47</ItemOrder>
+      <PickListVis />
+      <PickListDb />
+      <IsHorizStacking>false</IsHorizStacking>
+      <IsTextWrap>false</IsTextWrap>
+      <Width>50</Width>
+      <FontScale>100</FontScale>
+      <IsRequired>false</IsRequired>
+      <ConditionalParent />
+      <ConditionalValue />
+      <LabelAlign>TopLeft</LabelAlign>
+      <SpaceBelow>-1</SpaceBelow>
+      <ReportableName />
+      <IsLocked>false</IsLocked>
+      <Border>ThreeD</Border>
+      <IsWidthPercentage>true</IsWidthPercentage>
+      <MinWidth>150</MinWidth>
+      <WidthLabel>0</WidthLabel>
+      <SpaceToRight>20</SpaceToRight>
+    </EFormFieldDef>
+    <EFormFieldDef>
+      <IsNew>false</IsNew>
+      <EFormFieldDefNum>161</EFormFieldDefNum>
+      <EFormDefNum>4</EFormDefNum>
+      <FieldType>CheckBox</FieldType>
+      <DbLink />
+      <ValueLabel>Gag easily</ValueLabel>
+      <ItemOrder>48</ItemOrder>
+      <PickListVis />
+      <PickListDb />
+      <IsHorizStacking>true</IsHorizStacking>
+      <IsTextWrap>false</IsTextWrap>
+      <Width>50</Width>
+      <FontScale>100</FontScale>
+      <IsRequired>false</IsRequired>
+      <ConditionalParent />
+      <ConditionalValue />
+      <LabelAlign>TopLeft</LabelAlign>
+      <SpaceBelow>20</SpaceBelow>
+      <ReportableName />
+      <IsLocked>false</IsLocked>
+      <Border>ThreeD</Border>
+      <IsWidthPercentage>true</IsWidthPercentage>
+      <MinWidth>150</MinWidth>
+      <WidthLabel>0</WidthLabel>
+      <SpaceToRight>20</SpaceToRight>
+    </EFormFieldDef>
+    <EFormFieldDef>
+      <IsNew>false</IsNew>
+      <EFormFieldDefNum>162</EFormFieldDefNum>
+      <EFormDefNum>4</EFormDefNum>
+      <FieldType>CheckBox</FieldType>
+      <DbLink />
+      <ValueLabel>Growths or lesions in your mouth</ValueLabel>
+      <ItemOrder>49</ItemOrder>
+      <PickListVis />
+      <PickListDb />
+      <IsHorizStacking>false</IsHorizStacking>
+      <IsTextWrap>false</IsTextWrap>
+      <Width>50</Width>
+      <FontScale>100</FontScale>
+      <IsRequired>false</IsRequired>
+      <ConditionalParent />
+      <ConditionalValue />
+      <LabelAlign>TopLeft</LabelAlign>
+      <SpaceBelow>-1</SpaceBelow>
+      <ReportableName />
+      <IsLocked>false</IsLocked>
+      <Border>ThreeD</Border>
+      <IsWidthPercentage>true</IsWidthPercentage>
+      <MinWidth>150</MinWidth>
+      <WidthLabel>0</WidthLabel>
+      <SpaceToRight>20</SpaceToRight>
+    </EFormFieldDef>
+    <EFormFieldDef>
+      <IsNew>false</IsNew>
+      <EFormFieldDefNum>163</EFormFieldDefNum>
+      <EFormDefNum>4</EFormDefNum>
+      <FieldType>CheckBox</FieldType>
+      <DbLink />
+      <ValueLabel>Gum infection/disease</ValueLabel>
+      <ItemOrder>50</ItemOrder>
+      <PickListVis />
+      <PickListDb />
+      <IsHorizStacking>true</IsHorizStacking>
+      <IsTextWrap>false</IsTextWrap>
+      <Width>50</Width>
+      <FontScale>100</FontScale>
+      <IsRequired>false</IsRequired>
+      <ConditionalParent />
+      <ConditionalValue />
+      <LabelAlign>TopLeft</LabelAlign>
+      <SpaceBelow>20</SpaceBelow>
+      <ReportableName />
+      <IsLocked>false</IsLocked>
+      <Border>ThreeD</Border>
+      <IsWidthPercentage>true</IsWidthPercentage>
+      <MinWidth>150</MinWidth>
+      <WidthLabel>0</WidthLabel>
+      <SpaceToRight>20</SpaceToRight>
+    </EFormFieldDef>
+    <EFormFieldDef>
+      <IsNew>false</IsNew>
+      <EFormFieldDefNum>164</EFormFieldDefNum>
+      <EFormDefNum>4</EFormDefNum>
+      <FieldType>CheckBox</FieldType>
+      <DbLink />
+      <ValueLabel>Loose teeth</ValueLabel>
+      <ItemOrder>51</ItemOrder>
+      <PickListVis />
+      <PickListDb />
+      <IsHorizStacking>false</IsHorizStacking>
+      <IsTextWrap>false</IsTextWrap>
+      <Width>50</Width>
+      <FontScale>100</FontScale>
+      <IsRequired>false</IsRequired>
+      <ConditionalParent />
+      <ConditionalValue />
+      <LabelAlign>TopLeft</LabelAlign>
+      <SpaceBelow>-1</SpaceBelow>
+      <ReportableName />
+      <IsLocked>false</IsLocked>
+      <Border>ThreeD</Border>
+      <IsWidthPercentage>true</IsWidthPercentage>
+      <MinWidth>150</MinWidth>
+      <WidthLabel>0</WidthLabel>
+      <SpaceToRight>20</SpaceToRight>
+    </EFormFieldDef>
+    <EFormFieldDef>
+      <IsNew>false</IsNew>
+      <EFormFieldDefNum>165</EFormFieldDefNum>
+      <EFormDefNum>4</EFormDefNum>
+      <FieldType>CheckBox</FieldType>
+      <DbLink />
+      <ValueLabel>Swelling or lumps in mouth</ValueLabel>
+      <ItemOrder>52</ItemOrder>
+      <PickListVis />
+      <PickListDb />
+      <IsHorizStacking>true</IsHorizStacking>
+      <IsTextWrap>false</IsTextWrap>
+      <Width>50</Width>
+      <FontScale>100</FontScale>
+      <IsRequired>false</IsRequired>
+      <ConditionalParent />
+      <ConditionalValue />
+      <LabelAlign>TopLeft</LabelAlign>
+      <SpaceBelow>20</SpaceBelow>
+      <ReportableName />
+      <IsLocked>false</IsLocked>
+      <Border>ThreeD</Border>
+      <IsWidthPercentage>true</IsWidthPercentage>
+      <MinWidth>150</MinWidth>
+      <WidthLabel>0</WidthLabel>
+      <SpaceToRight>20</SpaceToRight>
+    </EFormFieldDef>
+    <EFormFieldDef>
+      <IsNew>false</IsNew>
+      <EFormFieldDefNum>166</EFormFieldDefNum>
+      <EFormDefNum>4</EFormDefNum>
+      <FieldType>CheckBox</FieldType>
+      <DbLink />
+      <ValueLabel>Swollen glands</ValueLabel>
+      <ItemOrder>53</ItemOrder>
+      <PickListVis />
+      <PickListDb />
+      <IsHorizStacking>false</IsHorizStacking>
+      <IsTextWrap>false</IsTextWrap>
+      <Width>50</Width>
+      <FontScale>100</FontScale>
+      <IsRequired>false</IsRequired>
+      <ConditionalParent />
+      <ConditionalValue />
+      <LabelAlign>TopLeft</LabelAlign>
+      <SpaceBelow>-1</SpaceBelow>
+      <ReportableName />
+      <IsLocked>false</IsLocked>
+      <Border>ThreeD</Border>
+      <IsWidthPercentage>true</IsWidthPercentage>
+      <MinWidth>150</MinWidth>
+      <WidthLabel>0</WidthLabel>
+      <SpaceToRight>20</SpaceToRight>
+    </EFormFieldDef>
+    <EFormFieldDef>
+      <IsNew>false</IsNew>
+      <EFormFieldDefNum>167</EFormFieldDefNum>
+      <EFormDefNum>4</EFormDefNum>
+      <FieldType>CheckBox</FieldType>
+      <DbLink />
+      <ValueLabel>Teeth grinding</ValueLabel>
+      <ItemOrder>54</ItemOrder>
+      <PickListVis />
+      <PickListDb />
+      <IsHorizStacking>true</IsHorizStacking>
+      <IsTextWrap>false</IsTextWrap>
+      <Width>50</Width>
+      <FontScale>100</FontScale>
+      <IsRequired>false</IsRequired>
+      <ConditionalParent />
+      <ConditionalValue />
+      <LabelAlign>TopLeft</LabelAlign>
+      <SpaceBelow>20</SpaceBelow>
+      <ReportableName />
+      <IsLocked>false</IsLocked>
+      <Border>ThreeD</Border>
+      <IsWidthPercentage>true</IsWidthPercentage>
+      <MinWidth>150</MinWidth>
+      <WidthLabel>0</WidthLabel>
+      <SpaceToRight>20</SpaceToRight>
+    </EFormFieldDef>
+    <EFormFieldDef>
+      <IsNew>false</IsNew>
+      <EFormFieldDefNum>168</EFormFieldDefNum>
+      <EFormDefNum>4</EFormDefNum>
+      <FieldType>CheckBox</FieldType>
+      <DbLink />
+      <ValueLabel>None of the above</ValueLabel>
+      <ItemOrder>55</ItemOrder>
+      <PickListVis />
+      <PickListDb />
+      <IsHorizStacking>false</IsHorizStacking>
+      <IsTextWrap>false</IsTextWrap>
+      <Width>50</Width>
+      <FontScale>100</FontScale>
+      <IsRequired>false</IsRequired>
+      <ConditionalParent />
+      <ConditionalValue />
+      <LabelAlign>TopLeft</LabelAlign>
+      <SpaceBelow>20</SpaceBelow>
+      <ReportableName />
+      <IsLocked>false</IsLocked>
+      <Border>ThreeD</Border>
+      <IsWidthPercentage>true</IsWidthPercentage>
+      <MinWidth>150</MinWidth>
+      <WidthLabel>0</WidthLabel>
+      <SpaceToRight>20</SpaceToRight>
+    </EFormFieldDef>
+    <EFormFieldDef>
+      <IsNew>false</IsNew>
+      <EFormFieldDefNum>169</EFormFieldDefNum>
+      <EFormDefNum>4</EFormDefNum>
+      <FieldType>PageBreak</FieldType>
+      <DbLink />
+      <ValueLabel />
+      <ItemOrder>56</ItemOrder>
+      <PickListVis />
+      <PickListDb />
+      <IsHorizStacking>false</IsHorizStacking>
+      <IsTextWrap>false</IsTextWrap>
+      <Width>0</Width>
+      <FontScale>100</FontScale>
+      <IsRequired>false</IsRequired>
+      <ConditionalParent />
+      <ConditionalValue />
+      <LabelAlign>TopLeft</LabelAlign>
+      <SpaceBelow>20</SpaceBelow>
+      <ReportableName />
+      <IsLocked>false</IsLocked>
+      <Border>ThreeD</Border>
+      <IsWidthPercentage>false</IsWidthPercentage>
+      <MinWidth>0</MinWidth>
+      <WidthLabel>0</WidthLabel>
+      <SpaceToRight>20</SpaceToRight>
+    </EFormFieldDef>
+    <EFormFieldDef>
+      <IsNew>false</IsNew>
+      <EFormFieldDefNum>170</EFormFieldDefNum>
+      <EFormDefNum>4</EFormDefNum>
+      <FieldType>Label</FieldType>
+      <DbLink />
+      <ValueLabel>&lt;FlowDocument&gt;&lt;Paragraph&gt;&lt;Run FontWeight="Bold" FontSize="13.225"&gt;Do you:&lt;/Run&gt;&lt;/Paragraph&gt;&lt;/FlowDocument&gt;</ValueLabel>
+      <ItemOrder>57</ItemOrder>
+      <PickListVis />
+      <PickListDb />
+      <IsHorizStacking>false</IsHorizStacking>
+      <IsTextWrap>false</IsTextWrap>
+      <Width>0</Width>
+      <FontScale>100</FontScale>
+      <IsRequired>false</IsRequired>
+      <ConditionalParent />
+      <ConditionalValue />
+      <LabelAlign>TopLeft</LabelAlign>
+      <SpaceBelow>20</SpaceBelow>
+      <ReportableName />
+      <IsLocked>false</IsLocked>
+      <Border>None</Border>
+      <IsWidthPercentage>false</IsWidthPercentage>
+      <MinWidth>0</MinWidth>
+      <WidthLabel>0</WidthLabel>
+      <SpaceToRight>20</SpaceToRight>
+    </EFormFieldDef>
+    <EFormFieldDef>
+      <IsNew>false</IsNew>
+      <EFormFieldDefNum>171</EFormFieldDefNum>
+      <EFormDefNum>4</EFormDefNum>
+      <FieldType>RadioButtons</FieldType>
+      <DbLink />
+      <ValueLabel>Clench or grind your teeth while awake or asleep?</ValueLabel>
+      <ItemOrder>58</ItemOrder>
+      <PickListVis>Yes|No</PickListVis>
+      <PickListDb>|</PickListDb>
+      <IsHorizStacking>false</IsHorizStacking>
+      <IsTextWrap>false</IsTextWrap>
+      <Width>0</Width>
+      <FontScale>100</FontScale>
+      <IsRequired>false</IsRequired>
+      <ConditionalParent />
+      <ConditionalValue />
+      <LabelAlign>TopLeft</LabelAlign>
+      <SpaceBelow>20</SpaceBelow>
+      <ReportableName />
+      <IsLocked>false</IsLocked>
+      <Border>ThreeD</Border>
+      <IsWidthPercentage>false</IsWidthPercentage>
+      <MinWidth>0</MinWidth>
+      <WidthLabel>0</WidthLabel>
+      <SpaceToRight>20</SpaceToRight>
+    </EFormFieldDef>
+    <EFormFieldDef>
+      <IsNew>false</IsNew>
+      <EFormFieldDefNum>172</EFormFieldDefNum>
+      <EFormDefNum>4</EFormDefNum>
+      <FieldType>RadioButtons</FieldType>
+      <DbLink />
+      <ValueLabel>Bite your lips or cheeks regularly?</ValueLabel>
+      <ItemOrder>59</ItemOrder>
+      <PickListVis>Yes|No</PickListVis>
+      <PickListDb>|</PickListDb>
+      <IsHorizStacking>false</IsHorizStacking>
+      <IsTextWrap>false</IsTextWrap>
+      <Width>0</Width>
+      <FontScale>100</FontScale>
+      <IsRequired>false</IsRequired>
+      <ConditionalParent />
+      <ConditionalValue />
+      <LabelAlign>TopLeft</LabelAlign>
+      <SpaceBelow>20</SpaceBelow>
+      <ReportableName />
+      <IsLocked>false</IsLocked>
+      <Border>ThreeD</Border>
+      <IsWidthPercentage>false</IsWidthPercentage>
+      <MinWidth>0</MinWidth>
+      <WidthLabel>0</WidthLabel>
+      <SpaceToRight>20</SpaceToRight>
+    </EFormFieldDef>
+    <EFormFieldDef>
+      <IsNew>false</IsNew>
+      <EFormFieldDefNum>173</EFormFieldDefNum>
+      <EFormDefNum>4</EFormDefNum>
+      <FieldType>RadioButtons</FieldType>
+      <DbLink />
+      <ValueLabel>Hold foreign objects with your teeth? (pencils, pipe, etc.)</ValueLabel>
+      <ItemOrder>60</ItemOrder>
+      <PickListVis>Yes|No</PickListVis>
+      <PickListDb>|</PickListDb>
+      <IsHorizStacking>false</IsHorizStacking>
+      <IsTextWrap>false</IsTextWrap>
+      <Width>0</Width>
+      <FontScale>100</FontScale>
+      <IsRequired>false</IsRequired>
+      <ConditionalParent />
+      <ConditionalValue />
+      <LabelAlign>TopLeft</LabelAlign>
+      <SpaceBelow>20</SpaceBelow>
+      <ReportableName />
+      <IsLocked>false</IsLocked>
+      <Border>ThreeD</Border>
+      <IsWidthPercentage>false</IsWidthPercentage>
+      <MinWidth>0</MinWidth>
+      <WidthLabel>0</WidthLabel>
+      <SpaceToRight>20</SpaceToRight>
+    </EFormFieldDef>
+    <EFormFieldDef>
+      <IsNew>false</IsNew>
+      <EFormFieldDefNum>174</EFormFieldDefNum>
+      <EFormDefNum>4</EFormDefNum>
+      <FieldType>RadioButtons</FieldType>
+      <DbLink />
+      <ValueLabel>Mouth breathe while awake or asleep?</ValueLabel>
+      <ItemOrder>61</ItemOrder>
+      <PickListVis>Yes|No</PickListVis>
+      <PickListDb>|</PickListDb>
+      <IsHorizStacking>false</IsHorizStacking>
+      <IsTextWrap>false</IsTextWrap>
+      <Width>0</Width>
+      <FontScale>100</FontScale>
+      <IsRequired>false</IsRequired>
+      <ConditionalParent />
+      <ConditionalValue />
+      <LabelAlign>TopLeft</LabelAlign>
+      <SpaceBelow>20</SpaceBelow>
+      <ReportableName />
+      <IsLocked>false</IsLocked>
+      <Border>ThreeD</Border>
+      <IsWidthPercentage>false</IsWidthPercentage>
+      <MinWidth>0</MinWidth>
+      <WidthLabel>0</WidthLabel>
+      <SpaceToRight>20</SpaceToRight>
+    </EFormFieldDef>
+    <EFormFieldDef>
+      <IsNew>false</IsNew>
+      <EFormFieldDefNum>175</EFormFieldDefNum>
+      <EFormDefNum>4</EFormDefNum>
+      <FieldType>RadioButtons</FieldType>
+      <DbLink />
+      <ValueLabel>Have tired jaws, especially in the morning?</ValueLabel>
+      <ItemOrder>62</ItemOrder>
+      <PickListVis>Yes|No</PickListVis>
+      <PickListDb>|</PickListDb>
+      <IsHorizStacking>false</IsHorizStacking>
+      <IsTextWrap>false</IsTextWrap>
+      <Width>0</Width>
+      <FontScale>100</FontScale>
+      <IsRequired>false</IsRequired>
+      <ConditionalParent />
+      <ConditionalValue />
+      <LabelAlign>TopLeft</LabelAlign>
+      <SpaceBelow>20</SpaceBelow>
+      <ReportableName />
+      <IsLocked>false</IsLocked>
+      <Border>ThreeD</Border>
+      <IsWidthPercentage>false</IsWidthPercentage>
+      <MinWidth>0</MinWidth>
+      <WidthLabel>0</WidthLabel>
+      <SpaceToRight>20</SpaceToRight>
+    </EFormFieldDef>
+    <EFormFieldDef>
+      <IsNew>false</IsNew>
+      <EFormFieldDefNum>176</EFormFieldDefNum>
+      <EFormDefNum>4</EFormDefNum>
+      <FieldType>RadioButtons</FieldType>
+      <DbLink />
+      <ValueLabel>Snore or have any other sleeping disorders?</ValueLabel>
+      <ItemOrder>63</ItemOrder>
+      <PickListVis>Yes|No</PickListVis>
+      <PickListDb>|</PickListDb>
+      <IsHorizStacking>false</IsHorizStacking>
+      <IsTextWrap>false</IsTextWrap>
+      <Width>0</Width>
+      <FontScale>100</FontScale>
+      <IsRequired>false</IsRequired>
+      <ConditionalParent />
+      <ConditionalValue />
+      <LabelAlign>TopLeft</LabelAlign>
+      <SpaceBelow>20</SpaceBelow>
+      <ReportableName />
+      <IsLocked>false</IsLocked>
+      <Border>ThreeD</Border>
+      <IsWidthPercentage>false</IsWidthPercentage>
+      <MinWidth>0</MinWidth>
+      <WidthLabel>0</WidthLabel>
+      <SpaceToRight>20</SpaceToRight>
+    </EFormFieldDef>
+    <EFormFieldDef>
+      <IsNew>false</IsNew>
+      <EFormFieldDefNum>177</EFormFieldDefNum>
+      <EFormDefNum>4</EFormDefNum>
+      <FieldType>PageBreak</FieldType>
+      <DbLink />
+      <ValueLabel />
+      <ItemOrder>64</ItemOrder>
+      <PickListVis />
+      <PickListDb />
+      <IsHorizStacking>false</IsHorizStacking>
+      <IsTextWrap>false</IsTextWrap>
+      <Width>0</Width>
+      <FontScale>100</FontScale>
+      <IsRequired>false</IsRequired>
+      <ConditionalParent />
+      <ConditionalValue />
+      <LabelAlign>TopLeft</LabelAlign>
+      <SpaceBelow>20</SpaceBelow>
+      <ReportableName />
+      <IsLocked>false</IsLocked>
+      <Border>ThreeD</Border>
+      <IsWidthPercentage>false</IsWidthPercentage>
+      <MinWidth>0</MinWidth>
+      <WidthLabel>0</WidthLabel>
+      <SpaceToRight>20</SpaceToRight>
+    </EFormFieldDef>
+    <EFormFieldDef>
+      <IsNew>false</IsNew>
+      <EFormFieldDefNum>178</EFormFieldDefNum>
+      <EFormDefNum>4</EFormDefNum>
+      <FieldType>Label</FieldType>
+      <DbLink />
+      <ValueLabel>&lt;FlowDocument&gt;&lt;Paragraph&gt;&lt;Run FontFamily="ArialNarrow-Bold" FontWeight="Bold" FontSize="13.225"&gt;Have you ever had:&lt;/Run&gt;&lt;/Paragraph&gt;&lt;/FlowDocument&gt;</ValueLabel>
+      <ItemOrder>65</ItemOrder>
+      <PickListVis />
+      <PickListDb />
+      <IsHorizStacking>false</IsHorizStacking>
+      <IsTextWrap>false</IsTextWrap>
+      <Width>0</Width>
+      <FontScale>100</FontScale>
+      <IsRequired>false</IsRequired>
+      <ConditionalParent />
+      <ConditionalValue />
+      <LabelAlign>TopLeft</LabelAlign>
+      <SpaceBelow>20</SpaceBelow>
+      <ReportableName />
+      <IsLocked>false</IsLocked>
+      <Border>None</Border>
+      <IsWidthPercentage>false</IsWidthPercentage>
+      <MinWidth>0</MinWidth>
+      <WidthLabel>0</WidthLabel>
+      <SpaceToRight>20</SpaceToRight>
+    </EFormFieldDef>
+    <EFormFieldDef>
+      <IsNew>false</IsNew>
+      <EFormFieldDefNum>179</EFormFieldDefNum>
+      <EFormDefNum>4</EFormDefNum>
+      <FieldType>RadioButtons</FieldType>
+      <DbLink />
+      <ValueLabel>Orthodontic treatment?</ValueLabel>
+      <ItemOrder>66</ItemOrder>
+      <PickListVis>Yes|No</PickListVis>
+      <PickListDb>|</PickListDb>
+      <IsHorizStacking>false</IsHorizStacking>
+      <IsTextWrap>false</IsTextWrap>
+      <Width>0</Width>
+      <FontScale>100</FontScale>
+      <IsRequired>false</IsRequired>
+      <ConditionalParent />
+      <ConditionalValue />
+      <LabelAlign>TopLeft</LabelAlign>
+      <SpaceBelow>20</SpaceBelow>
+      <ReportableName />
+      <IsLocked>false</IsLocked>
+      <Border>ThreeD</Border>
+      <IsWidthPercentage>false</IsWidthPercentage>
+      <MinWidth>0</MinWidth>
+      <WidthLabel>0</WidthLabel>
+      <SpaceToRight>20</SpaceToRight>
+    </EFormFieldDef>
+    <EFormFieldDef>
+      <IsNew>false</IsNew>
+      <EFormFieldDefNum>180</EFormFieldDefNum>
+      <EFormDefNum>4</EFormDefNum>
+      <FieldType>RadioButtons</FieldType>
+      <DbLink />
+      <ValueLabel>Oral surgery?</ValueLabel>
+      <ItemOrder>67</ItemOrder>
+      <PickListVis>Yes|No</PickListVis>
+      <PickListDb>|</PickListDb>
+      <IsHorizStacking>false</IsHorizStacking>
+      <IsTextWrap>false</IsTextWrap>
+      <Width>0</Width>
+      <FontScale>100</FontScale>
+      <IsRequired>false</IsRequired>
+      <ConditionalParent />
+      <ConditionalValue />
+      <LabelAlign>TopLeft</LabelAlign>
+      <SpaceBelow>20</SpaceBelow>
+      <ReportableName />
+      <IsLocked>false</IsLocked>
+      <Border>ThreeD</Border>
+      <IsWidthPercentage>false</IsWidthPercentage>
+      <MinWidth>0</MinWidth>
+      <WidthLabel>0</WidthLabel>
+      <SpaceToRight>20</SpaceToRight>
+    </EFormFieldDef>
+    <EFormFieldDef>
+      <IsNew>false</IsNew>
+      <EFormFieldDefNum>181</EFormFieldDefNum>
+      <EFormDefNum>4</EFormDefNum>
+      <FieldType>RadioButtons</FieldType>
+      <DbLink />
+      <ValueLabel>Periodontal treatment?</ValueLabel>
+      <ItemOrder>68</ItemOrder>
+      <PickListVis>Yes|No</PickListVis>
+      <PickListDb>|</PickListDb>
+      <IsHorizStacking>false</IsHorizStacking>
+      <IsTextWrap>false</IsTextWrap>
+      <Width>0</Width>
+      <FontScale>100</FontScale>
+      <IsRequired>false</IsRequired>
+      <ConditionalParent />
+      <ConditionalValue />
+      <LabelAlign>TopLeft</LabelAlign>
+      <SpaceBelow>20</SpaceBelow>
+      <ReportableName />
+      <IsLocked>false</IsLocked>
+      <Border>ThreeD</Border>
+      <IsWidthPercentage>false</IsWidthPercentage>
+      <MinWidth>0</MinWidth>
+      <WidthLabel>0</WidthLabel>
+      <SpaceToRight>20</SpaceToRight>
+    </EFormFieldDef>
+    <EFormFieldDef>
+      <IsNew>false</IsNew>
+      <EFormFieldDefNum>182</EFormFieldDefNum>
+      <EFormDefNum>4</EFormDefNum>
+      <FieldType>RadioButtons</FieldType>
+      <DbLink />
+      <ValueLabel>Your teeth ground or the bite adjusted?</ValueLabel>
+      <ItemOrder>69</ItemOrder>
+      <PickListVis>Yes|No</PickListVis>
+      <PickListDb>|</PickListDb>
+      <IsHorizStacking>false</IsHorizStacking>
+      <IsTextWrap>false</IsTextWrap>
+      <Width>0</Width>
+      <FontScale>100</FontScale>
+      <IsRequired>false</IsRequired>
+      <ConditionalParent />
+      <ConditionalValue />
+      <LabelAlign>TopLeft</LabelAlign>
+      <SpaceBelow>20</SpaceBelow>
+      <ReportableName />
+      <IsLocked>false</IsLocked>
+      <Border>ThreeD</Border>
+      <IsWidthPercentage>false</IsWidthPercentage>
+      <MinWidth>0</MinWidth>
+      <WidthLabel>0</WidthLabel>
+      <SpaceToRight>20</SpaceToRight>
+    </EFormFieldDef>
+    <EFormFieldDef>
+      <IsNew>false</IsNew>
+      <EFormFieldDefNum>183</EFormFieldDefNum>
+      <EFormDefNum>4</EFormDefNum>
+      <FieldType>RadioButtons</FieldType>
+      <DbLink />
+      <ValueLabel>A bite plate or mouth guard?</ValueLabel>
+      <ItemOrder>70</ItemOrder>
+      <PickListVis>Yes|No</PickListVis>
+      <PickListDb>|</PickListDb>
+      <IsHorizStacking>false</IsHorizStacking>
+      <IsTextWrap>false</IsTextWrap>
+      <Width>0</Width>
+      <FontScale>100</FontScale>
+      <IsRequired>false</IsRequired>
+      <ConditionalParent />
+      <ConditionalValue />
+      <LabelAlign>TopLeft</LabelAlign>
+      <SpaceBelow>20</SpaceBelow>
+      <ReportableName />
+      <IsLocked>false</IsLocked>
+      <Border>ThreeD</Border>
+      <IsWidthPercentage>false</IsWidthPercentage>
+      <MinWidth>0</MinWidth>
+      <WidthLabel>0</WidthLabel>
+      <SpaceToRight>20</SpaceToRight>
+    </EFormFieldDef>
+    <EFormFieldDef>
+      <IsNew>false</IsNew>
+      <EFormFieldDefNum>184</EFormFieldDefNum>
+      <EFormDefNum>4</EFormDefNum>
+      <FieldType>RadioButtons</FieldType>
+      <DbLink />
+      <ValueLabel>A serious injury to the mouth or head?</ValueLabel>
+      <ItemOrder>71</ItemOrder>
+      <PickListVis>Yes|No</PickListVis>
+      <PickListDb>|</PickListDb>
+      <IsHorizStacking>false</IsHorizStacking>
+      <IsTextWrap>false</IsTextWrap>
+      <Width>0</Width>
+      <FontScale>100</FontScale>
+      <IsRequired>false</IsRequired>
+      <ConditionalParent />
+      <ConditionalValue />
+      <LabelAlign>TopLeft</LabelAlign>
+      <SpaceBelow>20</SpaceBelow>
+      <ReportableName />
+      <IsLocked>false</IsLocked>
+      <Border>ThreeD</Border>
+      <IsWidthPercentage>false</IsWidthPercentage>
+      <MinWidth>0</MinWidth>
+      <WidthLabel>0</WidthLabel>
+      <SpaceToRight>20</SpaceToRight>
+    </EFormFieldDef>
+    <EFormFieldDef>
+      <IsNew>false</IsNew>
+      <EFormFieldDefNum>185</EFormFieldDefNum>
+      <EFormDefNum>4</EFormDefNum>
+      <FieldType>TextField</FieldType>
+      <DbLink />
+      <ValueLabel>Please describe, including cause</ValueLabel>
+      <ItemOrder>72</ItemOrder>
+      <PickListVis />
+      <PickListDb />
+      <IsHorizStacking>false</IsHorizStacking>
+      <IsTextWrap>false</IsTextWrap>
+      <Width>0</Width>
+      <FontScale>100</FontScale>
+      <IsRequired>false</IsRequired>
+      <ConditionalParent>A serious injury to the mouth or head?</ConditionalParent>
+      <ConditionalValue>Yes</ConditionalValue>
+      <LabelAlign>TopLeft</LabelAlign>
+      <SpaceBelow>20</SpaceBelow>
+      <ReportableName />
+      <IsLocked>false</IsLocked>
+      <Border>ThreeD</Border>
+      <IsWidthPercentage>false</IsWidthPercentage>
+      <MinWidth>0</MinWidth>
+      <WidthLabel>0</WidthLabel>
+      <SpaceToRight>20</SpaceToRight>
+    </EFormFieldDef>
+    <EFormFieldDef>
+      <IsNew>false</IsNew>
+      <EFormFieldDefNum>186</EFormFieldDefNum>
+      <EFormDefNum>4</EFormDefNum>
+      <FieldType>TextField</FieldType>
+      <DbLink />
+      <ValueLabel>Is there anything else about having dental treatment that you would like us to know?</ValueLabel>
+      <ItemOrder>73</ItemOrder>
+      <PickListVis />
+      <PickListDb />
+      <IsHorizStacking>false</IsHorizStacking>
+      <IsTextWrap>true</IsTextWrap>
+      <Width>0</Width>
+      <FontScale>100</FontScale>
+      <IsRequired>false</IsRequired>
+      <ConditionalParent>A serious injury to the mouth or head?</ConditionalParent>
+      <ConditionalValue>Yes</ConditionalValue>
+      <LabelAlign>TopLeft</LabelAlign>
+      <SpaceBelow>20</SpaceBelow>
+      <ReportableName />
+      <IsLocked>false</IsLocked>
+      <Border>ThreeD</Border>
+      <IsWidthPercentage>false</IsWidthPercentage>
+      <MinWidth>0</MinWidth>
+      <WidthLabel>0</WidthLabel>
+      <SpaceToRight>20</SpaceToRight>
+    </EFormFieldDef>
+    <EFormFieldDef>
+      <IsNew>false</IsNew>
+      <EFormFieldDefNum>187</EFormFieldDefNum>
+      <EFormDefNum>4</EFormDefNum>
+      <FieldType>PageBreak</FieldType>
+      <DbLink />
+      <ValueLabel />
+      <ItemOrder>74</ItemOrder>
+      <PickListVis />
+      <PickListDb />
+      <IsHorizStacking>false</IsHorizStacking>
+      <IsTextWrap>false</IsTextWrap>
+      <Width>0</Width>
+      <FontScale>100</FontScale>
+      <IsRequired>false</IsRequired>
+      <ConditionalParent />
+      <ConditionalValue />
+      <LabelAlign>TopLeft</LabelAlign>
+      <SpaceBelow>20</SpaceBelow>
+      <ReportableName />
+      <IsLocked>false</IsLocked>
+      <Border>ThreeD</Border>
+      <IsWidthPercentage>false</IsWidthPercentage>
+      <MinWidth>0</MinWidth>
+      <WidthLabel>0</WidthLabel>
+      <SpaceToRight>20</SpaceToRight>
+    </EFormFieldDef>
+    <EFormFieldDef>
+      <IsNew>false</IsNew>
+      <EFormFieldDefNum>188</EFormFieldDefNum>
+      <EFormDefNum>4</EFormDefNum>
+      <FieldType>SigBox</FieldType>
+      <DbLink />
+      <ValueLabel>Signature</ValueLabel>
+      <ItemOrder>75</ItemOrder>
+      <PickListVis />
+      <PickListDb />
+      <IsHorizStacking>false</IsHorizStacking>
+      <IsTextWrap>false</IsTextWrap>
+      <Width>0</Width>
+      <FontScale>100</FontScale>
+      <IsRequired>false</IsRequired>
+      <ConditionalParent />
+      <ConditionalValue />
+      <LabelAlign>TopLeft</LabelAlign>
+      <SpaceBelow>20</SpaceBelow>
+      <ReportableName />
+      <IsLocked>false</IsLocked>
+      <Border>ThreeD</Border>
+      <IsWidthPercentage>false</IsWidthPercentage>
+      <MinWidth>0</MinWidth>
+      <WidthLabel>0</WidthLabel>
+      <SpaceToRight>20</SpaceToRight>
+    </EFormFieldDef>
+  </ListEFormFieldDefs>
+  <IsDeleted>false</IsDeleted>
+</EFormDef>

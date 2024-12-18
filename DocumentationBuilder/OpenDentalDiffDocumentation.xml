@@ -1,6 +1,26 @@
 ﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <?xml-stylesheet type='text/xsl' href='OpenDentalDiffDocumentation.xsl'?>
 <database version="24.3.0.0">
+  <table name="alertcategorylink">
+    <summary></summary>
+    <column order="2" name="AlertType" type="tinyint(4)">
+      <summary>Enum:AlertType Identifies what types of alert this row is associated to.</summary>
+      <Enumeration name="AlertType">
+        <summary>Enum representing different alert types. Any additional entries to this enum will need to be linked to the AlertCategory table. Do so with by calling the helper method in ConvertDatabases8. There will be one link to this type's specific category and one link to AlertCategory with InternalName 'OdAllTypes'.</summary>
+        <EnumValue name="Pearl">40 - Alert that is created when an error occurs while uploading an image to Pearl or processing Pearl results.</EnumValue>
+      </Enumeration>
+    </column>
+  </table>
+  <table name="alertitem">
+    <summary></summary>
+    <column order="3" name="Type" type="tinyint(4)">
+      <summary>Enum:AlertType Identifies what type of alert this row is.</summary>
+      <Enumeration name="AlertType">
+        <summary>Enum representing different alert types. Any additional entries to this enum will need to be linked to the AlertCategory table. Do so with by calling the helper method in ConvertDatabases8. There will be one link to this type's specific category and one link to AlertCategory with InternalName 'OdAllTypes'.</summary>
+        <EnumValue name="Pearl">40 - Alert that is created when an error occurs while uploading an image to Pearl or processing Pearl results.</EnumValue>
+      </Enumeration>
+    </column>
+  </table>
   <table name="commlog">
     <summary></summary>
     <column order="5" name="Mode_" type="tinyint">
@@ -288,6 +308,16 @@
         <EnumValue name="EFormDelete">260 - Allows deleting eForms when they're attached to patients. No date restrictions.</EnumValue>
         <EnumValue name="ChartViewsEdit">262 - Allows users to move chart views up and down, and add new chart views</EnumValue>
         <EnumValue name="SuperFamilyDisband">263 - Allows disbanding of Super Families.</EnumValue>
+      </Enumeration>
+    </column>
+  </table>
+  <table name="signalod">
+    <summary></summary>
+    <column order="5" name="IType" type="tinyint(4)">
+      <summary>Enum:InvalidType Indicates what cache or entity has been changed.</summary>
+      <Enumeration name="InvalidType">
+        <summary>When the autorefresh message is sent to the other computers, this is the type.</summary>
+        <EnumValue name="WebChatAiAssistants">115. This is used internally by OD, refreshes the AI assistant list. Fkey is not used.</EnumValue>
       </Enumeration>
     </column>
   </table>

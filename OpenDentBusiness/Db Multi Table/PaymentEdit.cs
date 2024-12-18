@@ -2001,6 +2001,10 @@ namespace OpenDentBusiness {
 				split.AdjNum=0;
 				split.ProcNum=entry.ProcNum;
 			}
+			else if(entry.PayPlanDebitType==PayPlanDebitTypes.Interest) {
+				split.AdjNum=0;
+				split.ProcNum=0;
+			}
 			else {//Payment plan entry or something else, just preserve the values set on the AccountEntry passed in.
 				split.AdjNum=entry.AdjNum;
 				split.ProcNum=entry.ProcNum;

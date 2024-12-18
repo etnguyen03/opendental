@@ -1381,8 +1381,16 @@ How to use the TextRich control:
 
 		///<summary>Pastes the contents of the clipboard, excluding the formatting.</summary>
 		private void PastePlainText() {
-			string text = Clipboard.GetText();
-			SelectedText=text;
+			try {
+				//2024-12-17-jordan this can fail in COM, with no known fix.
+				string text=Clipboard.GetText();
+				SelectedText=text;
+			}
+			catch(Exception ex) {
+				MsgBox.Show(this,"Could not paste contents from the clipboard.  Please try again.");
+				ex.DoNothing();
+				return;
+			}
 		}
 
 		///<summary></summary>

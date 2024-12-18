@@ -184,9 +184,11 @@ namespace OpenDental {
 				richTextBoxMessage.Multiline=true;
 				string message=smsThreadMessage.Message.Trim();//Trim leading and trailing whitespace for 2 reasons: 1) Prevents scrolling within the textbox when trying to highlight and copy the text 2) Matches the web view behavior.
 				if(smsThreadMessage.IsAiMessage) {
-					message=CleanAiResponse(message);
+					richTextBoxMessage.Rtf=ProcessAiMessage(message);
 				}
-				richTextBoxMessage.Text=message.Replace("\r\n","\n").Replace("\n","\r\n");//Normalize \n coming from RichTextBox to \r\n for TextBox.	
+				else {
+					richTextBoxMessage.Text=message.Replace("\r\n","\n").Replace("\n","\r\n");//Normalize \n coming from RichTextBox to \r\n for TextBox.	
+				}
 				size=GetSizeForText(richTextBoxMessage.Text);
 				richTextBoxMessage.Width=size.Width+4;//Extra horizontal padding to ensure that the text will fit when including the border.
 				richTextBoxMessage.Height=size.Height+4;//Extra vertical padding to ensure that the text will fit when including the border.
@@ -295,11 +297,59 @@ namespace OpenDental {
 			}
 		}
 
-		///<summary>Removes un-wanted text that OpenAi includes in their response.</summary>
-		private string CleanAiResponse(string text) {
+		public static string ProcessAiMessage(string text) {
 			//Pattern to capture `?` followed by numbers and then `†` followed by alphanumeric characters, underscores, and periods.
-			string regexPattern = @"\?\d+:\d+†[\w._]+\?";
-			return Regex.Replace(text, regexPattern, string.Empty);
+			string regexPattern=@"\?\d+:\d+†[\w._]+\?";
+			text=Regex.Replace(text,regexPattern,string.Empty);
+			var sb=new StringBuilder();
+			sb.Append(@"{\rtf1\ansi");//Start building the RTF content
+			foreach(var line in text.Split("\n", StringSplitOptions.None)) {
+				//line can be '\n' for empty lines, this is OK and will simply add the \par line below.
+				string processedLine=ReplaceOpenAiLinks(line);//Convert OpenAI links to hyperlinks
+				processedLine=processedLine.Replace("-", @"\bullet ");//Bullet lines
+				if(processedLine.StartsWith("###")) {//Header lines
+					processedLine=$@"\b {processedLine.Replace("###", "").Trim()}\b0 ";
+				}
+				if(processedLine.Contains("**")) {//Line contains bold words.
+					ProcessOpenAiBoldWords(sb,processedLine);
+				}
+				else {//Line doesn't contain bold characters so just add it as normal text.
+					sb.Append(processedLine);
+				}
+				sb.Append(@"\par ");//New line
+			}
+			sb.Append(@"}");//Close the RTF content
+			return sb.ToString();
+		}
+		
+		///<summary>Used with OpenAI response messages. The given line format is expected to be in the following format: [page name](url)</summary>
+		private static string ReplaceOpenAiLinks(string line) {
+			//Pattern to match the OpenAI link format: [text](url)
+			Match match=Regex.Match(line,@"\[(.*?)\]\((.*?)\)");
+			if(match.Success && match.Groups.Count>=2) {
+				string linkText=match.Groups[1].Value;//Extract the display text (between [ and ])
+				string url=match.Groups[2].Value;//Extract the URL (between ( and ))
+				//Construct the RTF hyperlink - https://stackoverflow.com/a/23536287
+				return @$"\bullet{{\colortbl ;\red0\green0\blue238;}}\n{{\field{{\*\fldinst HYPERLINK ""{url}""}}{{\fldrslt{{\ul\cf1 {linkText}}}}}}}";
+			}
+			return line;
+		}
+
+		///<summary>Walks through the given line to replace OpenAI bold tags to RTF bold tags.
+		///Converts text like 'hello world **bold example** the end' to 'hello world \b bold example\b0 the end'</summary>
+		private static void ProcessOpenAiBoldWords(StringBuilder sb,string line) {
+			string processedLine=line;
+			int boldStart;
+			while((boldStart=processedLine.IndexOf("**")) != -1) {
+				int boldEnd=processedLine.IndexOf("**",boldStart+2);//+2 to move past ** chars
+				if(boldEnd==-1) {
+					break;//If no closing '**' is found, exit the loop
+				}
+				sb.Append(processedLine.Substring(0,boldStart));//Add text before the bold section
+				sb.Append($@"\b {processedLine.Substring(boldStart+2,boldEnd-boldStart-2)}\b0 ");//Add bold RTF tags and text
+				processedLine=processedLine.Substring(boldEnd+2);//Walk past the closing ** bold tag, +2 to account for ** chars
+			}
+			sb.Append(processedLine);//Add any remaining text
 		}
 
 		///<summary>Returns the control which previsouly existing in the panel or returns the new control if it was added.</summary>

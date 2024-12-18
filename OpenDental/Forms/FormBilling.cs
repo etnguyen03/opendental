@@ -27,6 +27,8 @@ namespace OpenDental {
 		public bool IsHistoryStartMinDate;
 		///<summary>Used to hold this preference's state when it is different from the default.</summary>
 		public bool ShowBillTransSinceZero=false;
+		///<summary>There is a pref for this, but if user changed their selection for this batch, we want to use that. This then gets passed into FormStatmentOptions.</summary>
+		public List<StatementMode> ListStatementModesForSms;
 		
 		///<summary></summary>
 		public FormBilling(){
@@ -235,6 +237,7 @@ namespace OpenDental {
 				return;
 			}
 			using FormStatementOptions FormStatementOptions=new FormStatementOptions(true);
+			FormStatementOptions.ListStatementModesForSms=ListStatementModesForSms;
 			List<long> listStatementNums=new List<long>();
 			foreach(int index in gridBill.SelectedIndices) {
 				listStatementNums.Add(PIn.Long(((DataRow)gridBill.ListGridRows[index].Tag)["StatementNum"].ToString()));
@@ -514,6 +517,7 @@ namespace OpenDental {
 			}
 			formStatementOptions.StatementCur=statement;
 			formStatementOptions.ShowBillTransSinceZero=ShowBillTransSinceZero;
+			formStatementOptions.ListStatementModesForSms=ListStatementModesForSms;
 			formStatementOptions.ShowDialog();
 			//Could be changes even if not hit OK. Example: printing.
 			FillGrid();

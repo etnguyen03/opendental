@@ -149,7 +149,7 @@ namespace OpenDental{
 			gridMain.ListGridRows.Clear();
 			GridRow row;
 			for(int i=0;i<_listAccountEntries.Count;i++) {
-				if((!_listAccountEntries[i].GetType().In(typeof(ProcExtended),typeof(Adjustment)) || Math.Round(_listAccountEntries[i].AmountEnd,3) == 0) && creditCalcType!=CreditCalcType.ExcludeAll) {
+				if((!_listAccountEntries[i].GetType().In(typeof(ProcExtended),typeof(Adjustment)) || CompareDecimal.IsLessThanOrEqualToZero(_listAccountEntries[i].AmountEnd)) && creditCalcType!=CreditCalcType.ExcludeAll) {
 					continue;
 				}
 				string dateStr;
@@ -157,8 +157,8 @@ namespace OpenDental{
 				string toothNumStr="";
 				string descriptionText="";
 				if(_listAccountEntries[i].GetType()==typeof(Adjustment)) {
-					if(!_doShowAdjustments || _listAccountEntries[i].AmountEnd<=0 || _listAccountEntries[i].ProcNum>0) {
-						//Do not show adjustments or do show adjustments- must not be attached to a procedure or the amount end must be positive
+					if(!_doShowAdjustments || _listAccountEntries[i].ProcNum>0) {
+						//Do not show adjustments or do show adjustments- must not be attached to a procedure
 						continue;
 					}
 					dateStr=_listAccountEntries[i].Date.ToShortDateString();

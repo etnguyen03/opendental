@@ -572,12 +572,12 @@ namespace OpenDentBusiness.Properties {
         ///  &lt;FormType&gt;PatientForm&lt;/FormType&gt;
         ///  &lt;Description&gt;Demo&lt;/Description&gt;
         ///  &lt;DateTCreated&gt;2024-06-03T09:06:37&lt;/DateTCreated&gt;
+        ///  &lt;MaxWidth&gt;450&lt;/MaxWidth&gt;
         ///  &lt;IsInternalHidden&gt;false&lt;/IsInternalHidden&gt;
         ///  &lt;ListEFormFieldDefs&gt;
         ///    &lt;EFormFieldDef&gt;
         ///      &lt;IsNew&gt;false&lt;/IsNew&gt;
-        ///      &lt;EFormFieldDefNum&gt;3460&lt;/EFormFieldDefNum&gt;
-        ///      &lt;EFormDe [rest of string was truncated]&quot;;.
+        ///      &lt;EFormFieldDefNum&gt;3460&lt;/EForm [rest of string was truncated]&quot;;.
         /// </summary>
         public static string EFormDemo {
             get {
@@ -587,18 +587,37 @@ namespace OpenDentBusiness.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to &lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
-        ///&lt;EFormDef xmlns:xsd=&quot;http://www.w3.org/2001/XMLSchema&quot; xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;&gt;
+        ///&lt;EFormDef xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; xmlns:xsd=&quot;http://www.w3.org/2001/XMLSchema&quot;&gt;
+        ///  &lt;IsNew&gt;false&lt;/IsNew&gt;
+        ///  &lt;EFormDefNum&gt;0&lt;/EFormDefNum&gt;
+        ///  &lt;FormType&gt;MedicalHistory&lt;/FormType&gt;
+        ///  &lt;Description&gt;Dental History&lt;/Description&gt;
+        ///  &lt;DateTCreated&gt;2024-12-06T10:27:10&lt;/DateTCreated&gt;
+        ///  &lt;IsInternalHidden&gt;false&lt;/IsInternalHidden&gt;
+        ///  &lt;MaxWidth&gt;600&lt;/MaxWidth&gt;
+        ///  &lt;RevID&gt;0&lt;/RevID&gt;
+        ///  &lt;ShowLabelsBold&gt;true&lt;/ShowLabelsBold&gt;
+        ///  &lt;SpaceBelowEachField&gt;20&lt;/SpaceBe [rest of string was truncated]&quot;;.
+        /// </summary>
+        public static string EFormDentalHistory {
+            get {
+                return ResourceManager.GetString("EFormDentalHistory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
+        ///&lt;EFormDef xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; xmlns:xsd=&quot;http://www.w3.org/2001/XMLSchema&quot;&gt;
         ///  &lt;IsNew&gt;false&lt;/IsNew&gt;
         ///  &lt;EFormDefNum&gt;0&lt;/EFormDefNum&gt;
         ///  &lt;FormType&gt;Consent&lt;/FormType&gt;
         ///  &lt;Description&gt;Extraction Consent&lt;/Description&gt;
-        ///  &lt;DateTCreated&gt;2024-05-08T14:36:58&lt;/DateTCreated&gt;
+        ///  &lt;DateTCreated&gt;2024-12-06T10:27:13&lt;/DateTCreated&gt;
         ///  &lt;IsInternalHidden&gt;false&lt;/IsInternalHidden&gt;
-        ///  &lt;ListEFormFieldDefs&gt;
-        ///    &lt;EFormFieldDef&gt;
-        ///      &lt;IsNew&gt;false&lt;/IsNew&gt;
-        ///      &lt;EFormFieldDefNum&gt;4129&lt;/EFormFieldDefNum&gt;
-        ///     [rest of string was truncated]&quot;;.
+        ///  &lt;MaxWidth&gt;600&lt;/MaxWidth&gt;
+        ///  &lt;RevID&gt;0&lt;/RevID&gt;
+        ///  &lt;ShowLabelsBold&gt;true&lt;/ShowLabelsBold&gt;
+        ///  &lt;SpaceBelowEachField&gt;-1&lt;/SpaceBelow [rest of string was truncated]&quot;;.
         /// </summary>
         public static string EFormExtractionConsent {
             get {
@@ -608,18 +627,37 @@ namespace OpenDentBusiness.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to &lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
-        ///&lt;EFormDef xmlns:xsd=&quot;http://www.w3.org/2001/XMLSchema&quot; xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;&gt;
+        ///&lt;EFormDef xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; xmlns:xsd=&quot;http://www.w3.org/2001/XMLSchema&quot;&gt;
+        ///  &lt;IsNew&gt;false&lt;/IsNew&gt;
+        ///  &lt;EFormDefNum&gt;0&lt;/EFormDefNum&gt;
+        ///  &lt;FormType&gt;PatientForm&lt;/FormType&gt;
+        ///  &lt;Description&gt;HIPAA&lt;/Description&gt;
+        ///  &lt;DateTCreated&gt;2024-12-06T10:27:18&lt;/DateTCreated&gt;
+        ///  &lt;IsInternalHidden&gt;false&lt;/IsInternalHidden&gt;
+        ///  &lt;MaxWidth&gt;600&lt;/MaxWidth&gt;
+        ///  &lt;RevID&gt;0&lt;/RevID&gt;
+        ///  &lt;ShowLabelsBold&gt;true&lt;/ShowLabelsBold&gt;
+        ///  &lt;SpaceBelowEachField&gt;20&lt;/SpaceBelowEachField [rest of string was truncated]&quot;;.
+        /// </summary>
+        public static string EFormHIPAA {
+            get {
+                return ResourceManager.GetString("EFormHIPAA", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to &lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
+        ///&lt;EFormDef xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; xmlns:xsd=&quot;http://www.w3.org/2001/XMLSchema&quot;&gt;
         ///  &lt;IsNew&gt;false&lt;/IsNew&gt;
         ///  &lt;EFormDefNum&gt;0&lt;/EFormDefNum&gt;
         ///  &lt;FormType&gt;MedicalHistory&lt;/FormType&gt;
         ///  &lt;Description&gt;Medical History&lt;/Description&gt;
-        ///  &lt;DateTCreated&gt;2024-06-04T12:53:03&lt;/DateTCreated&gt;
+        ///  &lt;DateTCreated&gt;2024-12-06T10:27:22&lt;/DateTCreated&gt;
         ///  &lt;IsInternalHidden&gt;false&lt;/IsInternalHidden&gt;
-        ///  &lt;ListEFormFieldDefs&gt;
-        ///    &lt;EFormFieldDef&gt;
-        ///      &lt;IsNew&gt;false&lt;/IsNew&gt;
-        ///      &lt;EFormFieldDefNum&gt;3697&lt;/EFormFieldDefNum&gt;
-        /// [rest of string was truncated]&quot;;.
+        ///  &lt;MaxWidth&gt;600&lt;/MaxWidth&gt;
+        ///  &lt;RevID&gt;0&lt;/RevID&gt;
+        ///  &lt;ShowLabelsBold&gt;true&lt;/ShowLabelsBold&gt;
+        ///  &lt;SpaceBelowEachField&gt;20&lt;/SpaceB [rest of string was truncated]&quot;;.
         /// </summary>
         public static string EFormMedicalHistory {
             get {
@@ -629,17 +667,17 @@ namespace OpenDentBusiness.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to &lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
-        ///&lt;EFormDef xmlns:xsd=&quot;http://www.w3.org/2001/XMLSchema&quot; xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot;&gt;
+        ///&lt;EFormDef xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; xmlns:xsd=&quot;http://www.w3.org/2001/XMLSchema&quot;&gt;
         ///  &lt;IsNew&gt;false&lt;/IsNew&gt;
         ///  &lt;EFormDefNum&gt;0&lt;/EFormDefNum&gt;
         ///  &lt;FormType&gt;PatientForm&lt;/FormType&gt;
         ///  &lt;Description&gt;Patient Registration&lt;/Description&gt;
-        ///  &lt;DateTCreated&gt;2024-05-28T09:06:49&lt;/DateTCreated&gt;
+        ///  &lt;DateTCreated&gt;2024-12-06T10:27:30&lt;/DateTCreated&gt;
         ///  &lt;IsInternalHidden&gt;false&lt;/IsInternalHidden&gt;
-        ///  &lt;ListEFormFieldDefs&gt;
-        ///    &lt;EFormFieldDef&gt;
-        ///      &lt;IsNew&gt;false&lt;/IsNew&gt;
-        ///      &lt;EFormFieldDefNum&gt;2743&lt;/EFormFieldDefNum&gt; [rest of string was truncated]&quot;;.
+        ///  &lt;MaxWidth&gt;600&lt;/MaxWidth&gt;
+        ///  &lt;RevID&gt;0&lt;/RevID&gt;
+        ///  &lt;ShowLabelsBold&gt;true&lt;/ShowLabelsBold&gt;
+        ///  &lt;SpaceBelowEachField&gt;20&lt;/Spac [rest of string was truncated]&quot;;.
         /// </summary>
         public static string EFormPatientRegistration {
             get {
@@ -1030,7 +1068,7 @@ namespace OpenDentBusiness.Properties {
         ///	&lt;PageCount&gt;1&lt;/PageCount&gt;
         ///	&lt;IsMultiPage&gt;false&lt;/IsMultiPage&gt;
         ///	&lt;BypassGlobalLock&gt;NeverBypass&lt;/BypassGlobalLock&gt;
-        ///	&lt;HasMobileLayout&gt;true&lt;/Has [rest of string was truncated]&quot;;.
+        ///	&lt;HasMobileLay [rest of string was truncated]&quot;;.
         /// </summary>
         public static string MedicalHist {
             get {

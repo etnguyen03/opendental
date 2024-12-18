@@ -6919,6 +6919,9 @@ namespace OpenDental {
 			FillProcButtons(refreshData);
 			int intSelectedImageTab=tabControlImages.SelectedIndex;//retains current selection
 			//for(int i=tabControlImages.TabPages.Count-1;i>=0;i--){//backward to remove from end
+			for(int i=0;i<tabControlImages.TabPages.Count;i++) {
+				LayoutManager.Remove(tabControlImages.TabPages[i]);
+			}
 			tabControlImages.TabPages.Clear();
 			//}
 			UI.TabPage tabPage;

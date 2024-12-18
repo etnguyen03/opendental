@@ -309,6 +309,15 @@
     <HeightWindow>0</HeightWindow>
   </PrefInf>
   <PrefInf>
+    <PrefName>ClaimEditRequireNoMissingData</PrefName>
+    <Category>AccountClaimSend</Category>
+    <ControlName>checkClaimEditRequireNoMissingData</ControlName>
+    <ControlText>Require claims to have no missing data</ControlText>
+    <Details>Prevents claims from being created if there is missing data. Does not affect preauthorizations.</Details>
+    <WidthWindow>350</WidthWindow>
+    <HeightWindow>400</HeightWindow>
+  </PrefInf>
+  <PrefInf>
     <PrefName />
     <Category>AccountClaimSend</Category>
     <ControlName>checkClaimMedTypeIsInstWhenInsPlanIsMedical</ControlName>
@@ -367,7 +376,9 @@
     <Category>AccountGeneral</Category>
     <ControlName>checkBalancesDontSubtractIns</ControlName>
     <ControlText>Balances don't subtract insurance estimates</ControlText>
-    <Details />
+    <Details>When enabled, total balances in the Account Module and Statements do not consider insurance estimates. The Balances Due area in the Account Module displays Balance (bold red), Ins Pending, After Ins, and Pat Est Bal. Claim line items in the Account include Estimated Payment Pending and Est Patient Portion.
+&lt;br/&gt;&lt;br/&gt;
+When disabled, total balances in the Account Module and Statements consider insurance estimates. The Balances Due area in the Account Module displays Total, Ins Est, =Est Bal (bold red), and Pat Est Bal. Claim line items in the Account exclude Estimated Payment Pending and Est Patient Portion.</Details>
     <WidthWindow>0</WidthWindow>
     <HeightWindow>0</HeightWindow>
   </PrefInf>
@@ -477,7 +488,7 @@ Usually blank</ControlText>
     <Category>AccountPayments</Category>
     <ControlName>label59</ControlName>
     <ControlText>Dynamic Pay Plan run time</ControlText>
-    <Details />
+    <Details>This should be set to run before Recurring charges run time.</Details>
     <WidthWindow>0</WidthWindow>
     <HeightWindow>0</HeightWindow>
   </PrefInf>
@@ -616,6 +627,15 @@ Usually blank</ControlText>
     <HeightWindow>0</HeightWindow>
   </PrefInf>
   <PrefInf>
+    <PrefName>PayPlanRequireLockForAPR</PrefName>
+    <Category>AccountPayments</Category>
+    <ControlName>checkPayPlanRequireLockForAPR</ControlName>
+    <ControlText>Require full lock to save a Payment Plan if there is an APR entered</ControlText>
+    <Details>Disabling this preference allows all Terms of a saved Payment Plan to change even when an APR has been entered.</Details>
+    <WidthWindow>350</WidthWindow>
+    <HeightWindow>400</HeightWindow>
+  </PrefInf>
+  <PrefInf>
     <PrefName>RecurringChargesAllowedWhenNoPatBal</PrefName>
     <Category>AccountRecAndRepCharges</Category>
     <ControlName>checkRecurPatBal0</ControlName>
@@ -656,7 +676,7 @@ Usually blank</ControlText>
     <Category>AccountRecAndRepCharges</Category>
     <ControlName>labelRecurringChargesAutomatedTime</ControlName>
     <ControlText>Recurring charges run time</ControlText>
-    <Details>this should be set to run after Repeating charges</Details>
+    <Details>This should be set to run after Repeating charges run time and Pay Plan run time.</Details>
     <WidthWindow>0</WidthWindow>
     <HeightWindow>0</HeightWindow>
   </PrefInf>
@@ -674,7 +694,7 @@ Usually blank</ControlText>
     <Category>AccountRecAndRepCharges</Category>
     <ControlName>checkRecurChargPriProv</ControlName>
     <ControlText>Recurring charges use primary provider instead of FIFO</ControlText>
-    <Details>only used when Paysplit allocations is set to 'Rigorous'</Details>
+    <Details>only used when the Allocations setting for Paysplits is set to 'Manual'</Details>
     <WidthWindow>0</WidthWindow>
     <HeightWindow>0</HeightWindow>
   </PrefInf>
@@ -1260,7 +1280,7 @@ ProviderTimeOperatory: searches availability using both the provider time bar an
     <Category>ChartProcedures</Category>
     <ControlName>labelProcFeeUpdatePrompt</ControlName>
     <ControlText>Procedure fee update behavior</ControlText>
-    <Details>when changing the provider</Details>
+    <Details>When changing the provider on a procedure, set the behavior for updating the procedure fee, if different. Fees are not updated on completed procedures if the date is earlier than today.</Details>
     <WidthWindow>0</WidthWindow>
     <HeightWindow>0</HeightWindow>
   </PrefInf>
@@ -1310,15 +1330,24 @@ ProviderTimeOperatory: searches availability using both the provider time bar an
     <HeightWindow>0</HeightWindow>
   </PrefInf>
   <PrefInf>
+    <PrefName>ClaimReportReceiveTime</PrefName>
+    <Category>EnterpriseAccount</Category>
+    <ControlName>textClaimReportReceiveTime</ControlName>
+    <ControlText />
+    <Details>Set a specific time to check for and download new clearinghouse reports.</Details>
+    <WidthWindow>400</WidthWindow>
+    <HeightWindow>300</HeightWindow>
+  </PrefInf>
+  <PrefInf>
     <PrefName>RigorousAdjustments</PrefName>
     <Category>EnterpriseAccount</Category>
     <ControlName>label41</ControlName>
     <ControlText>Adjustments Allocation</ControlText>
     <Details>Determines whether clinic and provider of adjustments match clinic and provider of attached procedures. Also determines whether attaching adjustments to procedures is required or optional. Setting only applys when creating new adjustments or editing existing adjustments. Also sets Adjustments setting in Allocation Setup.  Attaching adjustments through the Procedure Edit Window always assigns the procedure clinic and provider to the adjustment.
 &lt;br/&gt;&lt;br/&gt;
-Enforce Fully: (Rigorous in Allocations Setup) Attaching procedures to adjustments is required. Clinic and provider assigned are the same as procedure. Users with the Setup security permission may edit the adjustment to assign a different clinic and provider than the attached procedure.&lt;br/&gt;&lt;br/&gt;
+Rigorous: Attaching procedures to adjustments is required. Clinic and provider assigned are the same as procedure. Users with the Setup security permission may edit the adjustment to assign a different clinic and provider than the attached procedure.&lt;br/&gt;&lt;br/&gt;
 Link Only: Clinic and provider assigned are the same as procedure. Users may edit the adjustment to assign a different clinic and provider than the attached procedure.&lt;br/&gt;&lt;br/&gt;
-Don't Enforce: (Manual in Allocations Setup) The patient's default clinic and provider are assigned to the adjustment. Users may edit the adjustment to assign to the same clinic and provider as the procedure.</Details>
+Manual: The patient's default clinic and provider are assigned to the adjustment. Users may edit the adjustment to assign to the same clinic and provider as the procedure.</Details>
     <WidthWindow>350</WidthWindow>
     <HeightWindow>500</HeightWindow>
   </PrefInf>
@@ -1341,15 +1370,24 @@ Don't Enforce: (Manual in Allocations Setup) The patient's default clinic and pr
     <HeightWindow>0</HeightWindow>
   </PrefInf>
   <PrefInf>
+    <PrefName>ClaimReportReceiveInterval</PrefName>
+    <Category>EnterpriseAccount</Category>
+    <ControlName>labelReportheckUnits</ControlName>
+    <ControlText>minutes (5 to 60)</ControlText>
+    <Details>Set a time interval, in minutes, to check for and download new clearinghouse reports. Allows values between 5 and 60. 30 is the default.</Details>
+    <WidthWindow>400</WidthWindow>
+    <HeightWindow>300</HeightWindow>
+  </PrefInf>
+  <PrefInf>
     <PrefName>PaymentClinicSetting</PrefName>
     <Category>EnterpriseAccount</Category>
     <ControlName>label38</ControlName>
     <ControlText>Patient Payments Use</ControlText>
-    <Details>Determines the default clinic for patient payments (&lt;a href='https://opendental.com/manual/payment.html' target='_blank'&gt;Payment&lt;/a&gt; window). There are three options.
+    <Details>Determines the default clinic for patient &lt;a href='https://opendental.com/manual/payment.html' target='_blank'&gt;Payments&lt;/a&gt;. There are three options.
 &lt;br/&gt;&lt;br/&gt;
-SelectedClinic: Use the clinic selected in the main menu under Clinics.&lt;br/&gt;&lt;br/&gt;
-PatientDefaultClinic: Use the patient's default clinic as set on the &lt;a href='https://opendental.com/manual/patientedit.html' target='_blank'&gt;Edit Patient Information&lt;/a&gt;. If the patient's clinic is Unassigned, the default clinic is None.&lt;br/&gt;&lt;br/&gt;
-SelectedExceptHQ: Use the clinic selected in the main menu, unless it is Headquarters. In that case, use the patient's clinic.</Details>
+Selected Clinic: Use the clinic selected in the Main Menu under Clinics.&lt;br/&gt;&lt;br/&gt;
+Patient Default Clinic: Use the patient's default clinic set in &lt;a href='https://opendental.com/manual/patientedit.html' target='_blank'&gt;Edit Patient Information&lt;/a&gt;. If the patient's clinic is Unassigned, the default clinic is None.&lt;br/&gt;&lt;br/&gt;
+Selected Except HQ: Use the clinic selected in the Main Menu, unless it is Headquarters. In that case, use the patient's clinic.</Details>
     <WidthWindow>350</WidthWindow>
     <HeightWindow>400</HeightWindow>
   </PrefInf>
@@ -1398,9 +1436,10 @@ If unchecked, the first Payment Type in the list will be selected by default.</D
     <Category>EnterpriseAccount</Category>
     <ControlName>label39</ControlName>
     <ControlText>Paysplits Allocation</ControlText>
-    <Details>Determines whether or not users are forced to allocate patient payments to procedures and unearned income. Also sets Paysplits setting in &lt;a href='https://opendental.com/manual/allocationssetup.html' target='_blank'&gt;Allocations Setup&lt;/a&gt;.&lt;br/&gt;&lt;br/&gt;Enforce Fully: (Rigorous in Allocations Setup) Open Dental automatically suggests payment splits (paysplits) allocated to procedures, procedure treating provider, default clinic, and default unearned income types. Users can modify suggested paysplits, but are required to allocate to production (procedures or adjustments) or an unearned income type. Pay Plan Credits are also required to be attached to procedures.&lt;br/&gt;&lt;br/&gt;
+    <Details>Determines whether or not users are forced to allocate patient payments to procedures and unearned income. Also sets Paysplits setting in &lt;a href='https://opendental.com/manual/allocationssetup.html' target='_blank'&gt;Allocations Setup&lt;/a&gt;.&lt;br/&gt;&lt;br/&gt;
+Rigorous: Open Dental automatically suggests payment splits (paysplits) allocated to procedures, procedure treating provider, default clinic, and default unearned income types. Users can modify suggested paysplits, but are required to allocate to production (procedures or adjustments) or an unearned income type. Pay Plan Credits are also required to be attached to procedures.&lt;br/&gt;&lt;br/&gt;
 Auto-Split Only: Open Dental automatically suggest paysplits allocated to procedure treating provider, default clinic, and default unearned income types, but user can modify splits or choose to remove allocations to procedures or unearned income types.&lt;br/&gt;&lt;br/&gt;
-Don't Enforce: (Manual in Allocations Setup) Paysplits must be manually created and may optionally be allocated to production or unearned income. If no paysplits are added, a single, unallocated paysplit is automatically created when the payment is posted to the account. The provider assigned to the paysplit defaults to the patients' primary provider and the Clinic is determined by 'Default Clinic for patient payments', found in Account - Payments, which may differ from the Clinic and provider of outstanding charges.</Details>
+Manual: Paysplits must be manually created and may optionally be allocated to production or unearned income. If no paysplits are added, a single, unallocated paysplit is automatically created when the payment is posted to the account. The provider assigned to the paysplit defaults to the patients' primary provider and the Clinic is determined by 'Default Clinic for patient payments', found in Account - Payments, which may differ from the Clinic and provider of outstanding charges.</Details>
     <WidthWindow>350</WidthWindow>
     <HeightWindow>550</HeightWindow>
   </PrefInf>
@@ -1409,17 +1448,25 @@ Don't Enforce: (Manual in Allocations Setup) Paysplits must be manually created 
     <Category>EnterpriseAccount</Category>
     <ControlName>checkReceiveReportsService</ControlName>
     <ControlText>Receive Reports by Service</ControlText>
-    <Details>Determines the method used to receive clearinghouse reports.  If it is left unchecked, the specified computer receives the reports. This is the original method used by Open Dental.  If it checked, reports will be received by using the OpenDentalService (see &lt;a href='https://opendental.com/manual/servicemanager.html' target='_blank'&gt;Service Manager&lt;/a&gt;). This method is recommended for remote app users.</Details>
+    <Details>Determines the method used to receive clearinghouse reports. When enabled, reports are received using the &lt;a href='https://www.opendental.com/manual/opendentalservice.html' target='_blank'&gt;Open Dental Service&lt;/a&gt;. When disabled, reports are received using the computer specified in &lt;a href='https://www.opendental.com/manual/clearinghouses.html' target='_blank'&gt;Clearinghouse Setup&lt;/a&gt;. This method is recommended for remote app users.</Details>
     <WidthWindow>0</WidthWindow>
     <HeightWindow>0</HeightWindow>
+  </PrefInf>
+  <PrefInf>
+    <PrefName>BillingShowTransSinceBalZero</PrefName>
+    <Category>EnterpriseAccount</Category>
+    <ControlName>checkBillingShowTransSinceBalZero</ControlName>
+    <ControlText>Show all transactions since zero balance</ControlText>
+    <Details>The 'Show all transactions since zero or negative balance' option is checked by default in &lt;a href='https://www.opendental.com/manual/billing.html' target='_blank'&gt;Billing Options&lt;/a&gt; and when using More Options for single a &lt;a href=https://www.opendental.com/manual/statementwindow.html' target='_blank'&gt;Statement&lt;/a&gt;.</Details>
+    <WidthWindow>400</WidthWindow>
+    <HeightWindow>300</HeightWindow>
   </PrefInf>
   <PrefInf>
     <PrefName>EnterpriseApptList</PrefName>
     <Category>EnterpriseAppts</Category>
     <ControlName>checkEnterpriseApptList</ControlName>
     <ControlText>Enterprise Appointment Lists</ControlText>
-    <Details>Setting to reduce unnecessary server traffic.  If checked, many forms will not automatically load information while Headquarters is active Clinic. 'All' option will not be available in Clinic selection boxes, and server load will be reduced.
-</Details>
+    <Details>Setting to reduce unnecessary server traffic. If enabled, some windows will not automatically load information while 'Headquarters' is the active Clinic, 'All' option will not be available in Clinic selection boxes, and server load will be reduced.</Details>
     <WidthWindow>0</WidthWindow>
     <HeightWindow>0</HeightWindow>
   </PrefInf>
@@ -1442,6 +1489,15 @@ Don't Enforce: (Manual in Allocations Setup) Paysplits must be manually created 
     <HeightWindow>0</HeightWindow>
   </PrefInf>
   <PrefInf>
+    <PrefName>ShowFeeSchedGroups</PrefName>
+    <Category>EnterpriseFamily</Category>
+    <ControlName>checkShowFeeSchedGroups</ControlName>
+    <ControlText>Show Fee Schedule Groups</ControlText>
+    <Details>See &lt;a href='https://www.opendental.com/manual/feeschedulegroups.html' target='_blank'&gt;Fee Schedule Groups&lt;/a&gt;</Details>
+    <WidthWindow>400</WidthWindow>
+    <HeightWindow>300</HeightWindow>
+  </PrefInf>
+  <PrefInf>
     <PrefName>ClaimSnapshotTriggerType</PrefName>
     <Category>EnterpriseFamily</Category>
     <ControlName>labelClaimSnapshotTrigger</ControlName>
@@ -1459,7 +1515,7 @@ Insurance Payment Received: Snapshot is created when the Insurance payment is re
     <Category>EnterpriseFamily</Category>
     <ControlName>checkSuperFam</ControlName>
     <ControlText>Super Families</ControlText>
-    <Details>turn on &lt;a href='https://www.opendental.com/manual/superfamily.html' target='_blank'&gt;Super Family&lt;/a&gt; feature.</Details>
+    <Details>Turn on &lt;a href='https://www.opendental.com/manual/superfamily.html' target='_blank'&gt;Super Family&lt;/a&gt; feature.</Details>
     <WidthWindow>0</WidthWindow>
     <HeightWindow>0</HeightWindow>
   </PrefInf>
@@ -1468,7 +1524,7 @@ Insurance Payment Received: Snapshot is created when the Insurance payment is re
     <Category>EnterpriseGeneral</Category>
     <ControlName>label2</ControlName>
     <ControlText># of digits</ControlText>
-    <Details>Enter a number to determine when to run the exact match if 'Only match patients by exact phone number' is checked . 10 is the default.</Details>
+    <Details>Enter a number to determine when to run the exact match if 'Only match patients by exact phone number' is enabled. 10 is the default.</Details>
     <WidthWindow>0</WidthWindow>
     <HeightWindow>0</HeightWindow>
   </PrefInf>
@@ -1500,6 +1556,24 @@ Insurance Payment Received: Snapshot is created when the Insurance payment is re
     <HeightWindow>0</HeightWindow>
   </PrefInf>
   <PrefInf>
+    <PrefName>EnableEmailAddressAutoComplete</PrefName>
+    <Category>EnterpriseGeneral</Category>
+    <ControlName>checkEnableEmailAddressAutoComplete</ControlName>
+    <ControlText>Enable email address auto-complete</ControlText>
+    <Details>In the &lt;a href='https://www.opendental.com/manual/emailmessage.html' target='_blank'&gt;Email Message Edit&lt;/a&gt; window, suggestions, based on historical emails sent, appear when typing an email address.</Details>
+    <WidthWindow>400</WidthWindow>
+    <HeightWindow>300</HeightWindow>
+  </PrefInf>
+  <PrefInf>
+    <PrefName>PasswordsWeakChangeToStrong</PrefName>
+    <Category>EnterpriseGeneral</Category>
+    <ControlName>checkPasswordsWeakChangeToStrong</ControlName>
+    <ControlText>Force password change if not strong</ControlText>
+    <Details>If the 'Passwords must be strong' preference is enabled, users are required to change their password when logging on if the current password does not meet the requirements.</Details>
+    <WidthWindow>400</WidthWindow>
+    <HeightWindow>300</HeightWindow>
+  </PrefInf>
+  <PrefInf>
     <PrefName />
     <Category>EnterpriseGeneral</Category>
     <ControlName>groupBox2</ControlName>
@@ -1516,7 +1590,7 @@ Lock Days: Changes are only allowed within a set amount of days from the origina
     <Category>EnterpriseGeneral</Category>
     <ControlName>checkLockIncludesAdmin</ControlName>
     <ControlText>Lock includes administrators</ControlText>
-    <Details> Lock limitation applies to Admin user group. See &lt;a href='https://opendental.com/manual/securitylockdates.html' target='_blank'&gt;Security Lock Dates.&lt;/a&gt;</Details>
+    <Details>Global Lock limitation applies to users with the Security Admin permission. See &lt;a href='https://opendental.com/manual/securitylockdates.html' target='_blank'&gt;Security Lock Dates.&lt;/a&gt;</Details>
     <WidthWindow>0</WidthWindow>
     <HeightWindow>0</HeightWindow>
   </PrefInf>
@@ -1525,18 +1599,36 @@ Lock Days: Changes are only allowed within a set amount of days from the origina
     <Category>EnterpriseGeneral</Category>
     <ControlName>checkMatchExactPhoneNum</ControlName>
     <ControlText>Only match patients by exact phone number</ControlText>
-    <Details>Only used if Store patient phone numbers in a separate table for patient search is checked. Useful to speed up the patient search for large databases.</Details>
+    <Details>Only used when the  'Store patient phone numbers in a separate table for patient search' preference is also enabled. Useful to speed up the patient search for large databases.</Details>
     <WidthWindow>0</WidthWindow>
     <HeightWindow>0</HeightWindow>
+  </PrefInf>
+  <PrefInf>
+    <PrefName>PasswordsMustBeStrong</PrefName>
+    <Category>EnterpriseGeneral</Category>
+    <ControlName>checkPasswordsMustBeStrong</ControlName>
+    <ControlText>Passwords must be strong</ControlText>
+    <Details>Requires a password to be added when creating a new user. Passwords must be 8 or greater characters and contain at least one number, one uppercase letter, and one lowercase letter. </Details>
+    <WidthWindow>400</WidthWindow>
+    <HeightWindow>300</HeightWindow>
   </PrefInf>
   <PrefInf>
     <PrefName>PatientSelectSearchWithEmptyParams</PrefName>
     <Category>EnterpriseGeneral</Category>
     <ControlName>checkPatSearchEmptyParams</ControlName>
     <ControlText>Search and fill grid with all empty search fields</ControlText>
-    <Details>By default, opening Select Patient window populates the grid before any search fields have been entered. Uncheck to reduce sever load by requiring user to click Search before populating the grid if no search terms have been entered.</Details>
-    <WidthWindow>0</WidthWindow>
-    <HeightWindow>0</HeightWindow>
+    <Details>Three-state checkbox. When indeterminate (filled) it behaves are enabled. Opening the Select Patient window populates the grid before any search fields are entered. Disable to reduce server load by requiring users to click 'Search' before populating the grid if no search terms have been entered.</Details>
+    <WidthWindow>400</WidthWindow>
+    <HeightWindow>300</HeightWindow>
+  </PrefInf>
+  <PrefInf>
+    <PrefName>PasswordsStrongIncludeSpecial</PrefName>
+    <Category>EnterpriseGeneral</Category>
+    <ControlName>checkPasswordsStrongIncludedSpecial</ControlName>
+    <ControlText>Strong passwords require special character</ControlText>
+    <Details>If the 'Passwords must be strong' preference is enabled, passwords must also contain at least one special character (e.g., #, $, !).</Details>
+    <WidthWindow>400</WidthWindow>
+    <HeightWindow>300</HeightWindow>
   </PrefInf>
   <PrefInf>
     <PrefName>PatientSelectSearchMinChars</PrefName>
@@ -1579,7 +1671,7 @@ Lock Days: Changes are only allowed within a set amount of days from the origina
     <Category>EnterpriseManage</Category>
     <ControlName>checkEra835sShowStatusAndClinic</ControlName>
     <ControlText>ERA 835s window show status and clinic information</ControlText>
-    <Details>Determines filter option in ERA window.  If checked, ERA window will include standard filter options. It will not provide the ability to sort the list by finalized or unfinalized ERAs only.  Otherwise, clinic dropdown, Status filters and Automatable Carriers only checkbox in ERA window will be hidden. A new checkbox for Finalized Only will be added.  For larger offices concerned about speed, we recommend leaving this unchecked.</Details>
+    <Details>Determines the filter options in the &lt;a href=https://www.opendental.com/manual/claimsera835.html' target='_blank'&gt;ERAs&lt;/a&gt; window. When enabled, Clinics and Status filters and 'Automatable Carriers Only' checkbox are available in addition to standard filter options. When disabled, these options are hidden, a 'Finalized Only' checkbox is shown, and the ERAs list cannot be sorted by Status or Clinic.</Details>
     <WidthWindow>0</WidthWindow>
     <HeightWindow>0</HeightWindow>
   </PrefInf>
@@ -1804,8 +1896,10 @@ Checked: Blank entries are treated as 0.&lt;br/&gt;Example: UCR =$200, PPO Fee =
     <PrefName>InsPlanUseUcrFeeForExclusions</PrefName>
     <Category>FamilyInsurance</Category>
     <ControlName>checkInsPlanExclusionsUseUCR</ControlName>
-    <ControlText>Ins plans with exclusions use UCR fee</ControlText>
-    <Details>Can be overridden by plan. For use with PPO plans where certain excluded procedures are allowed to be billed using UCR fee rather than a negotiated rate.&lt;br/&gt;&lt;br/&gt;Exclusions are defined using an Other Benefits exclusion rule, or for any benefit set to a 0% coverage level.</Details>
+    <ControlText>Ins plans with exclusions use UCR fee (zero out write-offs)</ControlText>
+    <Details>Can be overriden by insurance plan. For in-network insurance plans where certain procedures are allowed to be billed using the UCR fee rather than the negotiated rate.
+&lt;br/&gt;&lt;br/&gt;
+Exclusions are defined using an Other Benefits Exclusions type, or by setting any benefit set to a 0% coverage level.</Details>
     <WidthWindow>400</WidthWindow>
     <HeightWindow>275</HeightWindow>
   </PrefInf>
@@ -1976,7 +2070,7 @@ Checked: Blank entries are treated as 0.&lt;br/&gt;Example: UCR =$200, PPO Fee =
     <Category>ImagingGeneral</Category>
     <ControlName>checkImagesModuleUsesOld2020</ControlName>
     <ControlText>Use old Imaging module interface, pre 2020</ControlText>
-    <Details>not recommended. Only used with Apteryx XV Web.</Details>
+    <Details>not recommended</Details>
     <WidthWindow>0</WidthWindow>
     <HeightWindow>0</HeightWindow>
   </PrefInf>
@@ -2093,7 +2187,7 @@ Checked: Blank entries are treated as 0.&lt;br/&gt;Example: UCR =$200, PPO Fee =
     <Category>MainWindowMisc</Category>
     <ControlName>label3</ControlName>
     <ControlText>Process signal interval in seconds.  Leave blank to disable autorefresh</ControlText>
-    <Details>The interval, in seconds, that Open Dental will automatically refresh the Appointments Module, task lists, and text notifications. This is usually every 6 to 20 seconds. Leave blank to disable auto refresh.</Details>
+    <Details>Leave blank to disable autorefresh. The interval, in seconds, that Open Dental will automatically refresh the Appointments Module, task lists, and text notifications. This is usually every 6 to 20 seconds. Leave blank to disable auto refresh.</Details>
     <WidthWindow>0</WidthWindow>
     <HeightWindow>0</HeightWindow>
   </PrefInf>
@@ -2132,15 +2226,6 @@ Checked: Blank entries are treated as 0.&lt;br/&gt;Example: UCR =$200, PPO Fee =
     <Details>This is the name of the Update Server machine.  Version updates can only be performed from this computer, and the eConnector can only be installed on this computer.  For Middle Tier, this identifies which computer is running the middle tier.  If the server name exceeds 15 characters, users may receive an error when attempting check for updates or install services. If the server name exceeds 15 characters, only type the first 15 characters.</Details>
     <WidthWindow>0</WidthWindow>
     <HeightWindow>0</HeightWindow>
-  </PrefInf>
-  <PrefInf>
-    <PrefName>BackupIndexesDisabled</PrefName>
-    <Category>MainWindowMisc</Category>
-    <ControlName>checkBackupIndexesDisabled</ControlName>
-    <ControlText>Disable keys for automatic backups</ControlText>
-    <Details>Disable indexes for all database tables when making automatic backups. This will reduce the time it takes to make an automatic backup. For example, a 30 minute backup can take as little as 10 minutes with indexes disabled. When restoring a backup, indexes will be re-enabled the first time the backup database is opened with Open Dental. The process of re-enabling the indexes will take approximately the amount of time saved by disabling them during automatic backup creation.</Details>
-    <WidthWindow>400</WidthWindow>
-    <HeightWindow>300</HeightWindow>
   </PrefInf>
   <PrefInf>
     <PrefName>PayPlansBillInAdvanceDays</PrefName>
@@ -2415,9 +2500,18 @@ Primary From Plan - Write-offs are posted when the insurance plan is marked as p
     <Category>Ortho</Category>
     <ControlName>checkDebondOverridesMonthsTreat</ControlName>
     <ControlText>Completing Debond procedure overrides months treatment</ControlText>
-    <Details>Ortho months in treatment stops calculating when a debond procedure is set complete.</Details>
-    <WidthWindow>0</WidthWindow>
-    <HeightWindow>0</HeightWindow>
+    <Details>When a Debond procedure is set complete, the Tx Months Total is updated and Months in Treatment and Months Rem stop calculating. </Details>
+    <WidthWindow>350</WidthWindow>
+    <HeightWindow>350</HeightWindow>
+  </PrefInf>
+  <PrefInf>
+    <PrefName>OrthoInsPayConsolidated</PrefName>
+    <Category>Ortho</Category>
+    <ControlName>checkConsolidateInsPayment</ControlName>
+    <ControlText>Consolidate Ortho Insurance Payments</ControlText>
+    <Details>When using the Ortho Auto Claims tool, payments must be made on the original ortho claim. Payments cannot be added to claims made using the Ortho Auto Claims tool.</Details>
+    <WidthWindow>350</WidthWindow>
+    <HeightWindow>350</HeightWindow>
   </PrefInf>
   <PrefInf>
     <PrefName>OrthoDebondCodes</PrefName>
@@ -2442,7 +2536,21 @@ Primary From Plan - Write-offs are posted when the insurance plan is marked as p
     <Category>Ortho</Category>
     <ControlName>label3</ControlName>
     <ControlText>Default Ortho Auto Proc</ControlText>
-    <Details>Required if using the Auto Ortho Tool to generate claims. Set the default procedure code that will be used on the claim and sent to insurance. The default is D8670.auto, but users can select any procedure code. Click [...] to change. Only the first 5 digits of procedure codes are sent to insurance. The .auto portion of the procedure code is not sent to insurance. So while D8670.auto will show on the Edit Claim window, only D8670 is sent to insurance. Using a procedure code with .auto is optional, but doing so is useful to track codes used on auto-generated claims.  The Default Ortho Auto Proc cannot be a banding procedure. This will prevent supplemental payments from being applied to the original claim.</Details>
+    <Details>Required if using the &lt;a href='https://opendental.com/manual/orthoautoclaim.htmll' target='_blank'&gt;Ortho Auto Claims&lt;/a&gt; tool. Click [...] to change. This is generally D8670.auto, but any procedure code can be used. &lt;br/&gt;
+
+If using a code longer than 5 characters (e.g., D8670.auto), only the first 5 characters (e.g., D8670) are included on claims. Using a procedure code with ".auto" is optional, but doing so is useful to track codes used on auto-generated claims. &lt;br/&gt;
+
+The Default Ortho Auto Proc cannot be a banding procedure. This prevents supplemental payments from being applied to the original claim.</Details>
+    <WidthWindow>350</WidthWindow>
+    <HeightWindow>350</HeightWindow>
+  </PrefInf>
+  <PrefInf>
+    <PrefName>OrthoClaimMarkAsOrtho</PrefName>
+    <Category>Ortho</Category>
+    <ControlName>checkOrthoClaimMarkAsOrtho</ControlName>
+    <ControlText>Mark claims as Ortho if they have Ortho procedures</ControlText>
+    <Details>The 'Is Ortho' checkbox in the &lt;a href='https://opendental.com/manual/claimtabgeneral.html' target='_blank'&gt;Edit Claim - General Tab&lt;/a&gt; is automatically checked when a claim or preauthorization includes a procedure in the Orthodonics &lt;a href='https://opendental.com/manual/inscatssetup.html' target='_blank'&gt;Insurance Category&lt;/a&gt;.
+</Details>
     <WidthWindow>350</WidthWindow>
     <HeightWindow>350</HeightWindow>
   </PrefInf>
@@ -2451,9 +2559,11 @@ Primary From Plan - Write-offs are posted when the insurance plan is marked as p
     <Category>Ortho</Category>
     <ControlName>groupBox4</ControlName>
     <ControlText>Ortho Placement Procedures</ControlText>
-    <Details>Define which procedures can be considered as the initial orthodontic procedure. Determines which procedure will affect the Date Start on the Auto Ortho tab. If Use the first ortho procedure date as the Date of Placement is enabled above, also affects Date of Placement on claims. If no procedures are defined, Open Dental will attempt to use the first procedure within the code span D8000-D8999 as the initial orthodontic procedure.</Details>
-    <WidthWindow>0</WidthWindow>
-    <HeightWindow>0</HeightWindow>
+    <Details>Define which procedures can be considered as the initial orthodontic procedure to calculate the Date Start for &lt;a href='https://opendental.com/manual/orthoauto.html' target='_blank'&gt;Auto Ortho&lt;/a&gt;. If the 'Use the first ortho procedure date as the Date of Placement' preference is enabled this also affects 'Date of Placement' on claims. 
+&lt;br/&gt;
+If no procedures are defined, Open Dental attempts to use the first procedure within the code span D8000-D8999 as the initial orthodontic procedure.</Details>
+    <WidthWindow>400</WidthWindow>
+    <HeightWindow>600</HeightWindow>
   </PrefInf>
   <PrefInf>
     <PrefName>ShowFeaturePatientClone</PrefName>
@@ -2481,6 +2591,16 @@ Primary From Plan - Write-offs are posted when the insurance plan is marked as p
     <Details>see &lt;a href='https://opendental.com/manual/orthoauto.html' target='_blank'&gt;Auto Ortho&lt;/a&gt;</Details>
     <WidthWindow>0</WidthWindow>
     <HeightWindow>0</HeightWindow>
+  </PrefInf>
+  <PrefInf>
+    <PrefName>ApptModuleShowOrthoChartItem</PrefName>
+    <Category>Ortho</Category>
+    <ControlName>checkApptModuleShowOrthoChartItem.</ControlName>
+    <ControlText>Show Ortho Chart in appointment options</ControlText>
+    <Details>Show 'Go to Ortho Chart' option in the appointment right-click menu.
+</Details>
+    <WidthWindow>350</WidthWindow>
+    <HeightWindow>300</HeightWindow>
   </PrefInf>
   <PrefInf>
     <PrefName>OrthoVisitCodes</PrefName>
@@ -2516,12 +2636,12 @@ Primary From Plan - Write-offs are posted when the insurance plan is marked as p
     <ControlText>(all codes should be comma separated)</ControlText>
     <Details>See &lt;a href='https://www.opendental.com/manual/insfrequencylimitations.html' target='_blank' rel='noopener noreferrer'&gt;Frequency Limitations.&lt;/a&gt; 
 The default codes are:
-&lt;br&gt;&lt;br&gt;-BWs: D0272, D0274
-&lt;br&gt;-Pano/FMX: D0210, D0330
-&lt;br&gt;-Exams: D0120, D0150
+&lt;br&gt;&lt;br&gt;-BWs: D0272,D0274
+&lt;br&gt;-Pano/FMX: D0210,D0330
+&lt;br&gt;-Exams: D0120,D0150
 &lt;br&gt;-Cancer Screening: D0431
-&lt;br&gt;-Prophylaxis: D1110, D1120
-&lt;br&gt;-Fluoride: D1206, D1208
+&lt;br&gt;-Prophylaxis: D1110,D1120
+&lt;br&gt;-Fluoride: D1206,D1208
 &lt;br&gt;-Sealant: D1351
 &lt;br&gt;-Crown: D2740,D2750,D2751,D2752,D2780,D2781,D2782,D2783,D2790,D2791,D2792,D2794
 &lt;br&gt;-SRP: D4341,D4342

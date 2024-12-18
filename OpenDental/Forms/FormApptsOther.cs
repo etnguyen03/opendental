@@ -531,6 +531,9 @@ namespace OpenDental {
 		}
 
 		private void butPin_Click(object sender, System.EventArgs e) {
+			if(!Security.IsAuthorized(EnumPermType.AppointmentMove)) {
+				return;
+			}
 			int selectedIndex=gridMain.GetSelectedIndex();
 			if(selectedIndex==-1) {
 				MsgBox.Show(this,"Please select appointment first.");

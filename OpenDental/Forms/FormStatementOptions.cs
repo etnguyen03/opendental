@@ -29,6 +29,8 @@ namespace OpenDental{
 		public Statement StatementCur;
 		///<summary>This will be null for ordinary edits.  But sometimes this window is used to edit bulk statements.  In that case, this list contains the statements being edited.  Must contain at least one item.</summary>
 		public List<Statement> ListStatements;
+		///<summary>This is the list of selected statement modes to send text messages (if any). Set in FormBillingOptions. If this form is not being shown from Billing, this list should remain null.</summary>
+		public List<StatementMode> ListStatementModesForSms;
 
 		///<summary></summary>
 		public FormStatementOptions()
@@ -1145,6 +1147,11 @@ namespace OpenDental{
 			//Disable controls for Limited Custom Statement
 			if(IsLimitedCustomStatement()) {
 				LimitedCustomStatementLayoutHelper();
+			}
+			//Check the box to send a text message if the statement is being edited from Billing and the newly-selected mode was set in FormBillingOptions to send texts.
+			if(_isFromBilling && checkSendSms.Enabled && ListStatementModesForSms.Contains(listMode.GetSelected<StatementMode>())) {
+				checkSendSms.Checked=true;
+				checkSendSms.CheckState=CheckState.Checked;
 			}
 		}
 

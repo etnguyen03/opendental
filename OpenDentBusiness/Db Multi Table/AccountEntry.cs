@@ -500,6 +500,8 @@ namespace OpenDentBusiness {
 				}
 				else {
 					this.PayPlanDebitType=PayPlanDebitTypes.Interest;
+					this.ProcNum=0;
+					this.AdjNum=0;
 				}
 			}
 			this.ClinicNum=payPlanCharge.ClinicNum;

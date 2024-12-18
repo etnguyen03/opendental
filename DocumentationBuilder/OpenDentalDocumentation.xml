@@ -198,6 +198,7 @@
             a specific redistributable that allows the creation of the image.</EnumValue>
         <EnumValue name="SMSThread">38 - Alert that is created when the SMSQueuer is turned on but no Broadcaster Servers are configured to send out text messages. Requires Engineers to update BroadcasterThreadSettings.</EnumValue>
         <EnumValue name="SignatureCleared">39 - Alert that is created when a procedure or group note's signature is cleared by another user editing that note.</EnumValue>
+        <EnumValue name="Pearl">40 - Alert that is created when an error occurs while uploading an image to Pearl or processing Pearl results.</EnumValue>
       </Enumeration>
     </column>
   </table>
@@ -262,6 +263,7 @@
             a specific redistributable that allows the creation of the image.</EnumValue>
         <EnumValue name="SMSThread">38 - Alert that is created when the SMSQueuer is turned on but no Broadcaster Servers are configured to send out text messages. Requires Engineers to update BroadcasterThreadSettings.</EnumValue>
         <EnumValue name="SignatureCleared">39 - Alert that is created when a procedure or group note's signature is cleared by another user editing that note.</EnumValue>
+        <EnumValue name="Pearl">40 - Alert that is created when an error occurs while uploading an image to Pearl or processing Pearl results.</EnumValue>
       </Enumeration>
     </column>
     <column order="4" name="Severity" type="tinyint(4)">
@@ -4946,7 +4948,7 @@
       <summary>Comma delimited list of sheetdef nums to ignore. This can only be set if the preFillStatus is set to Once. These sheetDefs are ignored until this sheet is filled out. For example, an office may have a sheet for new patients that is only filled out once. Once the new patient has filled out this sheet, these sheetDefs will no longer be ignored when the patient checks in again. Not used in eForms because we have conditional fields, so a single form could be designed to be used for both new and existing patients.</summary>
     </column>
     <column order="9" name="PrefillStatusOverride" type="bigint(20)">
-      <summary>For both Sheets and eForms. Holds the previous revision number that marks what def revision number we expect to have a submission for from the patient. This value can be incremented when changes are made to a linked sheet or eForm def, but it is not always updated. This should hold the last revision number that was updated for this eClipboardSheetDef. If a patient has a form filled out that has a revision ID that matches this or is greater (this field will be 0 by default, or they filled out a more up to date form manually in the office and not through eClipboard), then this form will be filtered out if set to PrefillStatuses.Once when we determine which forms load for the patient in eClipboard. If this value is higher than the RevID of the last form the patient filled out, we consider this eClipboardSheetDef to be updated and the patient will need to fill out the form again when set to PrefillStatuses.Once.</summary>
+      <summary>For both Sheets and eForms. Holds the previous revision number that marks what def revision number we expect to have a submission for from the patient. This value can be incremented when changes are made to a linked sheet or eForm def, but it is not always updated. This should hold the last revision number that was updated for this eClipboardSheetDef. If a patient has a form filled out that has a revision ID that matches this or is greater (this field will be 0 by default, or they filled out a more up to date form manually in the office and not through eClipboard), then this form will be filtered out if set to EnumEClipFreq.Once when we determine which forms load for the patient in eClipboard. If this value is higher than the RevID of the last form the patient filled out, we consider this eClipboardSheetDef to be updated and the patient will need to fill out the form again when set to EnumEClipFreq.Once.</summary>
     </column>
     <column order="10" name="EFormDefNum" type="bigint(20)" fk="eformdef">
       <summary>FK to EFormDef.EFormDefNum. Can be zero if this row is for a sheet.</summary>
@@ -16187,7 +16189,7 @@
             because this column is used for altering text fields' positions in PDFs.</summary>
     </column>
     <column order="13" name="RevID" type="int(11)">
-      <summary>Revision ID. Gets updated any time a sheet field is added or deleted from a sheetdef (this includes any time a new language is added). Used to determine in conjunction with PrefillMode for eClipboard to determine whether to show a patient a new form or have them update their last filled out form. Must match up with Sheet RevID to show a previously filled out form.</summary>
+      <summary>Revision ID. Gets updated any time a sheet field is added or deleted from a sheetdef (this includes any time a new language is added) or a static text field is changed. Used to determine in conjunction with PrefillMode for eClipboard to determine whether to show a patient a new form or have them update their last filled out form. Must match up with Sheet RevID to show a filled out form.</summary>
     </column>
     <column order="14" name="AutoCheckSaveImage" type="tinyint(4)">
       <summary>Indicates whether sheets created with this sheet def load with the "Save to Images" box checked</summary>
@@ -16721,6 +16723,7 @@
         <EnumValue name="ConnectionStoreClear">112. Indicates that database connection settings have changed and the cached connections should be reinitialized.</EnumValue>
         <EnumValue name="Children">113. Used to keep the daycare map and parent check in/out window synced. Has nothing to do with the cache.</EnumValue>
         <EnumValue name="Print">114. Instructs a specific computer to print the RemotePrintRequest that is attached as json. This signal is generated by eConnector in response to a print request from ODTouch or possibly others.</EnumValue>
+        <EnumValue name="WebChatAiAssistants">115. This is used internally by OD, refreshes the AI assistant list. Fkey is not used.</EnumValue>
       </Enumeration>
     </column>
     <column order="6" name="RemoteRole" type="tinyint(4)">

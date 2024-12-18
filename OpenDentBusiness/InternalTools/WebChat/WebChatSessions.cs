@@ -109,23 +109,25 @@ namespace OpenDentBusiness {
 		}
 
 		///<summary>Sets the DateTend field to now and inserts a message into the chat so all users can see the session has ended.</summary>
-		public static void EndSession(long webChatSessionNum) {
+		public static void EndSession(long webChatSessionNum,bool doIncludeEndMessage=true) {
 			if(RemotingClient.MiddleTierRole==MiddleTierRole.ClientMT) {
-				Meth.GetVoid(MethodBase.GetCurrentMethod(),webChatSessionNum);
+				Meth.GetVoid(MethodBase.GetCurrentMethod(),webChatSessionNum,doIncludeEndMessage);
 				return;
 			}
 			WebChatMisc.DbAction(delegate() {
 				string command="UPDATE webchatsession SET DateTend=NOW() WHERE WebChatSessionNum="+POut.Long(webChatSessionNum);
 				DataCore.NonQ(command);
-				//Last message just after session ended, in case someone types another message into the thread just as the thread is ending.
-				//This way the end session message is guaranteed to be last, since the timestamp on it is after the session technically ended.
-				WebChatMessage endSessionMessage=new WebChatMessage();
-				endSessionMessage.WebChatSessionNum=webChatSessionNum;
-				endSessionMessage.DateT=MiscData.GetNowDateTime();
-				endSessionMessage.UserName=WebChatPrefs.GetString(WebChatPrefName.SystemName);
-				endSessionMessage.MessageText=WebChatPrefs.GetString(WebChatPrefName.SystemSessionEndMessage);
-				endSessionMessage.MessageType=WebChatMessageType.EndSession;
-				WebChatMessages.Insert(endSessionMessage);
+				if(doIncludeEndMessage) {
+					//Last message just after session ended, in case someone types another message into the thread just as the thread is ending.
+					//This way the end session message is guaranteed to be last, since the timestamp on it is after the session technically ended.
+					WebChatMessage endSessionMessage=new WebChatMessage();
+					endSessionMessage.WebChatSessionNum=webChatSessionNum;
+					endSessionMessage.DateT=MiscData.GetNowDateTime();
+					endSessionMessage.UserName=WebChatPrefs.GetString(WebChatPrefName.SystemName);
+					endSessionMessage.MessageText=WebChatPrefs.GetString(WebChatPrefName.SystemSessionEndMessage);
+					endSessionMessage.MessageType=WebChatMessageType.EndSession;
+					WebChatMessages.Insert(endSessionMessage);
+				}
 			});
 		}
 

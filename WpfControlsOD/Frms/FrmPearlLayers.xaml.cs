@@ -43,7 +43,6 @@ namespace OpenDental {
 		#region Event Handlers
 		private void FrmPearlLayers_Load(object sender, EventArgs e) {
 			Lang.F(this);
-			_formFrame.TopMost=true;
 			SetAllCheckBoxClickEventHandlers();
 			SetAllCheckBoxTags();
 			SetAllCheckBoxCheckeds();

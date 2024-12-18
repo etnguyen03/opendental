@@ -2052,6 +2052,9 @@ namespace OpenDentBusiness {
 					dataRow["chargesDouble"]=0;
 					amt=PIn.Decimal(rawPayPlan2.Rows[i]["Principal"].ToString());
 					if(chargetype==PayPlanChargeType.Debit) {//show principle amount as a charge if it's a ChargeDue chargeType.
+						if(statement.StatementType==StmtType.LimitedStatement) {//Not interested in debits for limited statements.
+							continue;
+						}
 						amt+=PIn.Decimal(rawPayPlan2.Rows[i]["Interest"].ToString());
 						dataRow["chargesDouble"]=amt;
 						dataRow["charges"]=amt.ToString("n");

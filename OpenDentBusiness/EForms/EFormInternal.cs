@@ -16,6 +16,8 @@ namespace OpenDentBusiness {
 			listEFormDefs.Add(GetEFormDef(EnumEFormInternalType.PatientRegistration));
 			listEFormDefs.Add(GetEFormDef(EnumEFormInternalType.MedicalHist));
 			listEFormDefs.Add(GetEFormDef(EnumEFormInternalType.Consent));
+			listEFormDefs.Add(GetEFormDef(EnumEFormInternalType.DentalHist));
+			listEFormDefs.Add(GetEFormDef(EnumEFormInternalType.HIPPA));
 			//Only show the internal Demo EForm in Debug mode.
 			//I think maybe this is no longer useful.
 			//if(ODBuild.IsDebug()) {
@@ -34,6 +36,10 @@ namespace OpenDentBusiness {
 					return GetEFormFromResource(Properties.Resources.EFormMedicalHistory);
 				case EnumEFormInternalType.Consent:
 					return GetEFormFromResource(Properties.Resources.EFormExtractionConsent);
+				case EnumEFormInternalType.DentalHist:
+					return GetEFormFromResource(Properties.Resources.EFormDentalHistory);
+				case EnumEFormInternalType.HIPPA:
+					return GetEFormFromResource(Properties.Resources.EFormHIPAA);
 				default:
 					throw new ApplicationException("Invalid EnumEFormInternalType:"+eformInternalType.ToString());
 			}

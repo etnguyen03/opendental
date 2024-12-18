@@ -3355,6 +3355,13 @@ namespace OpenDental{
 
 		///<summary>Determines if the right click DXC options are grayed out. If the preauth selected does not have a clearinghouse, is not allowed to send attachments, or the clearinghouse is not ClaimConnect, then the options will be grayed out.</summary>
 		private void contextMenuPreAuthGrid_Popup(object sender,EventArgs e) {
+			//Hide DXC options outright if Canada user
+			if(CultureInfo.CurrentCulture.Name.EndsWith("CA")) {//Canadian. en-CA or fr-CA
+				menuItemSnipAttachment.Visible=false;
+				menuItemSelectImage.Visible=false;
+				menuItemPasteAttachment.Visible=false;
+				menuItemAttachmentHistory.Visible=false;
+			}
 			menuItemSnipAttachment.Enabled=true;
 			menuItemSelectImage.Enabled=true;
 			menuItemPasteAttachment.Enabled=true;

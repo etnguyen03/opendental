@@ -533,6 +533,15 @@ Scrollable Control: For example, a panel that's set to AutoScroll=true.  These c
 			return Scale(_heightTitleBar96);
 		}
 
+		///<summary>Removes Control96Info control reference to prepare for garbage collection.</summary>
+		public void Remove(Control control){
+			Control96Info control96Info=_listControl96Infos.Find(x => x.ControlRef==control);
+			if(control96Info!=null) {
+				control96Info.ControlRef=null;
+				_listControl96Infos.Remove(control96Info);
+			}
+		}
+
 		///<summary>Example 1.8. This is the scale of this form and all its controls, compared to 96dpi as 100%.  It's a combination of _scaleMS and ComputerPrefs.LocalComputer.Zoom.</summary>
 		public float ScaleMy(){
 			if(Is96dpi){

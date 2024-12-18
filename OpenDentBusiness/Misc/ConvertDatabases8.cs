@@ -2495,5 +2495,42 @@ namespace OpenDentBusiness {
 			//End B58344
 		}//End of 24_3_30
 
+		private static void To24_3_31() {
+			//Start E58652
+			string command="SELECT ProgramNum FROM program WHERE ProgName='Pearl'";
+			long programNum=Db.GetLong(command);
+			command="SELECT COUNT(*) FROM programproperty WHERE PropertyDesc='Disable Advertising' AND ProgramNum="+POut.Long(programNum);
+			if(Db.GetInt(command)==0) {
+				command="INSERT INTO programproperty (ProgramNum,PropertyDesc,PropertyValue) VALUES("+POut.Long(programNum)+",'Disable Advertising','0')";
+				Db.NonQ(command);
+			}
+			command="UPDATE program "+
+				"SET ButtonImage='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' "
+				+"WHERE ProgramNum="+POut.Long(programNum);
+			Db.NonQ(command);
+			//End E58652
+			//Start B58086
+			command="UPDATE paysplit SET ProcNum=0, AdjNum=0 WHERE PayPlanNum > 0 AND PayPlanDebitType=2";//2=interest
+			Db.NonQ(command);
+			//End B58086
+		}//End of 24_3_31
+
 	}
 }

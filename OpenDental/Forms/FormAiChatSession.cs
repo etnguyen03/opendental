@@ -240,7 +240,7 @@ namespace OpenDental {
 
 		private void butEndSession_Click(object sender,EventArgs e) {
 			if(TryEndSession()) {
-				WebChatSessions.EndSession(_openAiChatSession.ChatSession.WebChatSessionNum);
+				WebChatSessions.EndSession(_openAiChatSession.ChatSession.WebChatSessionNum,false);
 				DialogResult=DialogResult.OK;
 				Close();
 			}
@@ -365,7 +365,7 @@ namespace OpenDental {
 
 		private void FormWebChatSession_FormClosing(object sender,FormClosingEventArgs e) {
 			if(TryEndSession()) {
-				WebChatSessions.EndSession(_openAiChatSession.ChatSession.WebChatSessionNum);
+				WebChatSessions.EndSession(_openAiChatSession.ChatSession.WebChatSessionNum,false);
 			}
 			_actionClose?.Invoke();
 		}

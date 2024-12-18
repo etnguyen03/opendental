@@ -4026,8 +4026,11 @@ Here is the desired behavior:
 				if(!_showDrawingsOD && _listImageDraws[i].ImageAnnotVendor==EnumImageAnnotVendor.OpenDental){
 					continue;
 				}
-				if(_listImageDraws[i].ImageAnnotVendor==EnumImageAnnotVendor.Pearl){
-					if(!_showDrawingsPearl || !_listPearlCategoriesShown.Contains(_listImageDraws[i].PearlLayer)) {
+				if(_listImageDraws[i].ImageAnnotVendor==EnumImageAnnotVendor.Pearl){//This is an AI drawing
+					if(!Programs.IsEnabled(ProgramName.Pearl)) {//AI program is disabled
+						continue;
+					}
+					if(!_showDrawingsPearl || !_listPearlCategoriesShown.Contains(_listImageDraws[i].PearlLayer)) {//AI drawing is hidden
 						continue;
 					}
 				}

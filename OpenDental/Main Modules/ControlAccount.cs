@@ -331,6 +331,13 @@ namespace OpenDental {
 				menuItemAddRefundWorkNotPerformed.Enabled=false;
 			}
 			//DentalXChange Attachments----------------------------------------------------------------------------------------
+			//Hide DXC options outright if Canada user
+			if(CultureInfo.CurrentCulture.Name.EndsWith("CA")) {//Canadian. en-CA or fr-CA
+				menuItemSnipAttachment.Visible=false;
+				menuItemSelectImage.Visible=false;
+				menuItemPasteAttachment.Visible=false;
+				menuItemAttachmentHistory.Visible=false;
+			}
 			menuItemSnipAttachment.Enabled=true;
 			menuItemSelectImage.Enabled=true;
 			menuItemPasteAttachment.Enabled=true;

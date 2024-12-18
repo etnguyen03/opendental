@@ -72,17 +72,22 @@ namespace OpenDentBusiness {
 		UnmatchedToPatient
 	}
 
-	//<summary>These are the different internal eForm types that show up on the left grid of FrmEFormDefs. For example, we might have two different internal eForms called PatientRegistration and PatientLetter but they would both have an EnumEFormType set to PatientForm.</summary>
+	//<summary>Not a db field. These are the different internal eForm types that show up on the left grid of FrmEFormDefs. For example, we might have two different internal eForms called PatientRegistration and PatientLetter but they would both have an EnumEFormType set to PatientForm.</summary>
 	public enum EnumEFormInternalType {
-		///<summary>0 - Demo. Not used.</summary>
+		///<summary>Demo. Not used.</summary>
 		Demo,
-		///<summary>1 - Patient Registration Form. eformdef.EnumEFormType will be set to PatientForm.</summary>
+		///<summary>Patient Registration Form. eformdef.EnumEFormType will be set to PatientForm.</summary>
 		[Description("Patient Registration")]
 		PatientRegistration,
-		///<summary>2 - Medical History Form. eformdef.EnumEFormType will be set to MedicalHistory.</summary>
+		///<summary>Medical History Form. eformdef.EnumEFormType will be set to MedicalHistory.</summary>
 		[Description("Medical History")]
 		MedicalHist,
-		///<summary>3 - Consent Form. eformdef.EnumEFormType will be set to Consent.</summary>
-		Consent
+		///<summary>Consent Form. eformdef.EnumEFormType will be set to Consent.</summary>
+		Consent,
+		///<summary>Dental History Form. eformdef.EnumEFormType will be set to MedicalHistory.</summary>
+		[Description("Dental History")]
+		DentalHist,
+		///<summary>HIPPA Form. eformdef.EnumEFormType will be set to PatientForm.</summary>
+		HIPPA
 	}
 }

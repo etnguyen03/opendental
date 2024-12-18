@@ -380,4 +380,16 @@ namespace OpenDentBusiness{
 		/// <summary>SuperFamily=3</summary>
 		SuperFamily=3
 	}
+
+	///<summary>0-Mail, 1-InPerson, 2-Email, 3-Electronic</summary>
+	public enum StatementMode{
+		///<summary>0</summary>
+		Mail,
+		///<summary>1</summary>
+		InPerson,
+		///<summary>2</summary>
+		Email,
+		///<summary>3</summary>
+		Electronic
+	}
 }

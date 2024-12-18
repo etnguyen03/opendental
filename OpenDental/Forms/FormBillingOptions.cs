@@ -34,6 +34,8 @@ namespace OpenDental{
 		public bool ShowBillTransSinceZero=false;
 		///<summary>Tracks if textDateStart is blank so we can display a warning in FormBilling.cs when sending electronic bills.</summary>
 		public bool IsHistoryStartMinDate { get; private set; }
+		///<summary>This is used to pass the selected mode(s) for texting to FormBilling and then through to FormStatementOptions for determining whether to send a text when editing a statement's mode.</summary>
+		public List<StatementMode> ListStatementModesForSMS=new List<StatementMode>();
 
 		///<summary></summary>
 		public FormBillingOptions(){
@@ -632,6 +634,7 @@ namespace OpenDental{
 				MsgBox.Show("Invalid selection of filing codes. None and all cannot be selected with other filing code options.");
 				return;
 			}
+			ListStatementModesForSMS=listModeToText.GetListSelected<StatementMode>();
 			SendStatementsIO sendStatementsIO=new SendStatementsIO();
 			sendStatementsIO.Source="FormBillingOptions";
 			sendStatementsIO.ActionPrompt=(prompt,useCopyPasteDialog) => { MessageBox.Show(prompt); };

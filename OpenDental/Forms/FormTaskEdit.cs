@@ -1519,6 +1519,12 @@ namespace OpenDental {
 					MessageBox.Show(ex.Message);
 					return false;
 				}
+				//Add copies of any taskAttachments from the original task
+				for(int t=0;t<_listTaskAttachments.Count;t++) {
+					TaskAttachment taskAttachment=_listTaskAttachments[t].Copy();
+					taskAttachment.TaskNum=taskCopy.TaskNum;
+					TaskAttachments.Insert(taskAttachment);
+				}
 				if(taskCopy.TaskListNum==Userods.GetInbox(Security.CurUser.UserNum)) {//My inbox.
 					FormTaskEdit formTaskEdit=new OpenDental.FormTaskEdit(taskCopy);//Maintain previous behavior. If I send to myself, should popup.
 					formTaskEdit.Show();//Non-modal. 

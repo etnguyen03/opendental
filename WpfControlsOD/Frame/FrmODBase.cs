@@ -436,6 +436,8 @@ How to:
 			_formFrame.CloseXClicked+=_formFrame_CloseXClicked;
 			_formFrame.InitializeFormMaker(this);
 			_formFrame.ShowDialog();
+			_formFrame.Dispose();
+			_formFrame=null;
 			//formFrame won't have a meaningful dialogResult.
 			//The programmer has already set IsDialogOK from inside the derived frm.
 			return _isDialogOK;

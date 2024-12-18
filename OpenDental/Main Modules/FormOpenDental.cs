@@ -5761,7 +5761,8 @@ namespace OpenDental{
 			InputBoxParam inputBoxParam=new InputBoxParam();
 			inputBoxParam.InputBoxType_=InputBoxType.ComboSelect;//Not multiselect
 			inputBoxParam.LabelText="Select a user.";
-			List<Userod> listUserods=Userods.GetAll();//Already orders by username
+			List<Userod> listUserodsAll=Userods.GetAll();//Already orders by username
+			List<Userod> listUserods=listUserodsAll.FindAll(x => !x.IsHidden);
 			inputBoxParam.ListSelections=listUserods.Select(x => x.UserName).ToList();
 			inputBoxParam.SizeParam=new System.Windows.Size(width:200,height:20);
 			InputBox inputBox=new InputBox(inputBoxParam);

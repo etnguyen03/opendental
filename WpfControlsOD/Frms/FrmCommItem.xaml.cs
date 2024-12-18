@@ -524,6 +524,9 @@ namespace OpenDental {
 			if(IsPersistent) {
 				return;
 			}
+			if(_dispatcherTimerAutoSave==null) {//If we kickout in the Load before _dispatcherTimerAutoSave is instantiated kickout here
+				return;
+			}
 			//Only delete the commlog from the database when the user manually closes the form.
 			if(!IsDialogOK && _dispatcherTimerAutoSave.IsEnabled && !_commlogOld.IsNew && _isUserClosing) {
 				try {

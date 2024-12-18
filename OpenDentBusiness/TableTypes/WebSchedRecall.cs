@@ -217,6 +217,7 @@ namespace OpenDentBusiness {
 		}
 	}
 	
+	///<summary>Used by both Statement and WebSchedRecall (and probably other places).</summary>
 	public enum AutoCommStatus {
 		///<summary>0 - Should not be in the database but can be used in the program.</summary>
 		Undefined,

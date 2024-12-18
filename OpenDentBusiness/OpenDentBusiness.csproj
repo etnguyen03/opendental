@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="12.0">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -2925,6 +2925,8 @@
     <None Include="Resources\ClaimForms\ClaimFormADA 2024.xml" />
     <None Include="Resources\EForms\EFormDemo.xml" />
     <None Include="Resources\EForms\EFormExtractionConsent.xml" />
+    <None Include="Resources\EForms\EFormDentalHistory.xml" />
+    <None Include="Resources\EForms\EFormHIPAA.xml" />
     <Content Include="Resources\EForms\EFormMedicalHistory.xml" />
     <Content Include="Resources\EForms\EFormPatientRegistration.xml" />
     <Content Include="Shared\README.txt" />
