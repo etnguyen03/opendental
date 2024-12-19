@@ -1197,6 +1197,7 @@ namespace OpenDentBusiness.Eclaims {
 		internal static List<ClaimProc> _listClaimProcsForPat;
 		internal static List<ClaimProc> _listClaimProcsForClaim;
 		internal static List<InsPlan> _listInsPlans;
+		///<summary>Cannot use to find primary patplan because it may have been dropped.</summary>
 		internal static List<PatPlan> _listPatPlans;
 		internal static List<InsSub> _listInsSubs;
 		internal static List<string> _listDiagnoses;
@@ -2141,17 +2142,16 @@ namespace OpenDentBusiness.Eclaims {
 			XConnectProvider xConnectProviderBill=XConnectProvider.FromProvider(providerBill,clinic,carrier.ElectID,EnumXConnectProviderType.BILLING);
 			XConnectProvider xConnectProviderRendering=XConnectProvider.FromProvider(providerRendering,clinic,carrier.ElectID,EnumXConnectProviderType.RENDERING);
 			xconnectClaim.providers=new XConnectProvider[] { xConnectProviderBill,xConnectProviderRendering };
-			PatPlan patPlan=XConnect._listPatPlans.FirstOrDefault(x => x.InsSubNum==insSub.InsSubNum);
-			xconnectClaim.patient=XConnectPatient.FromPatient(patient,patPlan,EnumXConnectPatientMemberType.PATIENT,patPlan.Relationship);
+			xconnectClaim.patient=XConnectPatient.FromPatient(patient,XConnect._claim.InsSubNum,EnumXConnectPatientMemberType.PATIENT,claim.PatRelat);
 			List<Patient> listSubscribers=Patients.GetMultPats(XConnect._listInsSubs.Select(x => x.Subscriber).ToList()).ToList();
 			Patient subscriber=listSubscribers.FirstOrDefault(x => x.PatNum==insSub.Subscriber);
-			xconnectClaim.subscriber=XConnectPatient.FromPatient(subscriber,patPlan,EnumXConnectPatientMemberType.SUBSCRIBER,patPlan.Relationship);
+			xconnectClaim.subscriber=XConnectPatient.FromPatient(subscriber,XConnect._claim.InsSubNum,EnumXConnectPatientMemberType.SUBSCRIBER,claim.PatRelat);
 			List<XConnectPatient> listXConnectPatientsAdditionalSubs=new List<XConnectPatient>();
 			List<long> listPatNums=new List<long>() { patient.PatNum };
-			List<PatPlan> listOtherPatPlans=XConnect._listPatPlans.FindAll(x => x.PatPlanNum!=patPlan.PatPlanNum);
+			List<PatPlan> listOtherPatPlans=XConnect._listPatPlans.FindAll(x => x.PatPlanNum!=XConnect._claim.InsSubNum);
 			if(listOtherPatPlans.Count>0) {
 				for(int i=0;i<listOtherPatPlans.Count;i++) {
-					XConnectPatient xConnectPatient=XConnectPatient.FromPatient(patient,listOtherPatPlans[i],EnumXConnectPatientMemberType.ADDITIONAL_SUBSCRIBER,claim.PatRelat);
+					XConnectPatient xConnectPatient=XConnectPatient.FromPatient(patient,listOtherPatPlans[i].InsSubNum,EnumXConnectPatientMemberType.ADDITIONAL_SUBSCRIBER,claim.PatRelat);
 					if(xConnectPatient.sequenceCode=="") {
 						//XConnect cannot handle beyond Tertiary claims.
 						continue;
@@ -2180,7 +2180,7 @@ namespace OpenDentBusiness.Eclaims {
 			//xconnectClaim.facilityIdType="XX";//NPI
 			List<XConnectClaimItem> listXConnectClaimItems=XConnectClaimItem.FromClaim(claim,xconnectClaim.facilityId);
 			xconnectClaim.items=listXConnectClaimItems.ToArray();
-			xconnectClaim.payer=XConnectPayer.FromPatPlan(patPlan);
+			xconnectClaim.payer=XConnectPayer.FromInsSubNum(XConnect._claim.InsSubNum);
 			if(claim.AccidentRelated=="A") {
 				xconnectClaim.accidentCode="AA";
 			}
@@ -2291,13 +2291,18 @@ namespace OpenDentBusiness.Eclaims {
 			List<XConnectClaimItem> listXConnectClaimItems=new List<XConnectClaimItem>();
 			List<ProcedureCode> listProcedureCodes=ProcedureCodes.GetAllCodes();
 			Patient patient=Patients.GetPat(claim.PatNum);
-			List<PatPlan> listPatPlans=PatPlans.GetPatientData(claim.PatNum);
 			InsPlan insPlan=XConnect._listInsPlans.FirstOrDefault(x => x.PlanNum==claim.PlanNum);
 			Carrier carrier=Carriers.GetCarrier(insPlan.CarrierNum);
 			for(int i=0;i<XConnect._listClaimProcsForClaim.Count;i++) {
 				Procedure proc=XConnect._listProceduresForPat.FirstOrDefault(x => x.ProcNum==XConnect._listClaimProcsForClaim[i].ProcNum);
 				XConnectClaimItem xconnectClaimItem=new XConnectClaimItem();
-				int ordinal=PatPlans.GetOrdinal(claim.InsSubNum,listPatPlans);
+				int ordinal=1;
+				if(XConnect._claim.ClaimType=="S") {
+					ordinal=2;
+				}
+				else if(XConnect._claim.ClaimType=="Other") {
+					ordinal=3;
+				}
 				xconnectClaimItem.controlNumber=("x"+proc.ProcNum.ToString()+"/"+ordinal+"/"+insPlan.PlanNum);//Mimics X12 field REF02 version 3
 				if(xconnectClaimItem.controlNumber.Length>30) {//copied from X837_5010.cs
 					//Even though the field allows 1-50 characters the 837 5010 documentation states:
@@ -2578,16 +2583,16 @@ namespace OpenDentBusiness.Eclaims {
 		///<summary>Optional</summary>
 		public XConnectPayerCob coordinationOfBenefits;
 
-		public static XConnectPayer FromPatPlan(PatPlan patPlan) {
-			InsSub insSub=XConnect._listInsSubs.FirstOrDefault(x => x.InsSubNum==patPlan.InsSubNum);
+		public static XConnectPayer FromInsSubNum(long insSubNum) {
+			InsSub insSub=XConnect._listInsSubs.FirstOrDefault(x => x.InsSubNum==insSubNum);
 			InsPlan insPlan=XConnect._listInsPlans.FirstOrDefault(x => x.PlanNum==insSub.PlanNum);
 			Carrier carrier=Carriers.GetFirstOrDefault(x => x.CarrierNum==insPlan.CarrierNum);
 			XConnectPayer xconnectPayer=new XConnectPayer();
 			xconnectPayer.payerIdCode=carrier.ElectID;
 			xconnectPayer.address=XConnectAddress.FromCarrier(carrier);
 			xconnectPayer.employerName=Employers.GetName(XConnect._patient.EmployerNum);
-			if(patPlan.InsSubNum!=XConnect._claim.InsSubNum) {
-				xconnectPayer.coordinationOfBenefits=XConnectPayerCob.FromPatPlan(patPlan);
+			if(insSubNum!=XConnect._claim.InsSubNum) {
+				xconnectPayer.coordinationOfBenefits=XConnectPayerCob.FromInsSubNum(insSubNum);
 			}
 			return xconnectPayer;
 		}
@@ -2606,7 +2611,7 @@ namespace OpenDentBusiness.Eclaims {
 		///<summary>Optional.</summary>
 		public double? totalNonCoveredAmount=null;
 
-		public static XConnectPayerCob FromPatPlan(PatPlan patPlan) {
+		public static XConnectPayerCob FromInsSubNum(long insSubNum) {
 			Carrier carrier=Carriers.GetCarrier(XConnect._insPlanForClaim.CarrierNum);
 			EclaimCobInsPaidBehavior cobBehavior=PrefC.GetEnum<EclaimCobInsPaidBehavior>(PrefName.ClaimCobInsPaidBehavior);
 			if(carrier.CobInsPaidBehaviorOverride!=EclaimCobInsPaidBehavior.Default) {
@@ -2623,7 +2628,7 @@ namespace OpenDentBusiness.Eclaims {
 				&& x.Status.In(ClaimProcStatus.CapClaim,ClaimProcStatus.Received,ClaimProcStatus.Supplemental)
 				&& listProcNums.Contains(x.ProcNum)).Select(x => x.ClaimNum).Distinct().ToList();
 			List<ClaimProc> listTotalPayments=XConnect._listClaimProcsForPat.FindAll(x => listOtherClaimNums.Contains(x.ClaimNum) && x.ProcNum==0);
-			List<ClaimProc> listByProcPayments=XConnect._listClaimProcsForPat.FindAll(x => x.InsSubNum==patPlan.InsSubNum
+			List<ClaimProc> listByProcPayments=XConnect._listClaimProcsForPat.FindAll(x => x.InsSubNum==insSubNum
 				&& x.ProcNum.In(listProcNums.ToArray())
 				&& x.Status.In(ClaimProcStatus.CapClaim,ClaimProcStatus.Received,ClaimProcStatus.Supplemental));
 			List<ClaimProc> listPayments=new List<ClaimProc>(listTotalPayments);
@@ -2675,11 +2680,11 @@ namespace OpenDentBusiness.Eclaims {
 		public string schoolState;
 
 		///<summary></summary>
-		public static XConnectPatient FromPatient(Patient patient,PatPlan patPlan,EnumXConnectPatientMemberType memberType,Relat relation) {
-			InsSub insSub=XConnect._listInsSubs.FirstOrDefault(x => x.InsSubNum==patPlan.InsSubNum);
+		public static XConnectPatient FromPatient(Patient patient,long insSubNum,EnumXConnectPatientMemberType memberType,Relat relation) {
+			InsSub insSub=XConnect._listInsSubs.FirstOrDefault(x => x.InsSubNum==insSubNum);
 			XConnectPatient xconnectPatient=new XConnectPatient();
 			xconnectPatient.address=XConnectAddress.FromPatient(patient);
-			xconnectPatient.payer=XConnectPayer.FromPatPlan(patPlan);
+			xconnectPatient.payer=XConnectPayer.FromInsSubNum(insSubNum);
 			xconnectPatient.memberType=memberType;
 			string genderAbbrev=patient.Gender.ToString().Substring(0,1);
 			EnumXConnectPatientGender gender=EnumXConnectPatientGender.U;
@@ -2701,13 +2706,13 @@ namespace OpenDentBusiness.Eclaims {
 			xconnectPatient.memberId=insSub.SubscriberID;
 			xconnectPatient.dateOfBirth=patient.Birthdate.ToString("yyyy-MM-dd");//required
 			xconnectPatient.sequenceCode="";
-			if(patPlan.Ordinal==1) {
+			if(XConnect._claim.ClaimType=="P") {
 				xconnectPatient.sequenceCode="P";
 			}
-			else if(patPlan.Ordinal==2) {
+			else if(XConnect._claim.ClaimType=="S") {
 				xconnectPatient.sequenceCode="S";
 			}
-			else if(patPlan.Ordinal==3) {
+			else if(XConnect._claim.ClaimType=="Other") {
 				xconnectPatient.sequenceCode="T";
 			}
 			InsPlan insPlan=XConnect._listInsPlans.FirstOrDefault(x => x.PlanNum==insSub.PlanNum);

@@ -403,10 +403,10 @@ Examples:
 				imageDraw.ColorDraw=PearlColorToSystemColor(listAnnotations[i]?.stroke_color);
 				imageDraw.ImageAnnotVendor=EnumImageAnnotVendor.Pearl;
 				imageDraw.PearlLayer=CategoryToODCategory(listAnnotations[i].category_id);
-				if(imageDraw.PearlLayer==EnumCategoryOD.CariesProgressed 
+				if(imageDraw.PearlLayer==EnumCategoryOD.CariesIncipient 
 					&& listAnnotations[i].relationships.Any(x => x.prop_value.Contains("dentin") && x.metric_value>0.0f))
 				{
-					imageDraw.PearlLayer=EnumCategoryOD.CariesIncipient;
+					imageDraw.PearlLayer=EnumCategoryOD.CariesProgressed;
 				}
 				List<PointF> listPointFsAnnotation=new List<PointF>();
 				//Use polygon if provided, otherwise use line segment and text if provided, otherwise use contour box.
@@ -625,7 +625,7 @@ Examples:
 				case EnumCategory.Implant:                return EnumCategoryOD.Implant;
 				case EnumCategory.RootCanal:              return EnumCategoryOD.RootCanal;
 				case EnumCategory.Bridge:                 return EnumCategoryOD.Bridge;
-				case EnumCategory.Caries:                 return EnumCategoryOD.CariesProgressed;
+				case EnumCategory.Caries:                 return EnumCategoryOD.CariesIncipient;
 				case EnumCategory.Calculus:               return EnumCategoryOD.Calculus;
 				case EnumCategory.PeriapicalRadiolucency: return EnumCategoryOD.PeriapicalRadiolucency;
 				case EnumCategory.NotableMargin:          return EnumCategoryOD.NotableMargin;
