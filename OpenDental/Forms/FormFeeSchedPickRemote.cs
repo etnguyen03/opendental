@@ -117,13 +117,6 @@ namespace OpenDental {
 
 		private void FillListFeeSchedFilesOntario() {
 			_listFeeSchedFilesOntario=new List<string>();
-			_listFeeSchedFilesOntario.Add("ON_ODA_2023_AN.txt");//Ontario Dental Association 2023 fee schedule for Anaesthesiologists.
-			_listFeeSchedFilesOntario.Add("ON_ODA_2023_EN.txt");//Ontario Dental Association 2023 fee schedule for Endodontists.
-			_listFeeSchedFilesOntario.Add("ON_ODA_2023_GP.txt");//Ontario Dental Association 2023 fee schedule for General Practitioners.
-			_listFeeSchedFilesOntario.Add("ON_ODA_2023_OS.txt");//Ontario Dental Association 2023 fee schedule for Oral & Maxillofacial Surgeons.
-			_listFeeSchedFilesOntario.Add("ON_ODA_2023_PA.txt");//Ontario Dental Association 2023 fee schedule for Paediatric Dentists.
-			_listFeeSchedFilesOntario.Add("ON_ODA_2023_PE.txt");//Ontario Dental Association 2023 fee schedule for Periodontists.
-			_listFeeSchedFilesOntario.Add("ON_ODA_2023_PR.txt");//Ontario Dental Association 2023 fee schedule for Prosthodontists.
 			_listFeeSchedFilesOntario.Add("ON_ODA_2024_AN.txt");//Ontario Dental Association 2024 fee schedule for Anaesthesiologists.
 			_listFeeSchedFilesOntario.Add("ON_ODA_2024_EN.txt");//Ontario Dental Association 2024 fee schedule for Endodontists.
 			_listFeeSchedFilesOntario.Add("ON_ODA_2024_GP.txt");//Ontario Dental Association 2024 fee schedule for General Practitioners.
@@ -131,6 +124,13 @@ namespace OpenDental {
 			_listFeeSchedFilesOntario.Add("ON_ODA_2024_PA.txt");//Ontario Dental Association 2024 fee schedule for Paediatric Dentists.
 			_listFeeSchedFilesOntario.Add("ON_ODA_2024_PE.txt");//Ontario Dental Association 2024 fee schedule for Periodontists.
 			_listFeeSchedFilesOntario.Add("ON_ODA_2024_PR.txt");//Ontario Dental Association 2024 fee schedule for Prosthodontists.
+			_listFeeSchedFilesOntario.Add("ON_ODA_2025_AN.txt");//Ontario Dental Association 2025 fee schedule for Anaesthesiologists.
+			_listFeeSchedFilesOntario.Add("ON_ODA_2025_EN.txt");//Ontario Dental Association 2025 fee schedule for Endodontists.
+			_listFeeSchedFilesOntario.Add("ON_ODA_2025_GP.txt");//Ontario Dental Association 2025 fee schedule for General Practitioners.
+			_listFeeSchedFilesOntario.Add("ON_ODA_2025_OS.txt");//Ontario Dental Association 2025 fee schedule for Oral & Maxillofacial Surgeons.
+			_listFeeSchedFilesOntario.Add("ON_ODA_2025_PA.txt");//Ontario Dental Association 2025 fee schedule for Paediatric Dentists.
+			_listFeeSchedFilesOntario.Add("ON_ODA_2025_PE.txt");//Ontario Dental Association 2025 fee schedule for Periodontists.
+			_listFeeSchedFilesOntario.Add("ON_ODA_2025_PR.txt");//Ontario Dental Association 2025 fee schedule for Prosthodontists.
 		}
 
 		private void FillListFeeSchedFilesBCDA() {

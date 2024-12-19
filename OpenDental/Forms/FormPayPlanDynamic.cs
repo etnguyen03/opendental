@@ -348,7 +348,7 @@ namespace OpenDental {
 			_dynamicPaymentPlanData.ListPayPlanChargesExpected=listPayPlanChargesExpected;
 			//The above method call will set the terms.AreTermsValid field.
 			if(!terms.AreTermsValid) {
-				if(isSilent) {
+				if(!isSilent) {
 					MsgBox.Show("This payment plan will never be paid off. The interest is too high or the payment amount is too low.");
 				}
 				gridCharges.EndUpdate();

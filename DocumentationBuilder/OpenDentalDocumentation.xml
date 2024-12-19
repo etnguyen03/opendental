@@ -1161,7 +1161,7 @@
     <column order="10" name="SmsSendStatus" type="tinyint(4)">
       <summary>Enum:AutoCommStatus The status of sending the text for this communication.</summary>
       <Enumeration name="AutoCommStatus">
-        <summary></summary>
+        <summary>Used by both Statement and WebSchedRecall (and probably other places).</summary>
         <EnumValue name="Undefined">0 - Should not be in the database but can be used in the program.</EnumValue>
         <EnumValue name="DoNotSend">1 - Do not send a reminder.</EnumValue>
         <EnumValue name="SendNotAttempted">2 - Has not been attempted to send yet.</EnumValue>
@@ -1173,7 +1173,7 @@
     <column order="11" name="EmailSendStatus" type="tinyint(4)">
       <summary>Enum:AutoCommStatus The status of sending the email for this communication.</summary>
       <Enumeration name="AutoCommStatus">
-        <summary></summary>
+        <summary>Used by both Statement and WebSchedRecall (and probably other places).</summary>
         <EnumValue name="Undefined">0 - Should not be in the database but can be used in the program.</EnumValue>
         <EnumValue name="DoNotSend">1 - Do not send a reminder.</EnumValue>
         <EnumValue name="SendNotAttempted">2 - Has not been attempted to send yet.</EnumValue>
@@ -17112,7 +17112,7 @@
     <column order="7" name="Mode_" type="tinyint">
       <summary>Enum:StatementMode Mail, InPerson, Email, Electronic.</summary>
       <Enumeration name="StatementMode">
-        <summary></summary>
+        <summary>0-Mail, 1-InPerson, 2-Email, 3-Electronic</summary>
         <EnumValue name="Mail">0</EnumValue>
         <EnumValue name="InPerson">1</EnumValue>
         <EnumValue name="Email">2</EnumValue>
@@ -17186,7 +17186,7 @@
     <column order="27" name="SmsSendStatus" type="tinyint(4)">
       <summary>Enum:AutoCommStatus Stores what should be done or was done in regards to SMS messaging for this statement.</summary>
       <Enumeration name="AutoCommStatus">
-        <summary></summary>
+        <summary>Used by both Statement and WebSchedRecall (and probably other places).</summary>
         <EnumValue name="Undefined">0 - Should not be in the database but can be used in the program.</EnumValue>
         <EnumValue name="DoNotSend">1 - Do not send a reminder.</EnumValue>
         <EnumValue name="SendNotAttempted">2 - Has not been attempted to send yet.</EnumValue>
@@ -18948,7 +18948,7 @@
     <column order="9" name="SendStatus" type="tinyint(4)">
       <summary>Enum:AutoCommStatus The status of the email or text being sent for this recall.</summary>
       <Enumeration name="AutoCommStatus">
-        <summary></summary>
+        <summary>Used by both Statement and WebSchedRecall (and probably other places).</summary>
         <EnumValue name="Undefined">0 - Should not be in the database but can be used in the program.</EnumValue>
         <EnumValue name="DoNotSend">1 - Do not send a reminder.</EnumValue>
         <EnumValue name="SendNotAttempted">2 - Has not been attempted to send yet.</EnumValue>
