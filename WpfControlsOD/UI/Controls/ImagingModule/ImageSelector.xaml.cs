@@ -419,7 +419,7 @@ Only used once in Imaging module.
 		}
 
 		///<summary>Sets the thumbnail showing for the current item. Supply 100x100 bitmap. Only needed when current thumbnail needs to be updated.</summary>
-		public void SetThumbnail(System.Drawing.Bitmap bitmap){
+		public async void SetThumbnail(System.Drawing.Bitmap bitmap){
 			if(_nodeObjTagSelected==null){
 				return;
 			}
@@ -441,16 +441,20 @@ Only used once in Imaging module.
 				return;
 			}
 			BitmapImage bitmapImage =null;
-			Document document=Documents.GetByNum(nodeObjTag.DocNum);
-			using MemoryStream memoryStream = new MemoryStream();
-			bitmap.Save(memoryStream, System.Drawing.Imaging.ImageFormat.Png);
-			memoryStream.Position = 0;
-			bitmapImage=new BitmapImage();
-			bitmapImage.BeginInit();
-			bitmapImage.StreamSource = memoryStream;
-			bitmapImage.CacheOption = BitmapCacheOption.OnLoad;//makes it load into memory during EndInit
-			bitmapImage.EndInit();
-			//bitmapImage.Freeze(); //for use in another thread
+			//We must await because LoadImageMount (400 lines down) must finish before this.
+			//We don't want LoadImageMount to overwrite what we are doing here.
+			//In other words, they both need to be either synch or async.
+			await System.Threading.Tasks.Task.Run(() => {
+				using MemoryStream memoryStream = new MemoryStream();
+				bitmap.Save(memoryStream, System.Drawing.Imaging.ImageFormat.Png);
+				memoryStream.Position = 0;
+				bitmapImage=new BitmapImage();
+				bitmapImage.BeginInit();
+				bitmapImage.StreamSource = memoryStream;
+				bitmapImage.CacheOption = BitmapCacheOption.OnLoad;//makes it load into memory during EndInit
+				bitmapImage.EndInit();
+				bitmapImage.Freeze(); //for use in another thread
+			});
 			image.Source=bitmapImage;
 		}
 		#endregion Methods - Public

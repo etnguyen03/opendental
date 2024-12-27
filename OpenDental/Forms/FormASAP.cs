@@ -713,15 +713,17 @@ namespace OpenDental {
 				inputBoxParam.LabelText="Enter time for available time";
 				listInputBoxParams.Add(inputBoxParam);
 			}
+			if(listInputBoxParams.IsNullOrEmpty()) {
+				return textTemplate;
+			}
 			InputBox inputBox=new InputBox(listInputBoxParams);
 			inputBox.ShowDialog();
-			if(listInputBoxParams.Count > 0 && inputBox.IsDialogOK) {
-				if(inputBox.DateResult.Year > 1880) {
+			if(inputBox.IsDialogOK) {
+				if(textTemplate.Contains("[Date]") && inputBox.DateResult.Year > 1880) {
 					textTemplate=textTemplate.Replace("[Date]",inputBox.DateResult.ToString(PrefC.PatientCommunicationDateFormat));
 				}
-				TimeSpan timeSpan=inputBox.TimeSpanResult;
-				if(textTemplate.Contains("[Time]") && timeSpan!=TimeSpan.Zero){//A time was entered.
-					textTemplate=textTemplate.Replace("[Time]",timeSpan.ToShortTimeString());
+				if(textTemplate.Contains("[Time]") && inputBox.TimeSpanResult!=TimeSpan.Zero){//A time was entered.
+					textTemplate=textTemplate.Replace("[Time]",inputBox.TimeSpanResult.ToShortTimeString());
 				}
 			}
 			return textTemplate;

@@ -58,7 +58,13 @@ namespace OpenDental {
 			}
 			for(int i=0;i<listFileNames.Count;i++){
 				if(!CloudStorage.IsCloudStorage){
-					listEmailAttaches.Add(EmailAttaches.CreateAttach(Path.GetFileName(listFileNames[i]),File.ReadAllBytes(listFileNames[i])));
+					try {
+						listEmailAttaches.Add(EmailAttaches.CreateAttach(Path.GetFileName(listFileNames[i]),File.ReadAllBytes(listFileNames[i])));
+					}
+					catch(Exception ex) {
+						MsgBox.Show(ex.Message);
+						return listEmailAttaches;
+					}
 					continue;
 				}
 				FileAtoZSourceDestination fileAtoZSourceDestination;

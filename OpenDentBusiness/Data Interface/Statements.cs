@@ -679,7 +679,7 @@ namespace OpenDentBusiness {
 		}
 
 		public static Statement CreateLimitedStatement(List<long> listPatNumsSelected,long patNum,List<long> listPayClaimNums,List<long> listAdjustments,
-			List<long> listPayNums,List<long> listProcedures,List<long> listPayPlanChargeNums,long superFamily=0,
+			List<long> listPayNums,List<long> listProcedures,long superFamily=0,
 			EnumLimitedCustomFamily limitedCustomFamily=EnumLimitedCustomFamily.None)
 		{
 			Statement statement=new Statement();
@@ -702,7 +702,7 @@ namespace OpenDentBusiness {
 			statement.InsEst=0;
 			statement.SuperFamily=superFamily;
 			statement.LimitedCustomFamily=limitedCustomFamily;
-			Statements.Insert(statement);//we need stmt.StatementNum for attaching procs, adjustments, paysplits, and payment plan charges to the statement
+			Statements.Insert(statement);//we need stmt.StatementNum for attaching procs, adjustments, and paysplits to the statement
 			for(int i=0;i<listAdjustments.Count;i++) {
 				StmtLink stmtLink=new StmtLink();
 				stmtLink.FKey=listAdjustments[i];
@@ -735,13 +735,6 @@ namespace OpenDentBusiness {
 				stmtLink.StmtLinkType=StmtLinkTypes.ClaimPay;
 				StmtLinks.Insert(stmtLink);
 			}
-			for(int i=0;i<listPayPlanChargeNums.Count;i++) {
-				StmtLink stmtLink=new StmtLink();
-				stmtLink.FKey=listPayPlanChargeNums[i];
-				stmtLink.StatementNum=statement.StatementNum;
-				stmtLink.StmtLinkType=StmtLinkTypes.PayPlanCharge;
-				StmtLinks.Insert(stmtLink);
-			}
 			if(limitedCustomFamily!=EnumLimitedCustomFamily.None || listPatNumsSelected.Any(x => x!=patNum)) {
 				for(int i=0;i<listPatNumsSelected.Count;i++) {
 					StmtLink stmtLink=new StmtLink();
@@ -756,7 +749,6 @@ namespace OpenDentBusiness {
 			statement.ListPaySplitNums=null;
 			statement.ListProcNums=null;
 			statement.ListInsPayClaimNums=null;
-			statement.ListPayPlanChargeNums=null;
 			statement.ListPatNums=null;
 			if(RemotingClient.MiddleTierRole==MiddleTierRole.ClientMT) {
 				//Currently when using MiddleTier null lists inside an object like above causes the deserialized statement to incorrectly set the null lists
@@ -773,7 +765,6 @@ namespace OpenDentBusiness {
 					statement.ListProcNums=StmtLinks.GetForStatementAndType(statement.StatementNum,StmtLinkTypes.Proc);
 				}
 				statement.ListInsPayClaimNums=StmtLinks.GetForStatementAndType(statement.StatementNum,StmtLinkTypes.ClaimPay);
-				statement.ListPayPlanChargeNums=StmtLinks.GetForStatementAndType(statement.StatementNum,StmtLinkTypes.PayPlanCharge);
 				statement.ListPatNums=StmtLinks.GetForStatementAndType(statement.StatementNum,StmtLinkTypes.PatNum);
 			}
 			return statement;

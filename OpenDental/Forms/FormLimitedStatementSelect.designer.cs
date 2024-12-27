@@ -94,7 +94,7 @@ namespace OpenDental{
 			this.label1.Name = "label1";
 			this.label1.Size = new System.Drawing.Size(661, 16);
 			this.label1.TabIndex = 145;
-			this.label1.Text = "Select procedures, payments, adjustments, claim payments, or payment plan charges" +
+			this.label1.Text = "Select procedures, payments, adjustments, or claim payments" +
     " to include on the limited statement";
 			this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			// 
@@ -181,7 +181,6 @@ namespace OpenDental{
         "Adjustment",
         "Claim Payment",
         "Payment",
-        "Pay Plan Charge",
         "Procedure"};
 			this.listBoxTransTypes.Location = new System.Drawing.Point(103, 64);
 			this.listBoxTransTypes.Name = "listBoxTransTypes";

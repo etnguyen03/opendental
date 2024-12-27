@@ -19,6 +19,8 @@ namespace OpenDentBusiness.Pearl {
 		};
 		///<summary>HttpClient used exclusively for uploading images to the Pearl provided Amazon S3 bucket via a pre-signed URL. </summary>
 		private static HttpClient _httpAwsClient=new HttpClient();
+		///<summary>Event used to show the UI mini panel as soon as the image has started uploading/processing.</summary>
+		public static event EventHandler EventRefreshDisplay=null;
 
 		///<summary>Retrieves and sets the auth header for the Pearl http client if it is empty or has expired. Throws exceptions.</summary>
 		public void RefreshAuthTokenIfNeeded(string clientId,string clientSecret) {
@@ -67,13 +69,21 @@ namespace OpenDentBusiness.Pearl {
 			if(imageResponse==null || !(imageResponse is ImageResponse)) {
 				throw new ApplicationException("A presigned url was not valid.");
 			}
+			//Set Request to Uploading to we can communicate to the user that the image is uploading.
+			pearlRequest.RequestStatus=EnumPearlStatus.Uploading;
+			PearlRequests.Insert(pearlRequest);
+			EventRefreshDisplay?.Invoke(this,new EventArgs());
 			bool wasImageUploaded=UploadToAwsPresignedUrl(bitmap,imageResponse);
 			if(!wasImageUploaded) {
+				//Image upload failed, delete PearlRequest so the image can be resent.
+				PearlRequests.Delete(pearlRequest.PearlRequestNum);
 				throw new ApplicationException("Could not upload image successfully.");
 			}
+			//Image upload succeeded, so we are now in the polling phase.
 			pearlRequest.RequestStatus=EnumPearlStatus.Polling;
 			pearlRequest.DateTSent=DateTime.Now;
-			PearlRequests.Insert(pearlRequest);
+			PearlRequests.Update(pearlRequest);
+			EventRefreshDisplay?.Invoke(this,new EventArgs());//Refresh panel to show user we are now polling.
 			return requestId;
 		}
 

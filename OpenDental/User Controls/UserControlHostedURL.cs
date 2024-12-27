@@ -114,7 +114,13 @@ namespace OpenDental.User_Controls {
 				ToolStripMenuItem browse = new ToolStripMenuItem("Browse");
 				browse.Click+=(sender, e) => {
 					if(!string.IsNullOrWhiteSpace(text.Text)) {
-						System.Diagnostics.Process.Start(text.Text);
+						string url=text.Text;
+						if(ODCloudClient.IsAppStream) {
+							ODCloudClient.LaunchFileWithODCloudClient(url);
+						}
+						else {
+							System.Diagnostics.Process.Start(url);
+						}
 					}
 				};
 				menu.Items.Add(browse);

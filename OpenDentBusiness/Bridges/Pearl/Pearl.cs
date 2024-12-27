@@ -121,6 +121,8 @@ Examples:
 				return null;
 			}
 			pearl._userNum=Security.CurUser.UserNum;
+			//PearlApiClient will refresh display to communicate request status to the user (Uploading, Polling, etc.).
+			PearlApiClient.EventRefreshDisplay+=(s,e) => { EventRefreshDisplay?.Invoke(s,e); };
 			return pearl;
 		}
 
@@ -177,7 +179,7 @@ Examples:
 				string requestId=null;
 				if(ODBuild.IsDebug()&&!ODBuild.IsUnitTest) {
 					oDThread.Wait(2000);//simulated wait for getting URL and uploading image
-					requestId=SimulateSendOneImageToPearl(Document_.DocNum,Bitmap_);
+					requestId=SimulateSendOneImageToPearl(Document_.DocNum,Bitmap_,oDThread);
 				}
 				else {
 					//Get AWS presigned URL, upload image to it, then send to Pearl
@@ -199,6 +201,7 @@ Examples:
 			if(_pearlRequest is null || PearlRequests.IsRequestHandled(_pearlRequest)) {
 				return;//Don't poll if image was not uploaded or was already handled.
 			}
+			EventRefreshDisplay?.Invoke(this,new EventArgs());//Refresh the display to show the user that the image is processing.
 			//Begin polling the API until all images have been processed, or this thread is canceled.
 			DateTime dtStart=DateTime.Now;
 			bool isComplete;
@@ -226,17 +229,24 @@ Examples:
 		
 		#region Simulate methods
 		///<summary>Returns a fake Pearl requestId and inserts a PearlRequest into the DB.</summary>
-		private string SimulateSendOneImageToPearl(long docNum,Bitmap bitmap) {
-			// 1 - Get AWS presigned URL
-			string requestId=Guid.NewGuid().ToString();
-			// 2 - Upload image to AWS presigned URL
-			// 3 - Create PearlRequest
+		private string SimulateSendOneImageToPearl(long docNum,Bitmap bitmap,ODThread oDThread) {
 			PearlRequest pearlRequest=new PearlRequest();
+			string requestId=Guid.NewGuid().ToString();
 			pearlRequest.RequestId=requestId;
-			pearlRequest.RequestStatus=EnumPearlStatus.Polling;
 			pearlRequest.DocNum=docNum;
-			pearlRequest.DateTSent=DateTime.Now;
+			// 1 - Get AWS presigned URL
+			// 2 - Upload image to AWS presigned URL
+			//Set Request to Uploading to we can communicate to the user that the image is processing.
+			pearlRequest.RequestStatus=EnumPearlStatus.Uploading;
 			PearlRequests.Insert(pearlRequest);
+			EventRefreshDisplay?.Invoke(this,new EventArgs());
+			oDThread.Wait(2000);
+			// 3 - Create PearlRequest
+			pearlRequest.RequestStatus=EnumPearlStatus.Polling;
+			pearlRequest.DateTSent=DateTime.Now;
+			PearlRequests.Update(pearlRequest);
+			EventRefreshDisplay?.Invoke(this,new EventArgs());
+			oDThread.Wait(2000);
 			return pearlRequest.RequestId;
 		}
 

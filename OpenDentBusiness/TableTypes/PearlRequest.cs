@@ -32,6 +32,8 @@ namespace OpenDentBusiness {
 		Error,
 		///<summary>3 - Pearl did not give results within the timeout period of 10 minutes. Polling for this request can be retried.</summary>
 		TimedOut,
+		///<summary>4 - The image is being uploaded to Pearl.</summary>
+		Uploading,
 	}
 }
 

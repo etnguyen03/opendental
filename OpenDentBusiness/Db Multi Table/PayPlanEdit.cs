@@ -1037,6 +1037,11 @@ namespace OpenDentBusiness {
 			//specifically to make a check more accurate where determining if payplan will ever be paid off
 			decimal previousSumPrincipalNotYetCharged=sumPrincipalNotYetCharged;
 			int maxPayPlanCharges=2000;//ceiling of payplan charges should not go beyond 2000
+			List<long> listProcNums=listCreditsAndProduction.FindAll(x => x.LinkType==PayPlanLinkType.Procedure)
+				.Select(y => y.PriKey)
+				.Distinct()
+				.ToList();
+			List<Procedure> listProcedures=Procedures.GetManyProc(listProcNums,includeNote:false);
 			//Iterates over the periods.
 			while(sumPrincipalNotYetCharged > 0 && chargesCount < maxPayPlanCharges) { 
 				DateTime periodDate=CalcNextPeriodDate(terms.DateFirstPayment,periodCount,terms.Frequency);
@@ -1063,7 +1068,7 @@ namespace OpenDentBusiness {
 					}
 					Procedure proc=null;
 					if(entry.LinkType==PayPlanLinkType.Procedure) {
-						proc=Procedures.GetOneProc(entry.PriKey,false);
+						proc=listProcedures.Find(x => x.ProcNum==entry.PriKey);
 					}
 					//Used for handling 'Await Complete' option in dynamic payment plans. skips over adding a charge for an incomplete proc.
 					if(proc!=null && proc.ProcStatus==ProcStat.TP && terms.DynamicPayPlanTPOption==DynamicPayPlanTPOptions.AwaitComplete && !isForDownPaymentCharge) {

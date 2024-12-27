@@ -338,6 +338,7 @@ Here is the desired behavior:
 			//_bitmapRaw: don't load this because it would waste time.  Instead, deselect after loop.
 			ImageHelper.ApplyColorSettings(GetBitmapShowing(_idxSelectedInMount),
 				GetDocumentShowing(_idxSelectedInMount).WindowingMin,GetDocumentShowing(_idxSelectedInMount).WindowingMax);
+			ThumbnailRefresh();
 			panelMain.Invalidate();
 		}
 
@@ -1123,6 +1124,7 @@ Here is the desired behavior:
 				ImageHelper.ConvertCropIfNeeded(document,_bitmapRaw);
 				SetWindowingSlider();
 				EnableToolBarButtons();
+				CreateDocumentThumbnail();
 				EventSetCropPanEditAdj?.Invoke(this,EnumCropPanAdj.Pan);
 			}
 			if(nodeTypeAndKey.NodeType==EnumImageNodeType.Mount){
@@ -3337,6 +3339,7 @@ Here is the desired behavior:
 						ImageDraws.Update(_listImageDraws[_idxTextMouseDown]);
 						_idxTextMouseDown=-1;
 						panelMain.Invalidate();
+						ThumbnailRefresh();
 					}
 				}
 				_isMouseDownPanel=false;
@@ -3356,6 +3359,7 @@ Here is the desired behavior:
 					//no point doing a refresh from db, though
 				}
 				panelMain.Invalidate();
+				ThumbnailRefresh();
 				_listPointFsDrawing.Clear();
 				_isMouseDownPanel=false;
 				return;
@@ -3379,6 +3383,7 @@ Here is the desired behavior:
 					_isLineExtending=false;
 					_listPointFsDrawing.Clear();
 					panelMain.Invalidate();
+					ThumbnailRefresh();
 				}
 				_isMouseDownPanel=false;
 				return;
@@ -3401,9 +3406,10 @@ Here is the desired behavior:
 				_isMouseDownPanel=false;
 				return;
 			}
-			if(_drawMode==EnumDrawMode.Eraser
-				|| _drawMode==EnumDrawMode.ChangeColor)
-			{
+			if(_drawMode==EnumDrawMode.Eraser){
+				ThumbnailRefresh();
+			}
+			if(_drawMode==EnumDrawMode.ChangeColor) {
 				//do nothing
 			}
 			_isMouseDownPanel=false;
@@ -3617,6 +3623,7 @@ Here is the desired behavior:
 					+" with category "+defDocCategory.ItemName+" was changed using the Crop button";
 				SecurityLogs.MakeLogEntry(EnumPermType.ImageEdit,PatientCur.PatNum,logText);
 				panelMain.Invalidate();
+				ThumbnailRefresh();
 			}
 		}
 
@@ -3810,7 +3817,55 @@ Here is the desired behavior:
 			return pointFArray[0];
 		}
 
-		///<summary>The thumbnail is retrieved in Mounts.GetThumbnail. This strategy is different than document because it must be done while we already have the files open.</summary>
+		///<summary>The thumbnail is retrieved in Documents.GetThumbnail.</summary>
+		private void CreateDocumentThumbnail() {
+			if(!IsDocumentShowing()) {
+				return;
+			}
+			Document document=GetDocumentShowing(0);
+			Bitmap bitmapOriginal=GetBitmapShowing(0);
+			if(document==null || bitmapOriginal==null) {
+				return;
+			}
+			using Bitmap bitmap=new Bitmap(100,100);
+			using Graphics g=Graphics.FromImage(bitmap);
+			g.TranslateTransform(50,50);//Center
+			//scale it slightly smaller so that the right pixels won't get cut off
+			if(bitmapOriginal.Height==0) {
+				return;
+			}
+			float scale=ImageTools.CalcScaleFit(new Size(99,99),new Size(bitmapOriginal.Width,bitmapOriginal.Height),0);
+			g.ScaleTransform(scale,scale);
+			DrawDocument(g);
+			string pathThumbnails=Path.Combine(PatFolder,"Thumbnails");
+			if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ && !Directory.Exists(pathThumbnails)) {
+				try {
+					Directory.CreateDirectory(pathThumbnails);
+				}
+				catch{
+					return;
+				}
+			}
+			string fileNameFull=Path.Combine(PatFolder,"Thumbnails",document.FileName);
+			if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ) {
+				if(File.Exists(fileNameFull)) {
+					try {
+						File.Delete(fileNameFull);
+					}
+					catch (Exception ex) {
+						ex.DoNothing();
+					}
+				}
+				try {
+					bitmap.Save(fileNameFull);
+				}
+				catch(Exception ex) {
+					ex.DoNothing();
+				}
+			}
+		}
+
+		///<summary>The thumbnail is retrieved in Mounts.GetThumbnail.</summary>
 		private void CreateMountThumbnail(){
 			using Bitmap bitmap=new Bitmap(100,100);
 			using Graphics g=Graphics.FromImage(bitmap);
@@ -4768,6 +4823,7 @@ Here is the desired behavior:
 				EventThumbnailNeedsRefresh?.Invoke(this,new EventArgs());
 			}
 			if(IsDocumentShowing()){
+				CreateDocumentThumbnail();
 				EventThumbnailNeedsRefresh?.Invoke(this,new EventArgs());
 			}
 		}

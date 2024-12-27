@@ -562,6 +562,7 @@ namespace WpfControls {
 			retVal=Patients.ReplacePatient(retVal,patient);
 			retVal=Patients.ReplaceGuarantor(retVal,patient);
 			retVal=Referrals.ReplaceRefProvider(retVal,patient);
+			retVal=ReplaceTags.ReplaceMisc(retVal);
 			retVal=retVal.Replace("[UserName]",Security.CurUser.UserName);
 			return retVal;
 		}
@@ -625,7 +626,9 @@ namespace WpfControls {
 					toolBarButton.ContextMenuDropDown=contextMenu;
 				}
 				else if(program.ProgName==ProgramName.Pearl.ToString()) {
-					toolBarButton.SetToolTipText("Send currently displayed image(s) to Pearl");
+					if(Programs.IsEnabled(ProgramName.Pearl)) {
+						toolBarButton.SetToolTipText("Send currently displayed image(s) to Pearl");
+					}
 				}
 				if(toolBarsAvail!=EnumToolBar.MainToolbar) {
 					toolBar.AddSeparator();

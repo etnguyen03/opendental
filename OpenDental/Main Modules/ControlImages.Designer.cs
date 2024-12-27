@@ -64,6 +64,7 @@
 			this.elementHostToolBarMain = new System.Windows.Forms.Integration.ElementHost();
 			this.panelPearl = new System.Windows.Forms.Panel();
 			this.groupPearl = new OpenDental.UI.GroupBox();
+			this.labelAIProcessing = new System.Windows.Forms.Label();
 			this.checkPearlShow = new OpenDental.UI.CheckBox();
 			this.butPearlLayers = new OpenDental.UI.Button();
 			this.checkPearlToothParts = new OpenDental.UI.CheckBox();
@@ -388,6 +389,7 @@
 			this.groupPearl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+			this.groupPearl.Controls.Add(this.labelAIProcessing);
 			this.groupPearl.Controls.Add(this.checkPearlShow);
 			this.groupPearl.Controls.Add(this.butPearlLayers);
 			this.groupPearl.Controls.Add(this.checkPearlToothParts);
@@ -397,6 +399,15 @@
 			this.groupPearl.Size = new System.Drawing.Size(194, 56);
 			this.groupPearl.TabIndex = 3;
 			this.groupPearl.Text = "Pearl AI";
+			// 
+			// labelAIProcessing
+			//
+			this.labelAIProcessing.Location = new System.Drawing.Point(7, 27);
+			this.labelAIProcessing.Name = "labelAIProcessing";
+			this.labelAIProcessing.Size = new System.Drawing.Size(80, 16);
+			this.labelAIProcessing.TabIndex = 3;
+			this.labelAIProcessing.Text = "Processing...";
+			this.labelAIProcessing.Visible = false;
 			// 
 			// checkPearlShow
 			// 
@@ -496,5 +507,6 @@
 		private UI.CheckBox checkPearlShow;
 		private UI.GroupBox groupPearl;
 		private UI.Button butPearlLayers;
+		private System.Windows.Forms.Label labelAIProcessing;
 	}
 }

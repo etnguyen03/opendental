@@ -321,14 +321,33 @@ namespace OpenDental {
 			}
 			//After finishing, clear the Copy To section, but leave the Copy From section as is.
 			comboFeeSchedTo.SelectedIndex=0;
-			comboClinicTo.IsNothingSelected=true;
-			comboProviderTo.SelectedIndex=0;
 			long feeSchedGroupToNum=0;
 			if(comboGroupTo.GetSelected<FeeSchedGroup>()!=null) {
 				feeSchedGroupToNum=comboGroupTo.GetSelected<FeeSchedGroup>().FeeSchedGroupNum;
 			}
 			comboGroupTo.Items.Clear();
 			FillFeeSchedGroupComboBox(comboGroupTo,_listFeeScheds[comboFeeSchedTo.SelectedIndex].FeeSchedNum,feeSchedGroupToNum);
+			//Copied over from FillComboBoxes() for just the 'Copy To' group box
+			if(_listFeeScheds[comboFeeSchedTo.SelectedIndex].IsGlobal) {
+				comboClinicTo.Enabled=false;
+				comboClinicTo.HqDescription="None";
+				comboClinicTo.IsUnassignedSelected=true;
+				comboProviderTo.Enabled=false;
+				butPickProvTo.Enabled=false;
+				butPickGroupTo.Enabled=false;
+				comboProviderTo.SelectedIndex=0;
+				comboGroupTo.Enabled=false;
+			}
+			else {
+				if(PrefC.HasClinicsEnabled) {
+					comboClinicTo.Enabled=true;
+					comboClinicTo.HqDescription="Default";
+					comboGroupTo.Enabled=true;
+					butPickGroupTo.Enabled=true;
+				}
+				comboProviderTo.Enabled=true;
+				butPickProvTo.Enabled=true;
+			}
 			MsgBox.Show(this,"Done.");
 		}
 

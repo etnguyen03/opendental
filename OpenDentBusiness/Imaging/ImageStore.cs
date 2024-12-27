@@ -894,7 +894,7 @@ namespace OpenDentBusiness {
 			}
 			else {//Using an AtoZ folder
 				string docPath=FileAtoZ.CombinePaths(GetPatientFolder(pat,GetPreferredAtoZpath()),doc.FileName);
-				FileAtoZ.Copy(docPath,saveToPath,FileAtoZSourceDestination.AtoZToLocal);
+				FileAtoZ.Copy(docPath,saveToPath,FileAtoZSourceDestination.AtoZToLocal,doOverwrite:true);
 			}
 		}
 

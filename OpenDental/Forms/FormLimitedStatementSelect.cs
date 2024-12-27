@@ -19,7 +19,6 @@ namespace OpenDental {
 		public List<long> ListPayNums=new List<long>();
 		public List<long> ListProcNums=new List<long>();
 		public List<long> ListPatNums=new List<long>();
-		public List<long> ListPayPlanChargeNums=new List<long>();
 		public Patient PatCur=null;
 		public List<long> ListPatNumsFamily=new List<long>();
 		public List<long> ListPatNumsSuperFamily=new List<long>();
@@ -83,8 +82,6 @@ namespace OpenDental {
 			listBoxTransTypes.SetSelected(listBoxTransTypes.Items.Count-1,true);
 			listBoxTransTypes.Items.Add(Lan.g(this,"Payment"),AccountEntryType.Payment);
 			listBoxTransTypes.SetSelected(listBoxTransTypes.Items.Count-1,true);
-			listBoxTransTypes.Items.Add(Lan.g(this,"Pay Plan Charge"),AccountEntryType.PayPlanCharge);
-			listBoxTransTypes.SetSelected(listBoxTransTypes.Items.Count-1,true);
 			listBoxTransTypes.Items.Add(Lan.g(this,"Procedure"),AccountEntryType.Procedure);
 			listBoxTransTypes.SetSelected(listBoxTransTypes.Items.Count-1,true);
 		}
@@ -128,10 +125,6 @@ namespace OpenDental {
 						limitedRow.AccountEntryType_=AccountEntryType.ClaimPayment;
 					}
 				}
-				else if(TableAccount.Rows[i]["PayPlanChargeNum"].ToString()!="0" && TableAccount.Rows[i]["credits"].ToString()=="") {//We only want debits.
-					limitedRow.PrimaryKey=PIn.Long(TableAccount.Rows[i]["PayPlanChargeNum"].ToString());
-					limitedRow.AccountEntryType_=AccountEntryType.PayPlanCharge;
-				}
 				else {
 					//type is not one that is currently supported, skip it.
 					continue;
@@ -155,9 +148,6 @@ namespace OpenDental {
 				return true;
 			}
 			if(accountEntryType==AccountEntryType.ClaimPayment && ListPayClaimNums.Contains(priKey)){
-				return true;
-			}
-			if(accountEntryType==AccountEntryType.PayPlanCharge && ListPayPlanChargeNums.Contains(priKey)){
 				return true;
 			}
 			return false;
@@ -462,7 +452,7 @@ namespace OpenDental {
 		private void butOK_Click(object sender,EventArgs e) {
 			List<LimitedRow> listLimitedRowsSelected=gridMain.SelectedTags<LimitedRow>();
 			if(listLimitedRowsSelected.Count==0) {
-				MsgBox.Show(this,"Please select procedures, adjustments, payments, claim payments or payment plan charges first.");
+				MsgBox.Show(this,"Please select procedures, adjustments, payments, or claim payments first.");
 				return;
 			}
 			ListPatNums=listLimitedRowsSelected.Select(x => x.PatNum).Distinct().ToList();
@@ -477,13 +467,12 @@ namespace OpenDental {
 					.FindAll(x => x.AccountEntryType_==AccountEntryType.Claim && ListPayClaimNums.Contains(x.PrimaryKey))
 					.SelectMany(x => x.ListProcsOnObject)
 				).Distinct().ToList();
-			ListPayPlanChargeNums=listLimitedRowsSelected.FindAll(x => x.AccountEntryType_==AccountEntryType.PayPlanCharge).Select(x => x.PrimaryKey).Distinct().ToList();
 			DialogResult=DialogResult.OK;
 		}
 
 		/// <summary>Class to represent items coming in from the account module grid.</summary>
 		private class LimitedRow {
-			//Can be paymentNum,adjustmentNum,procedureNum,claimNum,payplanNum. NOTE: ClaimPayments will hold the ClaimNum. 
+			//Can be paymentNum,adjustmentNum,procedureNum,claimNum. NOTE: ClaimPayments will hold the ClaimNum. 
 			public long PrimaryKey;
 			public AccountEntryType AccountEntryType_;
 			//List of procedures attached to the object (if any)

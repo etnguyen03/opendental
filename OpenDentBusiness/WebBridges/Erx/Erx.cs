@@ -51,10 +51,6 @@ namespace OpenDentBusiness {
 			}
 			else {//The prescription was already in our database. Update it.
 				rxPat.RxNum=rxPatOld.RxNum;
-				//Preserve the pharmacy on the existing prescription, in case the user set the value manually.
-				//We do not pull pharmacy back from eRx yet.
-				rxPat.PharmacyNum=rxPatOld.PharmacyNum;
-				rxPat.ProvNum=rxPatOld.ProvNum;
 				if(rxPatOld.IsErxOld) {
 					rxPat.IsErxOld=true;
 					rxPat.SendStatus=RxSendStatus.SentElect;//To maintain backward compatibility.

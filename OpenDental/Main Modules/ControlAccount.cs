@@ -1509,7 +1509,7 @@ namespace OpenDental {
 					}
 				}
 				if(gridAccount.SelectedIndices.Length==0) {//if still none selected
-					MsgBox.Show(this,"Please select procedures, adjustments, payments, claims, or pay plan charges first.");
+					MsgBox.Show(this,"Please select procedures, adjustments, payments, or claims first.");
 					return;
 				}
 			}
@@ -1525,11 +1525,11 @@ namespace OpenDental {
 				arePayPlanCreditsSelected=gridAccount.SelectedIndices.Any(x => table.Rows[x]["PayPlanNum"].ToString()!="0" && table.Rows[x]["charges"].ToString()=="");
 			}
 			if(areStatementsSelected || arePayPlanCreditsSelected) {
-				MsgBox.Show(this,"You can only select procedures, adjustments, payments, claims, or pay plan charges.");
+				MsgBox.Show(this,"You can only select procedures, adjustments, payments, or claims.");
 				gridAccount.SetAll(false);
 				return;
 			}
-			//At this point, all selected items are procedures, adjustments, payments, claims, or pay plan charges.
+			//At this point, all selected items are procedures, adjustments, payments, or claims.
 			//get all ClaimNums from claimprocs for the selected procs
 			List<long> listProcClaimNums=ClaimProcs.GetForProcs(gridAccount.SelectedIndices.Where(x => table.Rows[x]["ProcNum"].ToString()!="0")
 				.Select(x => PIn.Long(table.Rows[x]["ProcNum"].ToString())).ToList()).FindAll(x => x.ClaimNum!=0).ConvertAll(x => x.ClaimNum);
@@ -1554,14 +1554,11 @@ namespace OpenDental {
 			List<long> listProcNums=gridAccount.SelectedIndices
 				.Where(x => table.Rows[x]["ProcNum"].ToString()!="0")
 				.Select(x => PIn.Long(table.Rows[x]["ProcNum"].ToString())).ToList();
-			List<long> listPayPlanChargeNums=gridAccount.SelectedIndices
-				.Where(x => table.Rows[x]["PayPlanChargeNum"].ToString()!="0")
-				.Select(x => PIn.Long(table.Rows[x]["PayPlanChargeNum"].ToString())).ToList();//Debits attached to insurance payplans do not get shown in the account module.
 			long patNumStatement=_patient.Guarantor;
 			if(listPatNums.Count==1) {//If only one patient is selected
 				patNumStatement=_patient.PatNum; //Use the patient's info on statement instead of the guarantor's.
 			}
-			Statement statement=Statements.CreateLimitedStatement(listPatNums,patNumStatement,listPayClaimNums,listAdjNums,listPayNums,listProcNums,listPayPlanChargeNums);
+			Statement statement=Statements.CreateLimitedStatement(listPatNums,patNumStatement,listPayClaimNums,listAdjNums,listPayNums,listProcNums);
 			//All printing and emailing will be done from within the form:
 			using FormStatementOptions formStatementOptions=new FormStatementOptions();
 			formStatementOptions.StatementCur=statement;
@@ -1598,7 +1595,6 @@ namespace OpenDental {
 			List<long> listProcNums=new List<long>();
 			List<long> listAdjNums=new List<long>();
 			List<long> listPayNums=new List<long>();
-			List<long> listPayPlanChargeNums=new List<long>();
 			if(gridAccount.SelectedIndices.Length>0) {
 				PayPlanVersions payPlanVersions=(PayPlanVersions)PrefC.GetInt(PrefName.PayPlansVersion);
 				//guaranteed to have rows selected from here down, verify they are allowed transactions
@@ -1611,7 +1607,7 @@ namespace OpenDental {
 					arePayPlanCreditsSelected=gridAccount.SelectedIndices.Any(x => table.Rows[x]["PayPlanNum"].ToString()!="0" && table.Rows[x]["charges"].ToString()=="");
 				}
 				if(areStatementsSelected || arePayPlanCreditsSelected) {
-					MsgBox.Show(this,"You can only select procedures, adjustments, payments, claims, and pay plan charges.");
+					MsgBox.Show(this,"You can only select procedures, adjustments, payments, or claims.");
 					gridAccount.SetAll(false);
 					return;
 				}
@@ -1639,9 +1635,6 @@ namespace OpenDental {
 				listProcNums=gridAccount.SelectedIndices
 					.Where(x => table.Rows[x]["ProcNum"].ToString()!="0")
 					.Select(x => PIn.Long(table.Rows[x]["ProcNum"].ToString())).ToList();
-				listPayPlanChargeNums=gridAccount.SelectedIndices
-					.Where(x => table.Rows[x]["PayPlanChargeNum"].ToString()!="0")
-					.Select(x => PIn.Long(table.Rows[x]["PayPlanChargeNum"].ToString())).ToList();//Debits attached to insurance payplans do not get shown in the account module.
 			}
 			#endregion
 			bool isFamMember=_family.ListPats.Length>1;
@@ -1684,7 +1677,6 @@ namespace OpenDental {
 			formLimitedStatementSelect.ListPayNums=listPayNums??new List<long>();
 			formLimitedStatementSelect.ListProcNums=listProcNums??new List<long>();
 			formLimitedStatementSelect.ListPatNums=listPatNums??new List<long>();
-			formLimitedStatementSelect.ListPayPlanChargeNums=listPayPlanChargeNums??new List<long>();
 			formLimitedStatementSelect.PatCur=_patient;
 			if(isSuperFamMember) {
 				formLimitedStatementSelect.ListPatNumsSuperFamily=listPatientsSuperFamily.ConvertAll(x=>x.PatNum);
@@ -1700,7 +1692,6 @@ namespace OpenDental {
 			listProcNums=formLimitedStatementSelect.ListProcNums;
 			listAdjNums=formLimitedStatementSelect.ListAdjNums;
 			listPayNums=formLimitedStatementSelect.ListPayNums;
-			listPayPlanChargeNums=formLimitedStatementSelect.ListPayPlanChargeNums;
 			//At this point, all selected items are procedures, adjustments, payments, or claims.
 			Statement statementLimited;
 			//Determine if we have selected super fam members.
@@ -1731,7 +1722,7 @@ namespace OpenDental {
 					patNumStatement=_patient.PatNum;
 				}
 			}
-			statementLimited=Statements.CreateLimitedStatement(listPatNums,patNumStatement,listPayClaimNums,listAdjNums,listPayNums,listProcNums,listPayPlanChargeNums,superFamily:superFamNum,limitedCustomFamily:limitedCustomFamily);
+			statementLimited=Statements.CreateLimitedStatement(listPatNums,patNumStatement,listPayClaimNums,listAdjNums,listPayNums,listProcNums,superFamily:superFamNum,limitedCustomFamily:limitedCustomFamily);
 			//All printing and emailing will be done from within the form:
 			using FormStatementOptions formStatementOptions=new FormStatementOptions();
 			formStatementOptions.StatementCur=statementLimited;

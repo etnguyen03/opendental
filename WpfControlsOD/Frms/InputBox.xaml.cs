@@ -123,7 +123,12 @@ Someday, I will eliminate all the ctor overloads.
 
 		public DateTime DateResult {
 			get {
-				return PIn.Date(((TextVDate)ListControls.Find(x => x is TextVDate)).Text);
+				TextVDate textVDate=(TextVDate)ListControls.Find(x => x is TextVDate);
+				//check if any DateResult control exists, if not, return DateTime.MinValue
+				if(textVDate is null){
+					return DateTime.MinValue;
+				}
+				return PIn.Date(textVDate.Text);
 			}
 		}
 
@@ -202,7 +207,12 @@ Someday, I will eliminate all the ctor overloads.
 		///<summary>Will return a TimeSpan of zero if user did not enter anything.</summary>
 		public TimeSpan TimeSpanResult {
 			get {
-				DateTime dateTime=PIn.DateT(((TextVTime)ListControls.Find(x => x is TextVTime)).Text);
+				TextVTime textVTime=(TextVTime)ListControls.Find(x => x is TextVTime);
+				//check if any time control exists, if not, return TimeSpan of zero
+				if(textVTime is null){
+					return TimeSpan.Zero;
+				}
+				DateTime dateTime=PIn.DateT(textVTime.Text);
 				return dateTime.TimeOfDay;
 			}
 		}

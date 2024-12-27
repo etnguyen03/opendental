@@ -53,7 +53,6 @@ namespace OpenDental {
 			this.panelXcharge = new System.Windows.Forms.Panel();
 			this.groupPrepaid = new OpenDental.UI.GroupBox();
 			this.butPaySimple = new System.Windows.Forms.Panel();
-			this.butPayConnect = new OpenDental.UI.Button();
 			this.groupBoxDeposit = new OpenDental.UI.GroupBox();
 			this.labelDepositAccountNum = new System.Windows.Forms.Label();
 			this.comboDepositAccountNum = new OpenDental.UI.ComboBox();
@@ -66,6 +65,7 @@ namespace OpenDental {
 			this.validDoubleDepositAmt = new OpenDental.ValidDouble();
 			this.labelRequiredFields = new System.Windows.Forms.Label();
 			this.panelEdgeExpress = new System.Windows.Forms.Panel();
+			this.butPayConnect = new System.Windows.Forms.Panel();
 			this.groupPrepaid.SuspendLayout();
 			this.groupBoxDeposit.SuspendLayout();
 			this.SuspendLayout();
@@ -343,15 +343,6 @@ namespace OpenDental {
 			this.butPaySimple.TabIndex = 131;
 			this.butPaySimple.MouseClick += new System.Windows.Forms.MouseEventHandler(this.butPaySimple_MouseClick);
 			// 
-			// butPayConnect
-			// 
-			this.butPayConnect.Location = new System.Drawing.Point(159, 22);
-			this.butPayConnect.Name = "butPayConnect";
-			this.butPayConnect.Size = new System.Drawing.Size(75, 24);
-			this.butPayConnect.TabIndex = 130;
-			this.butPayConnect.Text = "PayConnect";
-			this.butPayConnect.Click += new System.EventHandler(this.butPayConnect_Click);
-			// 
 			// groupBoxDeposit
 			// 
 			this.groupBoxDeposit.Controls.Add(this.labelDepositAccountNum);
@@ -473,6 +464,16 @@ namespace OpenDental {
 			this.panelEdgeExpress.Visible = false;
 			this.panelEdgeExpress.MouseClick += new System.Windows.Forms.MouseEventHandler(this.panelEdgeExpress_MouseClick);
 			// 
+			// butPayConnect
+			// 
+			this.butPayConnect.BackgroundImage = global::OpenDental.Properties.Resources.payconnect_btn_26;
+			this.butPayConnect.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+			this.butPayConnect.Location = new System.Drawing.Point(159, 21);
+			this.butPayConnect.Name = "butPayConnect";
+			this.butPayConnect.Size = new System.Drawing.Size(76, 26);
+			this.butPayConnect.TabIndex = 132;
+			this.butPayConnect.Click += new System.EventHandler(this.butPayConnect_Click);
+			// 
 			// FormClaimPayEdit
 			// 
 			this.AcceptButton = this.butSave;
@@ -554,7 +555,6 @@ namespace OpenDental {
 		private Label labelClaimPaymentGroup;
 		private Panel panelXcharge;
 		private OpenDental.UI.GroupBox groupPrepaid;
-		private UI.Button butPayConnect;
 		private OpenDental.UI.GroupBox groupBoxDeposit;
 		private ValidDate validDepositDate;
 		private ValidDouble validDoubleDepositAmt;
@@ -568,5 +568,6 @@ namespace OpenDental {
 		private Panel butPaySimple;
 		private Label labelRequiredFields;
 		private Panel panelEdgeExpress;
+		private Panel butPayConnect;
 	}
 }

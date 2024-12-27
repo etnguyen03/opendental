@@ -1582,7 +1582,8 @@ namespace OpenDental{
 				attemptsMade++;
 				Thread.Sleep(100);
 			}
-			Document document = null;
+			Document document=null;
+			Thread.Sleep(1000);
 			try{
 				document=ImageStore.Import(e.FullPath,GetCurrentCategory(),_patient);
 			}
@@ -1902,6 +1903,10 @@ namespace OpenDental{
 			try {
 				ControlImageDisplay controlImageDisplay=this.GetControlImageDisplaySelected();
 				controlImageDisplay?.SetShowDrawings(_showDrawingsOD,_showDrawingsPearl,_listPearlCategoriesShown);
+				labelAIProcessing.Visible=false;
+				checkPearlShow.Visible=true;
+				checkPearlToothParts.Visible=true;
+				butPearlLayers.Visible=true;
 				//FrmPearlLayers could have changed what is showing, so update docked checkboxes to match.
 				checkPearlShow.Checked=_showDrawingsPearl;
 				List<OpenDentBusiness.Pearl.EnumCategoryOD> listEnumCategoryODsToothParts=OpenDentBusiness.Bridges.Pearl.GetToothPartsCategoryODs();
@@ -1918,6 +1923,14 @@ namespace OpenDental{
 					_frmPearlLayers.ShowPearlLayers=_showDrawingsPearl;
 					_frmPearlLayers.RefreshUI();
 				}
+				//Regenerate thumbnails when new Pearl drawings have been added
+				if(sender is OpenDentBusiness.Bridges.Pearl) {
+					controlImageDisplay.ClearObjects();
+					NodeTypeAndKey nodeTypeAndKey=controlImageDisplay.GetNodeTypeAndKey();
+					SetDocumentOrMount(nodeTypeAndKey,controlImageDisplay);
+					controlImageDisplay.SelectTreeNode2(nodeTypeAndKey);
+				}
+				ThumbnailRefresh();
 				LayoutControls();
 			}
 			catch(Exception ex) {
@@ -1954,6 +1967,11 @@ namespace OpenDental{
 				ImageDraws.DeleteByDocNumAndVendor(docNum,EnumImageAnnotVendor.Pearl);
 				PearlRequests.DeleteByDocNum(docNum);
 			}
+			//Regenerate thumbnails when Pearl drawings are deleted
+			controlImageDisplay.ClearObjects();
+			NodeTypeAndKey nodeTypeAndKey=controlImageDisplay.GetNodeTypeAndKey();
+			SetDocumentOrMount(nodeTypeAndKey,controlImageDisplay);
+			controlImageDisplay.SelectTreeNode2(nodeTypeAndKey);
 			pearl_EventRefreshDisplay(sender,e);
 		}
 
@@ -3630,7 +3648,7 @@ namespace OpenDental{
 
 		private void ThumbnailRefresh(){
 			if(IsDocumentShowing()){
-				Bitmap bitmapThumb=Documents.CreateNewThumbnail(GetDocumentShowing(0),GetBitmapShowing(0));
+				Bitmap bitmapThumb=Documents.GetThumbnail(GetDocumentShowing(0),_patFolder);
 				imageSelector.SetThumbnail(bitmapThumb);
 			}
 			if(IsMountShowing()){
@@ -3736,8 +3754,9 @@ namespace OpenDental{
 				string logText="Mount Created: "+mount.Description+" with category "
 					+defDocCategory.ItemName;
 				SecurityLogs.MakeLogEntry(EnumPermType.ImageCreate,_patient.PatNum,logText);
-				FillImageSelector(false);
-				SelectTreeNode1(new NodeTypeAndKey(EnumImageNodeType.Mount,mount.MountNum));
+				FillImageSelector(false);//Thumbnail hasn't been created yet so thumbnail will read "Thumbnail not available"
+				SelectTreeNode1(new NodeTypeAndKey(EnumImageNodeType.Mount,mount.MountNum));//Thumbnail is created downstream of this
+				ThumbnailRefresh();//Load new thumbnail into image selector
 			}
 			ImagingDevice imagingDevice=frmMountAndAcquire.ImagingDeviceSelected;
 			if(imagingDevice is null){
@@ -4071,6 +4090,32 @@ namespace OpenDental{
 				if(listDocuments[i]!=null && PearlRequests.GetOneByDocNum(listDocuments[i].DocNum)?.RequestStatus==EnumPearlStatus.Received) {
 					return true;
 				}
+			}
+			//If no AI ImageDraws found for the document/mount, look for a PearlRequest to see if any images are currently processing.
+			bool isProcessing=false;
+			if(IsDocumentShowing()) {
+				PearlRequest pearlRequest=PearlRequests.GetOneByDocNum(listDocuments[0].DocNum);
+				if(pearlRequest!=null && pearlRequest.RequestStatus.In(EnumPearlStatus.Polling,EnumPearlStatus.Uploading)) {
+					isProcessing=true;
+					labelAIProcessing.Text=pearlRequest.RequestStatus.ToString()+"...";
+				}
+			}
+			else if(IsMountShowing()) {
+				for(int i=0;i<listDocuments.Count;i++) {
+					PearlRequest pearlRequest=PearlRequests.GetOneByDocNum(listDocuments[i].DocNum);
+					if(pearlRequest!=null && pearlRequest.RequestStatus.In(EnumPearlStatus.Polling,EnumPearlStatus.Uploading)) {
+						isProcessing=true;
+						labelAIProcessing.Text=pearlRequest.RequestStatus.ToString()+"...";
+						break;
+					}
+				}
+			}
+			if(isProcessing) {
+				labelAIProcessing.Visible=true;
+				checkPearlShow.Visible=false;
+				checkPearlToothParts.Visible=false;
+				butPearlLayers.Visible=false;
+				return true;
 			}
 			return false;
 		}

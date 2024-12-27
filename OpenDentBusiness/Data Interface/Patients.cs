@@ -1793,7 +1793,7 @@ namespace OpenDentBusiness {
 			int exactMatchPhoneDigits=PrefC.GetInt(PrefName.EnterpriseExactMatchPhoneNumDigits);
 			string phoneNumSearch="";
 			string likeQueryString=$@"
-					AND phonenumber.PhoneNumberDigits LIKE '%{POut.String(phDigitsTrimmed)}%'";
+					AND phonenumber.PhoneNumberDigits LIKE '{POut.String(phDigitsTrimmed)}%'";
 			if(usePhonenumTable) {
 				if(useExactMatch && phDigitsTrimmed.Length==exactMatchPhoneDigits) {
 					phoneNumSearch=$@"
@@ -1941,8 +1941,7 @@ namespace OpenDentBusiness {
 				+(ptSearchArgs.ListExplicitPatNums.IsNullOrEmpty()?"":$@"
 				AND FALSE
 				OR patient.PatNum IN ({string.Join(",",ptSearchArgs.ListExplicitPatNums)})")
-				+(!PrefC.GetBool(PrefName.DistributorKey)?"":$@"
-				GROUP BY patient.PatNum");
+				+$@"GROUP BY patient.PatNum";
 			if(!usePhonenumTable) {
 				command+=$@"
 				ORDER BY {((ptSearchArgs.InitialPatNum==0 || !ptSearchArgs.DoLimit) ? "" : $@"patient.PatNum={ptSearchArgs.InitialPatNum} DESC,")}"

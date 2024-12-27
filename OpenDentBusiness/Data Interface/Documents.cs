@@ -452,25 +452,26 @@ namespace OpenDentBusiness {
 			#endregion Create New Thumbnail
 		}
 
-		public static Bitmap CreateNewThumbnail(Document document,Bitmap bitmap){
-			Meth.NoCheckMiddleTierRole();
-			//The bitmap passed in already has brightness/contrast applied
-			Bitmap bitmapFullSize=ImageHelper.CopyWithCropRotate(document,bitmap);
-			Bitmap bitmapThumb=ImageHelper.GetBitmapSquare(bitmapFullSize,100);//Thumbnails saved in the thumbnails folder are always 100x100
-			bitmapFullSize?.Dispose();
-			/*
-			//If we also want to save it:
-			string fileNameThumb=ODFileUtils.CombinePaths(patFolder,"Thumbnails",document.FileName);
-			if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ) {//Only save thumbnail to local directory if using local AtoZ
-				try {
-					bitmapThumb.Save(fileNameThumb);
-				}
-				catch(Exception ex) {
-					ex.DoNothing();
-				}
-			}*/
-			return bitmapThumb;
-		}
+		////The below method was removed because Document thumbnails are now generated in ControlImageDisplay just as mounts are.
+		//public static Bitmap CreateNewThumbnail(Document document,Bitmap bitmap){
+		//	Meth.NoCheckMiddleTierRole();
+		//	//The bitmap passed in already has brightness/contrast applied
+		//	Bitmap bitmapFullSize=ImageHelper.CopyWithCropRotate(document,bitmap);
+		//	Bitmap bitmapThumb=ImageHelper.GetBitmapSquare(bitmapFullSize,100);//Thumbnails saved in the thumbnails folder are always 100x100
+		//	bitmapFullSize?.Dispose();
+		//	/*
+		//	//If we also want to save it:
+		//	string fileNameThumb=ODFileUtils.CombinePaths(patFolder,"Thumbnails",document.FileName);
+		//	if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ) {//Only save thumbnail to local directory if using local AtoZ
+		//		try {
+		//			bitmapThumb.Save(fileNameThumb);
+		//		}
+		//		catch(Exception ex) {
+		//			ex.DoNothing();
+		//		}
+		//	}*/
+		//	return bitmapThumb;
+		//}
 
 		public static Bitmap NoAvailablePhoto(){
 			Meth.NoCheckMiddleTierRole();

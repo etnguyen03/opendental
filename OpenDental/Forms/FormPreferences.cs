@@ -161,12 +161,19 @@ namespace OpenDental {
 				List<ControlAndPrefInfo> listControlAndPrefInfos=new List<ControlAndPrefInfo>();
 				ControlAndPrefInfo controlAndPref;
 				for(int c=0;c<listControls.Count;c++){
+					//we only care about labels and checkboxes, but we add all of them to handle the mouse leaving the ones we care about
+					listControls[c].MouseMove+=FormPreferences_MouseMove;
+					listControls[c].MouseDown+=FormPreferences_MouseDown;
 					PrefInf prefInf=null;
 					if(listControls[c] is Label label){//If it's a label, assign any preference information
 						prefInf=GetPrefInf(label);
 					}
 					if(listControls[c] is UI.CheckBox checkBox){//If it's a checkbox, assign any preference information
 						prefInf=GetPrefInf(checkBox);
+						//We need to make checkboxes with hoverinfo not have the text be clickable or checks will accidentally change when user clicks to see hover info.
+						if(prefInf!=null && !prefInf.Details.IsNullOrEmpty()){
+							checkBox.IsTextClickable=false;
+						}
 					}
 					controlAndPref=new ControlAndPrefInfo();
 					controlAndPref.Control_=listControls[c];
@@ -175,19 +182,6 @@ namespace OpenDental {
 				}
 				treeNodeAndControls.ListControlAndPrefInfos=listControlAndPrefInfos;
 				_listTreeNodeAndControls.Add(treeNodeAndControls);
-			}
-			List<Control> listControlsAll=GetListControlsFlat(this);
-			for(int i=0;i<listControlsAll.Count;i++){
-				//we only care about labels and checkboxes, but we add all of them to handle the mouse leaving the ones we care about
-				listControlsAll[i].MouseMove+=FormPreferences_MouseMove;
-				listControlsAll[i].MouseDown+=FormPreferences_MouseDown;
-				if(listControlsAll[i] is UI.CheckBox checkBox){
-					//We need to make checkboxes with hoverinfo not have the text be clickable or checks will accidentally change when user clicks to see hover info.
-					PrefInf prefInf=GetPrefInf(checkBox);
-					if(prefInf!=null && !prefInf.Details.IsNullOrEmpty()){
-						checkBox.IsTextClickable=false;
-					}
-				}
 			}
 			Left=Left-200;//to make room on the right for the popup info boxes.
 			Plugins.HookAddCode(this,"FormModuleSetup.FormModuleSetup_Load_end");

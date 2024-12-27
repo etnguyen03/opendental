@@ -37,8 +37,8 @@ namespace OpenDental.Bridges{
 				info+="-integrationid=\""+Tidy(pat.ChartNumber)+"\" ";
 			}
 			info+="-patientid=\""+Tidy(pat.SSN)+"\" ";
-			info+="-firstname=\""+Tidy(pat.GetNameFirst())+"\" ";
-			info+="-lastname=\""+Tidy(pat.LName)+"\" ";
+			info+="-firstname=\""+Tidy(pat.FName, true)+"\" ";
+			info+="-lastname=\""+Tidy(pat.LName, true)+"\" ";
 			info+="-birthday=\""+Tidy(pat.Birthdate.ToString("yyyyMMdd"))+"\" ";
 			info+="-merge";
 			try {
@@ -49,10 +49,15 @@ namespace OpenDental.Bridges{
 			}
 		}
 
-		///<summary>Removes semicolons and spaces.</summary>
-		private static string Tidy(string input) {
+		///<summary>Removes semicolons, spaces, and double quotes.  If isName is set to true, spaces within the name will be preserved.</summary>
+		private static string Tidy(string input, bool isName=false) {
 			string retVal=input.Replace(";","");//get rid of any semicolons.
-			retVal=retVal.Replace(" ","");
+			if(isName) {
+				retVal=retVal.Trim();
+			}
+			else {
+				retVal=retVal.Replace(" ","");
+			}
 			retVal=retVal.Replace("\"","");
 			return retVal;
 		}

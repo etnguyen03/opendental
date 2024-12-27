@@ -89,7 +89,6 @@ namespace OpenDentBusiness{
 		//	Db.NonQ(command);
 		//}
 
-		/*
 		///<summary></summary>
 		public static void Delete(long pearlRequestNum) {
 			if(RemotingClient.MiddleTierRole==MiddleTierRole.ClientMT) {
@@ -98,7 +97,6 @@ namespace OpenDentBusiness{
 			}
 			Crud.PearlRequestCrud.Delete(pearlRequestNum);
 		}
-		*/
 		///<summary></summary>
 		public static void DeleteByDocNum(long docNum) {
 			if(RemotingClient.MiddleTierRole==MiddleTierRole.ClientMT) {
