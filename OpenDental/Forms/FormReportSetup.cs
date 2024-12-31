@@ -237,6 +237,12 @@ namespace OpenDental {
 		}
 
 		private bool UpdateReportingServer() {
+			string oldReportingServerCompName=PrefC.GetStringSilent(PrefName.ReportingServerCompName);
+			string oldReportingServerDbName=PrefC.GetStringSilent(PrefName.ReportingServerDbName);
+			string oldReportingServerMySqlUser=PrefC.GetStringSilent(PrefName.ReportingServerMySqlUser);
+			string oldReportingServerMySqlPassHash=PrefC.GetStringSilent(PrefName.ReportingServerMySqlPassHash);
+			string oldReportingServerSslCa=PrefC.GetStringSilent(PrefName.ReportingServerSslCa);
+			string oldReportingServerURI=PrefC.GetStringSilent(PrefName.ReportingServerURI);
 			bool hasChanged=false;
 			if(!checkUseReportServer.Checked) {
 				hasChanged |=Prefs.UpdateString(PrefName.ReportingServerCompName,"");
@@ -265,6 +271,34 @@ namespace OpenDental {
 					hasChanged |=Prefs.UpdateString(PrefName.ReportingServerSslCa,"");
 					hasChanged |=Prefs.UpdateString(PrefName.ReportingServerURI,textMiddleTierURI.Text);
 				}
+			}
+			if(hasChanged) {
+				string logentry="";
+				if(radioReportServerDirect.Checked) {
+					if(oldReportingServerCompName!=PrefC.GetStringSilent(PrefName.ReportingServerCompName)) {
+						logentry+="Server Name changed from "+oldReportingServerCompName
+							+" to "+PrefC.GetStringSilent(PrefName.ReportingServerCompName)+"\n";
+					}
+					if(oldReportingServerDbName!=PrefC.GetStringSilent(PrefName.ReportingServerDbName)) {
+						logentry+="Database changed from "+oldReportingServerDbName
+						+" to "+PrefC.GetStringSilent(PrefName.ReportingServerDbName)+"\n";
+					}
+					if(oldReportingServerMySqlUser!=PrefC.GetStringSilent(PrefName.ReportingServerMySqlUser)) {
+						logentry+="MySQL User changed from "+oldReportingServerMySqlUser
+							+" to "+PrefC.GetStringSilent(PrefName.ReportingServerMySqlUser)+"\n";
+					}
+					if(oldReportingServerSslCa!=PrefC.GetStringSilent(PrefName.ReportingServerSslCa)) {
+						logentry="SslCa changed from "+oldReportingServerSslCa
+							+" to "+PrefC.GetStringSilent(PrefName.ReportingServerSslCa);
+					}
+				}
+				else {
+					if(oldReportingServerURI!=PrefC.GetStringSilent(PrefName.ReportingServerURI)) {
+						logentry+="URI changed from "+oldReportingServerURI
+							+" to "+PrefC.GetStringSilent(PrefName.ReportingServerURI);
+					}
+				}
+				SecurityLogs.MakeLogEntry(EnumPermType.Setup,Security.CurUser.UserNum,logentry);
 			}
 			return hasChanged;
 		}

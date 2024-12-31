@@ -202,7 +202,7 @@ namespace OpenDentBusiness.Crud{
 				+    POut.Long  (appointment.NextAptNum)+","
 				+    POut.Long  (appointment.UnschedStatus)+","
 				+    POut.Bool  (appointment.IsNewPatient)+","
-				+"'"+POut.String(appointment.ProcDescript)+"',"
+				+    DbHelper.ParamChar+"paramProcDescript,"
 				+    POut.Long  (appointment.Assistant)+","
 				+    POut.Long  (appointment.ClinicNum)+","
 				+    POut.Bool  (appointment.IsHygiene)+","
@@ -227,15 +227,19 @@ namespace OpenDentBusiness.Crud{
 				appointment.Note="";
 			}
 			OdSqlParameter paramNote=new OdSqlParameter("paramNote",OdDbType.Text,POut.StringNote(appointment.Note));
+			if(appointment.ProcDescript==null) {
+				appointment.ProcDescript="";
+			}
+			OdSqlParameter paramProcDescript=new OdSqlParameter("paramProcDescript",OdDbType.Text,POut.StringParam(appointment.ProcDescript));
 			if(appointment.ProcsColored==null) {
 				appointment.ProcsColored="";
 			}
 			OdSqlParameter paramProcsColored=new OdSqlParameter("paramProcsColored",OdDbType.Text,POut.StringParam(appointment.ProcsColored));
 			if(useExistingPK || PrefC.RandomKeys) {
-				Db.NonQ(command,paramNote,paramProcsColored);
+				Db.NonQ(command,paramNote,paramProcDescript,paramProcsColored);
 			}
 			else {
-				appointment.AptNum=Db.NonQ(command,true,"AptNum","appointment",paramNote,paramProcsColored);
+				appointment.AptNum=Db.NonQ(command,true,"AptNum","appointment",paramNote,paramProcDescript,paramProcsColored);
 			}
 			return appointment.AptNum;
 		}
@@ -273,7 +277,7 @@ namespace OpenDentBusiness.Crud{
 				+    POut.Long  (appointment.NextAptNum)+","
 				+    POut.Long  (appointment.UnschedStatus)+","
 				+    POut.Bool  (appointment.IsNewPatient)+","
-				+"'"+POut.String(appointment.ProcDescript)+"',"
+				+    DbHelper.ParamChar+"paramProcDescript,"
 				+    POut.Long  (appointment.Assistant)+","
 				+    POut.Long  (appointment.ClinicNum)+","
 				+    POut.Bool  (appointment.IsHygiene)+","
@@ -298,15 +302,19 @@ namespace OpenDentBusiness.Crud{
 				appointment.Note="";
 			}
 			OdSqlParameter paramNote=new OdSqlParameter("paramNote",OdDbType.Text,POut.StringNote(appointment.Note));
+			if(appointment.ProcDescript==null) {
+				appointment.ProcDescript="";
+			}
+			OdSqlParameter paramProcDescript=new OdSqlParameter("paramProcDescript",OdDbType.Text,POut.StringParam(appointment.ProcDescript));
 			if(appointment.ProcsColored==null) {
 				appointment.ProcsColored="";
 			}
 			OdSqlParameter paramProcsColored=new OdSqlParameter("paramProcsColored",OdDbType.Text,POut.StringParam(appointment.ProcsColored));
 			if(useExistingPK || isRandomKeys) {
-				Db.NonQ(command,paramNote,paramProcsColored);
+				Db.NonQ(command,paramNote,paramProcDescript,paramProcsColored);
 			}
 			else {
-				appointment.AptNum=Db.NonQ(command,true,"AptNum","appointment",paramNote,paramProcsColored);
+				appointment.AptNum=Db.NonQ(command,true,"AptNum","appointment",paramNote,paramProcDescript,paramProcsColored);
 			}
 			return appointment.AptNum;
 		}
@@ -327,7 +335,7 @@ namespace OpenDentBusiness.Crud{
 				+"NextAptNum           =  "+POut.Long  (appointment.NextAptNum)+", "
 				+"UnschedStatus        =  "+POut.Long  (appointment.UnschedStatus)+", "
 				+"IsNewPatient         =  "+POut.Bool  (appointment.IsNewPatient)+", "
-				+"ProcDescript         = '"+POut.String(appointment.ProcDescript)+"', "
+				+"ProcDescript         =  "+DbHelper.ParamChar+"paramProcDescript, "
 				+"Assistant            =  "+POut.Long  (appointment.Assistant)+", "
 				+"ClinicNum            =  "+POut.Long  (appointment.ClinicNum)+", "
 				+"IsHygiene            =  "+POut.Bool  (appointment.IsHygiene)+", "
@@ -353,11 +361,15 @@ namespace OpenDentBusiness.Crud{
 				appointment.Note="";
 			}
 			OdSqlParameter paramNote=new OdSqlParameter("paramNote",OdDbType.Text,POut.StringNote(appointment.Note));
+			if(appointment.ProcDescript==null) {
+				appointment.ProcDescript="";
+			}
+			OdSqlParameter paramProcDescript=new OdSqlParameter("paramProcDescript",OdDbType.Text,POut.StringParam(appointment.ProcDescript));
 			if(appointment.ProcsColored==null) {
 				appointment.ProcsColored="";
 			}
 			OdSqlParameter paramProcsColored=new OdSqlParameter("paramProcsColored",OdDbType.Text,POut.StringParam(appointment.ProcsColored));
-			Db.NonQ(command,paramNote,paramProcsColored);
+			Db.NonQ(command,paramNote,paramProcDescript,paramProcsColored);
 		}
 
 		///<summary>Updates one Appointment in the database.  Uses an old object to compare to, and only alters changed fields.  This prevents collisions and concurrency problems in heavily used tables.  Returns true if an update occurred.</summary>
@@ -417,7 +429,7 @@ namespace OpenDentBusiness.Crud{
 			}
 			if(appointment.ProcDescript != oldAppointment.ProcDescript) {
 				if(command!="") { command+=",";}
-				command+="ProcDescript = '"+POut.String(appointment.ProcDescript)+"'";
+				command+="ProcDescript = "+DbHelper.ParamChar+"paramProcDescript";
 			}
 			if(appointment.Assistant != oldAppointment.Assistant) {
 				if(command!="") { command+=",";}
@@ -497,13 +509,17 @@ namespace OpenDentBusiness.Crud{
 				appointment.Note="";
 			}
 			OdSqlParameter paramNote=new OdSqlParameter("paramNote",OdDbType.Text,POut.StringNote(appointment.Note));
+			if(appointment.ProcDescript==null) {
+				appointment.ProcDescript="";
+			}
+			OdSqlParameter paramProcDescript=new OdSqlParameter("paramProcDescript",OdDbType.Text,POut.StringParam(appointment.ProcDescript));
 			if(appointment.ProcsColored==null) {
 				appointment.ProcsColored="";
 			}
 			OdSqlParameter paramProcsColored=new OdSqlParameter("paramProcsColored",OdDbType.Text,POut.StringParam(appointment.ProcsColored));
 			command="UPDATE appointment SET "+command
 				+" WHERE AptNum = "+POut.Long(appointment.AptNum);
-			Db.NonQ(command,paramNote,paramProcsColored);
+			Db.NonQ(command,paramNote,paramProcDescript,paramProcsColored);
 			return true;
 		}
 

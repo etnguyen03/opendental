@@ -162,6 +162,21 @@ namespace OpenDentBusiness {
 			return Crud.ProcedureCrud.SelectMany(command);
 		}
 
+		///<summary>Gets all completed procedures with the matching codeNum for a list of patients, without notes.</summary>
+		public static List<Procedure> GetCompleteForProcCodeNum(List<long> listPatNums,long codeNum) {
+			if(listPatNums==null || listPatNums.Count==0) {
+				return new List<Procedure>();
+			}
+			if(RemotingClient.MiddleTierRole==MiddleTierRole.ClientMT) {
+				return Meth.GetObject<List<Procedure>>(MethodBase.GetCurrentMethod(),listPatNums,codeNum);
+			}
+			string command="SELECT * FROM procedurelog WHERE PatNum IN"+" ("+String.Join(",",listPatNums)+") "+
+				"AND CodeNum="+POut.Long(codeNum)+" "+
+				"AND ProcStatus ="+POut.Int((int)ProcStat.C)+" "+//include Complete
+				"ORDER BY ProcDate";
+			return Crud.ProcedureCrud.SelectMany(command);
+		}
+
 		///<summary>Gets all completed procedures without notes for a list of patients. Used when making auto splits. Also returns any procedures attached to payplans that the current patient is responsible for.</summary>
 		public static List<Procedure> GetCompleteForPats(List<long> listPatNums) {
 			if(RemotingClient.MiddleTierRole==MiddleTierRole.ClientMT) {

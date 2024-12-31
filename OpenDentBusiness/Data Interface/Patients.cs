@@ -2015,12 +2015,14 @@ namespace OpenDentBusiness {
 			List<long> listPatNumsWithCompletedProcs=new List<long>();//only for OmhNy
 			//RecallPastDue is not a part of the table and must be added manually by grabbing the recall data.
 			List<Procedure> listProceduresComplete=new List<Procedure>();//only for OmhNy
+			long codeNumAdmissionExam=-1;//only for OmhNy
 			if(PrefC.GetBool(PrefName.OmhNy)) {
+				codeNumAdmissionExam=ProcedureCodes.GetProcCode("D0122").CodeNum;//only for OmhNy
 				if(listPatNums.Count==0) {
 					listPatNums=listPatNumStrs.Select(x => PIn.Long(x)).ToList();
 				}
 				listRecalls=Recalls.GetList(listPatNums);
-				listProceduresComplete=Procedures.GetMostRecentCompletedProcedureForPatNums(listPatNums);
+				listProceduresComplete=Procedures.GetCompleteForProcCodeNum(listPatNums,codeNumAdmissionExam);
 				PtDataTable.Columns.Add("RecallPastDue");
 			}
 			PtDataTable.Columns.OfType<DataColumn>().ForEach(x => x.DataType=typeof(string));
@@ -2102,15 +2104,15 @@ namespace OpenDentBusiness {
 						.FindAll(x => x.PatNum==patNum)
 						.OrderBy(x => x.RecallTypeNum).ToList();//at their request, not sure why
 					string description="ORANGE";
-					bool hasCompletedProc=listProceduresComplete.Exists(x => x.PatNum==patNum && dateDischarge<=dateAdmit && x.DateComplete>=dateAdmit);//Currently admitted and has a procedure completed after being admitted
-					if(hasCompletedProc || dateDischarge>dateAdmit) {//Has completed procedure or is currently Discharged
+					bool hasCompletedAdmissionProc=listProceduresComplete.Exists(x => x.PatNum==patNum && dateDischarge<=dateAdmit && x.DateComplete>=dateAdmit && x.CodeNum==codeNumAdmissionExam);//Currently admitted and has an admission exam completed after being admitted
+					if(hasCompletedAdmissionProc || dateDischarge>dateAdmit) {//Has completed procedure or is currently Discharged
 						description="BLACK";
 					}
 					//Recall that has a due date within 14 days or less... or recall is overdue
 					Recall recallPastDue=listRecallsPat.Find(x => x.DateDue.Year>1880 
 						&& x.DateDue.AddDays(-14)<=DateTime.Today
 						&& RecallTypes.GetDescription(x.RecallTypeNum).In("PROPHY","CHILD PROPHY","ANNUAL EXAM","6 MONTH EXAM","PANO X-RAY","PERIO SRP(UR)","PERIO SRP(UL)","PERIO SRP(LR)","PERIO SRP(LL)"));
-					if(recallPastDue!=null && hasCompletedProc) {
+					if(recallPastDue!=null && hasCompletedAdmissionProc) {
 						description=RecallTypes.GetDescription(recallPastDue.RecallTypeNum);
 					}
 					r["RecallPastDue"]=description;

@@ -2532,5 +2532,13 @@ namespace OpenDentBusiness {
 			//End B58086
 		}//End of 24_3_31
 
+		private static void To24_3_35() {
+			string command;
+			//Start B58938
+			command="ALTER TABLE appointment MODIFY ProcDescript TEXT";
+			Db.NonQ(command);
+			//End B58938
+		}//End of 24_3_34() method
+	
 	}
 }

@@ -101,9 +101,15 @@ namespace OpenDental {
 			string clinicID="";
 			string clinicKey="";
 			string userID="";
+			ProgramProperty programPropertyDoseSpotApiVersion=OpenDentBusiness.ProgramProperties.GetPropForProgByDesc(Programs.GetProgramNum(ProgramName.eRx),DoseSpotREST.PropertyDescs.DoseSpotApiVersion);
 			try {
 				userID=DoseSpot.GetUserID(Security.CurUser,_clinic.ClinicNum);
-				DoseSpot.RegisterClinic(_clinic.ClinicNum,programPropertyClinicID.PropertyValue,programPropertyClinicKey.PropertyValue,userID,out clinicID,out clinicKey);
+				if(programPropertyDoseSpotApiVersion.PropertyValue=="1") {
+					DoseSpot.RegisterClinic(_clinic.ClinicNum,programPropertyClinicID.PropertyValue,programPropertyClinicKey.PropertyValue,userID,out clinicID,out clinicKey);
+				} 
+				else if(programPropertyDoseSpotApiVersion.PropertyValue=="2"){
+					DoseSpotV2.RegisterClinic(_clinic.ClinicNum,programPropertyClinicID.PropertyValue,programPropertyClinicKey.PropertyValue,userID,out clinicID,out clinicKey);
+				}
 			}
 			catch(Exception ex) {
 				MessageBox.Show(Lan.g(this,"Error: ")+ex.Message);

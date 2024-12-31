@@ -1917,8 +1917,8 @@ namespace OpenDental.InternalTools.Job_Manager {
 					_jobCur.UserNumTester=FormJRE.JobReviewCur.ReviewerNum;
 				}
 			}
-			_jobCur.ListJobReviews.RemoveAt(e.Row);
-			_jobOld.ListJobReviews.RemoveAt(e.Row);
+			_jobCur.ListJobReviews.RemoveAll(x=>x.JobReviewNum==jobReview.JobReviewNum);
+			_jobOld.ListJobReviews.RemoveAll(x=>x.JobReviewNum==jobReview.JobReviewNum);
 			if(FormJRE.JobReviewCur!=null) {
 				_jobCur.ListJobReviews.Add(FormJRE.JobReviewCur);
 				_jobOld.ListJobReviews.Add(FormJRE.JobReviewCur);

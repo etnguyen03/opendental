@@ -637,6 +637,7 @@ namespace OpenDental {
 					else {
 						//terms were not correctly validated, schedule was not able to be set so uncheck the box for the user to make edits.
 						checkProductionLock.Checked=false;
+						return;
 					}
 				}
 			}
@@ -766,6 +767,7 @@ namespace OpenDental {
 				if(textAPR.IsValid() && !CompareDouble.IsZero(PIn.Double(textAPR.Text)) && checkProductionLock.Checked==false
 				&& PrefC.GetBool(PrefName.PayPlanRequireLockForAPR)) {
 					checkProductionLock.Checked=true;
+					return true;
 				}
 				CalculateDateInterestStartFromInterestDelay();
 				FillCharges();

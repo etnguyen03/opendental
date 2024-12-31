@@ -74,6 +74,9 @@ namespace OpenDental.InternalTools.Job_Manager {
 			comboJobTeam.Items.AddList(_listJobTeams,x => x.TeamName);
 			comboJobTeam.SelectedIndex=0;
 			CreateGridContextMenus();
+			if(textEditorProjectDescription.Controls.Find("textDescription",true)[0] is ODtextBox textBox) {
+				textBox.HasInlineAutoNotesEnabled = false;
+			}
 		}
 
 		private bool TryGetSelectedJobFromMenuItem(MenuItem menuItem,out Job job,out string error) {

@@ -104,6 +104,7 @@ namespace OpenDental {
 		public bool UnsavedChangesCheck() {
 			//Depending on which control is visible, 
 			if(userControlJobEdit.Visible && userControlJobEdit.IsChanged) {
+				_jobCur=userControlJobEdit.GetJob();
 				switch(MessageBox.Show("Save changes to current job?","",MessageBoxButtons.YesNoCancel)) {
 					case System.Windows.Forms.DialogResult.OK:
 					case System.Windows.Forms.DialogResult.Yes:
@@ -119,6 +120,7 @@ namespace OpenDental {
 				}
 			}
 			if(userControlQueryEdit.Visible && userControlQueryEdit.IsChanged) {
+				_jobCur=userControlQueryEdit.GetJob();
 				switch(MessageBox.Show("Save changes to current job?","",MessageBoxButtons.YesNoCancel)) {
 					case System.Windows.Forms.DialogResult.OK:
 					case System.Windows.Forms.DialogResult.Yes:
@@ -134,6 +136,7 @@ namespace OpenDental {
 				}
 			}
 			if(userControlMarketingEdit.Visible && userControlMarketingEdit.IsChanged) {
+				_jobCur=userControlMarketingEdit.GetJob();
 				switch(MessageBox.Show("Save changes to current job?","",MessageBoxButtons.YesNoCancel)) {
 					case System.Windows.Forms.DialogResult.OK:
 					case System.Windows.Forms.DialogResult.Yes:
@@ -149,6 +152,7 @@ namespace OpenDental {
 				}
 			}
 			if(userControlProjectEdit.Visible && userControlProjectEdit.IsChanged) {
+				_jobCur=userControlProjectEdit.GetJob();
 				switch(MessageBox.Show("Save changes to current job?","",MessageBoxButtons.YesNoCancel)) {
 					case System.Windows.Forms.DialogResult.OK:
 					case System.Windows.Forms.DialogResult.Yes:

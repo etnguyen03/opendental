@@ -182,6 +182,9 @@ namespace OpenDental.InternalTools.Job_Manager {
 			menuItemBugsViewSubmissions.Click+=new System.EventHandler(this.menuItemBugsViewSubmissions_Click);
 			gridBugs.ContextMenu.MenuItems.Add(menuItemBugsViewSubmissions);
 			gridBugs.ContextMenu.Popup+=GridBugsPopupHelper;
+			if(textEditorDocumentation.Controls.Find("textDescription",true)[0] is ODtextBox textBox) {
+				textBox.HasInlineAutoNotesEnabled = false;
+			}
 		}
 
 		#region Popup Helpers

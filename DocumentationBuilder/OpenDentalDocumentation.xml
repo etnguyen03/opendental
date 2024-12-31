@@ -12772,6 +12772,7 @@
         <EnumValue name="Received">1 - The image was successfully processed and AI annotations were returned from Pearl.</EnumValue>
         <EnumValue name="Error">2 - An error occurred on Pearl’s side. Only set for errors that prevent this request from ever being fulfilled.</EnumValue>
         <EnumValue name="TimedOut">3 - Pearl did not give results within the timeout period of 10 minutes. Polling for this request can be retried.</EnumValue>
+        <EnumValue name="Uploading">4 - The image is being uploaded to Pearl.</EnumValue>
       </Enumeration>
     </column>
     <column order="4" name="DateTSent" type="date">

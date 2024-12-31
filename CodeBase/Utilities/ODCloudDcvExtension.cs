@@ -11,11 +11,12 @@ using Newtonsoft.Json;
 namespace CodeBase.Utilities {
 	public class ODCloudDcvExtension {
 		private static DateTime LastRequest;
-		private const int _bufferSize=4096;
+		private const int _bufferSize=1048576;// 1MB
 		private const string _delimiter="<END>";
 		private static readonly ODCloudDcvExtension _instance=new ODCloudDcvExtension();
     private NamedPipeClientStream _namedPipeClientStream;
-		private ResponseListHandler _responseListHandler;
+		private MessageListHandler _responseListHandler;
+		private MessageListHandler _sendingListHandler;
 
 		private ODCloudDcvExtension() { }
 
@@ -26,19 +27,40 @@ namespace CodeBase.Utilities {
 		}
 
 		public static async Task Start() {
-			while (!Instance.IsConnected()) {
-				LastRequest=DateTime.MinValue;
-				await Task.Delay(500);
-				try {
+			while(true) {
+				if(!Instance.IsConnected()) {
+					LastRequest=DateTime.MinValue;
 					// Create the client side stream to connect to the server namedpipe.
-					Instance._namedPipeClientStream=new NamedPipeClientStream(".","ServerPipe",PipeDirection.InOut,PipeOptions.Asynchronous | PipeOptions.WriteThrough);
-					await Instance._namedPipeClientStream.ConnectAsync();
-					Instance._responseListHandler=new ResponseListHandler();
-					await Instance.RunClient(Instance._responseListHandler);
+					NamedPipeClientStream pipeClientStream=null;
+					string userName=Environment.UserName;
+					try {
+						if(Instance._namedPipeClientStream==null || !Instance._namedPipeClientStream.IsConnected) {
+							Task.Delay(200).Wait();
+							pipeClientStream=new NamedPipeClientStream(".","ServerPipe"+userName,PipeDirection.InOut,PipeOptions.Asynchronous | PipeOptions.WriteThrough);
+							Instance._namedPipeClientStream=pipeClientStream;
+						}
+						if(pipeClientStream!=null && !pipeClientStream.IsConnected) {
+							await Instance._namedPipeClientStream.ConnectAsync();
+						}
+						if(Instance._responseListHandler==null && Instance._sendingListHandler==null) {
+							Instance._responseListHandler=new MessageListHandler();
+							Instance._sendingListHandler=new MessageListHandler();
+							Task readTask = Task.Run(async () => await Instance.RunClient(Instance._responseListHandler));
+							Task writeTask = Task.Run(async () => await Instance._sendingListHandler.ProcessMessages(Instance._namedPipeClientStream));
+						}
+					}
+					catch(Exception ex) {
+						ex.DoNothing();
+					}
+					finally {
+						if(Instance._namedPipeClientStream!=null && !Instance._namedPipeClientStream.IsConnected) {
+							Instance._namedPipeClientStream.Close();
+							Instance._namedPipeClientStream.Dispose();
+							Instance._namedPipeClientStream=null;
+						}
+					}
 				}
-				catch(Exception ex) {
-					ex.DoNothing();
-				}
+				Task.Delay(500).Wait();
 			}
 		}
 
@@ -56,36 +78,29 @@ namespace CodeBase.Utilities {
 			return LastRequest;
 		}
 
-		public async Task SendRequest(string request) {
-			try {
-				if (Instance._namedPipeClientStream!=null) {
-					byte[] messageByteArray=Encoding.UTF8.GetBytes(request+_delimiter);
-					int numBytes=messageByteArray.Length;
-					int numBytesSent=0;
-					while (numBytesSent<numBytes) {
-						int numBytesSending=Math.Min(_bufferSize,numBytes-numBytesSent);
-						await Instance._namedPipeClientStream.WriteAsync(messageByteArray,numBytesSent,numBytesSending);
-						numBytesSent+=numBytesSending;
-					}
-				}
+		public void SendRequest(string request) {
+			if(request==null || request.Length==0) {
+				return;
 			}
-			catch (Exception ex) {
-				ex.DoNothing();
-			}
+			Instance._sendingListHandler.AddMessage(request+_delimiter);
+			return;
 		}
 
 		public string GetResponse(string requestId) {
 			if(Instance._responseListHandler==null) {
 				return null;
 			}
-			string response=Instance._responseListHandler.GetResponse(requestId);
-			return response;
+			return Instance._responseListHandler.GetMessage(requestId);
 		}
 
-		private async Task RunClient(ResponseListHandler responseListHandler) {
+		private async Task RunClient(MessageListHandler responseListHandler) {
 			byte[] readBufferArray=new byte[_bufferSize];
 			StringBuilder stringBuilder=new StringBuilder();
-			while(Instance._namedPipeClientStream.IsConnected) {
+			while(true) {
+				if (_namedPipeClientStream==null || !_namedPipeClientStream.IsConnected ) {
+          Thread.Sleep(250);
+					break;
+        }
 				try {
 					int numBytes=await Instance._namedPipeClientStream.ReadAsync(readBufferArray,0,readBufferArray.Length);
 					if(numBytes==0) {
@@ -123,12 +138,12 @@ namespace CodeBase.Utilities {
       }
     }
 
-		private static void ProcessResponse(string response,ResponseListHandler responseListHandler) {
+		private static void ProcessResponse(string response,MessageListHandler responseListHandler) {
 			if(response==null || response.Length==0) {
 				return;
 			}
 			LastRequest=DateTime.Now;
-			responseListHandler.AddResponse(response);
+			responseListHandler.AddMessage(response);
 		}
 	}
 }

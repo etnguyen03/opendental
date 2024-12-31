@@ -26,6 +26,9 @@ namespace OpenDental {
 			InitializeComponent();
 			InitializeLayoutManager(isLayoutMS:true);
 			Lan.F(this);
+			if(textConcept.Controls.Find("textDescription",true)[0] is ODtextBox textBox) {
+				textBox.HasInlineAutoNotesEnabled = false;
+			}
 		}
 
 		private void FormJobAdd_Load(object sender,EventArgs e) {

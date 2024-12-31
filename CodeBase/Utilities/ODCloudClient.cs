@@ -549,7 +549,7 @@ namespace CodeBase {
 			_hasReceivedResponse=false;
 			ODCloudClientArgs args=JsonConvert.DeserializeObject<ODCloudClientArgs>(data);
 			//Send a request to the extension which will then send our request to the ODCC
-			Task.Run(async () => await Utilities.ODCloudDcvExtension.Instance.SendRequest(data));
+			Utilities.ODCloudDcvExtension.Instance.SendRequest(data);
 			DateTime start=DateTime.Now;
 			void waitForResponse() {
 				while(!_hasReceivedResponse && (DateTime.Now-start).TotalSeconds<timeoutSecs) {
@@ -745,10 +745,11 @@ namespace CodeBase {
 
 		private static string GetODCloudClientRequest(ODCloudClientData cloudClientData,CloudClientAction cloudClientAction,bool hasResponse=true) {
 			string dataStr=JsonConvert.SerializeObject(cloudClientData);
+			string userName=Environment.UserName;
 			//We will sign dataStr to prove this request came from an Open Dental server.
 			byte[] byteArray=Encoding.Unicode.GetBytes(dataStr);
 			CspParameters csp=new CspParameters {
-				KeyContainerName="cloudkey",
+				KeyContainerName="cloudkey"+userName,
 				Flags=CspProviderFlags.UseMachineKeyStore,
 			};
 			using RSACryptoServiceProvider rsa=new RSACryptoServiceProvider(csp);
@@ -784,7 +785,7 @@ namespace CodeBase {
 				SendDataToBrowser(request,(int)BrowserAction.SendToODCloudClient);
 			}
 			else if(IsAppStream) {
-				Task.Run(async () => await Utilities.ODCloudDcvExtension.Instance.SendRequest(request));
+				Utilities.ODCloudDcvExtension.Instance.SendRequest(request);
 			}
 		}
 

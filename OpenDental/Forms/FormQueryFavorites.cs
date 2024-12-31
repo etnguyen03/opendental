@@ -146,7 +146,7 @@ namespace OpenDental{
 			using FormQueryEdit formQueryEdit=new FormQueryEdit();
 			formQueryEdit.UserQueryCur=UserQueryCur;
 			formQueryEdit.UserQueryCur.IsNew=false;
-			formQueryEdit.UserQueryCur.IsPromptSetup=false;
+			formQueryEdit.UserQueryCur.IsPromptSetup=UserQueryCur.IsPromptSetup;
 			formQueryEdit.ShowDialog();
 			FillGrid();
 		}

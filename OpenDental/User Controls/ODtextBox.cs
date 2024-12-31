@@ -111,14 +111,12 @@ namespace OpenDental {
 		///<summary>Set to true to enable context menu option to insert auto notes.</summary>
 		[Category("OD"), Description("Set to true to enable context menu option to insert auto notes.")]
 		[DefaultValue(false)]
-		public bool HasAutoNotes {
-			get {
-				return _hasAutoNotes;
-			}
-			set {
-				_hasAutoNotes=value;
-			}
-		}
+		public bool HasAutoNotes { get; set; }
+
+		///<summary>Set to true to enable context menu option to insert auto notes.</summary>
+		[Category("OD"), Description("Set to true to enable context menu option to insert auto notes.")]
+		[DefaultValue(true)]
+		public bool HasInlineAutoNotesEnabled { get; set; }=true;
 
 		///<summary>Set true to enable the newer version 4.1 RichEdit library.</summary>
 		[Category("OD"), Description("Set true to enable RichEdit version 4.1 enhanced features.")]
@@ -713,10 +711,12 @@ namespace OpenDental {
 			}
 			int originalLength=Text.Length;
 			int originalCaret=base.SelectionStart;
-			string newText=QuickPasteNotes.Substitute(Text,_quickPasteType);
-			if(Text!=newText) {
-				Text=newText;
-				SelectionStart=originalCaret+Text.Length-originalLength;
+			if(HasInlineAutoNotesEnabled) {
+				string newText=QuickPasteNotes.Substitute(Text,_quickPasteType);
+				if(Text!=newText) {
+					Text=newText;
+					SelectionStart=originalCaret+Text.Length-originalLength;
+				}
 			}
 			//then CtrlQ
 			if(e.KeyCode==Keys.Q && e.Modifiers==Keys.Control) {

@@ -195,7 +195,7 @@
     <Compile Include="Utilities\ODCloudClient.cs" />
     <Compile Include="Utilities\ODCloudDcvExtension.cs" />
     <Compile Include="Utilities\PayConnectResponse.cs" />
-    <Compile Include="Utilities\ResponseListHandler.cs" />
+    <Compile Include="Utilities\MessageListHandler.cs" />
     <Compile Include="Utilities\SoundHelper.cs" />
     <Compile Include="Utilities\SymbolExtensions.cs" />
     <Compile Include="Utilities\ConvertWebCore.cs" />

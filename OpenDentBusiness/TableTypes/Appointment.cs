@@ -43,7 +43,8 @@ namespace OpenDentBusiness{
 		///<summary>This is the first appoinment this patient has had at this office.  Somewhat automated.</summary>
 		public bool IsNewPatient;
 		///<summary>A one line summary of all procedures.  Can be used in various reports, Unscheduled list, and Planned appointment tracker.  Not user editable right now, so it doesn't show on the screen.</summary>
-		public string ProcDescript;
+		[CrudColumn(SpecialType=CrudSpecialColType.IsText)]
+		public String ProcDescript;
 		///<summary>FK to employee.EmployeeNum.  You can assign an assistant to the appointment.</summary>
 		public long Assistant;
 		///<summary>FK to clinic.ClinicNum.  0 if no clinic.</summary>

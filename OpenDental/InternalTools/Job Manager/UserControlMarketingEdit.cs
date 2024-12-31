@@ -81,6 +81,9 @@ namespace OpenDental.InternalTools.Job_Manager {
 				gridFiles.ContextMenu=new ContextMenu();
 			}
 			gridFiles.ContextMenu.Popup+=FilePopupHelper;
+			if(textEditorMain.Controls.Find("textDescription",true)[0] is ODtextBox textBox) {
+				textBox.HasInlineAutoNotesEnabled = false;
+			}
 		}
 
 		///<summary>Not a property so that this is compatible with the VS designer.</summary>

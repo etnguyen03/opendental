@@ -448,6 +448,7 @@
 			this.textConcept.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.textConcept.FormattedTextAllowed = true;
 			this.textConcept.HasAutoNotes = true;
+			this.textConcept.HasInlineAutoNotesEnabled = false;
 			this.textConcept.HideSelection = false;
 			this.textConcept.Location = new System.Drawing.Point(0, 13);
 			this.textConcept.Name = "textConcept";
@@ -482,6 +483,7 @@
 			this.textWriteup.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.textWriteup.FormattedTextAllowed = true;
 			this.textWriteup.HasAutoNotes = true;
+			this.textWriteup.HasInlineAutoNotesEnabled = false;
 			this.textWriteup.HideSelection = false;
 			this.textWriteup.Location = new System.Drawing.Point(0, 13);
 			this.textWriteup.Name = "textWriteup";

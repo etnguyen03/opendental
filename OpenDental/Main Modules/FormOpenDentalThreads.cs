@@ -71,7 +71,7 @@ namespace OpenDental {
 					for(int i=0; i<_listThreadExitWaitHandles.Count; i++) {
 						//Accumulate total wait time over all threads and only allow a total of 30 seconds.
 						int msRemaining=(int)timeSpanTotalWait.Subtract(DateTime.Now.Subtract(dateTimeStart)).TotalMilliseconds;
-						//Always wait at least 1 ms.	
+						//Always wait at least 1 ms.
 						Logger.LogActionIfOverTimeLimit(
 							$"Waiting to stop: {_listThreadExitWaitHandles[i].Name}",
 							LogPath.Threads,
@@ -117,6 +117,8 @@ namespace OpenDental {
 						case FormODThreadNames.DataConnectionLost:
 						case FormODThreadNames.MiddleTierConnectionLost:
 						case FormODThreadNames.LicenseAgreementSignature:
+						case FormODThreadNames.ODCloudMachineName:
+						case FormODThreadNames.ODCloudDcvExtension:
 							break;
 						//Kill these.
 						case FormODThreadNames.CanadianItransCarrier:
@@ -124,8 +126,6 @@ namespace OpenDental {
 						case FormODThreadNames.EServiceMonitoring:
 						case FormODThreadNames.HqMetrics:
 						case FormODThreadNames.LogOff:
-						case FormODThreadNames.ODCloudMachineName:
-						case FormODThreadNames.ODCloudDcvExtension:
 						case FormODThreadNames.ODServiceMonitor:
 						case FormODThreadNames.Podium:
 						case FormODThreadNames.ReplicationMonitor:
@@ -708,7 +708,7 @@ namespace OpenDental {
 
 		#endregion
 		#region ODCloudSetMachineName
-		
+
 		///<summary>For ODBuild.IsThinfinity and PrefC.IsAppStream only.  Begins a thread that will run once per minute attempting to set the ODEnvironment.MachineName by making a
 		///call to the ODCloudClient. If ODCloudClient is not running or throws an exception, the machine name will be set to "UNKNOWN".  The next time this thread runs, if the
 		///machine name is "UNKNOWN" we will attempt to get the machine name from the ODCloudClient again.  If the machine name is successfully retrieved from the ODCloudClient
@@ -747,12 +747,12 @@ namespace OpenDental {
 			threadDcvExtension.GroupName=FormODThreadNames.ODCloudDcvExtension.GetDescription();
 			threadDcvExtension.Name=FormODThreadNames.ODCloudDcvExtension.GetDescription();
 			threadDcvExtension.Start();
-		}
-		#endregion ODCloudDcvExtension
-		#region ODServiceMonitorThread
+			}
+			#endregion ODCloudDcvExtension
+			#region ODServiceMonitorThread
 
-		///<summary>Begins a thread that monitor's the Open Dental Service heartbeat and alerts the user if the service is not running.</summary>
-		private void BeginODServiceMonitorThread() {
+			///<summary>Begins a thread that monitor's the Open Dental Service heartbeat and alerts the user if the service is not running.</summary>
+			private void BeginODServiceMonitorThread() {
 			if(IsThreadAlreadyRunning(FormODThreadNames.ODServiceMonitor)) {
 				return;
 			}
