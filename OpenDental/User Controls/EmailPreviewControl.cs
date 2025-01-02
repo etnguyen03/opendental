@@ -730,6 +730,10 @@ namespace OpenDental {
 			if(url.StartsWith("about")) {
 				url=url.Replace("about:","http://");
 			}
+			if(ODCloudClient.IsAppStream) {
+				ODCloudClient.LaunchFileWithODCloudClient(url);
+				return;
+			}
 			Process.Start(url);//Instead launch the URL into a new default browser window.
 		}
 

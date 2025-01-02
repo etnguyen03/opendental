@@ -273,7 +273,12 @@ namespace OpenDental {
 		}
 
 		private void linkLabel1_LinkClicked(object sender,LinkLabelLinkClickedEventArgs e) {
-			Process.Start("https://paysimple.com/partner/open-dental");
+			string url="https://paysimple.com/partner/open-dental";
+			if(ODCloudClient.IsAppStream) {
+				ODCloudClient.LaunchFileWithODCloudClient(url);
+				return;
+			}
+			Process.Start(url);
 		}
 
 		///<summary>Returns an error message if something went wrong. Otherwise, returns an empty string.</summary>

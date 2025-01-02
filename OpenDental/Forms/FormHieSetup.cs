@@ -90,6 +90,11 @@ namespace OpenDental {
 		}
 
 		private void butBrowse_Click(object sender,EventArgs e) {
+			if(ODCloudClient.IsAppStream) {
+				folderBrowserDialog.SelectedPath=PrefC.GetTempFolderPath();
+				textExportPath.Text=folderBrowserDialog.SelectedPath;
+				return;
+			}
 			folderBrowserDialog.SelectedPath=textExportPath.Text;
 			if(folderBrowserDialog.ShowDialog()==DialogResult.OK) {
 				textExportPath.Text=folderBrowserDialog.SelectedPath;

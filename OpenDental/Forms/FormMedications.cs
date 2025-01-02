@@ -269,7 +269,7 @@ namespace OpenDental {
 			}
 			int countExportedMeds=0;
 			string fileName;
-			if(ODBuild.IsThinfinity()) {
+			if(ODEnvironment.IsCloudInstance) {
 				fileName="ExportedMedications.txt";
 			}
 			else {

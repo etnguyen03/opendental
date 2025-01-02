@@ -250,7 +250,11 @@ namespace OpenDental{
 			WpfControls.UI.ContextMenu contextMenuImport = new WpfControls.UI.ContextMenu();
 			contextMenuImport.Add(new WpfControls.UI.MenuItem(Lan.g(this,"Import Automatically"),ToolBarImportAuto));
 			//toolStripMenuItem.ToolTipText="Import files as they are created in a folder.";//todo? no tooltip available for menus
-			toolBarMain.Add(Lan.g(this,"Import"),ToolBarImport_Click,WpfControls.UI.EnumIcons.Import,WpfControls.UI.ToolBarButtonStyle.DropDownButton,Lan.g(this,"Import From File"),contextMenuImport);
+			WpfControls.UI.ToolBarButtonStyle buttonStyle=WpfControls.UI.ToolBarButtonStyle.DropDownButton;
+			if(ODEnvironment.IsCloudInstance) {
+				buttonStyle=WpfControls.UI.ToolBarButtonStyle.NormalButton;
+			}
+			toolBarMain.Add(Lan.g(this,"Import"),ToolBarImport_Click,WpfControls.UI.EnumIcons.Import,buttonStyle,Lan.g(this,"Import From File"),contextMenuImport);
 			WpfControls.UI.ContextMenu contextMenuExport = new WpfControls.UI.ContextMenu();
 			contextMenuExport.Add(new WpfControls.UI.MenuItem(Lan.g(this,"Move to Patient..."),ToolBarMoveToPatient));
 			contextMenuExport.Add(new WpfControls.UI.MenuItem(Lan.g(this,"Export TIFF"),ToolBarExportTIFF));

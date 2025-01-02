@@ -371,14 +371,17 @@ namespace OpenDentBusiness{
 					.Where(x => x.SheetDefNum==listEClipboardSheetDefsToCreate[i].SheetDefNum)
 					.OrderBy(x => x.DateTimeSheet)
 					.LastOrDefault()??new Sheet();
-				if(sheetLastCompleted.DateTimeSheet > DateTime.MinValue) {
-					if(listEClipboardSheetDefsToCreate[i].ResubmitInterval.Days==0 && sheetLastCompleted.RevID >= listEClipboardSheetDefsToCreate[i].PrefillStatusOverride) {//Once should always equal 0 but in case check both
-						continue; //If this interval is set to 0 and they've already completed this form once, we never want to create it automatically again
+				if(sheetLastCompleted.DateTimeSheet > DateTime.MinValue) {//If the patient has submitted this sheetDef before.
+					if(listEClipboardSheetDefsToCreate[i].Frequency==EnumEClipFreq.Once && sheetLastCompleted.RevID >= listEClipboardSheetDefsToCreate[i].PrefillStatusOverride) {
+							continue;//If this frequency is set to once and they've already completed this form once, we never want to create it automatically again.
+					}	
+					else if(listEClipboardSheetDefsToCreate[i].Frequency==EnumEClipFreq.TimeSpan) {
+						int daysElapsed=(DateTime.Today - sheetLastCompleted.DateTimeSheet.Date).Days;
+						if(daysElapsed < listEClipboardSheetDefsToCreate[i].ResubmitInterval.Days) {
+							continue; //The interval hasn't elapsed yet so we don't want to create this sheet
+						}
 					}
-					int elapsed=(DateTime.Today - sheetLastCompleted.DateTimeSheet.Date).Days;
-					if(elapsed < listEClipboardSheetDefsToCreate[i].ResubmitInterval.Days) {
-						continue; //The interval hasn't elapsed yet so we don't want to create this sheet
-					}
+					//else if(listEClipboardSheetDefsToCreate[i].Frequency==EnumEClipFreq.EachTime), then we do not care about time elapsed and will populate the form each time.
 				}
 				SheetDef sheetDef=SheetDefs.GetSheetDef(listEClipboardSheetDefsToCreate[i].SheetDefNum);
 				Sheet sheetNew=new Sheet();

@@ -60,6 +60,10 @@ namespace OpenDental {
 		}
 
 		private void butSave_Click(object sender,EventArgs e) {
+			if(ODCloudClient.IsAppStream) {
+				ODCloudClient.ExportForAppStream(_tempPath);
+				return;
+			}
 			using SaveFileDialog saveFileDialog=new SaveFileDialog();
 			string filename="message.wav";
 			saveFileDialog.FileName=filename;

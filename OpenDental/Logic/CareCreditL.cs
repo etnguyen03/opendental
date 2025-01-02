@@ -9,12 +9,18 @@ namespace OpenDental {
 	public class CareCreditL {
 
 		///<summary>Opens the CareCredit Admin page.</summary>
-		public static void LaunchAdminPage(string merchantNum,string userName=null) {
-			TryLaunchCareCreditPage(CareCreditLandingPage.HM,null,0,0,CareCredit.IsMerchantNumberByProv,serviceType:EnumCareCreditPrefillServiceType.A,userName:userName,merchantNum:merchantNum);
+		public static string LaunchAdminPage(string merchantNum,string userName=null,bool showPage=true) {
+			string url=TryLaunchCareCreditPage(CareCreditLandingPage.HM,null,0,0,CareCredit.IsMerchantNumberByProv,serviceType:EnumCareCreditPrefillServiceType.A,userName:userName,merchantNum:merchantNum,doShowPage:showPage);
+			return url;
 		}
 
 		///<summary>Opens the CareCredit Admin page.</summary>
 		public static void LaunchAdminPage(long provNum,long clinicNum,bool isProvOverride,string userName=null) {
+			if(ODCloudClient.IsAppStream) {
+				string url=TryLaunchCareCreditPage(CareCreditLandingPage.HM,null,provNum,clinicNum,isProvOverride:isProvOverride,serviceType:EnumCareCreditPrefillServiceType.A,userName:userName,doShowPage:false);
+				ODCloudClient.LaunchFileWithODCloudClient(url);
+				return;
+			}
 			TryLaunchCareCreditPage(CareCreditLandingPage.HM,null,provNum,clinicNum,isProvOverride:isProvOverride,serviceType:EnumCareCreditPrefillServiceType.A,userName:userName);
 		}
 
@@ -22,12 +28,23 @@ namespace OpenDental {
 		public static void LaunchCreditApplicationPage(Patient patient,long provNum,long clinicNum,double purchaseAmt,double estimatedFeeAmt,
 			string practiceMemo=null,string userName=null,string oldRefId=null)
 		{
+			if(ODCloudClient.IsAppStream){
+				string url=TryLaunchCareCreditPage(CareCreditLandingPage.AP,patient,provNum,clinicNum,CareCredit.IsMerchantNumberByProv,purchaseAmt:purchaseAmt,
+				estimatedFeeAmt:estimatedFeeAmt,noteMemo:practiceMemo,userName:userName,oldRefId:oldRefId,doShowPage:false);
+				ODCloudClient.LaunchFileWithODCloudClient(url);
+				return;
+			}
 			TryLaunchCareCreditPage(CareCreditLandingPage.AP,patient,provNum,clinicNum,CareCredit.IsMerchantNumberByProv,purchaseAmt:purchaseAmt,
 				estimatedFeeAmt:estimatedFeeAmt,noteMemo:practiceMemo,userName:userName,oldRefId:oldRefId);
 		}
 
 		///<summary>Opens the CareCredit Lookup request page.</summary>
 		public static void LaunchLookupPage(Patient patient,long provNum,long clinicNum,string userName=null,string oldRefId=null) {
+			if(ODCloudClient.IsAppStream) {
+				string url=TryLaunchCareCreditPage(CareCreditLandingPage.LU,patient,provNum,clinicNum,CareCredit.IsMerchantNumberByProv,userName: userName,oldRefId: oldRefId,serviceType: EnumCareCreditPrefillServiceType.L,doShowPage:false);
+				ODCloudClient.LaunchFileWithODCloudClient(url);
+				return;
+			}
 			TryLaunchCareCreditPage(CareCreditLandingPage.LU,patient,provNum,clinicNum,CareCredit.IsMerchantNumberByProv,userName:userName,oldRefId:oldRefId,serviceType:EnumCareCreditPrefillServiceType.L);
 		}
 
@@ -79,6 +96,11 @@ namespace OpenDental {
 
 		///<summary>Opens the CareCredit Reports page.</summary>
 		public static void LaunchReportsPage(long provNum,long clinicNum,string userName=null) {
+			if(ODCloudClient.IsAppStream) {
+				string url=TryLaunchCareCreditPage(CareCreditLandingPage.HM,null,provNum,clinicNum,CareCredit.IsMerchantNumberByProv,userName:userName,serviceType:EnumCareCreditPrefillServiceType.R,doShowPage:false);
+				ODCloudClient.LaunchFileWithODCloudClient(url);
+				return;
+			}
 			TryLaunchCareCreditPage(CareCreditLandingPage.HM,null,provNum,clinicNum,CareCredit.IsMerchantNumberByProv,userName:userName,serviceType:EnumCareCreditPrefillServiceType.R);
 		}
 

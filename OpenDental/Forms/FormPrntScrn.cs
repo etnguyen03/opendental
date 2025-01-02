@@ -129,6 +129,13 @@ namespace OpenDental{
 		}
 
 		private void butExport_Click(object sender, System.EventArgs e) {
+			if(ODCloudClient.IsAppStream) {
+				using MemoryStream memoryStream=new MemoryStream();
+				_bitmapTemp.Save(memoryStream,ImageFormat.Jpeg);
+				byte[] byteArray=memoryStream.ToArray();
+				CloudClientL.ExportForCloud("Screenshot.jpg",false,byteArray);
+				return;
+			}
 			using SaveFileDialog saveFileDialog = new System.Windows.Forms.SaveFileDialog();
 			saveFileDialog.AddExtension=true;
 			saveFileDialog.Title=Lan.g(this,"Select Folder to Save Image To");
@@ -139,7 +146,7 @@ namespace OpenDental{
 			if(saveFileDialog.ShowDialog()!=DialogResult.OK){
 				return;
 			}
-			try{
+			try {
 				_bitmapTemp.Save(saveFileDialog.FileName, ImageFormat.Jpeg);
 			}
 			catch{

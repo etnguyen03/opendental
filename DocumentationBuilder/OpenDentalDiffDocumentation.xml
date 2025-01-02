@@ -21,6 +21,12 @@
       </Enumeration>
     </column>
   </table>
+  <table name="appointment">
+    <summary></summary>
+    <column order="14" name="ProcDescript" type="text">
+      <summary>A one line summary of all procedures.  Can be used in various reports, Unscheduled list, and Planned appointment tracker.  Not user editable right now, so it doesn't show on the screen.</summary>
+    </column>
+  </table>
   <table name="commlog">
     <summary></summary>
     <column order="5" name="Mode_" type="tinyint">
@@ -326,6 +332,12 @@
     <summary></summary>
     <column order="6" name="DefaultFormatRaw" type="tinyint(4)">
       <summary>Determines whether the UserQuery window loads with the 'Raw' format radio button pre-selected. For a new userquery, this is set based on pref.UserQueryDefaultRaw.</summary>
+    </column>
+  </table>
+  <table name="appointment">
+    <summary></summary>
+    <column order="14" name="ProcDescript" type="varchar(255)">
+      <summary>A one line summary of all procedures.  Can be used in various reports, Unscheduled list, and Planned appointment tracker.  Not user editable right now, so it doesn't show on the screen.</summary>
     </column>
   </table>
   <table name="grouppermission">

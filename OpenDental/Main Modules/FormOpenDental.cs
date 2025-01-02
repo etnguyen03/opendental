@@ -7334,6 +7334,10 @@ namespace OpenDental{
 				site="https://support.benco.com/";
 			}
 			try {
+				if(ODCloudClient.IsAppStream) {
+					ODCloudClient.LaunchFileWithODCloudClient(site);
+					return;
+				}
 				Process.Start(site);
 			}
 			catch(Exception) {
@@ -7363,8 +7367,13 @@ namespace OpenDental{
 		}
 
 		private void menuItemHelpContents_Click(object sender, System.EventArgs e) {
-			try{
-				Process.Start("https://www.opendental.com/manual/manual.html");
+			string site="https://www.opendental.com/manual/manual.html";
+			try {
+				if(ODCloudClient.IsAppStream) {
+					ODCloudClient.LaunchFileWithODCloudClient(site);
+					return;
+				}
+				Process.Start(site);
 			}
 			catch{
 				MsgBox.Show(this,"Could not find file.");
@@ -7372,8 +7381,13 @@ namespace OpenDental{
 		}
 
 		private void menuItemHelpIndex_Click(object sender, System.EventArgs e) {
-			try{
-				Process.Start("https://www.opendental.com/site/searchsite.html");
+			string site="https://www.opendental.com/site/searchsite.html";
+			try {
+				if(ODCloudClient.IsAppStream) {
+					ODCloudClient.LaunchFileWithODCloudClient(site);
+					return;
+				}
+				Process.Start(site);
 			}
 			catch{
 				MsgBox.Show(this,"Could not find file.");
@@ -7381,8 +7395,13 @@ namespace OpenDental{
 		}
 		
 		private void menuItemWebinar_Click(object sender,EventArgs e) {
-			try{
-				Process.Start("https://opendental.com/webinars/webinars.html");
+			string site="https://opendental.com/webinars/webinars.html";
+			try {
+				if(ODCloudClient.IsAppStream) {
+					ODCloudClient.LaunchFileWithODCloudClient(site);
+					return;
+				}
+				Process.Start(site);
 			}
 			catch{
 				MsgBox.Show(this,"Could not open page.");

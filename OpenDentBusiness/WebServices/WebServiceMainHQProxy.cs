@@ -46,7 +46,9 @@ namespace OpenDentBusiness {
 			}
 			if(webServiceHqUrl.IsNullOrEmpty() && ODBuild.IsDebug()) {
 				//Change arguments for debug only.
-				service.Url="http://localhost/OpenDentalWebServiceHQ/WebServiceMainHQ.asmx";//localhost
+				if(!ODCloudClient.IsAppStream){
+					service.Url="http://localhost/OpenDentalWebServiceHQ/WebServiceMainHQ.asmx";//localhost
+				}
 				//service.Url="https://patientviewer.com:49997/OpenDentalWebServiceHQ/WebServiceMainHQ.asmx";//Live server
 				if(Environment.MachineName.ToLower()=="jordanhome"){
 					service.Url="https://patientviewer.com:49997/OpenDentalWebServiceHQ/WebServiceMainHQ.asmx";

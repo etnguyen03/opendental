@@ -520,7 +520,7 @@
     <column order="13" name="IsNewPatient" type="tinyint">
       <summary>This is the first appoinment this patient has had at this office.  Somewhat automated.</summary>
     </column>
-    <column order="14" name="ProcDescript" type="varchar(255)">
+    <column order="14" name="ProcDescript" type="text">
       <summary>A one line summary of all procedures.  Can be used in various reports, Unscheduled list, and Planned appointment tracker.  Not user editable right now, so it doesn't show on the screen.</summary>
     </column>
     <column order="15" name="Assistant" type="bigint(20)" fk="employee">

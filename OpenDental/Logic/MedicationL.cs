@@ -118,6 +118,11 @@ namespace OpenDental {
 			if(ODBuild.IsThinfinity()) {
 				ThinfinityUtils.ExportForDownload(filename,json);
 			}
+			else if(ODCloudClient.IsAppStream) {
+				byte[] byteArray=Encoding.UTF8.GetBytes(json);
+				string combinedPath=ODFileUtils.CombinePaths(PrefC.GetTempFolderPath(),Path.GetFileName(filename));
+				CloudClientL.ExportForCloud(combinedPath,false,byteArray);
+			}
 			else {
 				File.WriteAllText(filename,json);//Allow Exception to trickle up.
 			}

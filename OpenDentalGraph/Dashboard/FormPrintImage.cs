@@ -167,7 +167,7 @@ namespace OpenDentalGraph {
 				FilterIndex=1,
 				RestoreDirectory=true,
 			};
-			if(ODBuild.IsThinfinity()) {
+			if(ODEnvironment.IsCloudInstance) {
 				sd.FileName=ODFileUtils.CombinePaths(Path.GetTempPath(),"image_export.pdf");
 			}
 			else {
@@ -187,6 +187,9 @@ namespace OpenDentalGraph {
 					pdfDoc.Save(sd.FileName);
 					if(ODBuild.IsThinfinity()) {
 						ThinfinityUtils.ExportForDownload(sd.FileName);
+					}
+					if(ODCloudClient.IsAppStream) {
+						ODCloudClient.ExportForAppStream(sd.FileName);
 					}
 					MessageBox.Show(Lans.g(this,"File saved."));
 				}

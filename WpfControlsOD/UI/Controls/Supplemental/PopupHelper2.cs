@@ -56,7 +56,9 @@ namespace WpfControls.UI {
 			for(int i=0;i<listStringMatches.Count;i++) {
 				string strMatch=listStringMatches[i]; //To avoid lazy eval
 				System.Windows.RoutedEventHandler eventHandler=(s,eArg) => { OpenUNCPath(strMatch); };
-				listMenuItemsLinks.Add(new MenuItem("File Explorer - "+listStringMatches[i],eventHandler,tag:"autolink"));
+				if(!ODCloudClient.IsAppStream) {
+					listMenuItemsLinks.Add(new MenuItem("File Explorer - "+listStringMatches[i],eventHandler));
+				}
 			}
 			if(rightClickLinks) {
 				listNumMatches=GetPatNumsFromText(contextMenuItemText);

@@ -131,7 +131,7 @@ namespace OpenDentBusiness {
 			if(codeGroupNum==0) {
 				return false;
 			}
-			CodeGroup codeGroup=GetOne(codeGroupNum,isShort:false);
+			CodeGroup codeGroup=GetOne(codeGroupNum);
 			if(codeGroup==null) {
 				return true;//Invalid CodeGroupNum passed in or database corruption.
 			}
@@ -150,7 +150,7 @@ namespace OpenDentBusiness {
 		public static List<long> GetCodeNums(long codeGroupNum) {
 			Meth.NoCheckMiddleTierRole();
 			List<long> listCodeNums=new List<long>();
-			CodeGroup codeGroup=GetOne(codeGroupNum,isShort:false);
+			CodeGroup codeGroup=GetOne(codeGroupNum);
 			if(codeGroup!=null) {
 				listCodeNums=ProcedureCodes.GetCodeNumsForProcCodes(codeGroup.ProcCodes);
 			}
@@ -158,9 +158,9 @@ namespace OpenDentBusiness {
 		}
 
 		///<summary>Returns the GroupName, including '(hidden)' if isHidden is true, for the CodeGroup passed in.</summary>
-		public static string GetGroupName(long codeGroupNum,bool isShort=false,bool isHidden=false) {
+		public static string GetGroupName(long codeGroupNum,bool isHidden=false) {
 			Meth.NoCheckMiddleTierRole();
-			CodeGroup codeGroup=GetOne(codeGroupNum,isShort:isShort);
+			CodeGroup codeGroup=GetOne(codeGroupNum);
 			return GetGroupName(codeGroup,isHidden:isHidden);
 		}
 
@@ -178,9 +178,10 @@ namespace OpenDentBusiness {
 			return groupName;
 		}
 
-		public static CodeGroup GetOne(long codeGroupNum,bool isShort=true) {
+		///<summary>Grab one code group from the full list of codegroups in the cache.</summary>
+		public static CodeGroup GetOne(long codeGroupNum) {
 			Meth.NoCheckMiddleTierRole();
-			return GetFirstOrDefault(x => x.CodeGroupNum==codeGroupNum,isShort);
+			return GetFirstOrDefault(x => x.CodeGroupNum==codeGroupNum);
 		}
 
 		public static CodeGroup GetOneForCodeGroupFixed(EnumCodeGroupFixed codeGroupFixed,bool isShort=true) {

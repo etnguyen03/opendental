@@ -212,8 +212,9 @@ namespace OpenDental {
 			butPrevious.IsEnabled=false;
 			FillSearchOption();
 			SetGridCols();
-			if(ODBuild.IsThinfinity()) {
-				//Keyboard does not currently work with THINFINITY users. 
+			if(ODEnvironment.IsCloudInstance) {
+				//Keyboard does not currently work with THINFINITY users.
+				//Disable keyboard for Appstream, help button launches URL on VM and options button can get to VM control panel.
 				butOnScreenKeyboard.Visible=false;
 			}
 			checkShowMerged.Visibility=Visibility.Hidden;

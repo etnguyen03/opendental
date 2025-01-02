@@ -107,9 +107,11 @@ namespace OpenDentBusiness {
 				return;
 			}
 			List<MobileAppDevice> listMobileAppDevices=MobileAppDevices.GetAll(patNum);
+			//Remove all devices that belong to a clinic that does not allow patients to fill out forms in eClipboard.
+			listMobileAppDevices.RemoveAll(x => !ClinicPrefs.GetBool(PrefName.EClipboardPresentAvailableFormsOnCheckIn,x.ClinicNum));
 			if(listMobileAppDevices.IsNullOrEmpty()) {
 				return;
-			}
+			}			
 			Sheet sheet=Sheets.GetOne(sheetNum);
 			if(sheet==null) {
 				return;
