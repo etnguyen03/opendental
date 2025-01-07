@@ -1579,12 +1579,12 @@ namespace OpenDentBusiness{
 		public static int CompareAptDateTimes(DataRow dataRowX,DataRow dataRowY) {
 			DateTime dateAptX=PIn.DateT(dataRowX["AptDateTime"].ToString());
 			DateTime dateAptY=PIn.DateT(dataRowY["AptDateTime"].ToString());
-			if(dateAptX==null
+			if(dateAptX==DateTime.MinValue
 				|| (ApptStatus)PIn.Int(dataRowX["AptStatus"].ToString())==ApptStatus.UnschedList)
 			{
 				dateAptX=DateTime.MaxValue;
 			}
-			if(dateAptY==null
+			if(dateAptY==DateTime.MinValue
 				|| (ApptStatus)PIn.Int(dataRowY["AptStatus"].ToString())==ApptStatus.UnschedList)
 			{
 				dateAptY=DateTime.MaxValue;

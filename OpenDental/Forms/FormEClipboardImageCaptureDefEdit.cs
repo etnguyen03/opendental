@@ -121,8 +121,8 @@ namespace OpenDental {
 				int numYears=textVIntYears.Value;
 				int numMonths=textVIntMonths.Value;
 				int numDays=textVIntDays.Value;
-				if(numYears+(numMonths/12)+(numDays/365)>29000){//29000 years is the max value for TimeSpan. Shouldn't actually happen.
-					MsgBox.Show("Time span must be less than 29,000 years.");
+				if((numYears*365)+(numMonths*30)+numDays>36500) {//36500 days (100 years) is well below the max value for TimeSpan of 29247 years.
+					MsgBox.Show("Time span must be less than 100 years.");
 					return;
 				}
 				if(numYears==0 && numMonths==0 && numDays==0){

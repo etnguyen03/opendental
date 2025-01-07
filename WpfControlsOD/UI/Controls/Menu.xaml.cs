@@ -25,6 +25,8 @@ Height is locked at 24.
 Unlike the MS menu, we don't add menu items in the designer.
 You can't add a ContextMenu in the designer. Do it in the constructor.
 Instead of ContextMenu.Popup event, use ContextMenu_Opened.
+Make sure to unsubscribe from the ContextMenu_Opened event when closing the frm to avoid a memory leak.
+	See FrmPatientSelect FormClosing for an example.
 Instead of MenuItem.Enabled, use MenuItem.IsEnabled.
 Instead of Visibile false, use Visibility.Collapsed.
 If you add a separator, use the actual Separator object instead of a hyphen.

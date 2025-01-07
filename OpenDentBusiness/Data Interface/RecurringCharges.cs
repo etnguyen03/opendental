@@ -1012,7 +1012,7 @@ namespace OpenDentBusiness {
 				}
 				else {
 					try {
-						errorMessage=((PayConnect2.ResponseError)response.ErrorResponse.Error).ToString();
+						errorMessage=(response.ErrorResponse).Error.ToString();
 					}
 					catch (Exception e) { 
 						errorMessage="Error returned from PayConnect: unable to parse error message";
@@ -1023,12 +1023,24 @@ namespace OpenDentBusiness {
 			PayConnectResponse payConnectResponse=PayConnect2.ApiResponseToPayConnectResponse(response);
 			StringBuilder strBuilderResultText=new StringBuilder();//this payment's result text, used in payment note and then appended to file string builder
 			strBuilderResultFile.AppendLine("PatNum: "+patNum+" Name: "+patCur.GetNameFLnoPref());
-			if(payConnectResponse==null || payConnectResponse.StatusCode.IsNullOrEmpty()) {
+			if((payConnectResponse==null || payConnectResponse.StatusCode.IsNullOrEmpty())
+				&& !payConnectResponse.Description.ToLower().Contains("declined")) 
+			{
 				MarkFailed(chargeData,Lans.g(_lanThis,"Transaction Failed, unknown error"),LogLevel.Information);//Likely a server internal error not a card issue
 				if(PrefC.HasClinicsEnabled && dictClinicNumDesc.ContainsKey(clinicNumCur)) {
 					strBuilderResultText.AppendLine("CLINIC="+dictClinicNumDesc[clinicNumCur]);
 				}
 				strBuilderResultText.AppendLine(Lans.g(_lanThis,"Transaction Failed, unknown error"));
+				strBuilderResultFile.AppendLine(strBuilderResultText.ToString());//add to the file string builder
+			}
+			else if(payConnectResponse.Description.ToLower().Contains("declined")
+				&& response.ResponseType==PayConnect2.ResponseType.Error) 
+			{
+				if(PrefC.HasClinicsEnabled && dictClinicNumDesc.ContainsKey(clinicNumCur)) {
+					strBuilderResultText.AppendLine("CLINIC="+dictClinicNumDesc[clinicNumCur]);
+				}
+				strBuilderResultText.AppendLine(Lans.g(_lanThis,"Transaction Type")+": "+PayConnectService.transType.SALE.ToString());
+				strBuilderResultText.AppendLine(Lans.g(_lanThis,"Status")+": "+payConnectResponse.Description);
 				strBuilderResultFile.AppendLine(strBuilderResultText.ToString());//add to the file string builder
 			}
 			else if(payConnectResponse.StatusCode!="0") {//error in transaction

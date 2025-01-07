@@ -102,7 +102,12 @@ namespace OpenDental{
 			pd2.PrintPage += new PrintPageEventHandler(this.pd2_PrintPage);
 //			pd2.DefaultPageSettings.Margins= new Margins(10,40,40,60);
 			if(isJustPreview){
-				printPreviewControl2.Document=pd2;
+				try {
+					printPreviewControl2.Document=pd2;
+				}
+				catch (Exception ex) {
+					MsgBox.Show(ex.Message);
+				}
 				return;
 			}
 			try {

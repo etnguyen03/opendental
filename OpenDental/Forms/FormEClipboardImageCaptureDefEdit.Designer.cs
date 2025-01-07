@@ -158,7 +158,7 @@ namespace OpenDental{
 			// textVIntDays
 			// 
 			this.textVIntDays.Location = new System.Drawing.Point(86, 150);
-			this.textVIntDays.MaxVal = 365;
+			this.textVIntDays.MaxVal = 36500;
 			this.textVIntDays.Name = "textVIntDays";
 			this.textVIntDays.Size = new System.Drawing.Size(51, 20);
 			this.textVIntDays.TabIndex = 263;
@@ -175,7 +175,7 @@ namespace OpenDental{
 			// textVIntMonths
 			// 
 			this.textVIntMonths.Location = new System.Drawing.Point(86, 126);
-			this.textVIntMonths.MaxVal = 12;
+			this.textVIntMonths.MaxVal = 1200;
 			this.textVIntMonths.Name = "textVIntMonths";
 			this.textVIntMonths.Size = new System.Drawing.Size(51, 20);
 			this.textVIntMonths.TabIndex = 261;
@@ -205,6 +205,7 @@ namespace OpenDental{
 			// textVIntYears
 			// 
 			this.textVIntYears.Location = new System.Drawing.Point(86, 103);
+			this.textVIntYears.MaxVal = 100;
 			this.textVIntYears.Name = "textVIntYears";
 			this.textVIntYears.Size = new System.Drawing.Size(51, 20);
 			this.textVIntYears.TabIndex = 259;

@@ -28,6 +28,7 @@ namespace WpfControls.UI{
 		public GroupBox(){
 			KeyboardNavigation.SetTabNavigation(this,KeyboardNavigationMode.Local);//See notes in FrmTestFocusTabbing.xaml.cs
 			Focusable=false;
+			Unloaded+=groupBox_Unloaded;
 		}
 		//https://stackoverflow.com/questions/9094486/adding-children-to-usercontrol
 		//Worked fine, but it wouldn't let me set Name property on child controls of UserControl
@@ -92,6 +93,12 @@ namespace WpfControls.UI{
 		}
 
 
+		private void groupBox_Unloaded(object sender,RoutedEventArgs e) {
+			Items.Clear();
+			if(this.Parent is System.Windows.Controls.Grid grid) {
+				grid.Children.Remove(this);
+			}
+		}
 	}
 
 	

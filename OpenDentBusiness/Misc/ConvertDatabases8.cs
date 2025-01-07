@@ -2435,6 +2435,9 @@ namespace OpenDentBusiness {
 			Db.NonQ(command);
 			command="UPDATE eclipboardimagecapturedef SET Frequency=2 WHERE FrequencyDays>0";//2=Timespan
 			Db.NonQ(command);
+			//Without the following line, the db conversion might fail and result in db corruption if 
+			command="UPDATE eclipboardimagecapturedef SET Frequency=0, ResubmitInterval=0, FrequencyDays=0 WHERE FrequencyDays>36500";//Frequency 0=Once
+			Db.NonQ(command);
 			command="UPDATE eclipboardimagecapturedef SET ResubmitInterval=864000000000*FrequencyDays WHERE FrequencyDays>0";
 			Db.NonQ(command);
 			command="UPDATE eclipboardimagecapturedef SET FrequencyDays=0";
@@ -2539,6 +2542,21 @@ namespace OpenDentBusiness {
 			Db.NonQ(command);
 			//End B58938
 		}//End of 24_3_34() method
+
+		private static void To24_3_37() {
+			string command;
+			//Start B59212
+			try {
+				if(!IndexExists("claim","DateService,SecDateEntry")) {
+					command="ALTER TABLE claim ADD INDEX DateService(DateService,SecDateEntry)";
+					Db.NonQ(command);
+				}
+			}
+			catch(Exception ex) {
+				ex.DoNothing(); //Only an index. (Exception ex) required to catch thrown exception
+			}
+			//End B59212
+		}//End of 24_3_37() method
 	
 	}
 }

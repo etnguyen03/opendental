@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Markup;
@@ -267,6 +268,7 @@ namespace OpenDental {
 			_dispatcherTimer.Tick+=Timer_Tick;
 			//stackPanel.Background=Brushes.Green;
 			Loaded+=CtrlEFormFill_Loaded;
+			Unloaded+=CtrlEFormFill_Unloaded;
 			_cursorDrag=new Cursor(new MemoryStream(WpfControls.Properties.Resources.CursorDrag));
 		}
 		#endregion Constructor
@@ -1576,6 +1578,15 @@ namespace OpenDental {
 			gridMain.MouseLeftButtonDown+=Grid_MouseLeftButtonDown;
 			gridMain.MouseLeftButtonUp+=Grid_MouseLeftButtonUp;
 			gridMain.MouseMove+=GridMain_MouseMove;
+		}
+
+		private void CtrlEFormFill_Unloaded(object sender,RoutedEventArgs e) {
+			if(scrollViewer!=null) {
+				ScrollBar scrollBarVertical=scrollViewer.Template.FindName("PART_VerticalScrollBar",scrollViewer) as ScrollBar;
+				if(scrollBarVertical!=null) {
+					scrollBarVertical.Template=null;
+				}
+			}
 		}
 
 		///<summary>This method is called when the timer interval has elapsed.</summary>

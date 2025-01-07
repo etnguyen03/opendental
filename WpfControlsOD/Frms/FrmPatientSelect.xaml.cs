@@ -185,24 +185,20 @@ namespace OpenDental {
 			contextMenu.Opened+=contextMenu_Opened;
 			if(PrefC.GetBool(PrefName.PatientSSNMasked)) {
 				//Add "View SS#" right click option, MenuItemPopup() will show and hide it as needed.
-				menuItemUnmaskSSN=new MenuItem();
+				menuItemUnmaskSSN=new MenuItem("View SS#",new RoutedEventHandler(MenuItemUnmaskSSN_Click));
 				menuItemUnmaskSSN.IsEnabled=false;
 				menuItemUnmaskSSN.Visibility=Visibility.Collapsed;
 				menuItemUnmaskSSN.Name="ViewSSN";
-				menuItemUnmaskSSN.Text="View SS#";
 				if(CultureInfo.CurrentCulture.Name.EndsWith("CA")) {//Canadian. en-CA or fr-CA
 					menuItemUnmaskSSN.Text="View SIN";
 				}
-				menuItemUnmaskSSN.Click+= new RoutedEventHandler(MenuItemUnmaskSSN_Click);
 				contextMenu.Add(menuItemUnmaskSSN);
 			}
 			if(PrefC.GetBool(PrefName.PatientDOBMasked)) {
-				menuItemUnmaskDOB=new MenuItem();
+				menuItemUnmaskDOB=new MenuItem("View DOB",new RoutedEventHandler(MenuItemUnmaskDOB_Click));
 				menuItemUnmaskDOB.IsEnabled=false;
 				menuItemUnmaskDOB.Visibility=Visibility.Collapsed;
 				menuItemUnmaskDOB.Name="ViewDOB";
-				menuItemUnmaskDOB.Text="View DOB";
-				menuItemUnmaskDOB.Click+= new RoutedEventHandler(MenuItemUnmaskDOB_Click);
 				contextMenu.Add(menuItemUnmaskDOB);
 			}
 			if(menuItemUnmaskSSN!=null || menuItemUnmaskDOB!=null){
@@ -867,6 +863,12 @@ namespace OpenDental {
 			if(butOK.IsAltKey(Key.O,e)) {
 				butOK_Click(this,new EventArgs());
 			}
+			if(butPrevious.IsAltKey(Key.P,e)) {
+				butPrevious_Click(this,new EventArgs());
+			}
+			if(butNext.IsAltKey(Key.N,e)) {
+				butNext_Click(this,new EventArgs());
+			}
 		}
 		#endregion
 
@@ -879,6 +881,7 @@ namespace OpenDental {
 		}
 
 		private void FrmPatientSelect_FormClosing(object sender,EventArgs e) {
+			gridMain.ContextMenu.Opened-=contextMenu_Opened;
 			//Try to close the on screen keyboard if one was opened by this form.
 			ODException.SwallowAnyException(CloseOnScreenKeyBoard);
 		}

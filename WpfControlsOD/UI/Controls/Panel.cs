@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -39,6 +40,7 @@ How to use panel control:
 			//Width=200;
 			//Height=200;
 			PreviewMouseDown+=panel_PreviewMouseDown;
+			Unloaded+=panel_Unloaded;
 			//I tried lots of other things to make click work, but unsuccessful. 
 			//Tried border.MouseDown, scrollViewer.MouseDown, grid.MouseDown, and preview versions of some.
 			//I tried adding backgrounds to things so that click would register, but that didn't work either.
@@ -132,6 +134,16 @@ How to use panel control:
 
 		private void panel_PreviewMouseDown(object sender,MouseButtonEventArgs e) {
 			Click?.Invoke(this,new EventArgs());
+		}
+
+		private void panel_Unloaded(object sender,RoutedEventArgs e) {
+			FieldInfo fieldInfo=typeof(Panel).GetField("Click",System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+			if(fieldInfo!=null) {
+				fieldInfo.SetValue(this,null);
+			}
+			if(this.Parent is System.Windows.Controls.Grid grid) {
+				grid.Children.Remove(this);
+			}
 		}
 
 		//private void scrollViewer_MouseDown(object sender,MouseButtonEventArgs e) {
