@@ -391,8 +391,9 @@ namespace OpenDental {
 				isValidClaimFee=CompareDouble.IsEqual(claimSelected.ClaimFee,fee);
 			}
 			if(!isValidClaimFee) {
-				MessageBox.Show(Lan.g(this,"Claim fee on claim does not match ERA.")+"  "+Lan.g(this,"Expected")+" "+fee.ToString("f"));
-				return;
+				if(!MsgBox.Show(this,MsgBoxButtons.OKCancel,"Claim fee on claim does not match ERA. Continue anyway?")) {
+					return;
+				}
 			}
 			if(claimSelected.ClaimType=="PreAuth" && _hx835_Claim.DateServiceStart.Date.Year<=1900) {
 				//Some 835s for PreaAuths have been returning 01/01/1900 as an equivalent to DateTime.MinVale. We will treat them as logically equal.
@@ -400,9 +401,9 @@ namespace OpenDental {
 			else if((claimSelected.DateService.Date.CompareTo(_hx835_Claim.DateServiceStart.Date) < 0)
 				|| (claimSelected.DateService.Date.CompareTo(_hx835_Claim.DateServiceEnd.Date) > 0))
 			{
-				MessageBox.Show(Lan.g(this,"Date of service on claim does not match service date range on ERA.")+"\r\n"+Lan.g(this,"Expected")+" "
-					+_hx835_Claim.DateServiceStart.ToShortDateString()+" - "+_hx835_Claim.DateServiceEnd.ToShortDateString());
-				return;
+				if(!MsgBox.Show(this,MsgBoxButtons.OKCancel,"Date of service on claim does not match service date range on ERA. Continue anyway?")) {
+					return;
+				}
 			}
 			ClaimSelected=claimSelected;
 			DialogResult=DialogResult.OK;

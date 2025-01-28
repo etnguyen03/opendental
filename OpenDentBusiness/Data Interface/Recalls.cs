@@ -1118,6 +1118,11 @@ namespace OpenDentBusiness {
 					string command="SELECT patient.PatNum,COALESCE(procedurelog.CodeNum,0) codeNum,"
 						+"COALESCE(MAX(procedurelog.ProcDate),"+POut.Date(DateTime.MinValue)+") lastProcDate "
 						+"FROM patient "
+						//The inner join will eliminate patients who do not have any completed procedures.
+						//The extra rows created by inner join will be collapsed away because we group by the other procedurelog result from the left join.
+						//We considered a where exists, but that's probably about the same performance.
+						+"INNER JOIN procedurelog procedurelogComplete ON patient.PatNum=procedurelogComplete.PatNum "
+							+"AND procedurelogComplete.ProcStatus IN("+POut.Int((int)ProcStat.C)+","+POut.Int((int)ProcStat.EC)+","+POut.Int((int)ProcStat.EO)+") "
 						+"LEFT JOIN procedurelog ON patient.PatNum=procedurelog.PatNum "
 							+"AND procedurelog.ProcStatus IN("+POut.Int((int)ProcStat.C)+","+POut.Int((int)ProcStat.EC)+","+POut.Int((int)ProcStat.EO)+") "
 							+"AND procedurelog.CodeNum IN(SELECT CodeNum FROM recalltrigger) "

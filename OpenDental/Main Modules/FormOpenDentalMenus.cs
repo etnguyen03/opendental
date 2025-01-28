@@ -41,8 +41,6 @@ namespace OpenDental{
 		private MenuItemOD _menuItemJobManager;
 		///<summary>Only available if Late Charges are enabled on the Show Features window.</summary>
 		private MenuItemOD _menuItemLateCharges;
-		///<summary>Not available if in Unix.</summary>
-		private MenuItemOD _menuItemLocalHelpWindows;
 		private MenuItemOD _menuItemNewCropBilling;
 		private MenuItemOD _menuItemNoAlerts;
 		private MenuItemOD _menuItemPatDashboards;
@@ -485,12 +483,10 @@ namespace OpenDental{
 		///<summary>Help Main</summary>
 		private void LayoutMenuHelp(MenuItemOD menuItemHelp) {
 			menuItemHelp.Add("Online Support",menuItemRemote_Click);
-			_menuItemLocalHelpWindows=new MenuItemOD("Local Help-Windows",menuItemHelpWindows_Click);
-			menuItemHelp.Add(_menuItemLocalHelpWindows);
-			menuItemHelp.Add("Online Help - Contents",menuItemHelpContents_Click);
-			MenuItemOD menuItemOnlineHelpIndex=new MenuItemOD("Online Help - Index",menuItemHelpIndex_Click);
-			menuItemOnlineHelpIndex.ShortcutKeys=Keys.Shift|Keys.F1;
-			menuItemHelp.Add(menuItemOnlineHelpIndex);
+			menuItemHelp.Add("Online Help - Documentation",menuItemHelpDocumentation_Click);
+			MenuItemOD menuItemOnlineHelpSearch=new MenuItemOD("Online Help - Search",menuItemHelpSearch_Click);
+			menuItemOnlineHelpSearch.ShortcutKeys=Keys.Shift|Keys.F1;
+			menuItemHelp.Add(menuItemOnlineHelpSearch);
 			_menuItemPayloadMonitor=new MenuItemOD("Payload Monitor",MenuItemQueryMonitor_Click);
 			menuItemHelp.Add(_menuItemPayloadMonitor);
 			menuItemHelp.Add("Training Videos",menuItemWebinar_Click);

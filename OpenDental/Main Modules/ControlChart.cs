@@ -2652,6 +2652,17 @@ namespace OpenDental {
 			}
 		}
 
+		private void textDate_Leave(object sender,EventArgs e) {
+			if(!DateTime.TryParse(textDate.Text, out DateTime dateTimeSelected)) {
+				MsgBox.Show(this,"Please enter a valid date.");
+				return;
+			}
+			if(dateTimeSelected.Date>DateTime.Today && !PrefC.GetBool(PrefName.FutureTransDatesAllowed)) {
+				MsgBox.Show(this,"Procedure cannot be set for future date.");
+				textDate.Text=DateTime.Today.Date.ToString();
+			}
+		}
+
 		private void textProcCode_Enter(object sender,EventArgs e) {
 			if(textProcCode.Text==Lan.g(this,"Type Proc Code")) {
 				textProcCode.Text="";

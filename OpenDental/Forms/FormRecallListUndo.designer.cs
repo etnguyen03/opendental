@@ -26,7 +26,7 @@ namespace OpenDental{
 			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormRecallListUndo));
 			this.butOK = new OpenDental.UI.Button();
 			this.label1 = new System.Windows.Forms.Label();
-			this.textDate = new OpenDental.ValidDate();
+			this.odDatePicker = new OpenDental.UI.ODDatePicker();
 			this.label2 = new System.Windows.Forms.Label();
 			this.label3 = new System.Windows.Forms.Label();
 			this.labelCount = new System.Windows.Forms.Label();
@@ -35,7 +35,7 @@ namespace OpenDental{
 			// butOK
 			// 
 			this.butOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.butOK.Location = new System.Drawing.Point(397, 125);
+			this.butOK.Location = new System.Drawing.Point(447, 227);
 			this.butOK.Name = "butOK";
 			this.butOK.Size = new System.Drawing.Size(75, 24);
 			this.butOK.TabIndex = 3;
@@ -44,23 +44,27 @@ namespace OpenDental{
 			// 
 			// label1
 			// 
-			this.label1.Location = new System.Drawing.Point(21, 18);
+			this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+			this.label1.Location = new System.Drawing.Point(12, 9);
 			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(455, 74);
+			this.label1.Size = new System.Drawing.Size(510, 60);
 			this.label1.TabIndex = 4;
 			this.label1.Text = resources.GetString("label1.Text");
 			// 
-			// textDate
+			// odDatePicker
 			// 
-			this.textDate.Location = new System.Drawing.Point(126, 95);
-			this.textDate.Name = "textDate";
-			this.textDate.Size = new System.Drawing.Size(100, 20);
-			this.textDate.TabIndex = 5;
-			this.textDate.TextChanged += new System.EventHandler(this.textDate_TextChanged);
+			this.odDatePicker.BackColor = System.Drawing.Color.Transparent;
+			this.odDatePicker.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
+			this.odDatePicker.Location = new System.Drawing.Point(24, 76);
+			this.odDatePicker.Name = "odDatePicker";
+			this.odDatePicker.Size = new System.Drawing.Size(227, 23);
+			this.odDatePicker.TabIndex = 9;
+			this.odDatePicker.DateTextChanged += new System.EventHandler(this.odDatePicker_DateTextChanged);
 			// 
 			// label2
 			// 
-			this.label2.Location = new System.Drawing.Point(54, 95);
+			this.label2.Location = new System.Drawing.Point(18, 78);
 			this.label2.Name = "label2";
 			this.label2.Size = new System.Drawing.Size(68, 18);
 			this.label2.TabIndex = 6;
@@ -69,7 +73,8 @@ namespace OpenDental{
 			// 
 			// label3
 			// 
-			this.label3.Location = new System.Drawing.Point(16, 128);
+			this.label3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.label3.Location = new System.Drawing.Point(268, 230);
 			this.label3.Name = "label3";
 			this.label3.Size = new System.Drawing.Size(108, 18);
 			this.label3.TabIndex = 7;
@@ -78,7 +83,8 @@ namespace OpenDental{
 			// 
 			// labelCount
 			// 
-			this.labelCount.Location = new System.Drawing.Point(123, 128);
+			this.labelCount.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.labelCount.Location = new System.Drawing.Point(375, 230);
 			this.labelCount.Name = "labelCount";
 			this.labelCount.Size = new System.Drawing.Size(68, 18);
 			this.labelCount.TabIndex = 8;
@@ -87,12 +93,12 @@ namespace OpenDental{
 			// 
 			// FormRecallListUndo
 			// 
-			this.ClientSize = new System.Drawing.Size(484, 159);
+			this.ClientSize = new System.Drawing.Size(534, 261);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
 			this.Controls.Add(this.labelCount);
 			this.Controls.Add(this.label3);
 			this.Controls.Add(this.label2);
-			this.Controls.Add(this.textDate);
+			this.Controls.Add(this.odDatePicker);
 			this.Controls.Add(this.label1);
 			this.Controls.Add(this.butOK);
 			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -101,7 +107,6 @@ namespace OpenDental{
 			this.Text = "Recall List Undo";
 			this.Load += new System.EventHandler(this.FormRecallListUndo_Load);
 			this.ResumeLayout(false);
-			this.PerformLayout();
 
 		}
 
@@ -109,7 +114,7 @@ namespace OpenDental{
 
 		private OpenDental.UI.Button butOK;
 		private System.Windows.Forms.Label label1;
-		private ValidDate textDate;
+		private UI.ODDatePicker odDatePicker;
 		private System.Windows.Forms.Label label2;
 		private System.Windows.Forms.Label label3;
 		private System.Windows.Forms.Label labelCount;

@@ -135,6 +135,10 @@ namespace OpenDental {
 		}
 
 		public bool SaveEnterpriseReports() {
+			string oldReportingServerCompName=PrefC.GetStringSilent(PrefName.ReportingServerCompName);
+			string oldReportingServerDbName=PrefC.GetStringSilent(PrefName.ReportingServerDbName);
+			string oldReportingServerMySqlUser=PrefC.GetStringSilent(PrefName.ReportingServerMySqlUser);
+			string oldReportingServerURI=PrefC.GetStringSilent(PrefName.ReportingServerURI);
 			if(!checkReportingServerCompNameOrURI.Checked) {
 				Changed|=Prefs.UpdateString(PrefName.ReportingServerCompName,"");
 				Changed|=Prefs.UpdateString(PrefName.ReportingServerDbName,"");
@@ -161,7 +165,30 @@ namespace OpenDental {
 				}
 			}
 			if(Changed) {
+				string logEntry="";
 				DataValid.SetInvalid(InvalidType.ConnectionStoreClear);
+				if(radioReportServerDirect.Checked) {
+					if(oldReportingServerCompName!=PrefC.GetStringSilent(PrefName.ReportingServerCompName)) {
+						logEntry+="Server Name changed from "+oldReportingServerCompName
+							+" to "+PrefC.GetStringSilent(PrefName.ReportingServerCompName)+"\n";
+					}
+					if(oldReportingServerDbName!=PrefC.GetStringSilent(PrefName.ReportingServerDbName)) {
+						logEntry+="Database changed from "+oldReportingServerDbName
+						+" to "+PrefC.GetStringSilent(PrefName.ReportingServerDbName)+"\n";
+					}
+					if(oldReportingServerMySqlUser!=PrefC.GetStringSilent(PrefName.ReportingServerMySqlUser)) {
+						logEntry+="MySQL User changed from "+oldReportingServerMySqlUser
+							+" to "+PrefC.GetStringSilent(PrefName.ReportingServerMySqlUser)+"\n";
+					}
+				}
+				else {
+					if(oldReportingServerURI!=PrefC.GetStringSilent(PrefName.ReportingServerURI)) {
+						logEntry+="URI changed from "+oldReportingServerURI
+							+" to "+PrefC.GetStringSilent(PrefName.ReportingServerURI);
+					}
+				}
+				SecurityLogs.MakeLogEntry(EnumPermType.Setup,Security.CurUser.UserNum,logEntry);
+				SecurityLogs.MakeLogEntry(EnumPermType.Setup,0,"Report settings have been changed.");
 			}
 			return true;
 		}

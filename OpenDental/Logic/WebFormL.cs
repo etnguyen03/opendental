@@ -654,6 +654,7 @@ namespace OpenDental {
 					|| sheetFromDbSorted.SheetFields[i].ItemColor!=sheetNewSorted.SheetFields[i].ItemColor
 					|| sheetFromDbSorted.SheetFields[i].UiLabelMobile!=sheetNewSorted.SheetFields[i].UiLabelMobile
 					|| sheetFromDbSorted.SheetFields[i].UiLabelMobileRadioButton!=sheetNewSorted.SheetFields[i].UiLabelMobileRadioButton
+					|| sheetFromDbSorted.SheetFields[i].CanElectronicallySign!=sheetNewSorted.SheetFields[i].CanElectronicallySign
 					) {
 					return false;//No need to keep looping, we know the sheets are not equal at this point.
 				}

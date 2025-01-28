@@ -623,9 +623,6 @@ namespace OpenDental{
 			if(CultureInfo.CurrentCulture.Name=="en-US") {
 				_menuItemTranslation.Available=false;
 			}
-			if(!File.Exists("Help.chm")) {
-				_menuItemLocalHelpWindows.Available=false;
-			}
 			if(Environment.OSVersion.Platform==PlatformID.Unix) {//Create A to Z unsupported on Unix for now.
 				_menuItemCreateAtoZ.Available=false;
 			}
@@ -917,22 +914,6 @@ namespace OpenDental{
 			Signalods.DateTRegularPrioritySignalLastRefreshed=MiscData.GetNowDateTime();
 			Signalods.DateTApptSignalLastRefreshed=Signalods.DateTRegularPrioritySignalLastRefreshed;
 			SetTimersAndThreads(true);//Safe to start timers since this method call is on the main thread.
-			if(PrefC.IsAppStream) {
-				ODCloudClient.FileWatcherDirectory=PrefC.GetString(PrefName.CloudFileWatcherDirectory);
-				try {
-					if(!Directory.Exists(ODCloudClient.FileWatcherDirectory)) {
-						Directory.CreateDirectory(ODCloudClient.FileWatcherDirectory);
-					}
-					ODCloudClient.FileWatcherDirectoryAPI=PrefC.GetString(PrefName.CloudFileWatcherDirectoryAPI);
-					if(!Directory.Exists(ODCloudClient.FileWatcherDirectoryAPI)) {
-						Directory.CreateDirectory(ODCloudClient.FileWatcherDirectoryAPI);
-					}
-				}
-				catch(Exception e) {
-					ODCloudClient.DidLocateFileWatcherDirectory=false;
-					FriendlyException.Show(Lans.g(this,"Unable to communicate with the Cloud Client. Any features that use the Cloud Client will be unavailable."),e);
-				}
-			}
 			if(ODBuild.IsThinfinity() || !PrefC.IsAppStream) {
 				_menuItemCloudUsers.Available=false;
 			}
@@ -7329,7 +7310,7 @@ namespace OpenDental{
 
 		#region Menu - Help
 		private void menuItemRemote_Click(object sender,System.EventArgs e) {
-			string site="http://www.opendental.com/contact.html";
+			string site="https://www.opendental.com/site/contact.html";
 			if(Programs.GetCur(ProgramName.BencoPracticeManagement).Enabled) {
 				site="https://support.benco.com/";
 			}
@@ -7357,17 +7338,8 @@ namespace OpenDental{
 			}*/
 		}
 
-		private void menuItemHelpWindows_Click(object sender, System.EventArgs e) {
-			try{
-				Process.Start("Help.chm");
-			}
-			catch{
-				MsgBox.Show(this,"Could not find file.");
-			}
-		}
-
-		private void menuItemHelpContents_Click(object sender, System.EventArgs e) {
-			string site="https://www.opendental.com/manual/manual.html";
+		private void menuItemHelpDocumentation_Click(object sender, System.EventArgs e) {
+			string site="https://www.opendental.com/site/documentation.html";
 			try {
 				if(ODCloudClient.IsAppStream) {
 					ODCloudClient.LaunchFileWithODCloudClient(site);
@@ -7380,7 +7352,7 @@ namespace OpenDental{
 			}
 		}
 
-		private void menuItemHelpIndex_Click(object sender, System.EventArgs e) {
+		private void menuItemHelpSearch_Click(object sender, System.EventArgs e) {
 			string site="https://www.opendental.com/site/searchsite.html";
 			try {
 				if(ODCloudClient.IsAppStream) {
@@ -7395,7 +7367,7 @@ namespace OpenDental{
 		}
 		
 		private void menuItemWebinar_Click(object sender,EventArgs e) {
-			string site="https://opendental.com/webinars/webinars.html";
+			string site="https://opendental.com/site/webinars.html";
 			try {
 				if(ODCloudClient.IsAppStream) {
 					ODCloudClient.LaunchFileWithODCloudClient(site);
@@ -7859,6 +7831,7 @@ namespace OpenDental{
 						Security.CurUser.IsPasswordResetRequired=false;
 						Userods.Update(Security.CurUser);
 						Userods.UpdatePassword(Security.CurUser,formUserPassword.PasswordContainer_,isPasswordStrong);
+						DataValid.SetInvalid(InvalidType.Security);
 						Security.PasswordTyped=formUserPassword.PasswordTyped;//Update the last typed in for middle tier refresh
 						Security.CurUser=Userods.GetUserNoCache(Security.CurUser.UserNum);//UpdatePassword() changes multiple fields.  Refresh from db.
 					}
@@ -7873,12 +7846,13 @@ namespace OpenDental{
 				try {
 					Security.CurUser.DateTLastLogin=DateTime.Now;
 					Userods.Update(Security.CurUser);//Unfortunately there is no update(new,old) for Userods yet due to comlexity.
+					//Do not send a Signalod with DataValid.SetInvalid because that creates too much network traffic in a large org.
+					//It's ok if DateTLastLogin is stale on other workstations because it's not used for anything.
 				}
 				catch(Exception ex) {
 					MessageBox.Show(ex.Message);
 				}
 			}
-			DataValid.SetInvalid(InvalidType.Security);
 		}
 		#endregion LogOn
 

@@ -149,8 +149,16 @@ namespace OpenDental{
 			gridMain.ListGridRows.Clear();
 			GridRow row;
 			for(int i=0;i<_listAccountEntries.Count;i++) {
-				if((!_listAccountEntries[i].GetType().In(typeof(ProcExtended),typeof(Adjustment)) || CompareDecimal.IsLessThanOrEqualToZero(_listAccountEntries[i].AmountEnd)) && creditCalcType!=CreditCalcType.ExcludeAll) {
+				if(!_listAccountEntries[i].GetType().In(typeof(ProcExtended),typeof(Adjustment))) {
 					continue;
+				}
+				if(creditCalcType!=CreditCalcType.ExcludeAll) {
+					if(_listAccountEntries[i].GetType()==typeof(ProcExtended) && CompareDecimal.IsZero(_listAccountEntries[i].AmountEnd)) {
+						continue;
+					}
+					if(_listAccountEntries[i].GetType()==typeof(Adjustment) && CompareDecimal.IsLessThanOrEqualToZero(_listAccountEntries[i].AmountEnd)) {
+						continue;
+					}
 				}
 				string dateStr;
 				string procCodeStr="";

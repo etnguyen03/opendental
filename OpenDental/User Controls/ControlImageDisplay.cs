@@ -3834,7 +3834,13 @@ Here is the desired behavior:
 			if(bitmapOriginal.Height==0) {
 				return;
 			}
-			float scale=ImageTools.CalcScaleFit(new Size(99,99),new Size(bitmapOriginal.Width,bitmapOriginal.Height),0);
+			float scale;
+			if(document.CropW>0 || document.CropH>0) {//If image is cropped, scale based upon the cropped section
+				scale=ImageTools.CalcScaleFit(new Size(99,99),new Size(document.CropW,document.CropH),0);
+			}
+			else {
+				scale=ImageTools.CalcScaleFit(new Size(99,99),new Size(bitmapOriginal.Width,bitmapOriginal.Height),0);
+			}
 			g.ScaleTransform(scale,scale);
 			DrawDocument(g);
 			string pathThumbnails=Path.Combine(PatFolder,"Thumbnails");
@@ -4075,7 +4081,7 @@ Here is the desired behavior:
 			List<long> listDocNums=new List<long>();
 			if(IsMountShowing()) {
 				List<WpfControls.UI.UnmountedObj> listUnmountedObjs=GetUmountedObjs();
-				listDocNums=listUnmountedObjs.Select(x => x.Document_.DocNum).ToList();
+				listDocNums=listUnmountedObjs.FindAll(x => x.Document_!=null).Select(x => x.Document_.DocNum).ToList();
 			}
 			for(int i=0;i<_listImageDraws.Count;i++){
 				if(!_showDrawingsOD && _listImageDraws[i].ImageAnnotVendor==EnumImageAnnotVendor.OpenDental){
@@ -4235,14 +4241,16 @@ Here is the desired behavior:
 				using Font font=new Font(FontFamily.GenericSansSerif,LayoutManager.ScaleFontODZoom(_listMountItems[i].FontSize));
 				using SolidBrush solidBrushFore=new SolidBrush(_mountShowing.ColorFore);
 				string str=_listMountItems[i].TextShowing;
-				str=Patients.ReplacePatient(str,PatientCur);
+				str=Patients.ReplacePatient(str,PatientCur);//This method makes a db call, but only when the tag that requires it is present.
 				str=Mounts.ReplaceMount(str,_mountShowing);
-				PatPlan patPlan=PatPlans.GetPatPlan(PatientCur.PatNum,1);
-				InsSub insSub=null;
-				if(patPlan!=null){
-					insSub=InsSubs.GetOne(patPlan.InsSubNum);
+				if(str.Contains("[SubscriberID]")) {//Only make db calls if the tag is used.
+					PatPlan patPlan=PatPlans.GetPatPlan(PatientCur.PatNum,1);
+					InsSub insSub=null;
+					if(patPlan!=null){
+						insSub=InsSubs.GetOne(patPlan.InsSubNum);
+					}
+					str=InsSubs.ReplaceInsSub(str, insSub);
 				}
-				str=InsSubs.ReplaceInsSub(str, insSub);
 				Clinic clinic=Clinics.GetClinic(PatientCur.ClinicNum);
 				str=Clinics.ReplaceOffice(str,clinic);
 				g.DrawString(str,font,solidBrushFore,rectangleF);

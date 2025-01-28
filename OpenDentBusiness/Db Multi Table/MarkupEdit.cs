@@ -137,11 +137,14 @@ namespace OpenDentBusiness {
 			return s;
 		}
 
+		public static Regex GetHtmlTagRegex() {
+			return new Regex(@"<\s*([^ >]+)[^>]*>.*?<\s*/\s*\1\s*>");
+		}
+
 		///<summary>Determines if the given text contains any HTML tags, ex <a href="opendental.com">opendental.com</a> or any Od wiki syntax tags that
 		///would result in HTML tags being added to the text when run through MarkupEdit.TranslateToXhtml()</summary>
 		public static bool ContainsOdHtmlTags(string text) {
-			Regex tagRegex=new Regex(@"<\s*([^ >]+)[^>]*>.*?<\s*/\s*\1\s*>");
-			return tagRegex.IsMatch(text??"")||ContainsOdMarkupForEmail(text??"");
+			return GetHtmlTagRegex().IsMatch(text??"")||ContainsOdMarkupForEmail(text??"");
 		}
 
 		///<summary>Determines if the given text contains any OD Markup tags that would be replaced with HTML tags in an email.</summary>

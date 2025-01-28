@@ -1243,6 +1243,14 @@ namespace OpenDentBusiness.Eclaims {
 			_claim=claim;
 		}
 
+		///<summary>Call After SetData to make sure no insurance plans were dropped or we are missing info.</summary>
+		public static bool ValidateData() {
+			if(_listInsPlans.Count==0 || !_listInsPlans.Any(x => x.PlanNum==_claim.PlanNum)) {
+				return false;
+			}
+			return true;
+		}
+
 		////<summary>Throws exceptions. Generic API call to XConnect. Give a payload object structured the same as the JSON definition of the API call. Returns an object of the type specified, which must also be structured the same as the JSON definition of the response for the API call. The endpointURL given must be a relative URL. The endpointURL is automatically modified to point to the sandbox in Debug mode.</summary>
 		private static T CallAPI<T>(Clearinghouse clearinghouseClinic,string endpointURL,object payload,HttpMethod httpMethod,List<string> queryParameters=null) {
 			//if(ODBuild.IsDebug()) {//Testing
@@ -1263,6 +1271,10 @@ namespace OpenDentBusiness.Eclaims {
 		public static XConnectWebResponse ValidateClaim(Claim claim) {
 			XConnectValidateClaim xConnectValidateClaim=new XConnectValidateClaim();
 			XConnect.SetData(claim);
+			if(!XConnect.ValidateData()) {
+				throw new ODException(Lans.g("XConnect","This claim contains no insurance plan associated with it, "+
+					"either the plan was dropped or an error occurred in claim creation. Delete the claim and create a new one."));
+			}
 			xConnectValidateClaim.claim=XConnectClaim.FromClaim(claim);
 			xConnectValidateClaim.validateForAttachment=true;
 			if(xConnectValidateClaim.claim.patient.sequenceCode=="") {

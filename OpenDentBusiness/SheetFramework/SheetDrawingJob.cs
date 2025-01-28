@@ -369,6 +369,8 @@ namespace OpenDentBusiness {
 			OpenDental.UI.GridOD odGrid=new OpenDental.UI.GridOD();//Only used for measurements, also contains printing/drawing logic.
 			odGrid.BeginUpdate();
 			odGrid.IsForSheets=true;
+			//There is a known visual bug with VScrollVisible=false that causes the scroll bar to overlap content on the first fill of the grid if the content exceeds the grid area.
+			//That is not a problem For sheets because they are dynamically sized to fit content i.e should never have scrollbars.
 			odGrid.VScrollVisible=false;
 			if(!string.IsNullOrEmpty(sheetField.FontName)) {
 				odGrid.FontForSheets=new Font(sheetField.FontName,sheetField.FontSize,sheetField.FontIsBold ? FontStyle.Bold : FontStyle.Regular);

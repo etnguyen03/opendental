@@ -131,6 +131,8 @@ using OpenDental.UI;
 		///<summary>This is the only internal storage for tracking selected row indices.  All properties refer to this same list.</summary>
 		private List<int> _listSelectedIndices=new List<int>();
 		private GridSelectionMode _selectionMode=GridSelectionMode.OneRow;
+		///<summary>This is used instead of vScroll.Visible so that we can have more control over it.</summary>
+		private bool _isVScrollVisible=true;
 		private bool _sortingAllowByColumn=false;
 		private string _title="";
 		private bool _titleVisible=true;
@@ -597,11 +599,14 @@ using OpenDental.UI;
 		[DefaultValue("")]
 		public string TranslationName { get; set; } = "";
 
-		///<summary></summary>
+		///<summary>Normally true to show vertical scroll. False will hide it IF the grid is short enough so that the vertical scroll is not needed. Do not set to false without reading code comments.</summary>
 		[Category("OD")]
-		[Description("Normally true to show vertical scroll. False will hide it IF the grid is short enough so that the vertical scroll is not needed.")]
+		[Description("Normally true to show vertical scroll. False will hide it IF the grid is short enough so that the vertical scroll is not needed. Do not set to false without reading code comments.")]
 		[DefaultValue(true)]
 		public bool VScrollVisible {
+			//There is a known issue if this is set to false. We will not fix it.
+			//On initial load, if content is taller than grid, then scrollbar will overlap content on the right.
+			//There is almost never any need to set this to false. If you do, be aware of the above issue.
 			get {
 				return _vScrollVisible;
 			}
@@ -3467,14 +3472,21 @@ using OpenDental.UI;
 			if(vScroll.Height<=0) {
 				return;
 			}
+			//All rows can be seen within the container, vertical scroll not needed.
 			if(_heightTotal<vScroll.Height) {
 				vScroll.Value=0;
-				vScroll.Enabled=false;
-				vScroll.Visible=_vScrollVisible;
+				vScroll.Enabled=false;//Whether the vertical scrollbar is shown or not, disable it because it can't do anything.
+				vScroll.Visible=VScrollVisible;//Show the vertical scrollbar if VScrollVisible is true even though it isn't needed.
+				//The following line is so that ComputeColumns() knows to make the final column a bit shorter to account for the scrollbar.
+				//If we use vScroll.Visible, then the scrollbar will not lay correctly when the grid is off the screen.
+				_isVScrollVisible=VScrollVisible;
 			}
-			else {
+			else {//All rows can't be seen within the container, vertical scroll is needed.
 				vScroll.Enabled=true;
 				vScroll.Visible=true;
+				//This is so that ComputeColumns() knows to make the final column a bit shorter to account for the scrollbar.
+				//If we use vScroll.Visible, then the scrollbar will not lay correctly when the grid is off the screen.
+				_isVScrollVisible=true;
 				vScroll.Minimum = 0;
 				vScroll.Maximum=_heightTotal;
 				vScroll.LargeChange=vScroll.Height;
@@ -3907,7 +3919,8 @@ using OpenDental.UI;
 					if(_printWidth>0){
 						widthExtra=_printWidth-2-widthFixedSum;
 					}
-					if(vScroll.Visible){// && vScroll.Enabled){
+					//If the vertical scrollbar is visible, then make some space for it.
+					if(_isVScrollVisible){
 						widthExtra-=vScroll.Width;
 					}
 					for(int i=0;i<Columns.Count;i++){
@@ -3922,7 +3935,8 @@ using OpenDental.UI;
 					if(_printWidth>0){
 						widthExtra=_printWidth-2-widthFixedSum+ScaleI(Columns[Columns.Count-1].ColWidth);
 					}
-					if(vScroll.Visible){
+					//If the vertical scrollbar is visible, then make some space for it.
+					if(_isVScrollVisible){
 						widthExtra-=vScroll.Width;
 					}
 					if(widthExtra>0){

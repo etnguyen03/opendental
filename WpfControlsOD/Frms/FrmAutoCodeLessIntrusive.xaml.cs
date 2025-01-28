@@ -100,6 +100,9 @@ namespace OpenDental {
 		}
 
 		private void butNo_Click(object sender, System.EventArgs e) {
+			if(ProcedureCur.ProcStatus.In(ProcStat.EC,ProcStat.EO)) {
+				ProcedureCur.DateEntryC=DateTime.Today;
+			}
 			IsDialogOK=false;
 		}
 

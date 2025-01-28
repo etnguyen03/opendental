@@ -271,7 +271,7 @@ namespace OpenDentBusiness{
 			}
 		}
 
-		///<summary>Gets the masked CC# and exp date for all cards setup for monthly charges for the specified patient.  Only used for filling [CreditCardsOnFile] variable when emailing statements.</summary>
+		///<summary>Gets the masked CC# and exp date for all cards setup for monthly charges for the specified patient.  Only used for filling [MonthlyCardsOnFile] variable when emailing statements.</summary>
 		public static string GetMonthlyCardsOnFile(long patNum) {
 			if(RemotingClient.MiddleTierRole==MiddleTierRole.ClientMT){
 				return Meth.GetString(MethodBase.GetCurrentMethod(),patNum);

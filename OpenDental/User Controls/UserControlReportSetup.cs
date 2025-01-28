@@ -438,6 +438,20 @@ namespace OpenDental.User_Controls {
 					return "Insurance Aging Report";
 				case DisplayReports.ReportNames.EraAutoProcessed:
 					return "ERAs Automatically Processed Report";
+				case "ODMonthlyProductionGoal":
+					return "Monthly Production Goal";
+				case "ODProceduresIndividual":
+					return "Procedures Individual";
+				case "ODProductionByProcedure":
+					return "Production By Procedure";
+				case "ODCustomAging":
+					return "Custom Aging";
+				case "ODDynamicPayPlanOvercharged":
+					return "Dynamic Pay Plan Overcharged";
+				case "ODDiscountPlan":
+					return "Discount Plan";
+				case "ODHiddenPaySplits":
+					return "Hidden Pay Splits";
 				default:
 					return "";
 			}

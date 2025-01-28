@@ -169,6 +169,9 @@ namespace OpenDental {
 			else if(selectionStart==-1) {//If cursor location is unknown just append the text to the end
 				textRichMain.Text=textRichMain.Text+strNote;
 			}
+			else if(selectionStart>textRichMain.Text.Length-1) {//If cursor location exceeds the end of the textbox, just append the text to the end
+				textRichMain.Text=textRichMain.Text+strNote;
+			}
 			else {//Cursor is in between text. Insert at the selected position.
 				textRichMain.Text=textRichMain.Text.Substring(0,selectionStart)+strNote+textRichMain.Text.Substring(selectionStart);
 			}

@@ -11,11 +11,14 @@ namespace OpenDentBusiness {
 	///This class centralizes some logic which allows things to execute faster and with far less network trips when utilizing the Middle Tier.
 	///Only used in billing options window for generating statements.</summary>
 	public class AgingData {
+		///<summary>Only used for unit testing. Action will be triggered any time it is non null and GetAgingData is called.</summary>
+		public static Action<bool,bool,bool,bool,bool,List<long>,int> ActionGetAgingDataInvoked=null;
 
 		///<summary>Returns a SerializableDictionary with key=PatNum, value=PatAgingData with the filters applied.</summary>
 		public static SerializableDictionary<long,PatAgingData> GetAgingData(bool isSinglePatient,bool includeChanged,bool excludeInsPending,
 			bool excludeIfUnsentProcs,bool isSuperBills,List<long> listClinicNums,int daysExcludeInsPending=0)
 		{
+			ActionGetAgingDataInvoked?.Invoke(isSinglePatient,includeChanged,excludeInsPending,excludeIfUnsentProcs,isSuperBills,listClinicNums,daysExcludeInsPending);
 			if(RemotingClient.MiddleTierRole==MiddleTierRole.ClientMT) {
 				return Meth.GetObject<SerializableDictionary<long,PatAgingData>>(MethodBase.GetCurrentMethod(),isSinglePatient,includeChanged,
 					excludeInsPending,excludeIfUnsentProcs,isSuperBills,listClinicNums,daysExcludeInsPending);
@@ -291,4 +294,10 @@ namespace OpenDentBusiness {
 		}
 	}
 
+	///<summary>Not a db table.  Used for generating statements from OD Service.</summary>
+	[Serializable]
+	public class PatAgingClinicGroup {
+		public List<long> ListClinicNums;
+		public SerializableDictionary<long,PatAgingData> DictPatAgingData;
+	}
 }

@@ -35,11 +35,11 @@ namespace OpenDental {
 		#endregion Fields - Public
 
 		#region Fields - Private
-		///<summary>The given action to run after filter input is commited for _waitFilterMs.</summary>
+		///<summary>The given action to run after filter input is commited for _waitFilterMs. Runs entirely on the UI thread.</summary>
 		private Action _actionFilter;
 		///<summary></summary>
 		private DateTime _dateTimeLastModified=DateTime.MaxValue;
-		///<summary>Default 1 second. The number of milliseconds to wait after the last user input on one of the specified filter controls to wait before calling _filterAction.</summary>
+		///<summary>Default 1 second. The number of milliseconds to wait after the last user input on one of the specified filter controls to wait before calling _actionFilter.</summary>
 		protected int _waitFilterMs=1000;
 		///<summary>If this is set in an inherited form, then the font of the title will be a different size.  This avoids touching form.Font because of ambient property complexities.</summary>
 		protected Font _fontTitle=null;
@@ -57,7 +57,7 @@ namespace OpenDental {
 		private List<Control> _listControlsFilter=new List<Control>();
 		///<summary>Each form adds itself to this list. When signals come in, they can then be passed off to each open form.  This will soon be changed. We will move this out of FormODBase and into a helper class. Forms that are interested in signals (there are only 17) will subscribe. This pulls us away from using inheritance and also allows it to work with the new WPF forms.</summary>
 		public static List<FormODBase> ListODFormsSubscribed=new List<FormODBase>();
-		///<summary>The thread that is run to check if filter controls have had their changes commited.  If a single control is considered to have commited changes then the thread will only fire the _filterAction once and then will wait for more input.</summary>
+		///<summary>The thread that is run to check if filter controls have had their changes commited.  If a single control is considered to have commited changes then the thread will only fire the _actionFilter once and then will wait for more input.</summary>
 		private ODThread _threadFilter;	
 		#endregion Fields - Private
 
@@ -1691,13 +1691,13 @@ Refresh();
 		#endregion Help
 
 		#region Filtering
-		///<summary>This introduces a delay between when a filter control is changed and when an action is taken. For example, when searching for a patient, each keystroke changes the filter criteria for the LName, and this makes sure that the grid won't be refreshed more than once per second. Call before form is Shown. Adds the given controls to the list of filter controls. We will loop through all the controls in the list to identify the first control that has had its filter change commited for _waitFilterMs.  Once a filter is commited, the filter action will be invoked and the thread will wait for the next filter change to start the thread again.  Controls which are not text-based will commit immediately and will not use a thread (ex checkboxes).  _waitFilterMs: The number of milliseconds to wait after the last user input on one of the specified filter controls to wait before calling _filterAction.</summary>
+		///<summary>This introduces a delay between when a filter control is changed and when an action is taken. For example, when searching for a patient, each keystroke changes the filter criteria for the LName, and this makes sure that the grid won't be refreshed more than once per second. Call before form is Shown. Adds the given controls to the list of filter controls. We will loop through all the controls in the list to identify the first control that has had its filter change commited for _waitFilterMs.  Once a filter is commited, the filter action will be invoked and the thread will wait for the next filter change to start the thread again.  Controls which are not text-based will commit immediately and will not use a thread (ex checkboxes). _waitFilterMs: The number of milliseconds to wait after the last user input on one of the specified filter controls to wait before calling _actionFilter. The action runs on the UI thread which means it's safe. But it also means that any db call also runs on the UI thread, so we didn't gain anything at all by implmenting threading.</summary>
 		protected void SetFilterControlsAndAction(Action action,int waitFilterMs,params Control[] arrayControls) {
 			SetFilterControlsAndAction(action,arrayControls);
 			_waitFilterMs=waitFilterMs;
 		}
 
-		///<summary>This introduces a delay between when a filter control is changed and when an action is taken. For example, when searching for a patient, each keystroke changes the filter criteria for the LName, and this makes sure that the grid won't be refreshed more than once per second. Call before form is Shown. Adds the given controls to the list of filter controls. We will loop through all the controls in the list to identify the first control that has had its filter change commited for _waitFilterMs.  Once a filter is commited, the filter action will be invoked and the thread will wait for the next filter change to start the thread again.  Controls which are not text-based will commit immediately and will not use a thread (ex checkboxes).</summary>
+		///<summary>This introduces a delay between when a filter control is changed and when an action is taken. For example, when searching for a patient, each keystroke changes the filter criteria for the LName, and this makes sure that the grid won't be refreshed more than once per second. Call before form is Shown. Adds the given controls to the list of filter controls. We will loop through all the controls in the list to identify the first control that has had its filter change commited for _waitFilterMs.  Once a filter is commited, the filter action will be invoked and the thread will wait for the next filter change to start the thread again.  Controls which are not text-based will commit immediately and will not use a thread (ex checkboxes). _waitFilterMs: The number of milliseconds to wait after the last user input on one of the specified filter controls to wait before calling _actionFilter. The action runs on the UI thread which means it's safe. But it also means that any db call also runs on the UI thread, so we didn't gain anything at all by implmenting threading.</summary>
 		protected void SetFilterControlsAndAction(Action action,params Control[] arrayControls) {
 			if(HasShown) {
 				return;
@@ -1821,6 +1821,7 @@ Refresh();
 			}
 		}
 
+		///<summary>The action always runs on the UI thread.</summary>
 		private void FilterActionCommit() {
 			Exception ex=null;
 			//Synchronously invoke the "Refresh"/filter action function for the form on the main thread and invoke to prevent thread access violation exceptions.

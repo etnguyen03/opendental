@@ -690,11 +690,12 @@ namespace OpenDentBusiness {
 			table.Columns.Add("PlanNum");
 			table.Columns.Add("State");
 			table.Columns.Add("subscribers");
+			table.Columns.Add("IsHidden");
 			table.Columns.Add("trojanID");
 			table.Columns.Add("Zip");
 			table.Columns.Add("IsCDA");
 			string command="SELECT carrier.Address,carrier.City,CarrierName,ElectID,EmpName,GroupName,GroupNum,NoSendElect,"
-				+"carrier.Phone,PlanNum,"
+				+"carrier.Phone,PlanNum,insplan.IsHidden,"
 				+"(SELECT COUNT(DISTINCT Subscriber) FROM inssub WHERE insplan.PlanNum=inssub.PlanNum) subscribers,"//for Oracle
 				+"carrier.State,TrojanID,carrier.Zip, "
 				//+"(SELECT COUNT(*) FROM employer WHERE insplan.EmployerNum=employer.EmployerNum) haveName "//for Oracle. Could be higher than 1?
@@ -747,6 +748,7 @@ namespace OpenDentBusiness {
 				row["PlanNum"]=listDataRows[i]["PlanNum"].ToString();
 				row["State"]=listDataRows[i]["State"].ToString();
 				row["subscribers"]=listDataRows[i]["subscribers"].ToString();
+				row["IsHidden"]=listDataRows[i]["IsHidden"].ToString();
 				row["TrojanID"]=listDataRows[i]["TrojanID"].ToString();
 				row["Zip"]=listDataRows[i]["Zip"].ToString();
 				row["IsCDA"]=listDataRows[i]["IsCDA"].ToString();

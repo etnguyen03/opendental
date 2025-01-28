@@ -54,6 +54,8 @@ namespace OpenDental {
 		private AccountModules.LoadData _loadData;
 		///<summary>Partially implemented lock object for an attempted bug fix.</summary>
 		private object _lockDataSetMain=new object();
+		//There is a known visual bug with VScrollVisible=false that causes the scroll bar to overlap content on the first fill of the grid if the content exceeds the grid area.
+		//That isn't a problem here because these grids are dynamically sized to fit all content when they are filled i.e. neither of these grids should ever have a scrollbar.
 		private GridOD gridUnearnedBreakdown=new GridOD() { TitleVisible=false,VScrollVisible=false,Visible=false };
 		private GridOD gridInsEstOpenClaims=new GridOD() { TitleVisible=false,VScrollVisible=false,Visible=false };
 		///<summary></summary>

@@ -72,13 +72,14 @@ namespace OpenDental {
 		}
 
 		private void butAttach_Click(object sender,EventArgs e) {
-			using FormImageSelect formImageSelect=new FormImageSelect();
-			formImageSelect.PatNum=_task.KeyNum;//KeyNum must be the PatNum due to validation in FormTaskAttachments
-			formImageSelect.ShowDialog();
-			if(formImageSelect.DialogResult!=DialogResult.OK) {
+			using FormImagePickerPatient formImagePickerPatient=new FormImagePickerPatient();
+			formImagePickerPatient.DoBlockMountSelection=true;
+			//KeyNum must be the PatNum due to validation in FormTaskAttachments
+			formImagePickerPatient.PatientCur=Patients.GetPat(_task.KeyNum);
+			if(formImagePickerPatient.ShowDialog()!=DialogResult.OK) {
 				return;
 			}
-			_document=Documents.GetByNum(formImageSelect.SelectedDocNum);
+			_document=Documents.GetByNum(formImagePickerPatient.DocNumSelected);
 			TaskAttachmentCur.DocNum=_document.DocNum;
 			textDocNum.Text=TaskAttachmentCur.DocNum.ToString();
 			textDescription.Text=_document.Description;

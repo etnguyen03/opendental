@@ -1323,6 +1323,9 @@ namespace OpenDentBusiness {
 	}
 
 	public class DoseSpotRESTV2 {
+		/// <summary>Do not access directly, use GetDoseSpotSubscriptionKeyDecrypted() to ensure that this variable has been properly initialized.</summary>
+		private static string _doseSpotSubscriptionKeyDecrypted="";
+		private static DateTime _dateTimeDoseSpotSubscriptionKeyDecryptedLastChecked=DateTime.MinValue;
 
 		#region GET
 
@@ -1833,23 +1836,31 @@ namespace OpenDentBusiness {
 			}
 		}
 
-		///<summary>Throws exception if the response from the server returned an http code of 300 or greater.</summary>
-		private static T Request<T>(ApiRoute apiRoute,HttpMethod httpMethod,string authHeader,string body,T responseType,string acceptType = "application/json",params string[] listRouteIDs) {
-			using(WebClient webClient = new WebClient()) {
-				webClient.Headers[HttpRequestHeader.Accept]=acceptType;
-				webClient.Headers[HttpRequestHeader.ContentType]=acceptType;
-				webClient.Headers[HttpRequestHeader.Authorization]=authHeader;
-				string doseSpotSubscriptionKeyDecrypted=Introspection.GetOverride(Introspection.IntrospectionEntity.DoseSpotV2DecryptedSubscriptionKey);
-				if(String.IsNullOrWhiteSpace(doseSpotSubscriptionKeyDecrypted)) {
+		public static string GetDoseSpotSubscriptionKeyDecrypted() {
+			if(String.IsNullOrWhiteSpace(_doseSpotSubscriptionKeyDecrypted) || (_dateTimeDoseSpotSubscriptionKeyDecryptedLastChecked-DateTime.Now).TotalHours>24) {
+				_doseSpotSubscriptionKeyDecrypted=Introspection.GetOverride(Introspection.IntrospectionEntity.DoseSpotV2DecryptedSubscriptionKey);
+				if(String.IsNullOrWhiteSpace(_doseSpotSubscriptionKeyDecrypted)) {
 					try {
-						doseSpotSubscriptionKeyDecrypted=WebServiceMainHQProxy.GetWebServiceMainHQInstance()
+						_doseSpotSubscriptionKeyDecrypted=WebServiceMainHQProxy.GetWebServiceMainHQInstance()
 						.BuildOAuthUrl(PrefC.GetString(PrefName.RegistrationKey),OAuthApplicationNames.DoseSpotSubscriptionKey.ToString());
 					}
 					catch(Exception ex) {
 						ex.DoNothing();
 					}
 				}
-				webClient.Headers.Add("Subscription-Key",doseSpotSubscriptionKeyDecrypted);
+				_dateTimeDoseSpotSubscriptionKeyDecryptedLastChecked=DateTime.Now;
+			}
+			return _doseSpotSubscriptionKeyDecrypted;
+		}
+
+		///<summary>Throws exception if the response from the server returned an http code of 300 or greater.</summary>
+		private static T Request<T>(ApiRoute apiRoute,HttpMethod httpMethod,string authHeader,string body,T responseType,string acceptType = "application/json",params string[] listRouteIDs) {
+			using(WebClient webClient = new WebClient()) {
+				webClient.Headers[HttpRequestHeader.Accept]=acceptType;
+				webClient.Headers[HttpRequestHeader.ContentType]=acceptType;
+				webClient.Headers[HttpRequestHeader.Authorization]=authHeader;
+				_doseSpotSubscriptionKeyDecrypted=GetDoseSpotSubscriptionKeyDecrypted();
+				webClient.Headers.Add("Subscription-Key",_doseSpotSubscriptionKeyDecrypted);
 				webClient.Encoding=UnicodeEncoding.UTF8;
 				//Post with Authorization headers and a body comprised of a JSON serialized anonymous type.
 				try {

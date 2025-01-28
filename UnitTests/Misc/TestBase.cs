@@ -71,6 +71,7 @@ namespace UnitTests {
 		[TestInitialize]
 		public void ResetTest() {
 			PrefT.RevertPrefChanges();
+			AgingData.ActionGetAgingDataInvoked=null;
 		}
 
 		///<summary>This method will execute after each test in this class.</summary>

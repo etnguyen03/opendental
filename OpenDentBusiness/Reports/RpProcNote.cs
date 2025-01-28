@@ -36,7 +36,7 @@ namespace OpenDentBusiness {
 						+@" GROUP BY procedurelog.ProcNum
 							HAVING LENGTH(procnote.Note)>0
 					) hasNotes ON hasNotes.PatNum=procedurelog.PatNum AND hasNotes.ProcDate=procedurelog.ProcDate ";
-				whereNotesClause=@"AND IF(procedurecode.ProcCode IN ('D9986','D9987'),(n1.Note LIKE '%""""%' OR n1.Note REGEXP '\[Prompt:""[a-zA-Z_0-9]+""\]'),TRUE) "; // if using no notes option, only show broken appointment codes that have empty quotes or prompts
+				whereNotesClause=@"AND IF(procedurecode.ProcCode IN ('D9986','D9987'),(n1.Note LIKE '%""""%' OR n1.Note REGEXP '\\[Prompt:""[a-zA-Z_0-9]+""\\]'),TRUE) "; // if using no notes option, only show broken appointment codes that have empty quotes or prompts
 				if(!includeUnsignedNotes) {
 					whereNotesClause+="AND (n1.ProcNum IS NOT NULL OR hasNotes.PatNum IS NULL)";
 				}
@@ -68,7 +68,7 @@ namespace OpenDentBusiness {
 				INNER JOIN patient ON procedurelog.PatNum = patient.PatNum 
 				INNER JOIN procedurecode ON procedurelog.CodeNum = procedurecode.CodeNum 
 				"+(includeNoNotes || includeUnsignedNotes?"LEFT":"INNER")+@" JOIN procnote n1 ON procedurelog.ProcNum = n1.ProcNum 
-					AND (n1.Note LIKE '%""""%' OR n1.Note REGEXP '"+@"\[Prompt:""[a-zA-Z_0-9 ]+""\]') "//looks for either "" (pre 17.3) or [Prompt:"{word}"] (post 17.3)
+					AND (n1.Note LIKE '%""""%' OR n1.Note REGEXP '"+@"\\[Prompt:""[a-zA-Z_0-9 ]+""\\]') "//looks for either "" (pre 17.3) or [Prompt:"{word}"] (post 17.3)
 				+@" AND n1.EntryDateTime= (SELECT MAX(n2.EntryDateTime) 
 				FROM procnote n2 
 				WHERE n1.ProcNum = n2.ProcNum) "

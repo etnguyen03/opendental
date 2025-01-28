@@ -526,6 +526,9 @@ namespace OpenDental{
 				}
 				_listPayPlanCharges.RemoveAll(x => x.ChargeType==PayPlanChargeType.Debit); //for version 1, ChargeDue is the only chargetype available.
 			}
+			if(Security.IsGlobalDateLock(EnumPermType.PayPlanEdit,PIn.Date(textDate.Text))) {
+				return;
+			}
 			CreateOrRecalculateScheduleCharges(false);
 			//fill signature. most likely will invalidate the signature if new schedule was created
 			FillSignatureBox();	
@@ -569,6 +572,9 @@ namespace OpenDental{
 			}
 			if(PIn.Double(textTotalCost.Text)<=PIn.Double(textAmtPaid.Text)) {
 				MsgBox.Show(this,"The payment plan has been completely paid and can't be recalculated.");
+				return;
+			}
+			if(Security.IsGlobalDateLock(EnumPermType.PayPlanEdit,PIn.Date(textDate.Text))) {
 				return;
 			}
 			_formPayPlanRecalculate=new FormPayPlanRecalculate();
@@ -915,6 +921,9 @@ namespace OpenDental{
 			}
 			if(PIn.Date(textDate.Text).Date > DateTime.Today.Date && !PrefC.GetBool(PrefName.FutureTransDatesAllowed)) {
 				MsgBox.Show(this,"Payment plan date cannot be set for the future.");
+				return true;
+			}
+			if(Security.IsGlobalDateLock(EnumPermType.PayPlanEdit,PIn.Date(textDate.Text))) {
 				return true;
 			}
 			return false;

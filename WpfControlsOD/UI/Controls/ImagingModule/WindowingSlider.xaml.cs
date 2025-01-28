@@ -95,10 +95,6 @@ Jordan is the only one allowed to edit this file.
 				}
 				return _minVal;
 			}
-			set{
-				_minVal=value;
-				Draw();
-			}
 		}
 
 		///<summary>The value of the right slider, max 255.</summary>
@@ -110,19 +106,19 @@ Jordan is the only one allowed to edit this file.
 				}
 				return _maxVal;
 			}
-			set {
-				if(value>255){
-					_maxVal=255;
-				}
-				else{
-					_maxVal=value;
-				}
-				Draw();
-			}
 		}
 		#endregion Properties - Not Browsable
 
 		#region Methods public
+		public void SetBounds(int minVal,int maxVal) {
+			if(maxVal>255) {
+				maxVal=255;
+			}
+			_maxVal=maxVal;
+			_minVal=minVal;
+			Draw();
+		}
+
 		public void Draw() {
 			_tick=(Width-_widthBut)/255;//gets set in mousemove also
 			if(!IsEnabled){

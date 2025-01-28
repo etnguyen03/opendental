@@ -64,6 +64,7 @@ namespace OpenDental{
 				checkItransMissing.Checked=(itransImportFields.HasFlag(ItransImportFields.AddMissing));
 			}
 			Carriers.RefreshCache();
+			SetFilterControlsAndAction(() => FillGrid(), textCarrier, textElectId, textPhone, checkCDAnet, checkShowHidden);
 			FillGrid();
 		}
 
@@ -190,18 +191,6 @@ namespace OpenDental{
 			//}
 		}
 
-		private void textCarrier_TextChanged(object sender,EventArgs e) {
-			FillGrid();
-		}
-
-		private void textElectId_TextChanged(object sender,EventArgs e) {
-			FillGrid();
-		}
-
-		private void textPhone_TextChanged(object sender,EventArgs e) {
-			FillGrid();
-		}
-
 		private void gridMain_CellDoubleClick(object sender,ODGridClickEventArgs e) {
 			Carrier carrier=Carriers.GetCarrier(PIn.Long(_table.Rows[e.Row]["CarrierNum"].ToString()));
 			if(IsSelectMode) {
@@ -225,14 +214,6 @@ namespace OpenDental{
 			if(cell.ColorText==System.Drawing.Color.Blue && cell.Underline==YN.Yes && Programs.GetCur(ProgramName.DentalTekSmartOfficePhone).Enabled) {
 				DentalTek.PlaceCall(cell.Text);
 			}
-		}
-
-		private void checkCDAnet_Click(object sender,EventArgs e) {
-			FillGrid();
-		}
-
-		private void checkShowHidden_Click(object sender,EventArgs e) {
-			FillGrid();
 		}
 
 		private void butItransUpdateCarriers_Click(object sender,EventArgs e) {
@@ -423,10 +404,6 @@ namespace OpenDental{
 				}
 			}
 			return true;
-		}
-
-		private void butRefresh_Click(object sender,EventArgs e) {
-			FillGrid();
 		}
 
 		private void butOK_Click(object sender, System.EventArgs e) {

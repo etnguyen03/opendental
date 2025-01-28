@@ -29,8 +29,7 @@ namespace UnitTests{
 			elementHostWindowingSlider.Child=windowingSlider2;
 			windowingSlider2.Width=154;
 			windowingSlider2.IsEnabled=true;
-			windowingSlider2.MinVal=40;
-			windowingSlider2.MaxVal=225;
+			windowingSlider2.SetBounds(40,225);
 		}
 
 		private void FormButtonTest_Load(object sender, EventArgs e)

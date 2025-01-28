@@ -1265,7 +1265,9 @@ namespace OpenDentBusiness {
 			ReplaceTags.ReplaceOneTag(template,"[City]",pat.City,isHtmlEmail);
 			ReplaceTags.ReplaceOneTag(template,"[State]",pat.State,isHtmlEmail);
 			ReplaceTags.ReplaceOneTag(template,"[Zip]",pat.Zip,isHtmlEmail);
-			ReplaceTags.ReplaceOneTag(template,"[MonthlyCardsOnFile]",CreditCards.GetMonthlyCardsOnFile(pat.PatNum),isHtmlEmail);
+			if(message.Contains("[MonthlyCardsOnFile]")) {//Only make the db call if the tag is used.
+				ReplaceTags.ReplaceOneTag(template,"[MonthlyCardsOnFile]",CreditCards.GetMonthlyCardsOnFile(pat.PatNum),isHtmlEmail);
+			}
 			ReplaceTags.ReplaceOneTag(template,"[PatientTitle]",pat.Title,isHtmlEmail);
 			ReplaceTags.ReplaceOneTag(template,"[PatientMiddleInitial]",pat.MiddleI,isHtmlEmail);
 			ReplaceTags.ReplaceOneTag(template,"[PatientPreferredName]",pat.Preferred,isHtmlEmail);
@@ -2104,7 +2106,7 @@ namespace OpenDentBusiness {
 						.FindAll(x => x.PatNum==patNum)
 						.OrderBy(x => x.RecallTypeNum).ToList();//at their request, not sure why
 					string description="ORANGE";
-					bool hasCompletedAdmissionProc=listProceduresComplete.Exists(x => x.PatNum==patNum && dateDischarge<=dateAdmit && x.DateComplete>=dateAdmit && x.CodeNum==codeNumAdmissionExam);//Currently admitted and has an admission exam completed after being admitted
+					bool hasCompletedAdmissionProc=listProceduresComplete.Exists(x => x.PatNum==patNum && dateDischarge<=dateAdmit && x.ProcDate>=dateAdmit && x.CodeNum==codeNumAdmissionExam);//Currently admitted and has an admission exam completed after being admitted
 					if(hasCompletedAdmissionProc || dateDischarge>dateAdmit) {//Has completed procedure or is currently Discharged
 						description="BLACK";
 					}

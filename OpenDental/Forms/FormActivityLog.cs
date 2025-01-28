@@ -45,6 +45,9 @@ namespace OpenDental {
 		}
 
 		private void FillGrid() {
+			if(!textPatNum.IsValid()) {
+				return;
+			}
 			List<EServiceLog> listEServiceLogs=_listEServiceLogs;
 			if(textPatNum.Text!="" && PIn.Long(textPatNum.Text)>-1) {
 				listEServiceLogs=listEServiceLogs.Where(x => x.PatNum.ToString()==textPatNum.Text).ToList();

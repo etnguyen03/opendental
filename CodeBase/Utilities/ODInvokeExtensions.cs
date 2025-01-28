@@ -20,9 +20,9 @@ namespace CodeBase {
 			action();
 		}
 
-		///<summary>Invoke an action on a control. If the control is disposing or disposed, will return without performing the action.</summary>
+		///<summary>Invoke an action on a control. If the control is disposing or disposed, will return without performing the action. Always runs on the UI thread.</summary>
 		public static void InvokeIfNotDisposed(this Control control,Action action) {
-			//jordan OK
+			//jordan extension method OK
 			if(control.Disposing || control.IsDisposed) {
 				return;
 			}
@@ -30,6 +30,8 @@ namespace CodeBase {
 			try {
 				//There is a chance this can throw if the invoke is reached and the form is disposed while the invoke is waiting for its turn.
 				control.Invoke(() => {
+					//Invoke safely runs the action on the UI thread.
+					//We don't need to check for InvokeRequired because Invoke works either way.
 					invokeSuccessful=true;
 					action();
 				});

@@ -836,6 +836,7 @@
 			this.textDate.Name = "textDate";
 			this.textDate.Size = new System.Drawing.Size(89, 20);
 			this.textDate.TabIndex = 55;
+			this.textDate.Leave += new System.EventHandler(this.textDate_Leave);
 			// 
 			// butBF
 			// 

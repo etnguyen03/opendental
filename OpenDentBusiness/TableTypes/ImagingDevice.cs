@@ -16,7 +16,7 @@ namespace OpenDentBusiness {
 		public string Description;
 		/// <summary>Name of the computer where this device is available.  Optional.  If blank, then this device will be available to all computers.</summary>
 		public string ComputerName;
-		///<summary>Enum:EnumImgDeviceType </summary>
+		///<summary>Enum:EnumImgDeviceType TwainRadiograph, XDR(not functional), or TwainMulti.</summary>
 		public EnumImgDeviceType DeviceType;
 		///<summary>The name of the twain device as in Windows.</summary>
 		public string TwainName;

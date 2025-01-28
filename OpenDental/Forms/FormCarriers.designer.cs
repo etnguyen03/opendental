@@ -45,7 +45,6 @@ namespace OpenDental {
 			this.butOK = new OpenDental.UI.Button();
 			this.textPhone = new OpenDental.ValidPhone();
 			this.labelPhone = new System.Windows.Forms.Label();
-			this.butRefresh = new OpenDental.UI.Button();
 			this.groupItrans = new OpenDental.UI.GroupBox();
 			this.checkItransMissing = new OpenDental.UI.CheckBox();
 			this.checkItransAddress = new OpenDental.UI.CheckBox();
@@ -111,7 +110,6 @@ namespace OpenDental {
 			this.checkCDAnet.Size = new System.Drawing.Size(96, 17);
 			this.checkCDAnet.TabIndex = 4;
 			this.checkCDAnet.Text = "CDAnet Only";
-			this.checkCDAnet.Click += new System.EventHandler(this.checkCDAnet_Click);
 			// 
 			// checkShowHidden
 			// 
@@ -120,7 +118,6 @@ namespace OpenDental {
 			this.checkShowHidden.Size = new System.Drawing.Size(96, 17);
 			this.checkShowHidden.TabIndex = 3;
 			this.checkShowHidden.Text = "Show Hidden";
-			this.checkShowHidden.Click += new System.EventHandler(this.checkShowHidden_Click);
 			// 
 			// textCarrier
 			// 
@@ -128,7 +125,6 @@ namespace OpenDental {
 			this.textCarrier.Name = "textCarrier";
 			this.textCarrier.Size = new System.Drawing.Size(140, 20);
 			this.textCarrier.TabIndex = 0;
-			this.textCarrier.TextChanged += new System.EventHandler(this.textCarrier_TextChanged);
 			// 
 			// label2
 			// 
@@ -155,7 +151,6 @@ namespace OpenDental {
 			this.textPhone.Name = "textPhone";
 			this.textPhone.Size = new System.Drawing.Size(140, 20);
 			this.textPhone.TabIndex = 2;
-			this.textPhone.TextChanged += new System.EventHandler(this.textPhone_TextChanged);
 			// 
 			// labelPhone
 			// 
@@ -165,16 +160,6 @@ namespace OpenDental {
 			this.labelPhone.TabIndex = 105;
 			this.labelPhone.Text = "Phone";
 			this.labelPhone.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-			// 
-			// butRefresh
-			// 
-			this.butRefresh.Location = new System.Drawing.Point(732, 2);
-			this.butRefresh.Name = "butRefresh";
-			this.butRefresh.Size = new System.Drawing.Size(75, 23);
-			this.butRefresh.TabIndex = 5;
-			this.butRefresh.Text = "Refresh";
-			this.butRefresh.UseVisualStyleBackColor = true;
-			this.butRefresh.Click += new System.EventHandler(this.butRefresh_Click);
 			// 
 			// groupItrans
 			// 
@@ -220,7 +205,6 @@ namespace OpenDental {
 			this.textElectId.Name = "textElectId";
 			this.textElectId.Size = new System.Drawing.Size(59, 20);
 			this.textElectId.TabIndex = 1;
-			this.textElectId.TextChanged += new System.EventHandler(this.textElectId_TextChanged);
 			// 
 			// labelElectId
 			// 
@@ -238,7 +222,6 @@ namespace OpenDental {
 			this.Controls.Add(this.labelElectId);
 			this.Controls.Add(this.butOK);
 			this.Controls.Add(this.groupItrans);
-			this.Controls.Add(this.butRefresh);
 			this.Controls.Add(this.textPhone);
 			this.Controls.Add(this.labelPhone);
 			this.Controls.Add(this.textCarrier);
@@ -273,7 +256,6 @@ namespace OpenDental {
 		private UI.Button butOK;//keeps track of whether an update is necessary.
 		public ValidPhone textPhone;
 		private Label labelPhone;
-		private UI.Button butRefresh;
 		private UI.Button butItransUpdateCarriers;
 		private OpenDental.UI.GroupBox groupItrans;
 		private OpenDental.UI.CheckBox checkITransPhone;

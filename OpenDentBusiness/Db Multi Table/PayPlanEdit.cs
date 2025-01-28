@@ -2290,6 +2290,8 @@ namespace OpenDentBusiness {
 				retVal.ListPaySplitsForCharges=retVal.ListPaySplits.Where(x => retVal.ListPayPlanChargesDb.Select(y => y.PayPlanChargeNum).ToList().Contains(x.PayPlanChargeNum)).ToList();
 				PayPlanTerms payPlanTerms=PayPlanEdit.GetPayPlanTerms(retVal.PayPlan,retVal.ListPayPlanLinks);
 				retVal.ListPayPlanChargesExpected=PayPlanEdit.GetPayPlanChargesForDynamicPaymentPlanSchedule(retVal.PayPlan,payPlanTerms,retVal.ListPayPlanChargesDb,retVal.ListPayPlanLinks,retVal.ListPaySplits);
+				//TotalInterest is not a database column, so manually calculate
+				retVal.TotalInterest=retVal.ListPayPlanChargesExpected.Sum(x=>x.Interest);
 			}
 			return retVal;
 		}

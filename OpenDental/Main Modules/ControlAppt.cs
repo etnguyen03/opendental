@@ -1092,6 +1092,8 @@ namespace OpenDental {
 			}
 			List<Procedure> listProceduresForAppt=Procedures.GetProcsForSingle(appointment.AptNum,false); //The procedures were never updated, fetch from db.
 			Procedures.AfterProcsSetComplete(listProcedures);
+			//Make sure dashboard still has latest info
+			Ledgers.ComputeAging(patient.Guarantor,DateTime.Today);
 			ModuleSelected(appointment.PatNum);
 			ODEvent.Fire(ODEventType.AppointmentEdited,appointment);
 			//If necessary, prompt the user to ask the patient to opt in to using Short Codes.
@@ -2923,6 +2925,7 @@ namespace OpenDental {
 				RefreshPeriod(listOpNums:ApptViewItems.GetOpsForView(apptViewNum),listProvNums:ApptViewItems.GetProvsForView(apptViewNum),isRefreshSchedules:true);
 			}
 			contrApptPanel.EndUpdate();
+			UpdateToolbarButtons();
 		}
 
 		///<summary>Refreshes the module for the passed in patient.  A patNum of 0 is acceptable.  Any ApptNums within listPinApptNums will get forcefully added to the main DataSet for the appointment module.</summary>
@@ -4714,9 +4717,9 @@ namespace OpenDental {
 					RefreshPeriod(listPinApptNums:listSelectedAptNums);
 					break;
 				case OtherResult.CreateNew:
-					contrApptPanel.SelectedAptNum=aptNumArray[0];
 					RefreshModuleDataPatient(patNum);
 					GlobalFormOpenDental.PatientSelected(_patient,true,false);
+					contrApptPanel.SelectedAptNum=aptNumArray[0];
 					Appointment appointment=Appointments.GetOneApt(contrApptPanel.SelectedAptNum);
 					if(appointment==null) {//apt has been deleted
 						return;

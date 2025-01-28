@@ -828,33 +828,6 @@ namespace OpenDental.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The GNU General Public License (GPL)
-        ///
-        ///Version 2, June 1991
-        ///
-        ///Copyright (C) 1989, 1991 Free Software Foundation, Inc.
-        ///
-        ///59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
-        ///
-        ///Everyone is permitted to copy and distribute verbatim copies
-        ///
-        ///of this license document, but changing it is not allowed.
-        ///
-        ///
-        ///Preamble
-        ///
-        ///
-        ///The licenses for most software are designed to take away your
-        ///freedom to share and change it. By contrast, the GNU General Public
-        ///License is intended to guarantee your freedom to share and  [rest of string was truncated]&quot;;.
-        /// </summary>
-        public static string GPL {
-            get {
-                return ResourceManager.GetString("GPL", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         public static System.Drawing.Bitmap gtaicon3 {
@@ -1509,7 +1482,7 @@ namespace OpenDental.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Sparks3D is a DirectX 11 plugin for Open Dental that is licensed separately.  Open Dental will still work fine without this plugin, but the older 3D &quot;SparksToothChart&quot; will require the user to install the DirectX 9 SDK.  To make the newer Sparks3D plugin work, the following two files must be present in the Sparks3D folder within the application folder:  Sparks3D.dll and Sparks3DXEngine.dll.  To disable the plugin for troubleshooting, rename the folder temporarily.
         ///
-        ///License:-------------------------------- [rest of string was truncated]&quot;;.
+        ///License:---------------------------------- [rest of string was truncated]&quot;;.
         /// </summary>
         public static string Sparks3D {
             get {

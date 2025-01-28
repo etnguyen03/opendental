@@ -16,28 +16,28 @@ namespace OpenDental {
 		}
 
 		private void FormRecallListUndo_Load(object sender,EventArgs e) {
-			textDate.Text=DateTime.Today.ToShortDateString();
+			odDatePicker.SetDateTime(DateTime.Today);
 		}
 
-		private void textDate_TextChanged(object sender,EventArgs e) {
-			if(textDate.IsValid()) {
-				int count=Commlogs.GetRecallUndoCount(PIn.Date(textDate.Text));
+		private void odDatePicker_DateTextChanged(object sender,EventArgs e) {
+			DateTime date=odDatePicker.GetDateTime();
+			if(date!=DateTime.MinValue) {
+				int count=Commlogs.GetRecallUndoCount(date);
 				labelCount.Text=count.ToString();
 				return;
 			}
 			labelCount.Text="";
-			
 		}
 
 		private void butOK_Click(object sender,EventArgs e) {
 			if(!Security.IsAuthorized(EnumPermType.SecurityAdmin)) {
 				return;
 			}
-			if(!textDate.IsValid()) {
+			DateTime date=odDatePicker.GetDateTime();
+			if(date==DateTime.MinValue) {
 				MsgBox.Show(this,"Invalid date");
 				return;
 			}
-			DateTime date=PIn.Date(textDate.Text);
 			if(date < DateTime.Today.AddDays(-7)){
 				if(!MsgBox.Show(this,MsgBoxButtons.OKCancel,"Date is from more than one week ago.  Continue anyway?")){
 					return;

@@ -1125,9 +1125,9 @@ namespace OpenDental{
 					PrintItem_Click();
 					break;
 				case "OutstandingClaims":
-					using(FormRpOutstandingIns formRpOutstandingIns=new FormRpOutstandingIns()) {
-						formRpOutstandingIns.ShowDialog();
-					}
+					FormRpOutstandingIns formRpOutstandingIns=new FormRpOutstandingIns();
+					formRpOutstandingIns.Show();
+					formRpOutstandingIns.BringToFront();
 					break;
 			}
 		}

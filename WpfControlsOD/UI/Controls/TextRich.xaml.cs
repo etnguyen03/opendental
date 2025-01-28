@@ -902,25 +902,28 @@ How to use the TextRich control:
 			MenuItem menuItem=(MenuItem)sender;
 			TextPointer textPointer=richTextBox.CaretPosition;
 			TextRange textRange=_listTextRangesMisspelled.Find(x=>x.Contains(textPointer));
-			if(menuItem==menuItemSuggest1 && textRange!=null){
-				textRange.Text=menuItemSuggest1.Header.ToString();
-				return;
-			}
-			if(menuItem==menuItemSuggest2 && textRange!=null){
-				textRange.Text=menuItemSuggest2.Header.ToString();
-				return;
-			}
-			if(menuItem==menuItemSuggest3 && textRange!=null){
-				textRange.Text=menuItemSuggest3.Header.ToString();
-				return;
-			}
-			if(menuItem==menuItemSuggest4 && textRange!=null){
-				textRange.Text=menuItemSuggest4.Header.ToString();
-				return;
-			}
-			if(menuItem==menuItemSuggest5 && textRange!=null){
-				textRange.Text=menuItemSuggest5.Header.ToString();
-				return;
+			if(textRange!=null){
+				//If caret is inside a misspelled word
+				if(menuItem==menuItemSuggest1){
+					textRange.Text=menuItemSuggest1.Header.ToString();
+				}
+				if(menuItem==menuItemSuggest2){
+					textRange.Text=menuItemSuggest2.Header.ToString();
+				}
+				if(menuItem==menuItemSuggest3){
+					textRange.Text=menuItemSuggest3.Header.ToString();
+				}
+				if(menuItem==menuItemSuggest4){
+					textRange.Text=menuItemSuggest4.Header.ToString();
+				}
+				if(menuItem==menuItemSuggest5){
+					textRange.Text=menuItemSuggest5.Header.ToString();
+				}
+				if(menuItem.In(menuItemSuggest1,menuItemSuggest2,menuItemSuggest3,menuItemSuggest4,menuItemSuggest5)){
+					//If a suggestion is chosen, start timer so spellcheck catches other misspelled words in 0.5 sec
+					_dispatcherTimer.Start();
+					return;
+				}
 			}
 			if(menuItem==menuItemAddToDict){
 				if(!IsUsingSpellCheck()) {//if spell check disabled, break.  Should never happen since Add to Dict won't show if spell check disabled

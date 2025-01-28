@@ -54,7 +54,6 @@ namespace OpenDental {
 			this.textPlanNum.Name = "textPlanNum";
 			this.textPlanNum.Size = new System.Drawing.Size(140, 20);
 			this.textPlanNum.TabIndex = 31;
-			this.textPlanNum.TextChanged += new System.EventHandler(this.textPlanNum_TextChanged);
 			// 
 			// labelInsPlanID
 			// 
@@ -93,7 +92,6 @@ namespace OpenDental {
 			this.checkShowHidden.Size = new System.Drawing.Size(93, 20);
 			this.checkShowHidden.TabIndex = 27;
 			this.checkShowHidden.Text = "Show Hidden";
-			this.checkShowHidden.CheckedChanged += new System.EventHandler(this.checkShowHidden_CheckedChanged);
 			// 
 			// textTrojanID
 			// 
@@ -101,7 +99,6 @@ namespace OpenDental {
 			this.textTrojanID.Name = "textTrojanID";
 			this.textTrojanID.Size = new System.Drawing.Size(140, 20);
 			this.textTrojanID.TabIndex = 25;
-			this.textTrojanID.TextChanged += new System.EventHandler(this.textTrojanID_TextChanged);
 			// 
 			// labelTrojanID
 			// 
@@ -129,7 +126,6 @@ namespace OpenDental {
 			this.textGroupNum.Name = "textGroupNum";
 			this.textGroupNum.Size = new System.Drawing.Size(140, 20);
 			this.textGroupNum.TabIndex = 20;
-			this.textGroupNum.TextChanged += new System.EventHandler(this.textGroupNum_TextChanged);
 			// 
 			// labelGroupNum
 			// 
@@ -146,7 +142,6 @@ namespace OpenDental {
 			this.textGroupName.Name = "textGroupName";
 			this.textGroupName.Size = new System.Drawing.Size(140, 20);
 			this.textGroupName.TabIndex = 21;
-			this.textGroupName.TextChanged += new System.EventHandler(this.textGroupName_TextChanged);
 			// 
 			// labelGroupName
 			// 
@@ -178,7 +173,6 @@ namespace OpenDental {
 			this.textCarrier.Name = "textCarrier";
 			this.textCarrier.Size = new System.Drawing.Size(140, 20);
 			this.textCarrier.TabIndex = 0;
-			this.textCarrier.TextChanged += new System.EventHandler(this.textCarrier_TextChanged);
 			// 
 			// labelCarrier
 			// 
@@ -195,7 +189,6 @@ namespace OpenDental {
 			this.textEmployer.Name = "textEmployer";
 			this.textEmployer.Size = new System.Drawing.Size(140, 20);
 			this.textEmployer.TabIndex = 1;
-			this.textEmployer.TextChanged += new System.EventHandler(this.textEmployer_TextChanged);
 			// 
 			// labelEmployer
 			// 

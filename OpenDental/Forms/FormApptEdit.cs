@@ -1402,6 +1402,9 @@ namespace OpenDental{
 				MsgBox.Show(this,"Appointments cannot be scheduled for "+_patient.PatStatus.ToString().ToLower()+" patients.");
 				return;
 			}
+			if(!Security.IsAuthorized(EnumPermType.AppointmentMove)) {
+				return;
+			}
 			if(!UpdateListAndDB()) {
 				return;
 			}
@@ -2712,7 +2715,14 @@ namespace OpenDental{
 
 		private void butSave_Click(object sender, System.EventArgs e) {
 			DateTime datePrevious=_appointment.DateTStamp;
-			if(comboProv.GetSelectedProvNum()==0) {
+			if(comboStatus.GetSelected<ApptStatus>()==ApptStatus.UnschedList) {
+				if(!Security.IsAuthorized(EnumPermType.AppointmentMove,MiscData.GetNowDateTime(),true)) {
+					comboStatus.SetSelectedEnum(_appointmentOld.AptStatus);
+					MsgBox.Show("The current user is not authorized to change status to unscheduled. Permission needed: "+EnumPermType.AppointmentMove.GetDescription());
+					return;
+				}
+			}
+			if (comboProv.GetSelectedProvNum()==0) {
 				MsgBox.Show(this,"Please select a provider.");
 				return;
 			}

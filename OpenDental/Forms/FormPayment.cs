@@ -258,11 +258,6 @@ namespace OpenDental {
 			textAmount.Text=_payment.PayAmt.ToString("F");
 			textCheckNum.Text=_payment.CheckNum;
 			textBankBranch.Text=_payment.BankBranch;
-			if(_payment.MerchantFee>0) {
-				labelSurchargeFee.Visible=true;
-				textSurcharge.Visible=true;
-				SetSurchargeTextFieldReadOnly();
-			}
 			textSurcharge.Text=_payment.MerchantFee.ToString("F");
 			_listDefsPaymentType=Defs.GetDefsForCategory(DefCat.PaymentTypes,true);
 			for(int i = 0;i<_listDefsPaymentType.Count;i++) {
@@ -1221,7 +1216,14 @@ namespace OpenDental {
 			butPayConnect.Visible=false;
 			butPaySimple.Visible=false;
 			butCareCredit.Visible=false;
+			if(_payment.MerchantFee>0) {
+				labelSurchargeFee.Visible=true;
+				textSurcharge.Visible=true;
+				SetSurchargeTextFieldReadOnly();
+			}
 			if(checkPayTypeNone.Checked) {
+				labelSurchargeFee.Visible=false;
+				textSurcharge.Visible=false;
 				return;
 			}
 			butCareCredit.Visible=!ProgramProperties.IsAdvertisingDisabled(programCareCredit);

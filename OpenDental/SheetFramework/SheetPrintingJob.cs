@@ -114,13 +114,14 @@ namespace OpenDental {
 			}
 			//Moved Calculate heights here because we need to caluclate height before printing, not while we are printing.
 			foreach(Sheet s in _listSheets) {
-				SheetUtil.CalculateHeights(s,null,null,_isPrinting,_printMargin.Top,_printMargin.Bottom);
+				SheetUtil.CalculateHeights(s,null,null,_isPrinting,_printMargin.Top,_printMargin.Bottom,isPrintingOnly:true);
 			}
 			Margins margins=new Margins(20,20,0,0);
 			int pageCount=0;
 			if(ODBuild.IsDebug()) {
 				foreach(Sheet s in _listSheets) {
 					//SetForceSinglePage(s);
+					//Do not set isPrintingOnly to true here because the amountOfGrowth is calculated already in the first CalculateHeights() called above
 					SheetUtil.CalculateHeights(s,null,null,_isPrinting,_printMargin.Top,_printMargin.Bottom);
 					pageCount+=Sheets.CalculatePageCount(s,_printMargin);//(_forceSinglePage?1:Sheets.CalculatePageCount(s,_printMargin));
 				}
@@ -262,7 +263,7 @@ namespace OpenDental {
 			if(stmt!=null) {//Because most of the time statements do not display the Fill Sheet window, so there is no opportunity to select a combobox.
 				SheetUtil.SetDefaultValueForComboBoxes(sheet);
 			}
-			SheetUtil.CalculateHeights(sheet,_dataSet,_stmt,_isPrinting,_printMargin.Top,_printMargin.Bottom,_medLab);
+			SheetUtil.CalculateHeights(sheet,_dataSet,_stmt,_isPrinting,_printMargin.Top,_printMargin.Bottom,_medLab,isPrintingOnly:true);
 			_listSheets=new List<Sheet>();
 			for(int i=0;i<copies;i++) {
 				_listSheets.Add(sheet.Copy());

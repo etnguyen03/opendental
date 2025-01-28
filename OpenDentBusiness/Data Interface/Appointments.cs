@@ -1346,7 +1346,7 @@ namespace OpenDentBusiness{
 									productionAmt+=PIn.Decimal(tableRawProcLab.Rows[a]["ProcFee"].ToString());
 									productionAmt-=PIn.Decimal(tableRawProcLab.Rows[a]["writeoffCap"].ToString());
 									writeoffPPOAmt+=PIn.Decimal(tableRawProcLab.Rows[a]["writeoffPPO"].ToString());//frequently zero
-									insAmt+=PIn.Decimal(tableRawProc.Rows[p]["insAmt"].ToString());
+									insAmt+=PIn.Decimal(tableRawProcLab.Rows[a]["insAmt"].ToString());
 									adjAmtForAppt+=listAdjustments.Where(x => x.ProcNum==PIn.Long(tableRawProcLab.Rows[a]["ProcNum"].ToString())).Sum(x => (decimal)x.AdjAmt);
 								}
 							}

@@ -741,12 +741,6 @@ namespace OpenDental {
 				MsgBox.Show(this,"Only procedures can be selected.  No total payments allowed.  Deselect all total payments before continuing.");
 				return;
 			}
-			if(listClaimProcsSelected.Any(x => x.InsPayAmt!=0)) {
-				if(!MsgBox.Show(this,MsgBoxButtons.YesNo,"All selected procedures must have zero insurance payment amounts.\r\nSet all selected insurance payment amounts to zero?")) {
-					return;
-				}
-				listClaimProcsSelected.ForEach(x => x.InsPayAmt=0);
-			}
 			//Make sure that there is at least one procedure left on the claim before splitting.
 			//The claim would become orphaned if we allow users to split off all procedures on the claim and DBM would be required to run to clean up.
 			if(gridPayments.ListGridRows.Count==listClaimProcsSelected.Count) {//All procedures are selected for the split...

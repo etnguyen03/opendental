@@ -44,6 +44,7 @@ namespace OpenDental{
 				labelTrojanID.Visible=false;
 				textTrojanID.Visible=false;
 			}
+			SetFilterControlsAndAction(() => FillGrid(),textCarrier,textEmployer,textGroupName,textGroupNum,textPlanNum,textTrojanID,checkShowHidden);
 			FillGrid();
 		}
 
@@ -161,34 +162,6 @@ namespace OpenDental{
 		}
 
 		private void radioOrderCarrier_Click(object sender, System.EventArgs e) {
-			FillGrid();
-		}
-
-		private void textEmployer_TextChanged(object sender,EventArgs e) {
-			FillGrid();
-		}
-
-		private void textCarrier_TextChanged(object sender,EventArgs e) {
-			FillGrid();
-		}
-
-		private void textGroupName_TextChanged(object sender,EventArgs e) {
-			FillGrid();
-		}
-
-		private void textGroupNum_TextChanged(object sender,EventArgs e) {
-			FillGrid();
-		}
-
-		private void textPlanNum_TextChanged(object sender,EventArgs e) {
-			FillGrid();
-		}
-
-		private void textTrojanID_TextChanged(object sender,EventArgs e) {
-			FillGrid();
-		}
-
-		private void checkShowHidden_CheckedChanged(object sender,EventArgs e) {
 			FillGrid();
 		}
 		

@@ -36,11 +36,13 @@ namespace UnitTests.Billing_Tests {
 			CommlogT.ClearCommLogTable();
 			SmsToMobileT.ClearSmsToMobileTable();
 			SecurityLogT.ClearSecurityLogsByPermType(EnumPermType.Billing);
+			AgingData.ActionGetAgingDataInvoked=null;
 			//Generate pdf if eBilling is on by default.
 			PrefT.UpdateBool(PrefName.BillingElectCreatePDF,true);
 			//eBilling off by default.
 			PrefT.UpdateInt(PrefName.BillingUseElectronic,(int)BillingUseElectronicEnum.None);
 			PrefT.UpdateBool(PrefName.BillingEmailIncludeAutograph,false);
+			PrefT.UpdateBool(PrefName.BillingDefaultsSinglePatient,false);
 			//Set to valid path so pdf will save.
 			PrefT.UpdateString(PrefName.BillingElectStmtOutputPathPos,PrefC.GetTempFolderPath());
 			PrefT.UpdateString(PrefName.BillingElectStmtOutputPathEds,PrefC.GetTempFolderPath());
@@ -803,7 +805,70 @@ namespace UnitTests.Billing_Tests {
 			assert(true,StatementMode.InPerson);
 		}
 
-		#region OpenDentalService		
+		#region OpenDentalService	
+		///<summary>Assert that AgingData.GetAgingData is called minimally and for groups of clinics according to aging ClinicPref values.</summary>
+		[TestMethod]
+		public void Billing_ODService_LimitAging() {
+			void assert(int numClinics,int reqAginingInvoked) {
+				ClearDbBilling();
+				int countAgingInvoked=0;
+				List<long> listClinicNumsAll=new List<long>();
+				AgingData.ActionGetAgingDataInvoked=(a,b,c,d,e,listClinicNums,g) => { 
+					countAgingInvoked++;
+					if(listClinicNums.IsNullOrEmpty()) { //Clinics off will pass null to this method, so assume CN 0 in this case.
+						listClinicNumsAll.Add(0); 
+					}
+					else {
+						listClinicNumsAll.AddRange(listClinicNums);
+					}
+				};
+				BillingSetup billingSetup=SetupBilling(numClinics>=1,numClinics:numClinics,numStatementsPerPat:0,
+					funcGetPatientProcsForAging: (clinicindex,famindex,patindex,patient,clinic) => {
+						//Always set practice prefs on first iteration (regardless if clinics on or off).
+						if(clinicindex==0){ 
+							PrefT.UpdateBool(PrefName.BillingIncludeChanged,false);
+							PrefT.UpdateBool(PrefName.BillingExcludeInsPending,false);
+							PrefT.UpdateBool(PrefName.BillingExcludeIfUnsentProcs,false);
+						}
+						//Only set clinic prefs when clincs are on.
+						if(numClinics>=1){
+							//Distibute bools evenly over multiple clinics. Limit to 1 of 3 bools true on each loop. This creates 3 possible combinations: 100, 010, 001.
+							ClinicPrefs.Upsert(PrefName.BillingIncludeChanged,clinic.ClinicNum,(clinicindex+0) % 3==0 ? "1" : "0");
+							ClinicPrefs.Upsert(PrefName.BillingExcludeInsPending,clinic.ClinicNum,(clinicindex+1) % 3==0 ? "1" : "0");
+							ClinicPrefs.Upsert(PrefName.BillingExcludeIfUnsentProcs,clinic.ClinicNum,(clinicindex+2) % 3==0 ? "1" : "0");
+						}
+						return new List<Procedure>();
+					});
+				ClinicPrefs.RefreshCache();
+				Prefs.RefreshCache();
+				SendStatementsIO sendStatementsIO=null;
+				BillingL.RunFromODService(_logWriterBilling,(sendStatementsIOMock) => {
+					//Save a shallow copy so we can assert later.
+					sendStatementsIO=sendStatementsIOMock;
+					sendStatementsIOMock.ActionSendEmail=(clinicNumPat,emailMessage,emailAddress,useSecureEmail) => { };
+					sendStatementsIOMock.FuncAskQuestion=(prompt) => { return true; };
+					sendStatementsIOMock.Source="BillingTests UnitTest";
+				});
+				if(numClinics>=1) {
+					//BillingSetup (test class) does not include ClinicNum 0 entry when clinics on. Add it here to fit the asserts below (BillingL always iterates through ClinicNum 0).
+					billingSetup.ListClinics.Add(new Clinic() { ClinicNum=0, });
+				}
+				Assert.AreEqual(reqAginingInvoked,countAgingInvoked);
+				//All clinics should pass through AgingData.GetAgingData.
+				Assert.AreEqual(listClinicNumsAll.Count,billingSetup.ListClinics.Count);
+				//Each clinic should pass through AgingData.GetAgingData.
+				Assert.IsTrue(ListTools.TryCompareList(listClinicNumsAll,billingSetup.ListClinics.Select(x => x.ClinicNum)));
+			}
+			//Invoke only once for clinic 0 (practice pref).
+			assert(0,1);
+			//Invoke for each real clinic (clinic pref) plus once for clinic 0 (practice pref).
+			assert(1,2);
+			assert(2,3);
+			assert(3,4);
+			//Never invoke more than 4 since our modulus groups start to repeat in setup (above).
+			assert(10,4);
+		}
+
 		///<summary>All RunFromODService to generate statements and assert that emails are sent and text messages are sent (or not) according to statement mode settings applied.</summary>
 		[TestMethod]
 		public void Billing_ODService_Email() {

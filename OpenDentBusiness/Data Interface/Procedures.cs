@@ -1639,10 +1639,13 @@ namespace OpenDentBusiness {
 			}
 			bool hasChanged=Crud.ProcedureCrud.Update(procedure,oldProcedure);
 			//Setting the procedure to complete OR treatment planned. Alternatively, if setting a proc TP / Completed to NOT be TP / Completed.
-			if((oldProcedure.ProcStatus!=ProcStat.C && new List<ProcStat> { ProcStat.C, ProcStat.TP }.Contains(procedure.ProcStatus))
-				|| (procedure.ProcStatus!=ProcStat.C && new List<ProcStat> { ProcStat.C, ProcStat.TP }.Contains(oldProcedure.ProcStatus)))
+			if((oldProcedure.ProcStatus!=ProcStat.C && procedure.ProcStatus.In(ProcStat.C, ProcStat.TP))
+				|| (procedure.ProcStatus!=ProcStat.C && oldProcedure.ProcStatus.In(ProcStat.C, ProcStat.TP)))
 			{
-				PayPlanCharges.UpdateAttachedPayPlanCharges(procedure);//does nothing if there are none.
+				//Here's a scenario that slips through the above 'if': If both are TP.
+				if(procedure.ProcStatus!=oldProcedure.ProcStatus) {
+					PayPlanCharges.UpdateAttachedPayPlanCharges(procedure);//does nothing if there are none.
+				}
 			}
 			if(hasChanged && oldProcedure.ProcStatus==ProcStat.TP && procedure.ProcStatus==ProcStat.C) {
 				//check for any tp prepayments and make transfer if valid

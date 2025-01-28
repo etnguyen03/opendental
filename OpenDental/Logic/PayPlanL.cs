@@ -7,6 +7,7 @@ using CodeBase;
 using OpenDental.UI;
 using System.Data;
 using System.Text;
+using System.Drawing;
 
 namespace OpenDental {
 	/// <summary>Provides a central location for both PayPlan and PayPlanDynamic to use the same, or similar methods.</summary>
@@ -319,8 +320,8 @@ namespace OpenDental {
 					row.Cells.Add((listPayPlanCharges[i].Principal+listPayPlanCharges[i].Interest).ToString("n"));
 					row.Cells.Add("");
 					row.Cells.Add("");
-					if(listPayPlanCharges[i].PayPlanChargeNum==0) {
-						row.ColorText=System.Drawing.Color.Gray;//it isn't an actual charge yet, it hasn't come due and been inserted into the database. 
+					if(listPayPlanCharges[i].ChargeDate>DateTime.Today) {
+						row.ColorText=System.Drawing.Color.Gray;//Future charges can be in the DB if they were edited(so PayPlanChargeNum isn't always 0)
 					}
 					row.Tag=new DynamicPayPlanRowData() {
 						ListPayPlanCharges=new List<PayPlanCharge>(){listPayPlanCharges[i]},
@@ -374,8 +375,8 @@ namespace OpenDental {
 				row.Cells.Add(due.ToString("n"));
 				row.Cells.Add("");
 				row.Cells.Add("");//6 Balance (filled later)
-				if(listPayPlanChargesForDate.Any(x => x.PayPlanChargeNum==0)) {
-					row.ColorText=System.Drawing.Color.Gray;//it isn't an actual charge yet, it hasn't come due and been inserted into the database 
+				if(listPayPlanChargesForDate.Any(x => x.ChargeDate>DateTime.Today)) {
+					row.ColorText=System.Drawing.Color.Gray;//Future charges can be in the DB if they were edited(so PayPlanChargeNum isn't always 0)
 				}
 				row.Tag=new DynamicPayPlanRowData() {
 					ListPayPlanCharges=listPayPlanChargesForDate,
@@ -473,7 +474,10 @@ namespace OpenDental {
 					}
 					row.Cells.Add(listDescriptions[j]);//Description
 					row.Cells.Add((listPayPlanCharges[j].Principal+listPayPlanCharges[j].Interest).ToString("n"));//Amount
-					row.Cells.Add("");//Amount Override
+					//This field cant be edited here
+					GridCell gridCell=new GridCell("N/A");//Amount Override
+					gridCell.ColorText=Color.Gray;
+					row.Cells.Add(gridCell);
 					row.ColorText=Defs.GetDefByExactName(DefCat.AccountColors,"PayPlan").ItemColor;//There isn't an ItemName for "Charge". Using "PayPlan" instead.
 					row.Tag=new DynamicPayPlanRowData() {
 						ListPayPlanCharges=listPayPlanCharges
@@ -499,7 +503,10 @@ namespace OpenDental {
 						}
 						row.Cells.Add(descript);//Description
 						row.Cells.Add(listPaySplits[k].SplitAmt.ToString("n"));//Amount
-						row.Cells.Add("");//Amount Override
+						//This field cant be edited here
+						gridCell=new GridCell("N/A");//Amount Override
+						gridCell.ColorText=Color.Gray;
+						row.Cells.Add(gridCell);
 						row.ColorText=Defs.GetDefByExactName(DefCat.AccountColors,"Payment").ItemColor;
 						row.Tag=new DynamicPayPlanRowData() {
 							PayNum=listPaySplits[k].PayNum

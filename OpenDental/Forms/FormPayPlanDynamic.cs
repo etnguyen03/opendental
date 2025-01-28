@@ -347,6 +347,10 @@ namespace OpenDental {
 			List<PayPlanCharge> listPayPlanChargesExpected=PayPlanEdit.GetPayPlanChargesForDynamicPaymentPlanSchedule(_dynamicPaymentPlanData.PayPlan,terms,_dynamicPaymentPlanData.ListPayPlanChargesDb,_dynamicPaymentPlanData.ListPayPlanLinks,_dynamicPaymentPlanData.ListPaySplits);
 			_dynamicPaymentPlanData.ListPayPlanChargesExpected=listPayPlanChargesExpected;
 			//The above method call will set the terms.AreTermsValid field.
+			//CreateRowsForDynamicPayPlanCharges expects the charges to be sorted in ascending ChargeDue order. Not ordering can lead to wrong charge number in the desciption of the rows
+			listPayPlanChargesExpected.Sort((x,y) => {
+				return x.ChargeDate.CompareTo(y.ChargeDate);
+			});
 			if(!terms.AreTermsValid) {
 				if(!isSilent) {
 					MsgBox.Show("This payment plan will never be paid off. The interest is too high or the payment amount is too low.");
@@ -929,7 +933,7 @@ namespace OpenDental {
 		}
 
 		private void gridLinkedProduction_CellLeave(object sender,ODGridClickEventArgs e) {
-			if(checkProductionLock.Checked) {
+			if(checkProductionLock.Checked || !(gridLinkedProduction.ListGridRows[e.Row].Tag is PayPlanProductionEntry)) {
 				FillProduction();//Show the user that their changes were not saved.
 				return;
 			}

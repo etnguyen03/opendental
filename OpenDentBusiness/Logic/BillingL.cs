@@ -127,14 +127,47 @@ namespace OpenDentBusiness {
 				sendStatementsIO.LogWrite(Lans.g("FormBilling","Aging failed"),LogLevel.Error);
 				return;
 			}
-			List<long> listClinicNumsAll=new List<long>() { -1 };
+			//If clinics off then use 0 so ClinicBillingOptions will use practice prefs.
+			//0 is also important for AgingData.GetAgingData proper filtering.
+			List<long> listClinicNumsAll=new List<long>() { 0 };
 			if(PrefC.HasClinicsEnabled) {
 				listClinicNumsAll=Clinics.GetDeepCopy(isShort: true).Select(x => x.ClinicNum).ToList();
 				listClinicNumsAll.Add(0);//Include HQ/Unassigned clinic. FormBilling.cs includes HQ when 'All' is selected.
 			}
+			//Put all clinics in groups according to their individual clinic pref values.
+			List<PatAgingClinicGroup> listPatAgingClinicGroups=listClinicNumsAll.Select(x => new ClinicBillingOptions(x))
+				//Worst case, there are 8 combos below 2 ^ 3.
+				//Group clinics by the combination of their input args and call GetAgingData below passing in each group of clinics.				
+				.GroupBy(x => new {
+					DoIncludeChanged=PIn.Bool(x.GetPrefValue(PrefName.BillingIncludeChanged)),
+					DoExcludeInsPending=PIn.Bool(x.GetPrefValue(PrefName.BillingExcludeInsPending)),
+					DoExcludeIfUnsentProcs=PIn.Bool(x.GetPrefValue(PrefName.BillingExcludeIfUnsentProcs)),
+				})
+				//Clinics are now in groups by billing prefs. Select the group of clinics and their args for ease of access below.
+				.Select(x => new PatAgingClinicGroup() {
+					//Store list of clinics associated with this group of bools. We need them below.
+					ListClinicNums=x.Select(y => y.ClinicNum).ToList(),
+					//Each group can now be passed into GetAgingData and the results stored for use below.
+					DictPatAgingData=AgingData.GetAgingData(
+						//Only filter on clinic if clinics are turned on.
+						PrefC.GetBool(PrefName.BillingDefaultsSinglePatient),
+						x.Key.DoIncludeChanged,
+						x.Key.DoExcludeInsPending,
+						x.Key.DoExcludeIfUnsentProcs,
+						false, //Super fam billing not supported by OD Service
+						PrefC.HasClinicsEnabled ? x.Select(y => y.ClinicNum).ToList() : null)
+				})
+				.ToList();
 			List<Statement> listStatementsCreatedAll=new List<Statement>();
 			foreach(long clinicNum in listClinicNumsAll) {
-				List<Statement> listStatementsCreatedByClinic=CreateStatementHelper(clinicNum,sendStatementsIO);//clinicNumCur will be -1 if clinics are not enabled.
+				//Should not be null since the clinic num list was used to build the agingData list, but check for null just in case.
+				SerializableDictionary<long,PatAgingData> dictPatAgingDataThisClinic=null;
+				PatAgingClinicGroup patAgingClinicGroup=listPatAgingClinicGroups.Find(x => x.ListClinicNums.Contains(clinicNum));
+				if(patAgingClinicGroup!=null) {
+					dictPatAgingDataThisClinic=patAgingClinicGroup.DictPatAgingData;
+				}
+				//clinicNum will be 0 if clinics are off OR clinics are on and we are capturing the HQ clinic (0).
+				List<Statement> listStatementsCreatedByClinic=CreateStatementHelper(clinicNum,sendStatementsIO,dictPatAgingDataThisClinic);
 				if(listStatementsCreatedByClinic.IsNullOrEmpty()) {
 					sendStatementsIO.LogWrite(Lans.g("FormBilling","No statements generated for ClinicNum")+" "+clinicNum.ToString(),LogLevel.Error);
 					continue;
@@ -380,7 +413,7 @@ namespace OpenDentBusiness {
 							if(emailAutograph!=null) {
 								//Always set the BodyText, we will additionally set HtmlText below if necessary (mimics FormEmailMessageEdit).
 								emailMessage.BodyText=EmailMessages.InsertAutograph(emailMessage.BodyText,emailAutograph);
-								if(MarkupEdit.ContainsOdHtmlTags(emailAutograph.AutographText)) {
+								if(EmailAutographs.IsAutographHTML(emailAutograph.AutographText)) {
 									//Attempt to convert entire message to html to accomodate for html autograph.
 									ODException.SwallowAnyException(() => {
 										//This will format the entire body at HTML, not just the autograph. This now becomes an undocumented loophole to deploy an html statement email.
@@ -827,7 +860,7 @@ namespace OpenDentBusiness {
 		///It will also use the default practice preference values for ClinicPrefs that are missing for the Clinic. 
 		///This method closely mimics OpenDental.FormBillingOptions.CreateHelper(). Changes to this method will also need to be considered there.</summary>
 		///<param name="clinicNum">The clinic that billing is being generated for. Passing in a value of -1 indicates clinics not being enabled.</param>
-		public static List<Statement> CreateStatementHelper(long clinicNum,SendStatementsIO sendStatementsIO) {
+		public static List<Statement> CreateStatementHelper(long clinicNum,SendStatementsIO sendStatementsIO,Dictionary<long,PatAgingData> dictPatAgingData=null) {
 			//If clinics are enabled, the list will be filled with the passed in clinicNum. Otherwise, it will be empty.
 			List<long> listClinicNums=new List<long>();
 			if(PrefC.HasClinicsEnabled&&clinicNum>=0) {
@@ -871,8 +904,11 @@ namespace OpenDentBusiness {
 				listBillingDefNums=strbillingSelectBillingTypes.Split(new char[] { ',' },StringSplitOptions.RemoveEmptyEntries).Select(x => PIn.Long(x)).ToList();
 			}
 			List<PatAging> listPatAgings=new List<PatAging>();
-			Dictionary<long,PatAgingData> dictPatAgingData=AgingData.GetAgingData(doBillingDefaultSinglePatient,doBillingIncludeChanged,doBillingExcludeInsPending,
+			//Should not be null but if it happens to be null, just go get the data from the db.
+			if(dictPatAgingData==null) {
+				dictPatAgingData=AgingData.GetAgingData(doBillingDefaultSinglePatient,doBillingIncludeChanged,doBillingExcludeInsPending,
 					doBillingExcludeIfUnsentProcs,isSuperFam,listClinicNums);
+			}
 			//This method was frequently causing a Middle Tier error. Grab all information, filtered by clinic if clinics enabled, and use the
 			//PatAgingData dictionary to create a list of PatNums with unsent procs, a list of PatNums with pending ins, and a dictionary of PatNum key to
 			//last trans date value and send only that data as it's all that GetAgingList needs.

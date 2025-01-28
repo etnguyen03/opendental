@@ -286,7 +286,7 @@ namespace OpenDental{
 			//If there is no insplan then we need to close
 			if(insPlan==null) {
 				MsgBox.Show(Lans.g(this,"Invalid insurance plan associated with claim. Please run database maintenance method")+" "+nameof(DatabaseMaintenances.InsSubNumMismatchPlanNum)
-					+" "+Lans.g(this,"found in the old tab"));
+					+" "+Lans.g(this,"found in the old tab and")+" "+nameof(DatabaseMaintenances.PatientPriProvMissing)+" "+Lan.g(this,"in the checks tab."));
 				this.DialogResult=DialogResult.Cancel;
 				this.Close();
 				return;

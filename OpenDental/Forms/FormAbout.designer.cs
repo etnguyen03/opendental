@@ -32,7 +32,6 @@ namespace OpenDental{
 			this.labelVersion = new System.Windows.Forms.Label();
 			this.labelCopyright = new System.Windows.Forms.Label();
 			this.labelMySQLCopyright = new System.Windows.Forms.Label();
-			this.label4 = new System.Windows.Forms.Label();
 			this.butLicense = new OpenDental.UI.Button();
 			this.label9 = new System.Windows.Forms.Label();
 			this.labelName = new System.Windows.Forms.Label();
@@ -77,16 +76,6 @@ namespace OpenDental{
 			this.labelMySQLCopyright.TabIndex = 6;
 			this.labelMySQLCopyright.Text = "MySQL - Copyright 1995-2007, www.mysql.com";
 			this.labelMySQLCopyright.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-			// 
-			// label4
-			// 
-			this.label4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-			this.label4.Location = new System.Drawing.Point(12, 249);
-			this.label4.Name = "label4";
-			this.label4.Size = new System.Drawing.Size(549, 20);
-			this.label4.TabIndex = 7;
-			this.label4.Text = "Main software license is GPL";
-			this.label4.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			// 
 			// butLicense
 			// 
@@ -225,7 +214,6 @@ namespace OpenDental{
 			this.Controls.Add(this.panelHL);
 			this.Controls.Add(this.label9);
 			this.Controls.Add(this.butLicense);
-			this.Controls.Add(this.label4);
 			this.Controls.Add(this.labelMySQLCopyright);
 			this.Controls.Add(this.labelCopyright);
 			this.Controls.Add(this.labelVersion);
@@ -246,7 +234,6 @@ namespace OpenDental{
 		private System.Windows.Forms.Label labelVersion;
 		private System.Windows.Forms.Label labelCopyright;
 		private System.Windows.Forms.Label labelMySQLCopyright;
-		private System.Windows.Forms.Label label4;
 		private OpenDental.UI.Button butLicense;
 		private Label label9;
 		private Label labelName;

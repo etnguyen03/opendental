@@ -42,6 +42,9 @@ namespace OpenDental.Bridges{
 				return;
 			}
 			string patFolder="";
+			if(Plugins.HookMethod(null,"TrophyEnhanced.SendData_patFolderCreate")) {
+				goto HookSkipPatFolderCreate;
+			}
 			if(pat.TrophyFolder=="") {//no trophy folder assigned yet
 				bool isNumberedMode=ProgramProperties.GetPropVal(ProgramCur.ProgramNum,"Enter 1 to enable Numbered Mode")=="1";
 				try{
@@ -65,6 +68,7 @@ namespace OpenDental.Bridges{
 			else {//pat.TrophyFolder was already previously entered.
 				patFolder=ODFileUtils.CombinePaths(storagePath,pat.TrophyFolder);
 			}
+			HookSkipPatFolderCreate:
 			//can't do this because the folder won't exist yet for new patients.
 			//if(!Directory.Exists(patFolder)) {
 			//	MessageBox.Show("Invalid patient folder: "+patFolder);

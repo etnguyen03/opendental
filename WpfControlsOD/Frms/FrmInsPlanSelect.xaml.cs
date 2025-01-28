@@ -28,8 +28,6 @@ namespace OpenDental {
 		///<summary>Supply a string here to start off the search with filtered group nums.</summary>
 		public string groupNumText;
 		private FilterControlsAndAction _filterControlsAndAction;
-		///<summary>Gets set to true when hitting GetAll button. Otherwise, query only gets 200 rows. This reverts back to false after one query.</summary>
-		private bool _showAll;
 
 		///<summary></summary>
 		public FrmInsPlanSelect(){
@@ -70,9 +68,11 @@ namespace OpenDental {
 			_filterControlsAndAction.AddControl(radioOrderCarrier);
 			_filterControlsAndAction.AddControl(radioOrderEmp);
 			_filterControlsAndAction.AddControl(checkShowHidden);
+			_filterControlsAndAction.AddControl(checkLimit200);
 			_filterControlsAndAction.FuncDb=RefreshFromDb;
-			_filterControlsAndAction.SetInterval(300);
-			//_filterControlsAndAction.SetMinChars(2);
+			//59494 interval was 300 and MinChars was 0, but NADG was complaining about too many queries
+			_filterControlsAndAction.SetInterval(500);
+			_filterControlsAndAction.SetMinChars(4);
 			_filterControlsAndAction.ActionComplete=FillGrid;
 			FillGrid(RefreshFromDb());
 		}
@@ -95,13 +95,13 @@ namespace OpenDental {
 			}
 			gridMain.BeginUpdate();
 			gridMain.Columns.Clear();
-			GridColumn col=new GridColumn(Lans.g("TableInsurancePlans","Employer"),140);
+			GridColumn col=new GridColumn(Lans.g("TableInsurancePlans","Employer"),160);
 			gridMain.Columns.Add(col);
-			col=new GridColumn(Lans.g("TableInsurancePlans","Carrier"),140);
+			col=new GridColumn(Lans.g("TableInsurancePlans","Carrier"),160);
 			gridMain.Columns.Add(col);
 			col=new GridColumn(Lans.g("TableInsurancePlans","Phone"),82);
 			gridMain.Columns.Add(col);
-			col=new GridColumn(Lans.g("TableInsurancePlans","Address"),120);
+			col=new GridColumn(Lans.g("TableInsurancePlans","Address"),140);
 			gridMain.Columns.Add(col);
 			col=new GridColumn(Lans.g("TableInsurancePlans","City"),80);
 			gridMain.Columns.Add(col);
@@ -111,13 +111,15 @@ namespace OpenDental {
 			gridMain.Columns.Add(col);
 			col=new GridColumn(Lans.g("TableInsurancePlans",groupNum),70);
 			gridMain.Columns.Add(col);
-			col=new GridColumn(Lans.g("TableInsurancePlans","Group Name"),90);
+			col=new GridColumn(Lans.g("TableInsurancePlans","Group Name"),110);
 			gridMain.Columns.Add(col);
 			col=new GridColumn(Lans.g("TableInsurancePlans","noE"),35);
 			gridMain.Columns.Add(col);
 			col=new GridColumn(Lans.g("TableInsurancePlans","ElectID"),45);
 			gridMain.Columns.Add(col);
 			col=new GridColumn(Lans.g("TableInsurancePlans","Subs"),40);
+			gridMain.Columns.Add(col);
+			col=new GridColumn(Lans.g("TableInsurancePlans","Hidden"),45);
 			gridMain.Columns.Add(col);
 			if(CultureInfo.CurrentCulture.Name.EndsWith("CA")) {//Canadian. en-CA or fr-CA
 				col=new GridColumn(Lans.g("TableCarriers","CDAnet"),50);
@@ -145,6 +147,7 @@ namespace OpenDental {
 				row.Cells.Add(_table.Rows[i]["noSendElect"].ToString());
 				row.Cells.Add(_table.Rows[i]["ElectID"].ToString());
 				row.Cells.Add(_table.Rows[i]["subscribers"].ToString());
+				row.Cells.Add(_table.Rows[i]["IsHidden"].ToString()=="0"?"":"X");
 				if(CultureInfo.CurrentCulture.Name.EndsWith("CA")) {//Canadian. en-CA or fr-CA
 					row.Cells.Add((_table.Rows[i]["IsCDA"].ToString()=="0")?"":"X");
 				}
@@ -176,10 +179,8 @@ namespace OpenDental {
 			IsDialogOK=true;
 		}
 
-		private void butGetAll_Click(object sender,EventArgs e) {
-			_showAll=true;
+		private void butRefresh_Click(object sender,EventArgs e) {
 			FillGrid(RefreshFromDb());
-			_showAll=false;
 		}
 
 		private void butBlank_Click(object sender, System.EventArgs e) {
@@ -213,7 +214,11 @@ namespace OpenDental {
 			Dispatcher.Invoke(()=>radioSortEmp=radioOrderEmp.Checked);
 			bool chkShowHidden=false;
 			Dispatcher.Invoke(()=>chkShowHidden=checkShowHidden.Checked==true);
-			return InsPlans.GetBigList(radioSortEmp,txtEmployer,txtCarrier,txtGroupName,txtGroupNum,txtPlanNum,txtTrojanID,chkShowHidden,_showAll);
+			bool includeAll=false;
+			if(checkLimit200.Checked==false) {
+				includeAll=true;
+			}
+			return InsPlans.GetBigList(radioSortEmp,txtEmployer,txtCarrier,txtGroupName,txtGroupNum,txtPlanNum,txtTrojanID,chkShowHidden,includeAll);
 		}
 
 		private void butOK_Click(object sender, System.EventArgs e) {

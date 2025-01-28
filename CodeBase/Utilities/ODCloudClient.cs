@@ -126,7 +126,14 @@ namespace CodeBase {
 		/// <summary>Synchronously requests the clipboard files from the client's FileDropList and places them in '.../temp/opendental/ODCloudFileTransfer'.</summary>
 		/// <returns>string[] of paths to the files in the temp directory</returns>
 		public static string[] GetClipboardFilesFromODCloudClient() {
-			string resultData=SendToODCloudClientSynchronously(new ODCloudClientData(),CloudClientAction.GetClipboardFiles);
+			string resultData;
+			try {
+				resultData=SendToODCloudClientSynchronously(new ODCloudClientData(),CloudClientAction.GetClipboardFiles);
+			}
+			catch(Exception ex) {
+				ODMessageBox.Show(ex.Message);
+				return null;
+			}
 			if(resultData.IsNullOrEmpty()) {
 				return null;
 			}
@@ -134,8 +141,28 @@ namespace CodeBase {
 			//Tuple: Item1=base64 filedata    Item2=filename
 			//Write all files to the temp path using the given filename (Item2) and return an array of file paths
 			Tuple<string,string>[] arrayFileData=JsonConvert.DeserializeObject<Tuple<string,string>[]>(resultData);
-			arrayFileData.ForEach(x => File.WriteAllBytes(ODFileUtils.CombinePaths(tempPathFT,x.Item2),Convert.FromBase64String(x.Item1)));
-			return arrayFileData.Select(x => ODFileUtils.CombinePaths(tempPathFT,x.Item2)).ToArray();
+			List<string> listPaths=new List<string>();
+			List<string> listFailedFileNames=new List<string>();
+			for(int i=0;i<arrayFileData.Length;i++) {
+				string filePath=ODFileUtils.CombinePaths(tempPathFT,arrayFileData[i].Item2);
+				try {
+					byte[] fileBytes=Convert.FromBase64String(arrayFileData[i].Item1);
+					File.WriteAllBytes(filePath,fileBytes);
+					listPaths.Add(filePath);
+				}
+				catch(Exception ex) {
+					ex.DoNothing();
+					listFailedFileNames.Add(arrayFileData[i].Item2);
+					continue;
+				}
+			}
+			if(listFailedFileNames.Count>0) {
+				ODMessageBox.Show($"The following files could not be imported: {string.Join(", ",listFailedFileNames)}.");
+			}
+			if(listPaths.Count==0) {
+				return null;
+			}
+			return listPaths.ToArray();
 		}
 
 		public static bool ClearClipboard() {
@@ -219,11 +246,17 @@ namespace CodeBase {
 			if(resultData.IsNullOrEmpty()) {//The scan was probably cancelled
 				return null;
 			}
-			byte[] byteArray=Convert.FromBase64String(resultData);
 			Bitmap bitmap;
 			using MemoryStream memoryStream=new MemoryStream();
-			memoryStream.Write(byteArray, 0, byteArray.Length);
-			bitmap=(Bitmap)Bitmap.FromStream(memoryStream);
+			try {
+				byte[] byteArray=Convert.FromBase64String(resultData);
+				memoryStream.Write(byteArray, 0, byteArray.Length);
+				bitmap=(Bitmap)Image.FromStream(memoryStream);
+			}
+			catch(Exception ex) {
+				ODMessageBox.Show(ex.Message);
+				return null;
+			}
 			return bitmap;
 		}
 
@@ -249,9 +282,16 @@ namespace CodeBase {
 			if(resultData.IsNullOrEmpty()) {
 				return null;
 			}
-			byte[] bytes=Convert.FromBase64String(resultData);
-			string tempFile=ODFileUtils.CreateRandomFile(GetTempFolderPath(),".pdf");
-			File.WriteAllBytes(tempFile,bytes);
+			string tempFile;
+			try {
+				byte[] bytes=Convert.FromBase64String(resultData);
+				tempFile=ODFileUtils.CreateRandomFile(GetTempFolderPath(),".pdf");
+				File.WriteAllBytes(tempFile,bytes);
+			}
+			catch(Exception ex) {
+				ODMessageBox.Show(ex.Message);
+				return null;
+			}
 			return tempFile;
 		}
 
@@ -272,14 +312,14 @@ namespace CodeBase {
 		public static void CopyToClipboard(Bitmap bitmapCopy=null,string fileName=null,int nodeType=-1, long imageKey=-1, string dbNameOrUri=null){
 			ODCloudClientData oDCloudClientData=new ODCloudClientData();
 			if(bitmapCopy!=null){
+				using MemoryStream memoryStream=new MemoryStream();
 				try{
-					using (MemoryStream memoryStream=new MemoryStream()){
-						bitmapCopy.Save(memoryStream, System.Drawing.Imaging.ImageFormat.Png);
-						byte[] byteArray=memoryStream.ToArray();
-						oDCloudClientData.BitmapCopy=Convert.ToBase64String(byteArray);
-					}
+					bitmapCopy.Save(memoryStream, System.Drawing.Imaging.ImageFormat.Png);
+					byte[] byteArray=memoryStream.ToArray();
+					oDCloudClientData.BitmapCopy=Convert.ToBase64String(byteArray);
 				}
-				catch(Exception){
+				catch(Exception ex) {
+					ODMessageBox.Show(ex.Message);
 					return;
 				}
 			}
@@ -297,7 +337,7 @@ namespace CodeBase {
 				SendToODCloudClientSynchronously(oDCloudClientData,CloudClientAction.CopyToClipboard);
 			}
 			catch(Exception ex){
-				ex.DoNothing();
+				ODMessageBox.Show(ex.Message);
 			}
 		}
 
@@ -394,11 +434,10 @@ namespace CodeBase {
 				resultData=SendToODCloudClientSynchronously(cloudClientData,CloudClientAction.TwainAcquireBitmap,timeoutSecs:timeoutSecs);
 			}
 			catch(Exception ex){
-				if(!string.IsNullOrEmpty(ex.Message)){
+				if(!string.IsNullOrEmpty(ex.Message)) {//Message is empty if the user cancelled
 					if(doThrowException) {
 						throw;
 					}
-					//Message is empty if the user cancelled
 					ODMessageBox.Show(ex.Message);
 				}
 				return null;
@@ -406,10 +445,21 @@ namespace CodeBase {
 			if(resultData.IsNullOrEmpty()) {
 				return null;
 			}
-			byte[] byteArray=Convert.FromBase64String(resultData);
+			Bitmap bitmap;
 			using MemoryStream memoryStream=new MemoryStream();
-			memoryStream.Write(byteArray,0,byteArray.Length);
-			return (Bitmap)Bitmap.FromStream(memoryStream);
+			try {
+				byte[] byteArray=Convert.FromBase64String(resultData);
+				memoryStream.Write(byteArray,0,byteArray.Length);
+				bitmap=(Bitmap)Image.FromStream(memoryStream);
+			}
+			catch(Exception ex) {
+				if(doThrowException) {
+					throw;
+				}
+				ODMessageBox.Show(ex.Message);
+				return null;
+			}
+			return bitmap;
 		}
 
 		///<summary>Sends a request to ODCloudClient to write the claim data to the specified file and archive any old claims.</summary>
@@ -745,17 +795,20 @@ namespace CodeBase {
 
 		private static string GetODCloudClientRequest(ODCloudClientData cloudClientData,CloudClientAction cloudClientAction,bool hasResponse=true) {
 			string dataStr=JsonConvert.SerializeObject(cloudClientData);
-			string userName=Environment.UserName;
-			//We will sign dataStr to prove this request came from an Open Dental server.
-			byte[] byteArray=Encoding.Unicode.GetBytes(dataStr);
-			CspParameters csp=new CspParameters {
-				KeyContainerName="cloudkey"+userName,
-				Flags=CspProviderFlags.UseMachineKeyStore,
-			};
-			using RSACryptoServiceProvider rsa=new RSACryptoServiceProvider(csp);
-			byte[] signedByteArray=rsa.SignData(byteArray,CryptoConfig.MapNameToOID("SHA256"));
-			string signature=Convert.ToBase64String(signedByteArray);
-			string publicKey=rsa.ToXmlString(false);
+			string signature="";
+			string publicKey="";
+			if(ODBuild.IsThinfinity()) {
+				//For Thinfinity,we will sign dataStr to prove this request came from an Open Dental server.
+				byte[] byteArray=Encoding.Unicode.GetBytes(dataStr);
+				CspParameters csp=new CspParameters {
+					KeyContainerName="cloudkey",
+					Flags=CspProviderFlags.UseMachineKeyStore,
+				};
+				using RSACryptoServiceProvider rsa=new RSACryptoServiceProvider(csp);
+				byte[] signedByteArray=rsa.SignData(byteArray,CryptoConfig.MapNameToOID("SHA256"));
+				signature=Convert.ToBase64String(signedByteArray);
+				publicKey=rsa.ToXmlString(false);
+			}
 			ODCloudClientArgs jsonData=new ODCloudClientArgs {
 				Data=dataStr,
 				Signature=signature,
@@ -780,12 +833,17 @@ namespace CodeBase {
 			}
 			cloudClientData.DoCheckVersion=DoCheckLatestCloudClientVersion();
 			cloudClientData.LatestCloudClientVersion=_latestCloudClientVersion;
-			string request=GetODCloudClientRequest(cloudClientData,cloudClientAction,false);
-			if(ODBuild.IsThinfinity()) {
-				SendDataToBrowser(request,(int)BrowserAction.SendToODCloudClient);
+			try {
+				string request=GetODCloudClientRequest(cloudClientData,cloudClientAction,false);
+				if(ODBuild.IsThinfinity()) {
+					SendDataToBrowser(request,(int)BrowserAction.SendToODCloudClient);
+				}
+				else if(IsAppStream) {
+					Utilities.ODCloudDcvExtension.Instance.SendRequest(request);
+				}
 			}
-			else if(IsAppStream) {
-				Utilities.ODCloudDcvExtension.Instance.SendRequest(request);
+			catch(Exception ex) {
+				ODMessageBox.Show(ex.Message);
 			}
 		}
 
@@ -895,8 +953,7 @@ namespace CodeBase {
 				resultData=SendToODCloudClientSynchronously(new ODCloudClientData(),CloudClientAction.TwainGetAcquiredBitmap,timeoutSecs:2000,doShowProgressBar:doShowProgressBar);
 			}
 			catch(Exception ex){
-				if(!string.IsNullOrEmpty(ex.Message)){
-					//Message is empty if the user cancelled
+				if(!string.IsNullOrEmpty(ex.Message)){//Message is empty if the user cancelled
 					ODMessageBox.Show(ex.Message);
 				}
 				return null;
@@ -904,13 +961,17 @@ namespace CodeBase {
 			if(resultData.IsNullOrEmpty()){
 				return null;
 			}
-			byte[] byteArray = Convert.FromBase64String(resultData);
-      using MemoryStream memoryStream = new MemoryStream();
-      memoryStream.Write(byteArray, 0, byteArray.Length);
-      Bitmap bitmap = (Bitmap)Bitmap.FromStream(memoryStream);
-      memoryStream.Flush();
-      byteArray = null;
-      resultData = null;
+			Bitmap bitmap;
+			using MemoryStream memoryStream=new MemoryStream();
+			try {
+				byte[] byteArray = Convert.FromBase64String(resultData);
+				memoryStream.Write(byteArray, 0, byteArray.Length);
+				bitmap = (Bitmap)Image.FromStream(memoryStream);
+			}
+			catch(Exception ex) {
+				ODMessageBox.Show(ex.Message);
+				return null;
+			}
 			return bitmap;
 		}
 
@@ -925,21 +986,20 @@ namespace CodeBase {
 
 		///<summary>Use CloudClientL.ExportForCloud helper instead of this method directly whenever possible. Calls the ExportFile method on the CloudClient. Creates the file in the user's downloads folder. Optionally can send a file name to be used instead of the name on the filePath. Can also optionally pass in a byteArray if available which will be used instead of the reading the path.</summary>
 		public static void ExportForAppStream(string filePath,string fileName="",Byte[] byteArray=null) {
-			if(byteArray.IsNullOrEmpty()) {
-				byteArray=File.ReadAllBytes(filePath);
-			}
-			string fileDataString=Convert.ToBase64String(byteArray);
 			ODCloudClientData oDCloudClientData=new ODCloudClientData();
-			oDCloudClientData.FileData=fileDataString;
-			if(fileName.IsNullOrEmpty()) {
-				fileName=Path.GetFileName(filePath);
-			}
-			oDCloudClientData.OtherData=fileName;
-			string response="";
+			string response;
 			try {
+				if(byteArray.IsNullOrEmpty()) {
+					byteArray=File.ReadAllBytes(filePath);
+				}
+				oDCloudClientData.FileData=Convert.ToBase64String(byteArray);
+				if(fileName.IsNullOrEmpty()) {
+					fileName=Path.GetFileName(filePath);
+				}
+				oDCloudClientData.OtherData=fileName;
 				response=SendToODCloudClientSynchronously(oDCloudClientData,CloudClientAction.ExportFile);
 			}
-			catch (Exception ex) {
+			catch(Exception ex) {
 				MessageBox.Show(ex.Message);
 				return;
 			}
@@ -952,22 +1012,25 @@ namespace CodeBase {
 			try {
 				importFile=SendToODCloudClientSynchronously(new ODCloudClientData(),CloudClientAction.ImportFile,timeoutSecs:120);
 			}
-			catch(ODException odEx) {
-				MessageBox.Show(odEx.Message);
+			catch(Exception ex) {
+				ODMessageBox.Show(ex.Message);
 				return "";
 			}
 			if(importFile.IsNullOrEmpty()){
 				return "";
 			}
 			List<string> listImportFileStrings=JsonConvert.DeserializeObject<List<string>>(importFile);
+			if(listImportFileStrings.Count<2) {
+				return "";
+			}
 			string fileName=listImportFileStrings[0];
-			byte[] byteArray=Convert.FromBase64String(listImportFileStrings[1]);
 			string importPath=ODFileUtils.CombinePaths(GetFileTransferTempPath(),fileName);
-			try{
+			try {
+				byte[] byteArray=Convert.FromBase64String(listImportFileStrings[1]);
 				File.WriteAllBytes(importPath,byteArray);
 			}
 			catch(Exception ex){
-				MessageBox.Show("Error importing file: "+ex.Message);
+				ODMessageBox.Show("Error importing file: "+ex.Message);
 				return "";
 			}
 			return importPath;
@@ -1059,8 +1122,8 @@ namespace CodeBase {
 			///<summary>This will be a JSON serialized string of <see cref="ODCloudClientData"/>.</summary>
 			public string Data;
 			///<summary>A signature of Data to prove this is from on Open Dental server.</summary>
-			public string Signature;
 			///<summary>The public key that corresponds to the private key used to sign the Signature.</summary>
+			public string Signature;
 			public string PublicKey;
 			///<summary>True if the ODCloudClient should listen for API Service requests and relay them to the VM, otherwise false.</summary>
 			public bool isApiEnabled;

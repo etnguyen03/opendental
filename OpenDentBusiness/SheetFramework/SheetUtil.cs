@@ -18,9 +18,9 @@ using PdfSharp.Drawing;
 namespace OpenDentBusiness{
 	public class SheetUtil {
 		#region Methods - Public
-		///<summary>Just before printing or displaying the final sheet output, the heights and y positions of various fields are adjusted according to their growth behavior.  This also now gets run every time a user changes the value of a textbox while filling out a sheet. dataSet should be prefilled by calling AccountModules.GetAccount() before calling this method in order to calculate for statements.</summary>
-		public static void CalculateHeights(Sheet sheet,DataSet dataSet=null,Statement stmt=null,bool isPrinting=false,
-			int topMargin=40,int bottomMargin=60,MedLab medLab=null,Patient pat=null,Patient patGuar=null)
+		///<summary>Just before printing or displaying the final sheet output, the heights and y positions of various fields are adjusted according to their growth behavior.  This also now gets run every time a user changes the value of a textbox while filling out a sheet. dataSet should be prefilled by calling AccountModules.GetAccount() before calling this method in order to calculate for statements.  isPrintingOrPDF determines if calculations for page breaks need to be done.  isPrintingOnly determines if a special calculation for amountOfGrowth needs to be done due to printing complications explained in GraphicsHelper.cs DrawString().</summary>
+		public static void CalculateHeights(Sheet sheet,DataSet dataSet=null,Statement stmt=null,bool isPrintingOrPDF=false,
+			int topMargin=40,int bottomMargin=60,MedLab medLab=null,Patient pat=null,Patient patGuar=null,bool isPrintingOnly=false)
 		{
 			int calcH;
 			FontStyle fontstyle;
@@ -158,7 +158,13 @@ namespace OpenDentBusiness{
 						}
 						break;
 				}
-				if(calcH<=field.Height //calc height is smaller
+				int heightToCalcAmountGrowth=calcH;
+				if(isPrintingOnly) {//Mulitply by 1.04 when printing, so we can calculate the amountOfGrowth based upon the height the field will be when field is later increased 4% in DrawString() in GraphicsHelper.cs
+					if(field.GrowthBehavior==GrowthBehaviorEnum.DownLocal || field.GrowthBehavior==GrowthBehaviorEnum.DownGlobal) {
+						heightToCalcAmountGrowth=(int)Math.Ceiling(calcH*1.04);
+					}
+				}
+				if(heightToCalcAmountGrowth<=field.Height //calc height is smaller
 					&& field.FieldName!="StatementPayPlanOld" //allow this grid to shrink and disappear.
 					&& field.FieldName!="StatementPayPlan" //allow this grid to shrink and disappear.
 					&& field.FieldName!="StatementDynamicPayPlan" //allow this grid to shrink and disappear.
@@ -173,7 +179,8 @@ namespace OpenDentBusiness{
 				//or 2. To shrink one of the six fieldNames listed above.
 				//Critically, any shrinking of most fields has been skipped.
 				int heightOld=field.Height;
-				int amountOfGrowth=calcH-field.Height;
+				int amountOfGrowth=heightToCalcAmountGrowth-field.Height;
+				//Do not multiply the actual height by 1.04 for printing here because that will happen later on in DrawString() in GraphicsHelper.cs
 				field.Height=calcH;
 				if(field.GrowthBehavior==GrowthBehaviorEnum.DownLocal){
 					MoveAllDownWhichIntersect(sheet,field,amountOfGrowth);
@@ -189,7 +196,7 @@ namespace OpenDentBusiness{
 					}
 				}
 			}
-			if(isPrinting && !Sheets.SheetTypeIsSinglePage(sheet.SheetType)) {
+			if(isPrintingOrPDF && !Sheets.SheetTypeIsSinglePage(sheet.SheetType)) {
 				//now break all text fields in between lines, not in the middle of actual text
 				sheet.SheetFields.Sort(SheetFields.SortDrawingOrderLayers);
 				int originalSheetFieldCount=sheet.SheetFields.Count;
@@ -284,6 +291,7 @@ namespace OpenDentBusiness{
 				sheetfieldCopy.TabOrderMobile=field.TabOrderMobile;
 				sheetfieldCopy.UiLabelMobile=field.UiLabelMobile;
 				sheetfieldCopy.UiLabelMobileRadioButton=field.UiLabelMobileRadioButton;
+				sheetfieldCopy.CanElectronicallySign=field.CanElectronicallySign;
 				if(sheetfieldCopy.FieldType==SheetFieldType.SigBox && !string.IsNullOrWhiteSpace(sheetfieldCopy.FieldValue)) {
 					sheetfieldCopy.DateTimeSig=newSheet.DateTimeSheet;
 				}
@@ -886,6 +894,8 @@ namespace OpenDentBusiness{
 			using GridOD odGrid=new GridOD();
 			odGrid.BeginUpdate();
 			odGrid.IsForSheets=true;
+			//There is a known visual bug with VScrollVisible=false that causes the scroll bar to overlap content on the first fill of the grid if the content exceeds the grid area.
+			//That is not a problem For sheets because they are dynamically sized to fit content i.e should never have scrollbars.
 			odGrid.VScrollVisible=false;
 			if(!string.IsNullOrEmpty(field.FontName)) {
 				odGrid.FontForSheets=new Font(field.FontName,field.FontSize,field.FontIsBold ? FontStyle.Bold : FontStyle.Regular);

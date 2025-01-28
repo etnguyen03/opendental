@@ -10971,7 +10971,6 @@
       <LastGenOutput>Reference.cs</LastGenOutput>
     </None>
     <None Include="Web References\localhost\Service1.disco" />
-    <None Include="Resources\GPL.txt" />
     <None Include="Resources\PaymentsRDL.txt" />
     <None Include="Resources\CommLog.gif" />
     <None Include="Resources\NoFeeProcCodes.txt" />

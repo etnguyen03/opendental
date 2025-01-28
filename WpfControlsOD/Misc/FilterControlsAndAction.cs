@@ -30,7 +30,7 @@ Initialize:
 			_filterControlsAndAction.AddControl(dateStart);
 			_filterControlsAndAction.FuncDb=RefreshFromDb;
 			_filterControlsAndAction.SetInterval(700); //optional. Default is 1000
-			_filterControlsAndAction.SetMinChars(4);//optional. If not set, then textboxes always wait the interval.
+			//_filterControlsAndAction.SetMinChars(3);//Don't use without involving Jordan. This prevents queries when chars below this threshold.
 			_filterControlsAndAction.ActionComplete=FillGrid;
 FuncDb:
 		private object RefreshFromDb(){
@@ -144,7 +144,7 @@ but understand that RefreshFromDb will happen on the main thread in this case, w
 			throw new Exception("That control type is not yet supported.");
 		}
 
-		/// <summary>Counts the total amount of text in each UI element to check against _minChars</summary>
+		/// <summary>Counts the total amount of text in all UI elements to check against _minChars</summary>
 		private int CountText(){
 			int count=0;
 			for(int i=0;i<_listTextboxes.Count;i++){
@@ -170,7 +170,7 @@ but understand that RefreshFromDb will happen on the main thread in this case, w
 			_dispatcherTimer.Interval=TimeSpan.FromMilliseconds(intervalMs);
 		}
 
-		///<summary>Allowed 0 to 10. If this is not set (0), then textboxes always wait the interval. If this is set, then it's compared to the total sum of all characters entered into all textboxes. If the number of characters entered so far is >= minChars, then the textbox will refresh immediately instead of waiting the interval. This is used in FrmPatientSelect(...) along with the pref PatientSelectSearchMinChars.</summary>
+		///<summary>0 by default. Allowed 0 to 10. Rarely used. If this is set, it prevents refresh when sum of the number of characters in all textboxes is less than this value. For example, when searching for a patient, it would be silly to run a query when only "s" had been entered. Setting this to 3 makes it wait until "smi" is entered, resulting in less useless slow queries. 3 is a typical reasonable number. This is used in FrmPatientSelect(...) along with the pref PatientSelectSearchMinChars. If user backspaces until there are 0 characters, then normally a query would still run and would get a huge list of everything. By setting MinChars, we can prevent that behavior. But a backspace will result in a stale list unless you manually refresh with a button. So a Refresh button is recommended if user wants to bypass MinChars for some reason.</summary>
 		public void SetMinChars(int minChars){
 			if(minChars>10){
 				throw new Exception("MinChars cannot be greater than 10.");
@@ -216,9 +216,14 @@ but understand that RefreshFromDb will happen on the main thread in this case, w
 			if(!ShouldRefresh){
 				return;
 			}
-			//Check the count of the textboxes to see if we should launch immediately or not
-			if(CountText() >= _minChars){
-				LaunchThread();//immediate
+			//Timer controlled only
+			if(_minChars==0){
+				_dispatcherTimer.Stop();
+				_dispatcherTimer.Start();
+				return;
+			}
+			//Check the count of the textboxes to see if we should start a timer
+			if(CountText()<_minChars){
 				return;
 			}
 			if(!_dispatcherTimer.IsEnabled){//not running

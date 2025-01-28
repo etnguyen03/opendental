@@ -599,8 +599,14 @@ namespace OpenDentBusiness{
 				sheetField.FieldType=SheetFieldType.Parameter;
 				sheetField.FieldName=sheet.Parameters[i].ParamName;
 				if(sheet.Parameters[i].ParamName=="ListProcNums") {//Save this parameter as a comma delimited list
-					List<long> listProcNums=(List<long>)SheetParameter.GetParamByName(sheet.Parameters,"ListProcNums").ParamValue;
-					sheetField.FieldValue=String.Join(",",listProcNums);
+					//When copying one sheet over to another, this param has already been coverted over to a string. In this case, we simply want to copy the string directly into the fieldvalue.
+					if(SheetParameter.GetParamByName(sheet.Parameters,"ListProcNums").ParamValue is string) {
+						sheetField.FieldValue=(string)SheetParameter.GetParamByName(sheet.Parameters,"ListProcNums").ParamValue;
+					}
+					else {
+						List<long> listProcNums=(List<long>)SheetParameter.GetParamByName(sheet.Parameters,"ListProcNums").ParamValue;
+						sheetField.FieldValue=String.Join(",",listProcNums);
+					}
 				}
 				else {
 					sheetField.FieldValue=sheet.Parameters[i].ParamValue.ToString();//the object will be an int. Stored as a string.

@@ -61,6 +61,9 @@ namespace OpenDental {
 				butDate.Visible=false;
 			}
 			_listQuickPasteCats=QuickPasteCats.GetDeepCopy();
+			object[] parameters=new object[] { _listQuickPasteCats };
+			Plugins.HookAddCode(this,"FrmQuickPaste.FormQuickPaste_Load_FillListCats",parameters);
+			_listQuickPasteCats=(List<QuickPasteCat>)parameters[0];
 			_listQuickPasteCatsOld=_listQuickPasteCats.Select(x=>x.Copy()).ToList();
 			FillCats();
 			listCat.SelectedIndex=QuickPasteCats.GetDefaultType(QuickPasteType_);

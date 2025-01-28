@@ -35,7 +35,6 @@ namespace OpenDental{
 		private Color _colorTextBack=Color.White;
 		///<summary>One of these 3 states is active at any time.</summary>
 		private EnumCropPanAdj _cropPanAdj;
-		private DeviceController _deviceController; 
 		///<summary>If the draw toolbar is showing, then one of these 5 modes will be active.</summary>
 		private EnumDrawMode _drawMode;
 		private Family _familyCur=null;
@@ -1453,8 +1452,7 @@ namespace OpenDental{
 		}
 
 		private void FormImageFloat_SetWindowingSlider(object sender,WindowingEventArgs windowingEventArgs){
-			windowingSlider.MinVal=windowingEventArgs.MinVal;
-			windowingSlider.MaxVal=windowingEventArgs.MaxVal;
+			windowingSlider.SetBounds(windowingEventArgs.MinVal,windowingEventArgs.MaxVal);
 		}
 
 		private void FormImageFloat_WindowClicked(object sender, int idx){
@@ -2659,7 +2657,7 @@ namespace OpenDental{
 			int errorCode=EZTwain.LastErrorCode();
 			if(errorCode!=0) {
 				if(errorCode==(int)EZTwainErrorCode.EZTEC_USER_CANCEL) {//19
-					//message="\r\nScanning cancelled.";//do nothing
+																																//message="\r\nScanning cancelled.";//do nothing
 					return;
 				}
 				else if(errorCode==(int)EZTwainErrorCode.EZTEC_JPEG_DLL) {//22
@@ -2667,7 +2665,7 @@ namespace OpenDental{
 					return;
 				}
 				else if(errorCode==(int)EZTwainErrorCode.EZTEC_0_PAGES) {//38
-					//message="\r\nScanning cancelled.";//do nothing
+																																 //message="\r\nScanning cancelled.";//do nothing
 					return;
 				}
 				else if(errorCode==(int)EZTwainErrorCode.EZTEC_NO_PDF) {//43
@@ -2679,8 +2677,8 @@ namespace OpenDental{
 					return;
 				}
 				//else if(errorCode==(int)EZTwainErrorCode.EZTEC_DS_FAILURE) {//5
-					//message="Duplex failure\r\n\r\nDuplex mode without scanner options window failed. Try enabling the scanner options window or disabling duplex mode.";
-					//The error message above is flat out wrong, at least sometimes.  In many cases, it's a harmless failure to disable, and scan was actually successful.
+				//message="Duplex failure\r\n\r\nDuplex mode without scanner options window failed. Try enabling the scanner options window or disabling duplex mode.";
+				//The error message above is flat out wrong, at least sometimes.  In many cases, it's a harmless failure to disable, and scan was actually successful.
 				//}
 				//return;//Error messages should not normally block continuation.
 			}
@@ -3171,6 +3169,7 @@ namespace OpenDental{
 			}
 			textNote.Text="";
 			sigBox.ClearTablet();
+			TopazWrapper.ClearTopaz(_sigBoxTopaz);
 			if(!panelNote.Visible) {
 				return;
 			}
@@ -3779,29 +3778,23 @@ namespace OpenDental{
 					return;
 				}
 			}
-			_deviceController=new DeviceController();
-			_deviceController.ImgDeviceControlType=ConvertToImgDeviceControlType(imagingDevice.DeviceType);
-			_deviceController.HandleWindow=Handle;
-			_deviceController.ShowTwainUI=imagingDevice.ShowTwainUI;
-			_deviceController.TwainName=imagingDevice.TwainName;
 			if(ODEnvironment.IsCloudServer) {
 				if(!CloudClientL.IsCloudClientRunning()) {
 					return;
 				}
-				if(_deviceController.ImgDeviceControlType==EnumImgDeviceControlType.Twain){
+				if(imagingDevice.DeviceType==EnumImgDeviceType.TwainRadiograph) {
 					try{
-						ODCloudClient.TwainInitializeDevice(_deviceController.ShowTwainUI);
+						ODCloudClient.TwainInitializeDevice(imagingDevice.ShowTwainUI);
 					}
 					catch(Exception ex){
 						MsgBox.Show(ex.Message);
-						_deviceController=null;
 						return;
 					}
 					GlobalFormOpenDental.LockODForMountAcquire(isEnabled:false);
 					ProgressWin progressWin=new ProgressWin();
 					progressWin.ActionMain=() => {
 						while(true) {
-							ODCloudClient.TwainAcquireBitmapStart(_deviceController.TwainName,doThrowException: true,doShowProgressBar: false);
+							ODCloudClient.TwainAcquireBitmapStart(imagingDevice.TwainName,doThrowException: true,doShowProgressBar: false);
 							Bitmap bitmap=null;
 							string scannerState="scanning";
 							while(scannerState=="scanning" || scannerState=="setup") {
@@ -3828,7 +3821,7 @@ namespace OpenDental{
 							if(bitmap==null) {
 									break; //Cancel the scanning task
 							}
-							if(!(bool)this.Invoke((Func<bool>)(()=>PlaceAcquiredBitmapInUI(bitmap)))) {
+							if(!(bool)this.Invoke((Func<bool>)(()=>PlaceAcquiredBitmapInUI(bitmap,imagingDevice.DeviceType)))) {
 								break;
 							}
 							if(!IsMountShowing()) {//single
@@ -3868,41 +3861,81 @@ namespace OpenDental{
 				return;
 			}
 			//Below here NOT Thinfinity
-			try{
-				_deviceController.InitializeDevice();
+			try {
+				Twain.ActivateEZTwain();//Activate EZTWAIN license
 			}
-			catch(Exception ex){
-				MsgBox.Show(ex.Message);
-				_deviceController=null;
+			catch {
+				Cursor=Cursors.Default;
+				MsgBox.Show(this,"EzTwain4.dll not found.  Please run the setup file in your images folder.");
 				return;
 			}
-			if(_deviceController.ImgDeviceControlType==EnumImgDeviceControlType.TwainMulti){
-				AcquireMulti(imagingDevice.Description);
+			if(imagingDevice.ShowTwainUI) {
+				EZTwain.SetHideUI(false);//This is required even though it's the default because it remembers previous flag passed in.
+			}
+			else {
+				EZTwain.SetHideUI(true);
+			}
+			if(imagingDevice.DeviceType==EnumImgDeviceType.TwainMulti) {
+				AcquireMulti(imagingDevice);
 				if(GetMountShowing().AdjModeAfterSeries) {
 					SetCropPanAdj(EnumCropPanAdj.Adj);
 					LayoutControls();
 				}
 				return;
 			}
+			//formHidden will be passed with .Acquire(), prevents ControlImages from being disabled
+			Form formHidden=new Form();
+			formHidden.ShowInTaskbar=false;
+			formHidden.WindowState=FormWindowState.Minimized;
+			formHidden.Show();
 			while(true){
 				Bitmap bitmap=null;
-				try{
-					bitmap=_deviceController.AcquireBitmap();
+				try {
+					if(imagingDevice.DeviceType==EnumImgDeviceType.TwainRadiograph) {
+						if(!EZTwain.OpenSource(imagingDevice.TwainName)) {//Sets which TWAIN UI to open, must be done with each scan or it reverts back to default
+							throw new Exception("Imaging Device unavailable.");
+						}
+						IntPtr handleDIB=EZTwain.Acquire(formHidden.Handle);//Synchronous blocking call. This is where the options dialog would come up.
+						int errorCode=EZTwain.LastErrorCode();
+						if(errorCode==(int)EZTwainErrorCode.EZTEC_USER_CANCEL) {//19, user cancelled
+							EZTwain.DIB_Free(handleDIB);
+							throw new Exception("");
+						}
+						if(handleDIB==IntPtr.Zero) {//nothing captured
+							if(errorCode==0 //user closed TWAIN UI
+								|| errorCode==(int)EZTwainErrorCode.EZTEC_DS_FAILURE) { //5
+								throw new Exception("");
+							}
+							throw new Exception(EZTwain.LastErrorText());
+						}
+						IntPtr handleBitmap=EZTwain.DIB_ToDibSection(handleDIB);//DIB_ToDibSection will free the DIB
+						try {
+							bitmap=Bitmap.FromHbitmap(handleBitmap);//Sometimes throws 'A generic error occurred in GDI+.'
+							//FromHbitmap makes a copy of the GDI bitmap, so we need to immediately delete the GDI bitmap.
+						}
+						catch(Exception ex) {
+							Twain.DeleteObject(handleBitmap);//delete the GDI bitmap
+							bitmap?.Dispose();
+							throw new Exception("Error: "+ex.Message);
+						}
+						Twain.DeleteObject(handleBitmap);//delete the GDI bitmap
+					}
 				}
-				catch(ImagingDeviceException ex){
-					if(ex.Message!=""){//If user cancels, there is no text.  We could test e.DeviceStatus instead
+				catch(Exception ex) {
+					if(ex.Message!="") {//If user cancels, there is no text
 						MessageBox.Show(ex.Message);
 					}
 					//when user cancels, we will keep panelUnmounted open so that they can do things like retake
 					break;
 				}
-				if(!PlaceAcquiredBitmapInUI(bitmap)){
+				if(!PlaceAcquiredBitmapInUI(bitmap,imagingDevice.DeviceType)){
 					break;
 				}
 				if(!IsMountShowing()){//single
 					break;
 				}
 			}
+			formHidden.Close();
 			if(!IsMountShowing()){
 				return;
 			}
@@ -3913,16 +3946,16 @@ namespace OpenDental{
 		}
 
 		///<summary></summary>
-		private void AcquireMulti(string deviceDescription=""){
-			if(!EZTwain.OpenSource(_deviceController.TwainName)){
-				return; 
+		private void AcquireMulti(ImagingDevice imagingDevice) {
+			if(!EZTwain.OpenSource(imagingDevice.TwainName)) {
+				return;
 			}
 			EZTwain.SetMultiTransfer(true);
-			if(!_deviceController.ShowTwainUI){
+			if(!imagingDevice.ShowTwainUI) {
 				EZTwain.SetHideUI(true);
 			}
 			bool isDexis=false;
-			if(deviceDescription.ToLower().Contains("dexis")) {
+			if(imagingDevice.Description.ToLower().Contains("dexis")) {
 				//Dexis GxTwain will import images to mounts in the reverse order that it displayed them.
 				//Example: images 1, 2, and 3 will get placed in a list.
 				//Then, for example, if current mount position is 3, 
@@ -3931,8 +3964,12 @@ namespace OpenDental{
 				isDexis=true;
 			}
 			List<Bitmap> listBitMapsDexis=new List<Bitmap>();
+			Form formHidden=new Form();
+			formHidden.ShowInTaskbar=false;
+			formHidden.WindowState=FormWindowState.Minimized;
+			formHidden.Show();
 			while(true) {
-				IntPtr hdib=EZTwain.Acquire(ParentForm.Handle);
+				IntPtr hdib=EZTwain.Acquire(formHidden.Handle);
 				if(hdib==IntPtr.Zero) {
 					break;
 				}
@@ -3943,25 +3980,25 @@ namespace OpenDental{
 					bitmap?.Dispose();
 				}
 				else {//Not Dexis so images are ordered correctly
-					PlaceAcquiredBitmapInUI(bitmap);
+					PlaceAcquiredBitmapInUI(bitmap,imagingDevice.DeviceType);
 				}
 				EZTwain.DIB_Free(hdib);
 				if(EZTwain.IsDone()) {
 					break;
 				}
 			}
+			formHidden.Close();
 			//if not Dexis, this list will be empty and not run
 			for(int i=listBitMapsDexis.Count-1;i >= 0;i--) {//Iterate through the list backwords to correctly place the mounts
-				PlaceAcquiredBitmapInUI(listBitMapsDexis[i]);
+				PlaceAcquiredBitmapInUI(listBitMapsDexis[i],imagingDevice.DeviceType);
 			}
 			EZTwain.CloseSource();
-			_deviceController=null;
 			//when user cancels, we will keep panelAcquire open so that they can do things like retake
 			LayoutControls();
 		}
 		
 		///<summary>Returns true if successful. Returns false if it failed or if no more images should be acquired.</summary>
-		private bool PlaceAcquiredBitmapInUI(Bitmap bitmap){
+		private bool PlaceAcquiredBitmapInUI(Bitmap bitmap,EnumImgDeviceType enumImgDeviceType) {
 			Document document=null;
 			if(bitmap is null){
 				return false;
@@ -4026,7 +4063,7 @@ namespace OpenDental{
 			}
 			bitmap?.Dispose();
 			//Decide if we are done----------------------------------------------------------------
-			if(_deviceController.ImgDeviceControlType==EnumImgDeviceControlType.TwainMulti){
+			if(enumImgDeviceType==EnumImgDeviceType.TwainMulti) {
 				//any extras will go in unmounted.  Take them all.
 				return true;
 			}

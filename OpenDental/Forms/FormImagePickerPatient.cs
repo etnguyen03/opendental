@@ -15,6 +15,8 @@ namespace OpenDental {
 	///<summary>This image picker shows all images and mounts for a patient and lets you pick one. The code in this form was basically just copied in chunks from ControlImagesJ.</summary>
 	public partial class FormImagePickerPatient:FormODBase {
 		public Patient PatientCur;
+		///<summary>Used to prevent the selection of mounts when picking an image.</summary>
+		public bool DoBlockMountSelection;
 		///<summary>Handles both incoming and outgoing selections</summary>
 		public long DocNumSelected;
 		private WpfControls.UI.ImageSelector imageSelector;
@@ -79,6 +81,10 @@ namespace OpenDental {
 
 		private void imageSelector_ItemDoubleClick(object sender,EventArgs e) {
 			EnumImageNodeType nodeType=imageSelector.GetSelectedType();
+			if(DoBlockMountSelection && nodeType==EnumImageNodeType.Mount) {
+				MsgBox.Show(this,"Mounts are not allowed to be selected is this view.");
+				return;
+			}
 			long priKey=imageSelector.GetSelectedKey();
 			if(nodeType==EnumImageNodeType.Document){
 				DocNumSelected=priKey;
@@ -96,6 +102,10 @@ namespace OpenDental {
 
 		private void butOK_Click(object sender,EventArgs e) {
 			EnumImageNodeType nodeType=imageSelector.GetSelectedType();
+			if(DoBlockMountSelection && nodeType==EnumImageNodeType.Mount) {
+				MsgBox.Show(this,"Mounts are not allowed to be selected is this view.");
+				return;
+			}
 			long priKey=imageSelector.GetSelectedKey();
 			if(nodeType==EnumImageNodeType.Document){
 				DocNumSelected=priKey;

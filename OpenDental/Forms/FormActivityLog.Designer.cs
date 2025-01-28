@@ -30,7 +30,7 @@ namespace OpenDental {
 			this.gridMain = new OpenDental.UI.GridOD();
 			this.checkDistinctLogGuid = new OpenDental.UI.CheckBox();
 			this.groupBoxFilters = new OpenDental.UI.GroupBox();
-			this.textPatNum = new System.Windows.Forms.TextBox();
+			this.textPatNum = new OpenDental.ValidNum();
 			this.labelEserviceType = new System.Windows.Forms.Label();
 			this.labelPatNum = new System.Windows.Forms.Label();
 			this.labelEserviceAction = new System.Windows.Forms.Label();
@@ -117,6 +117,7 @@ namespace OpenDental {
 			this.textPatNum.AcceptsTab = true;
 			this.textPatNum.BackColor = System.Drawing.SystemColors.Window;
 			this.textPatNum.Location = new System.Drawing.Point(755, 18);
+			this.textPatNum.MaxVal = int.MaxValue;
 			this.textPatNum.Name = "textPatNum";
 			this.textPatNum.Size = new System.Drawing.Size(48, 20);
 			this.textPatNum.TabIndex = 66;
@@ -231,6 +232,6 @@ namespace OpenDental {
 		private System.Windows.Forms.Label labelEserviceType;
 		private System.Windows.Forms.Label labelPatNum;
 		private System.Windows.Forms.Label labelEserviceAction;
-		private System.Windows.Forms.TextBox textPatNum;
+		private ValidNum textPatNum;
 	}
 }
