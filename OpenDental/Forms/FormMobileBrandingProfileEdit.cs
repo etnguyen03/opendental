@@ -75,10 +75,11 @@ namespace OpenDental {
 		/// <summary>Opens file picker, and sets path.</summary>
 		private void butSelectImage_Click(object sender,EventArgs e) {
 			if(!ODBuild.IsThinfinity() && ODCloudClient.IsAppStream) {
-				string importedImagePath=ODCloudClient.ImportFileForCloud();
-				if(importedImagePath.IsNullOrEmpty()) {
+				List<string> listImportFilePaths=ODCloudClient.ImportFileForCloud();
+				if(listImportFilePaths.IsNullOrEmpty()) {
 					return; //User cancelled out file selection
 				}
+				string importedImagePath=listImportFilePaths[0];
 				string pathAToZ="";
 				//ImportFileForCloud stores the imported image in the FileTransfer folder which is periodically emptied. Store the image in ODI.
 				try {

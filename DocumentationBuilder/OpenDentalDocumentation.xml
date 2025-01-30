@@ -9058,7 +9058,7 @@
       <summary>Name of the computer where this device is available.  Optional.  If blank, then this device will be available to all computers.</summary>
     </column>
     <column order="3" name="DeviceType" type="tinyint(4)">
-      <summary>Enum:EnumImgDeviceType </summary>
+      <summary>Enum:EnumImgDeviceType TwainRadiograph, XDR(not functional), or TwainMulti.</summary>
       <Enumeration name="EnumImgDeviceType">
         <summary>Order cannot change, since we store in db as enum number.  But we show the list in the UI in a different order or our choosing.</summary>
         <EnumValue name="TwainRadiograph">0</EnumValue>

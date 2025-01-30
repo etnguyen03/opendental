@@ -27,6 +27,8 @@ namespace OpenDental {
 		private bool _isRawHtml;
 		private long _clinicNum;
 		private Patient _patient;
+		///<summary>List of any "short URLs" that were originally found in the email body. When saving, we will allow these through, but the user will not be able to add other short URLs.</summary>
+		private List<string> _listShortURLsAllowed;
 
 		///<summary>isDeleteAllowed defines whether the email is able to be deleted when a patient is attached. 
 		///emailAddress corresponds to the account in Email Setup that will be used to send the email.
@@ -193,6 +195,7 @@ namespace OpenDental {
 			}
 			_isRawHtml=_emailMessage.HtmlType==EmailType.RawHtml;
 			Cursor=Cursors.WaitCursor;
+			_listShortURLsAllowed=PrefC.GetListShortURLs(_emailMessage.BodyText);
 			RefreshAll();
 			SetDefaultAutograph();
 			ODEvent.Fired+=EmailSaveEvent_Fired;
@@ -748,9 +751,9 @@ namespace OpenDental {
 			if(isSecureEmail && string.IsNullOrWhiteSpace(emailPreview.Subject)) {
 				error.AppendLine(Lan.g(this,"Subject line is required."));
 			}
-			string errorText=PrefC.GetFirstShortURL(emailPreview.BodyText);
-			if(!string.IsNullOrWhiteSpace(errorText)) {
-				error.AppendLine(Lan.g(this,"Message cannot contain the URL")+" "+errorText+" "+Lan.g(this,"as this is only allowed for eServices."));
+			List<string> listShortUrlsNotAllowed=PrefC.GetListShortURLs(emailPreview.BodyText).Except(_listShortURLsAllowed).ToList();
+			if(listShortUrlsNotAllowed.Count>0) {
+				error.AppendLine(Lan.g(this,"Message cannot contain the URL")+" "+listShortUrlsNotAllowed[0]+" "+Lan.g(this,"as this is only allowed for eServices."));
 			}
 			string errorMsg=error.ToString();
 			if(!string.IsNullOrWhiteSpace(errorMsg)) {

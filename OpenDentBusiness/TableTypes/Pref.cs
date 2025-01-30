@@ -2031,7 +2031,7 @@ namespace OpenDentBusiness {
 		///<summary>Bool, 0 by default.  When true, uses the transaction date for the recurring charge payment date.
 		///When false, the recurring charge date will be used as the recurring charge payment date.</summary>
 		RecurringChargesUseTransDate,
-		///<summary>Comma delimited list of redirect short urls that need to be excluded when users are sending out email communications to patients.</summary>
+		///<summary>Comma delimited list of redirect short urls that need to be excluded when users are sending out email communications to patients. Typically looks like this: 1dent1.com,2park7.com,2th111.com. OD HQ supplies and maintains this list. Each of these URLs is part of a patient-specific link, so we don't want anyone accidentally pasting these into another patient comm.</summary>
 		[PrefName(ValueType=PrefValueType.STRING)]
 		RedirectShortURLsFromHQ,
 		///<summary>FK to definition.DefNum, defaults to 0. Determines the adjustment type to be used for refund adjustments by default.</summary>

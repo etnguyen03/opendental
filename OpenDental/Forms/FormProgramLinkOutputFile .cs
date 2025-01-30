@@ -27,8 +27,8 @@ namespace OpenDental {
 		private void butImport_Click(object sender,EventArgs e) {
 			string[] stringArrayFileNames;
 			if(!ODBuild.IsThinfinity() && ODCloudClient.IsAppStream) {
-				List<string> listImportFilePaths=new List<string>(){ODCloudClient.ImportFileForCloud()};
-				if(listImportFilePaths[0].IsNullOrEmpty()) {
+				List<string> listImportFilePaths=ODCloudClient.ImportFileForCloud();
+				if(listImportFilePaths.IsNullOrEmpty()) {
 					return;
 				}
 				stringArrayFileNames=listImportFilePaths.ToArray();

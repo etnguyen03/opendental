@@ -138,21 +138,29 @@ namespace CodeBase {
 				return null;
 			}
 			string tempPathFT=GetFileTransferTempPath();//Path '.../temp/opendental/ODCloudFileTransfer'
-			//Tuple: Item1=base64 filedata    Item2=filename
-			//Write all files to the temp path using the given filename (Item2) and return an array of file paths
-			Tuple<string,string>[] arrayFileData=JsonConvert.DeserializeObject<Tuple<string,string>[]>(resultData);
+			//Write all files to the temp path using the given filename and return an array of file paths
+			List<CloudImportFile> listCloudImportFiles=JsonConvert.DeserializeObject<List<CloudImportFile>>(resultData);
+			if(listCloudImportFiles.All(x=> x.FileName==null && x.DataString==null)) {
+				//Previous versions of the OpenDentalCloudClient return a serialzed array of tuples. Translate that to list of CloudImportFiles.
+				//Refactored out tuple on OpenDentalCloudClient.
+				//This if block preserves backward compatibility until majority of Cloud users have upgraded to ODCC version 2.0.7.
+				//This if block can be removed at that time to fully refactor out the tuple.
+				//Tuple: Item1=base64 filedata    Item2=filename
+				Tuple<string,string>[] arrayFileData=JsonConvert.DeserializeObject<Tuple<string,string>[]>(resultData);
+				listCloudImportFiles=arrayFileData.Select(x => new CloudImportFile() { FileName=x.Item2,DataString=x.Item1 }).ToList();
+			}
 			List<string> listPaths=new List<string>();
 			List<string> listFailedFileNames=new List<string>();
-			for(int i=0;i<arrayFileData.Length;i++) {
-				string filePath=ODFileUtils.CombinePaths(tempPathFT,arrayFileData[i].Item2);
+			for(int i=0;i<listCloudImportFiles.Count;i++) {
+				string filePath=ODFileUtils.CombinePaths(tempPathFT,listCloudImportFiles[i].FileName);
 				try {
-					byte[] fileBytes=Convert.FromBase64String(arrayFileData[i].Item1);
+					byte[] fileBytes=Convert.FromBase64String(listCloudImportFiles[i].DataString);
 					File.WriteAllBytes(filePath,fileBytes);
 					listPaths.Add(filePath);
 				}
 				catch(Exception ex) {
 					ex.DoNothing();
-					listFailedFileNames.Add(arrayFileData[i].Item2);
+					listFailedFileNames.Add(listCloudImportFiles[i].FileName);
 					continue;
 				}
 			}
@@ -346,7 +354,7 @@ namespace CodeBase {
 			string strNodeTypeAndKey="";
 			CloudNodeTypeAndKey nodeTypeAndKey=null;
 			try{
-				strNodeTypeAndKey=SendToODCloudClientSynchronously(new ODCloudClientData(),CloudClientAction.GetNodeTypeAndKey);
+				strNodeTypeAndKey=SendToODCloudClientSynchronously(new ODCloudClientData(),CloudClientAction.GetNodeTypeAndKey,doShowProgressBar:false);
 			}
 			catch(Exception ex) {
 				ODMessageBox.Show(ex.Message);
@@ -362,7 +370,7 @@ namespace CodeBase {
 		public static string GetDbNameOrUriFromClipboard(){
 			string dbNameOrUri="";
 			try{
-				dbNameOrUri=SendToODCloudClientSynchronously(new ODCloudClientData(),CloudClientAction.GetDbNameOrUriFromClipboard);
+				dbNameOrUri=SendToODCloudClientSynchronously(new ODCloudClientData(),CloudClientAction.GetDbNameOrUriFromClipboard,doShowProgressBar:false);
 			}
 			catch(Exception ex) {
 				ex.DoNothing();//Don't need to handle here. Will return null and paste action will proceed.
@@ -1006,34 +1014,50 @@ namespace CodeBase {
 			MessageBox.Show(response);
 		}
 
-		///<summary>Calls the ImportFile method on the CloudClient. Splits the response string received into file name and data. Writes a new file to the FileTransferTempPath and returns the path string of the newly written file. Returns blank if file was not created for any reason.</summary>
-		public static string ImportFileForCloud() {
-			string importFile="";
+		///<summary>Calls the ImportFile or ImportFileMulti method on the CloudClient. Splits the response string received into file name and data. Writes new file(s) to the FileTransferTempPath and returns the list of path strings of the newly written file(s). Returns blank if file was not created for any reason.</summary>
+		public static List<string> ImportFileForCloud(bool isMulti=false) {
+			string serializedImportFile="";
 			try {
-				importFile=SendToODCloudClientSynchronously(new ODCloudClientData(),CloudClientAction.ImportFile,timeoutSecs:120);
+				if(isMulti) {
+					serializedImportFile=SendToODCloudClientSynchronously(new ODCloudClientData(),CloudClientAction.ImportFileMulti,timeoutSecs:120);
+				}
+				else {
+					serializedImportFile=SendToODCloudClientSynchronously(new ODCloudClientData(),CloudClientAction.ImportFile,timeoutSecs:120);
+				}
 			}
 			catch(Exception ex) {
+				if(ex.Message.Contains("Unknown Action:")) {
+					//Using an older version of the OpenDentalCloudClient, fall back to single select.
+					ODMessageBox.Show("File select limited to single select. \r\n"+
+						"Please install the latest version of the OpenDentalCloudClient to enable importing multiple files at once.");
+					return ImportFileForCloud(isMulti:false);
+				}
 				ODMessageBox.Show(ex.Message);
-				return "";
+				return new List<string>();
 			}
-			if(importFile.IsNullOrEmpty()){
-				return "";
+			if(serializedImportFile.IsNullOrEmpty()) {
+				return new List<string>();
 			}
-			List<string> listImportFileStrings=JsonConvert.DeserializeObject<List<string>>(importFile);
-			if(listImportFileStrings.Count<2) {
-				return "";
+			List<string> listImportPaths=new List<string>();
+			List<string> listFailedFileNames=new List<string>();
+			List<CloudImportFile> listCloudImportFiles=JsonConvert.DeserializeObject<List<CloudImportFile>>(serializedImportFile);
+			for(int i=0;i < listCloudImportFiles.Count;i++) {
+				string importPath=ODFileUtils.CombinePaths(GetFileTransferTempPath(),listCloudImportFiles[i].FileName);
+				try {
+					byte[] byteArray=Convert.FromBase64String(listCloudImportFiles[i].DataString);
+					File.WriteAllBytes(importPath,byteArray);
+				}
+				catch(Exception ex) {
+					ex.DoNothing();
+					listFailedFileNames.Add(listCloudImportFiles[i].FileName);
+					continue;
+				}
+				listImportPaths.Add(importPath);
 			}
-			string fileName=listImportFileStrings[0];
-			string importPath=ODFileUtils.CombinePaths(GetFileTransferTempPath(),fileName);
-			try {
-				byte[] byteArray=Convert.FromBase64String(listImportFileStrings[1]);
-				File.WriteAllBytes(importPath,byteArray);
+			if(listFailedFileNames.Count>0) {
+				ODMessageBox.Show($"Error importing file: {string.Join(", ", listFailedFileNames)}.");
 			}
-			catch(Exception ex){
-				ODMessageBox.Show("Error importing file: "+ex.Message);
-				return "";
-			}
-			return importPath;
+			return listImportPaths;
 		}
 
 		///<summary>Contains the data to be sent to the browser to perfrom a browser action. Will be serialized as JSON.</summary>
@@ -1168,9 +1192,15 @@ namespace CodeBase {
 		}
 
 		///<summary></summary>
-		public class CloudNodeTypeAndKey{
+		public class CloudNodeTypeAndKey {
 			public int nodeType;
 			public long imagekey;
+		}
+
+		///<summary></summary>
+		public class CloudImportFile {
+			public string FileName;
+			public string DataString;
 		}
 
 		///<summary>Different action types that can be sent to ODCloudClient.</summary>
@@ -1266,6 +1296,8 @@ namespace CodeBase {
 			ImportFile,
 			///<summary>Used during copy/paste in Imaging Module to prevent issues when copying images across different databases</summary>
 			GetDbNameOrUriFromClipboard,
+			///<summary>Imports multiple files from the user's workstation</summary>
+			ImportFileMulti,
 		}
 
 		///<summary>Tells the browser what action to take with the data passed to it.</summary>

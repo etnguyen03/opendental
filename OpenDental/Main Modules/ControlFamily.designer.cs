@@ -157,7 +157,7 @@ namespace OpenDental {
 			// 
 			this.gridPatientClones.Location = new System.Drawing.Point(0, 0);
 			this.gridPatientClones.Name = "gridPatientClones";
-			this.gridPatientClones.Size = new System.Drawing.Size(329, 290);
+			this.gridPatientClones.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.gridPatientClones.TabIndex = 34;
 			this.gridPatientClones.Title = "Patient Clones";
 			this.gridPatientClones.TranslationName = "TablePatientClones";

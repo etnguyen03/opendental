@@ -2011,11 +2011,10 @@ namespace OpenDental {
 			}
 			List<string> fileNames=new List<string>();
 			if(ODCloudClient.IsAppStream) {
-				string fileName=ODCloudClient.ImportFileForCloud();
-				if(fileName.IsNullOrEmpty()) {
+				fileNames=ODCloudClient.ImportFileForCloud(isMulti:true);
+				if(fileNames.IsNullOrEmpty()) {
 					return; //User cancelled out of import
 				}
-				fileNames.Add(fileName);
 			}
 			else{
 				OpenFileDialog openFileDialog=new OpenFileDialog();

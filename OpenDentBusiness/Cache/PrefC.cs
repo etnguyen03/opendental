@@ -514,16 +514,20 @@ namespace OpenDentBusiness {
 			}
 		}
 
-		/// <summary>Returns the first short-URL found in the supplied message, or an empty string if none are found.</summary>
+		///<summary>Returns the first short-URL found in the supplied message, or an empty string if none are found.</summary>
 		public static string GetFirstShortURL(string msgBodyText) {
 			if(string.IsNullOrWhiteSpace(msgBodyText)) {
 				return "";
 			}
 			List<string> listRedirectShortURLs=PrefC.GetString(PrefName.RedirectShortURLsFromHQ).Split(',').ToList();
-			return listRedirectShortURLs.Find(x=>msgBodyText.Contains(x))??"";
+			string url=listRedirectShortURLs.Find(x=>msgBodyText.Contains(x));
+			if(url==null) {
+				return "";
+			}
+			return url;
 		}
 
-		/// <summary>Returns a list of all short-URLs found in the supplied message, or an empty list if none are found.</summary>
+		///<summary>Returns a list of all short-URLs found in the supplied message, or an empty list if none are found.</summary>
 		public static List<string> GetListShortURLs(string msgBodyText) {
 			if(string.IsNullOrWhiteSpace(msgBodyText)) {
 				return new List<string>();

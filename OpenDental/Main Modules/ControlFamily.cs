@@ -1868,7 +1868,6 @@ namespace OpenDental{
 				}
 				gridSuperFam.Columns.Add(gridColumn);
 			}
-			gridSuperFam.Width=Math.Max(splitContainerSuperClones.Width,LayoutManager.Scale(listDisplayFields.Sum(x=>x.ColumnWidth)+SystemInformation.VerticalScrollBarWidth));
 			gridSuperFam.ListGridRows.Clear();
 			if(_patient==null) {
 				gridSuperFam.EndUpdate();
@@ -2761,7 +2760,7 @@ namespace OpenDental{
 		#endregion Methods - Private - GridIns
 
 		#region Methods - Private - Patient Clones
-		private void FillGridPatientClones() {
+		private void FillGridPatientClones(bool initOnly=false) {
 			gridPatientClones.BeginUpdate();
 			gridPatientClones.Columns.Clear();
 			gridPatientClones.Columns.Add(new GridColumn(Lan.g(gridPatientClones.TranslationName,"Name"),150));
@@ -2769,9 +2768,8 @@ namespace OpenDental{
 				gridPatientClones.Columns.Add(new GridColumn(Lan.g(gridPatientClones.TranslationName,"Clinic"),80));
 			}
 			gridPatientClones.Columns.Add(new GridColumn(Lan.g(gridPatientClones.TranslationName,"Specialty"),150){ IsWidthDynamic=true });
-			gridPatientClones.Width=LayoutManager.Scale(gridPatientClones.Columns.Sum(x=>x.ColWidth)+SystemInformation.VerticalScrollBarWidth);
 			gridPatientClones.ListGridRows.Clear();
-			if(_patient==null) {
+			if(_patient==null || initOnly) {
 				gridPatientClones.EndUpdate();
 				return;
 			}
@@ -3023,8 +3021,6 @@ namespace OpenDental{
 		}
 
 		private void RefreshModuleScreen() {
-			UpdateToolbarButtons();
-			LayoutManager.LayoutControlBoundsAndFonts(splitContainerSuperClones);
 			FillPatientPicture();
 			FillPatientData();
 			FillFamilyData();
@@ -3032,10 +3028,12 @@ namespace OpenDental{
 			FillInsData();
 			FillGridSuperFam();
 			FillGridPatientClones();
+			UpdateToolbarButtons();
+			LayoutManager.LayoutControlBoundsAndFonts(splitContainerSuperClones);
 			Plugins.HookAddCode(this,"ContrFamily.RefreshModuleScreen_end");
 		}
 
-		///<summary>Enables toolbar buttons if a patient is selected, otherwise disables them.</summary>
+		///<summary>Enables toolbar buttons if a patient is selected, otherwise disables them. Also sets visibilities of various panels in the insurance area.</summary>
 		private void UpdateToolbarButtons() {
 			if(_patient!=null) {//if there is a patient
 				//ToolBarMain.Buttons["Recall"].Enabled=true;
@@ -3053,8 +3051,18 @@ namespace OpenDental{
 				bool showPatientCloneGrid=PrefC.GetBool(PrefName.ShowFeaturePatientClone) && _loadData.ListPatientsClones!=null && _loadData.ListPatientsClones.Count > 1;
 				splitContainerSuperClones.Visible=showSuperfamilyGrid || showPatientCloneGrid;
 				if(splitContainerSuperClones.Visible) {
-					int widthSuperClonePanel=GetWidthSuperClonesPanel(showSuperfamilyGrid,showPatientCloneGrid);
-					LayoutManager.MoveWidth(splitContainerSuperClones,widthSuperClonePanel);
+					int widthSuperFam=0;
+					int widthClones=0;
+					if(showSuperfamilyGrid) {
+						widthSuperFam=DisplayFields.GetForCategory(DisplayFieldCategory.SuperFamilyGridCols).Sum(x => x.ColumnWidth);
+					}
+					if(showPatientCloneGrid) {
+						FillGridPatientClones(initOnly:true);//Make sure we actually have columns to count.
+						widthClones=gridPatientClones.Columns.Sum(x => x.ColWidth);
+					}
+					int widthFinal=Math.Max(widthSuperFam,widthClones)+SystemInformation.VerticalScrollBarWidth;
+					int widthSuperClonesPanel=LayoutManager.Scale(widthFinal);
+					LayoutManager.MoveWidth(splitContainerSuperClones,widthSuperClonesPanel);
 					LayoutManager.MoveLocation(gridIns,new Point(splitContainerSuperClones.Right+2,gridIns.Top));
 				}
 				else {
@@ -3168,21 +3176,6 @@ namespace OpenDental{
 				}
 			}
 			toolBarMain.Invalidate();
-		}
-
-		/// <summary></summary>
-		private int GetWidthSuperClonesPanel(bool showPanelForSuperfamilies,bool showPanelForPatientClone) {
-			int widthSuperFam=0;
-			int widthClones=0;
-			if(showPanelForSuperfamilies) {
-				int widthDisplayFields=DisplayFields.GetForCategory(DisplayFieldCategory.SuperFamilyGridCols).Sum(x => x.ColumnWidth);
-				widthSuperFam=LayoutManager.Scale(widthDisplayFields+SystemInformation.VerticalScrollBarWidth);
-			}
-			if(showPanelForPatientClone) {
-				int widthColumns=gridPatientClones.Columns.Sum(x => x.ColWidth);
-				widthClones=LayoutManager.Scale(widthColumns+SystemInformation.VerticalScrollBarWidth);
-			}
-			return Math.Max(widthSuperFam,widthClones);
 		}
 		#endregion Methods - Private - Other
 

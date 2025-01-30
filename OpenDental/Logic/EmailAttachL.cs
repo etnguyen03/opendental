@@ -19,8 +19,8 @@ namespace OpenDental {
 			List<string> listFileNames;
 			bool isLocalFileSelected=false;
 			if(!ODBuild.IsThinfinity() && ODCloudClient.IsAppStream) {
-				listFileNames=new List<string>(){ODCloudClient.ImportFileForCloud()};
-				if(listFileNames[0].IsNullOrEmpty()) {
+				listFileNames=ODCloudClient.ImportFileForCloud(isMulti:true);
+				if(listFileNames.IsNullOrEmpty()) {
 					return listEmailAttaches;
 				}
 			}

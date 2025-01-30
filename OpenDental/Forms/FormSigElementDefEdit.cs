@@ -9,6 +9,7 @@ using System.Windows.Forms;
 using OpenDentBusiness;
 using CodeBase;
 using OpenDental.Thinfinity;
+using System.Collections.Generic;
 
 namespace OpenDental{
 	///<summary></summary>
@@ -105,10 +106,11 @@ namespace OpenDental{
 		private void butImport_Click(object sender,EventArgs e) {
 			string importFilePath;
 			if(!ODBuild.IsThinfinity() && ODCloudClient.IsAppStream) {
-				importFilePath=ODCloudClient.ImportFileForCloud();
-				if(importFilePath.IsNullOrEmpty()) {
-					return;
+				List<string> listImportFilePaths=ODCloudClient.ImportFileForCloud();
+				if(listImportFilePaths.IsNullOrEmpty()) {
+					return; //User cancelled out file selection
 				}
+				importFilePath=listImportFilePaths[0];
 			}
 			else {
 				using OpenFileDialog openFileDialog1=new OpenFileDialog();

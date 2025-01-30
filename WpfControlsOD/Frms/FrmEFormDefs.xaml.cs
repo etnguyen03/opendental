@@ -121,7 +121,7 @@ namespace OpenDental {
 			Cursor=Cursors.Wait;
 			string importFilePath="";
 			if(!ODBuild.IsThinfinity() && ODCloudClient.IsAppStream) {
-				importFilePath=ODCloudClient.ImportFileForCloud();
+				importFilePath=ODCloudClient.ImportFileForCloud().First();
 				if(importFilePath.IsNullOrEmpty()) {
 					Cursor=Cursors.Arrow;
 					return; //User cancelled out of OpenFileDialog

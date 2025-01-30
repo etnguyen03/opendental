@@ -180,7 +180,7 @@ namespace OpenDentBusiness.Pearl {
 
 		///<summary>Returns a temporary path for the given bitmap, this file will need to be deleted later. Throws exceptions.</summary>
 		public string BitmapToImageTempCopy(Bitmap bitmap,string fileName) {
-			string tempPath=Path.Combine(Path.GetTempPath(),"opendental",fileName);
+			string tempPath=ODFileUtils.CombinePaths(PrefC.GetTempFolderPath(),fileName);
 			bitmap.Save(tempPath,ImageFormat.Jpeg);
 			return tempPath;
 		}

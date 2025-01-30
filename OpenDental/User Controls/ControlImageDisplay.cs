@@ -4910,8 +4910,8 @@ Here is the desired behavior:
 		private void ToolBarImportMount(){
 			string[] stringArrayFileNames;
 			if(!ODBuild.IsThinfinity() && ODCloudClient.IsAppStream) {
-				List<string> listImportFilePaths=new List<string>(){ODCloudClient.ImportFileForCloud()};
-				if(listImportFilePaths[0].IsNullOrEmpty()) {
+				List<string> listImportFilePaths=ODCloudClient.ImportFileForCloud(isMulti:true);
+				if(listImportFilePaths.IsNullOrEmpty()) {
 					return;
 				}
 				stringArrayFileNames=listImportFilePaths.ToArray();
@@ -4989,8 +4989,8 @@ Here is the desired behavior:
 			}
 			string[] stringArrayFileNames;
 			if(!ODBuild.IsThinfinity() && ODCloudClient.IsAppStream) {
-				List<string> listImportFilePaths=new List<string>(){ODCloudClient.ImportFileForCloud()};
-				if(listImportFilePaths[0].IsNullOrEmpty()) {
+				List<string> listImportFilePaths=ODCloudClient.ImportFileForCloud(isMulti:true);
+				if(listImportFilePaths.IsNullOrEmpty()) {
 					return;
 				}
 				stringArrayFileNames=listImportFilePaths.ToArray();

@@ -135,14 +135,14 @@ namespace OpenDental {
 
 		private void FillListFeeSchedFilesBCDA() {
 			_listFeeSchedFilesBCDA=new List<string>();
-			_listFeeSchedFilesBCDA.Add("BC_BCDA_2023_GP.txt");//British Columbia Dental Association 2023 fee schedule for General Practitioners.
-			_listFeeSchedFilesBCDA.Add("BC_BCDA_2023_LTC.txt");//British Columbia Dental Association 2023 fee schedule.
-			_listFeeSchedFilesBCDA.Add("BC_BCDA_2023_PA.txt");//British Columbia Dental Association 2023 fee schedule for Paediatric Dentists.
-			_listFeeSchedFilesBCDA.Add("BC_BCDA_2023_PE.txt");//British Columbia Dental Association 2023 fee schedule for Periodontists.
 			_listFeeSchedFilesBCDA.Add("BC_BCDA_2024_GP.txt");//British Columbia Dental Association 2024 fee schedule for General Practitioners.
 			_listFeeSchedFilesBCDA.Add("BC_BCDA_2024_LTC.txt");//British Columbia Dental Association 2024 fee schedule.
 			_listFeeSchedFilesBCDA.Add("BC_BCDA_2024_PA.txt");//British Columbia Dental Association 2024 fee schedule for Paediatric Dentists.
 			_listFeeSchedFilesBCDA.Add("BC_BCDA_2024_PE.txt");//British Columbia Dental Association 2024 fee schedule for Periodontists.
+			_listFeeSchedFilesBCDA.Add("BC_BCDA_2025_GP.txt");//British Columbia Dental Association 2025 fee schedule for General Practitioners.
+			_listFeeSchedFilesBCDA.Add("BC_BCDA_2025_LTC.txt");//British Columbia Dental Association 2025 fee schedule.
+			_listFeeSchedFilesBCDA.Add("BC_BCDA_2025_PA.txt");//British Columbia Dental Association 2025 fee schedule for Paediatric Dentists.
+			_listFeeSchedFilesBCDA.Add("BC_BCDA_2025_PE.txt");//British Columbia Dental Association 2025 fee schedule for Periodontists.
 		}
 
 		private void gridFeeSchedFiles_CellClick(object sender,ODGridClickEventArgs e) {
