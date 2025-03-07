@@ -97,12 +97,6 @@ namespace OpenDental {
 		}
 
 		private void butAcquire_Click(object sender, EventArgs e){
-			if(!ODBuild.IsTrial()
-				&& !OpenDentalHelp.ODHelp.IsEncryptedKeyValid())//always true in debug
-			{
-				MsgBox.Show(this,"This feature requires an active support plan.");
-				return;
-			}
 			if(listDevices.SelectedIndex==-1){
 				MsgBox.Show(this,"No device selected.  Set up imaging devices in Main Menu - Setup - Imaging - Devices.");
 				return;
@@ -132,13 +126,7 @@ namespace OpenDental {
 			IsDialogOK=true;
 		}
 
-		private void butMountAndAcquire_Click(object sender, EventArgs e){
-			if(!ODBuild.IsTrial()
-				&& !OpenDentalHelp.ODHelp.IsEncryptedKeyValid())//always true in debug
-			{
-				MsgBox.Show(this,"This feature requires an active support plan.");
-				return;
-			}
+		private void butMountAndAcquire_Click(object sender, EventArgs e) {
 			if(listDevices.SelectedIndex==-1) {
 				MsgBox.Show(this,"No device selected.  Set up imaging devices in Main Menu - Setup - Imaging - Devices.");
 				return;
