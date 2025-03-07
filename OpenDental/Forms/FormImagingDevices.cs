@@ -22,13 +22,6 @@ namespace OpenDentalImaging {
 		}
 
 		private void FormImagingDevices_Load(object sender, EventArgs e){
-			if(!ODBuild.IsTrial()
-				&& !OpenDentalHelp.ODHelp.IsEncryptedKeyValid())//always true in debug
-			{
-				MsgBox.Show(this,"This feature requires an active support plan.");
-				Close();
-				return;
-			}
 			textComputer.Text=ODEnvironment.MachineName;
 			FillGrid();
 		}

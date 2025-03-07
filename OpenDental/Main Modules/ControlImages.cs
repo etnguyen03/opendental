@@ -3026,18 +3026,8 @@ namespace OpenDental{
 		}
 
 		private void ToolBarVideo_Click(object sender,EventArgs e){
-			if(ODBuild.IsThinfinity()) {
-				MsgBox.Show(this,"This feature is not available in Open Dental Cloud.");
-				return;
-			}
 			//If no patient selected, then this button is disabled
 			if(!Security.IsAuthorized(EnumPermType.ImageCreate)) {
-				return;
-			}
-			if(!ODBuild.IsTrial()
-				&& !OpenDentalHelp.ODHelp.IsEncryptedKeyValid())//always true in debug
-			{
-				MsgBox.Show(this,"This feature requires an active support plan.");
 				return;
 			}
 			if(_formLauncherVideo is null){
