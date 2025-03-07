@@ -46,6 +46,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Required dlls\Bridges.dll</HintPath>
     </Reference>
+    <Reference Include="CDT, Version=24.2.54.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Required dlls\CDT.dll</HintPath>
+    </Reference>
     <Reference Include="DpsPos">
       <HintPath>..\Required dlls\DpsPos.dll</HintPath>
     </Reference>
@@ -80,6 +84,10 @@
     <Reference Include="NHunspell">
       <HintPath>..\Required dlls\NHunspell.dll</HintPath>
     </Reference>
+    <Reference Include="OpenDentalHelp, Version=24.2.54.0, Culture=neutral, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Required dlls\OpenDentalHelp.dll</HintPath>
+    </Reference>
     <Reference Include="PdfSharp, Version=1.2.1269.0, Culture=neutral, PublicKeyToken=f94615aa0424f9eb, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Required dlls\PdfSharp.dll</HintPath>
@@ -110,6 +118,10 @@
     <Reference Include="VBbridges, Version=22.1.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Required dlls\VBbridges.dll</HintPath>
+    </Reference>
+    <Reference Include="VirtualWeb, Version=22.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Required dlls\VirtualWeb.dll</HintPath>
     </Reference>
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
@@ -287,9 +299,9 @@
     <Compile Include="Frms\FrmChildRooms.xaml.cs">
       <DependentUpon>FrmChildRooms.xaml</DependentUpon>
     </Compile>
-		<Compile Include="Frms\FrmEClipboardDefEdit.xaml.cs">
-			<DependentUpon>FrmEClipboardDefEdit.xaml</DependentUpon>
-		</Compile>
+    <Compile Include="Frms\FrmEClipboardDefEdit.xaml.cs">
+      <DependentUpon>FrmEClipboardDefEdit.xaml</DependentUpon>
+    </Compile>
     <Compile Include="InternalTools\Job Manager\FrmJobGitBranch.xaml.cs">
       <DependentUpon>FrmJobGitBranch.xaml</DependentUpon>
     </Compile>
@@ -886,10 +898,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-		<Page Include="Frms\FrmEClipboardDefEdit.xaml">
-			<Generator>MSBuild:Compile</Generator>
-			<SubType>Designer</SubType>
-		</Page>
+    <Page Include="Frms\FrmEClipboardDefEdit.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="InternalTools\Job Manager\FrmJobGitBranch.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -1708,18 +1720,6 @@
     <None Include="Resources\en_US_dic" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Unversioned\VirtualWeb\VirtualWeb.csproj">
-      <Project>{4ED3DF2F-E97E-4BC3-AE5F-AA31A11AF57F}</Project>
-      <Name>VirtualWeb</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\CDT\xCDT.csproj">
-      <Project>{76ba82e6-d8e1-45b1-8ed6-41d97b8d67ec}</Project>
-      <Name>xCDT</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\OpenDentalHelp\OpenDentalHelp\OpenDentalHelp.csproj">
-      <Project>{98b2999c-8a9f-4795-b452-7f6231ed56b4}</Project>
-      <Name>OpenDentalHelp</Name>
-    </ProjectReference>
     <ProjectReference Include="..\CodeBase\xCodeBase.csproj">
       <Project>{18f7bc78-4b99-48d3-a1f1-0d13a63e3cf9}</Project>
       <Name>xCodeBase</Name>

@@ -157,6 +157,10 @@
       <HintPath>..\OpenDentalCloud\bin\Debug\OpenDentalCloud.dll</HintPath>
     </Reference>
     <Reference Include="OpenDentalGraph, Version=16.1.1.0, Culture=neutral, PublicKeyToken=null" />
+    <Reference Include="OpenDentalHelp, Version=24.2.54.0, Culture=neutral, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Required dlls\OpenDentalHelp.dll</HintPath>
+    </Reference>
     <Reference Include="PdfSharp, Version=1.2.1269.0, Culture=neutral, PublicKeyToken=f94615aa0424f9eb, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Required dlls\PdfSharp.dll</HintPath>
@@ -580,10 +584,6 @@
     <Compile Include="MiddleTier\WebServiceT.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\OpenDentalHelp\OpenDentalHelp\OpenDentalHelp.csproj">
-      <Project>{98b2999c-8a9f-4795-b452-7f6231ed56b4}</Project>
-      <Name>OpenDentalHelp</Name>
-    </ProjectReference>
     <ProjectReference Include="..\CentralManager\xCentralManager.csproj">
       <Project>{10BFA78E-E5FE-4209-8347-AD0EC8B3F064}</Project>
       <Name>xCentralManager</Name>
