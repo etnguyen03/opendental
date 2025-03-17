@@ -2292,12 +2292,6 @@ namespace OpenDental {
 						if(Plugins.HookMethod(this,"ContrAccount.ToolBarMain_ButtonClick_Payment")) {
 							break;
 						}
-						bool isTsiPayment=TsiTransLogs.IsTransworldEnabled(_patient.ClinicNum)
-							&& Patients.IsGuarCollections(_patient.Guarantor,includeSuspended:false)
-							&& !MsgBox.Show(this,MsgBoxButtons.YesNo,"The guarantor of this family has been sent to TSI for a past due balance.  "
-								+"Is the payment you are applying directly from the debtor or guarantor?\r\n\r\n"
-								+"Yes - this payment is directly from the debtor/guarantor\r\n\r\n"
-								+"No - this payment is from TSI");
 						List<InputBoxParam> listInputBoxParams=new List<InputBoxParam>();
 						InputBoxParam inputBoxParam=new InputBoxParam();
 						inputBoxParam.InputBoxType_=InputBoxType.ValidDouble;
@@ -2329,7 +2323,7 @@ namespace OpenDental {
 						if(inputBox.BoolResult) {
 							preferCurrentPat=true;
 						}
-						toolBarButPay_Click(PIn.Double(inputBox.StringResult),preferCurrentPat:preferCurrentPat,isTsiPayment:isTsiPayment);
+						toolBarButPay_Click(PIn.Double(inputBox.StringResult),preferCurrentPat:preferCurrentPat);
 						break;
 					case "Adjustment":
 						toolBarButAdj_Click();
@@ -2696,7 +2690,7 @@ namespace OpenDental {
 			ModuleSelected(_patient.PatNum);
 		}
 
-		private void toolBarButPay_Click(double payAmt,bool preferCurrentPat=false,bool isPrePay=false,bool isIncomeTransfer=false,bool isTsiPayment=false) {
+		private void toolBarButPay_Click(double payAmt,bool preferCurrentPat=false,bool isPrePay=false,bool isIncomeTransfer=false) {
 			Payment payment=new Payment();
 			payment.PayDate=DateTime.Today;
 			payment.PatNum=_patient.PatNum;
@@ -2771,46 +2765,6 @@ namespace OpenDental {
 			payment.PayAmt=payAmt;
 			Payments.Insert(payment);
 			formPayment.ShowDialog();
-			//If this is a payment received from Transworld, we don't want to send any new update messages to Transworld for any splits on this payment.
-			//To prevent new msgs from being sent, we will insert TsiTransLogs linked to all splits with TsiTransType.None.  The ODService will update the
-			//log TransAmt for any edits to this paysplit instead of sending a new msg to Transworld.
-			if(!isTsiPayment) {
-				ModuleSelected(_patient.PatNum);
-				return;
-			}
-			Payment paymentTsi=Payments.GetPayment(payment.PayNum);
-			if(paymentTsi!=null) {
-				List<PaySplit> listPaySplits=PaySplits.GetForPayment(paymentTsi.PayNum);
-				if(listPaySplits.Count>0) {
-					PatAging patAging=Patients.GetAgingListFromGuarNums(new List<long>() { _patient.Guarantor }).FirstOrDefault();
-					List<TsiTransLog> listTsiTransLogs=new List<TsiTransLog>();
-					for(int i=0;i<listPaySplits.Count;i++) {
-						double logAmt=patAging.ListTsiLogs.FindAll(x => x.FKeyType==TsiFKeyType.PaySplit && x.FKey==listPaySplits[i].SplitNum).Sum(x => x.TransAmt);
-						if(CompareDouble.IsEqual(listPaySplits[i].SplitAmt,logAmt)) {
-							continue;//split already linked to logs that sum to the split amount, nothing to do with this one
-						}
-						listTsiTransLogs.Add(new TsiTransLog() {
-							PatNum=patAging.PatNum,//this is the account guarantor, since these are reconciled by guars
-							UserNum=Security.CurUser.UserNum,
-							TransType=TsiTransType.None,
-							//TransDateTime=DateTime.Now,//set on insert, not editable by user
-							//DemandType=TsiDemandType.Accelerator,//only valid for placement msgs
-							//ServiceCode=TsiServiceCode.Diplomatic,//only valid for placement msgs
-							ClientId=patAging.ListTsiLogs.FirstOrDefault()?.ClientId??"",//can be blank, not used since this isn't really sent to Transworld
-							TransAmt=-listPaySplits[i].SplitAmt-logAmt,//Ex. already logged -10; split changed to -20; -20-(-10)=-10; -10 this split + -10 already logged = -20 split amt
-							AccountBalance=patAging.AmountDue-listPaySplits[i].SplitAmt-logAmt,
-							FKeyType=TsiFKeyType.PaySplit,
-							FKey=listPaySplits[i].SplitNum,
-							RawMsgText="This was not a message sent to Transworld.  This paysplit was entered due to a payment received from Transworld.",
-							ClinicNum=PrefC.HasClinicsEnabled?patAging.ClinicNum:0
-							//,TransJson=""//only valid for placement msgs
-						});
-					}
-					if(listTsiTransLogs.Count>0) {
-						TsiTransLogs.InsertMany(listTsiTransLogs);
-					}
-				}
-			}
 			ModuleSelected(_patient.PatNum);
 		}
 
@@ -4613,12 +4567,6 @@ namespace OpenDental {
 		///selects one procedure (not validated) we maintain the previous functionality of opening FormAdjust.</summary>
 		private void AddAdjustmentToSelectedProcsHelper(bool openMultiAdj=false) {
 			Plugins.HookAddCode(this,"ContrAccount.AddAdjustmentToSelectedProcsHelper_beginning",_patient,gridPayPlan);
-			bool isTsiAdj=TsiTransLogs.IsTransworldEnabled(_patient.ClinicNum)
-				&& Patients.IsGuarCollections(_patient.Guarantor)
-				&& !MsgBox.Show(this,MsgBoxButtons.YesNo,"The guarantor of this family has been sent to TSI for a past due balance.  "
-					+"Is this an adjustment applied by the office?\r\n\r\n"
-					+"Yes - this is an adjustment applied by the office\r\n\r\n"
-					+"No - this adjustment is the result of a payment received from TSI");
 			DataTable tableAcct=_dataSetMain.Tables["account"];
 			List<long> listProcNumsSelected=new List<long>();
 			for(int i=0;i<gridAccount.SelectedIndices.Length;i++) {
@@ -4665,7 +4613,7 @@ namespace OpenDental {
 						}
 					}
 				}
-				using FormAdjust formAdjust=new FormAdjust(patient,adjustment,isTsiAdj);
+				using FormAdjust formAdjust=new FormAdjust(patient,adjustment);
 				formAdjust.IsNew=true;
 				formAdjust.ShowDialog();
 				//Shared.ComputeBalances();
@@ -4730,29 +4678,7 @@ namespace OpenDental {
 			if(!Security.IsAuthorized(EnumPermType.PayPlanEdit)) {
 				return;
 			}
-			bool isTsiPayplan=TsiTransLogs.IsTransworldEnabled(_family.Guarantor.ClinicNum) && Patients.IsGuarCollections(_patient.Guarantor,false);
 			string msg="";
-			if(isTsiPayplan) {
-				if(!Security.IsAuthorized(EnumPermType.Billing,true)) {
-					msg=Lan.g(this,"The guarantor of this family has been sent to TSI for a past due balance.")+"\r\n"
-						+Lan.g(this,"Creating a payment plan for this guarantor would cause the account to be suspended in the TSI system but you are not "
-							+"authorized for")+"\r\n"
-						+GroupPermissions.GetDesc(EnumPermType.Billing);
-					MessageBox.Show(this,msg);
-					return;
-				}
-				string billingType=Defs.GetName(DefCat.BillingTypes,PrefC.GetLong(PrefName.TransworldPaidInFullBillingType));
-				msg=Lan.g(this,"The guarantor of this family has been sent to TSI for a past due balance.")+"\r\n"
-					+Lan.g(this,"Creating this payment plan will suspend the TSI account for a maximum of 50 days if the account is in the Accelerator or "
-						+"Profit Recovery stage.")+"\r\n"
-					+Lan.g(this,"Continue creating the payment plan?")+"\r\n\r\n"
-					+Lan.g(this,"Yes - Create the payment plan, send a suspend message to TSI, and change the guarantor's billing type to")+" "
-						+billingType+".\r\n\r\n"
-					+Lan.g(this,"No - Do not create the payment plan and allow TSI to continue managing the account.");
-				if(!MsgBox.Show(this,MsgBoxButtons.YesNo,msg)) {
-					return;
-				}
-			}
 			PayPlan payPlan=new PayPlan();
 			payPlan.IsNew=true;
 			payPlan.PatNum=_patient.PatNum;
@@ -4786,12 +4712,6 @@ namespace OpenDental {
 			}
 			else{
 				ModuleSelected(_patient.PatNum);
-			}
-			if(isTsiPayplan && PayPlans.GetOne(payPlan.PayPlanNum)!=null) {
-				msg=TsiTransLogs.SuspendGuar(_family.Guarantor);
-				if(!string.IsNullOrEmpty(msg)) {
-					MessageBox.Show(this,msg+"\r\n"+Lan.g(this,"The account will have to be suspended manually using the A/R Manager or the TSI web portal."));
-				}
 			}
 		}
 

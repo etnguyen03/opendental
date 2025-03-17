@@ -1572,9 +1572,6 @@ namespace OpenDental{
 			{
 				return;
 			}
-			if(IsGuarantorTSI()) {
-				return;
-			}
 			switch(MessageBox.Show(Lan.g(this,"Create new family instead of moving to an existing family?"),"",MessageBoxButtons.YesNoCancel)) {
 				case DialogResult.Cancel:
 					return;
@@ -2932,22 +2929,9 @@ namespace OpenDental{
 			}
 		}
 
-		///<summary>Shows warning if the patient's guarantor has been sent to TSI. Returns true if the patient has been sent to TSI and the user wants to cancel the move. Otherwise, returns false.</summary>
-		private bool IsGuarantorTSI() {
-			if(!TsiTransLogs.HasGuarBeenSentToTSI(_family.Guarantor)) {
-				return false;
-			}
-			return !MsgBox.Show(this,MsgBoxButtons.OKCancel,"The guarantor of this family has been sent to TSI for a past due balance. "
-				+"Moving a family member could change the balance and result in a charge by TSI. "
-				+"We recommend canceling TSI professional collection before moving a family member.\r\nContinue with the move?");
-		}
-
 		private bool MovePats(Patient patientOld,Family family=null) {
 			//no need to check insurance.  It will follow.
 			if(!MsgBox.Show(this,MsgBoxButtons.YesNo,"Moving the guarantor will cause two families to be combined.  The financial notes for both families will be combined and may need to be edited.  The address notes will also be combined and may need to be edited. Do you wish to continue?")) {
-				return false;
-			}
-			if(IsGuarantorTSI()) {
 				return false;
 			}
 			if(!MsgBox.Show(this,MsgBoxButtons.OKCancel,"Select the family to move this patient to from the list that will come up next.")) {

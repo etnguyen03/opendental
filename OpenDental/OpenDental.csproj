@@ -2396,12 +2396,6 @@
     <Compile Include="Forms\FormLogOn.designer.cs">
       <DependentUpon>FormLogOn.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\FormTsiHistory.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\FormTsiHistory.designer.cs">
-      <DependentUpon>FormTsiHistory.cs</DependentUpon>
-    </Compile>
     <Compile Include="Forms\FormCareCreditTransactions.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -3185,12 +3179,6 @@
     </Compile>
     <Compile Include="Forms\FormDunningSetup.designer.cs">
       <DependentUpon>FormDunningSetup.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Forms\FormArManager.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\FormArManager.designer.cs">
-      <DependentUpon>FormArManager.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms Reports\FormRpAging.cs">
       <SubType>Form</SubType>
@@ -7623,9 +7611,6 @@
     <EmbeddedResource Include="Forms\FormUnschedListPatient.resx">
       <DependentUpon>FormUnschedListPatient.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormTsiHistory.resx">
-      <DependentUpon>FormTsiHistory.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Forms\FormCareCreditTransactions.resx">
       <DependentUpon>FormCareCreditTransactions.cs</DependentUpon>
     </EmbeddedResource>
@@ -7849,9 +7834,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\FormDunningSetup.resx">
       <DependentUpon>FormDunningSetup.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Forms\FormArManager.resx">
-      <DependentUpon>FormArManager.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms Reports\FormRpAging.resx">
       <DependentUpon>FormRpAging.cs</DependentUpon>
@@ -11110,9 +11092,8 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CodeBase\xCodeBase.csproj">
-      <Project>{18F7BC78-4B99-48D3-A1F1-0D13A63E3CF9}</Project>
+      <Project>{18f7bc78-4b99-48d3-a1f1-0d13a63e3cf9}</Project>
       <Name>xCodeBase</Name>
-      <Aliases>global</Aliases>
     </ProjectReference>
     <ProjectReference Include="..\DataConnectionBase\xDataConnectionBase.csproj">
       <Project>{29c41020-4411-41f2-9061-9b71b5b32b5d}</Project>

@@ -27,8 +27,7 @@ namespace OpenDental{
 		private SigElementDef[] _sigElementDefArrayMessages;
 		private SigElementDef[] _sigElementDefArrayUsers;
 		private Employee _employee;
-		private ErrorProvider _errorProvider1=new ErrorProvider();
-		private FormArManager _formArManager;
+		private ErrorProvider _errorProvider1 = new ErrorProvider();
 		private FormBilling _formBilling;
 		private FormClaimsSend _formClaimsSend;
 		private FormEmailInbox _formEmailInbox=null;
@@ -304,50 +303,6 @@ namespace OpenDental{
 			using FormTimeCardManage formTimeCardManage=new FormTimeCardManage(_listEmployees);
 			formTimeCardManage.ShowDialog();
 			ModuleSelected(_patNum);
-		}
-
-		private void butManageAR_Click(object sender,EventArgs e) {
-			if(!Security.IsAuthorized(EnumPermType.Billing)) {
-				return;
-			}
-			if(!Programs.IsEnabled(ProgramName.Transworld)) {
-				string url="https://opendental.com/resources/redirects/redirecttransworldsystems.html";
-				try {
-					if(!ODBuild.IsThinfinity() && ODCloudClient.IsAppStream) {
-						ODCloudClient.LaunchFileWithODCloudClient(url);
-					}
-					else {
-						Process.Start(url);
-					}
-				}
-				catch(Exception ex) {
-					ex.DoNothing();
-					MsgBox.Show(this,"Failed to open web browser.  Please make sure you have a default browser set and are connected to the internet and then try again.");
-				}
-				return;
-			}
-			if(_formArManager==null || _formArManager.IsDisposed) {
-				while(!ValidateConnectionDetails()) {//only validate connection details if the ArManager form does not exist yet
-					string msgText="An SFTP connection could not be made using the connection details "+(PrefC.HasClinicsEnabled ? "for any clinic " : "")
-						+"in the enabled Transworld (TSI) program link.  Would you like to edit the Transworld program link now?";
-					if(!MsgBox.Show(this,MsgBoxButtons.YesNo,msgText)) {//if user does not want to edit program link, return
-						return;
-					}
-					using FormTransworldSetup formTransworldSetup=new FormTransworldSetup();
-					if(formTransworldSetup.ShowDialog()!=DialogResult.OK) {//if user cancels edits in the setup window, return
-						return;
-					}
-				}
-				_formArManager=new FormArManager();//connections settings have been validated, create a new ArManager form
-				_formArManager.FormClosed+=new FormClosedEventHandler((o,ev) => { _formArManager=null; });//So that the form can release its objects for garbage collection
-			}
-			_formArManager.Restore();
-			_formArManager.Show();//form has a Go To option and is shown as a non-modal window so the user can view the pat account and the collection list at the same time.
-			if(_formArManager!=null) {
-				//When things go wrong running aging, user is prompted to load the existing account info.  If they say no, the form closes, and the closing 
-				//event handler sets _formAR=null.
-				_formArManager.BringToFront();
-			}
 		}
 
 		private void butSchedule_Click(object sender,EventArgs e){
@@ -892,7 +847,6 @@ namespace OpenDental{
 			if(PrefC.GetBool(PrefName.EasyHidePublicHealth)) {
 				butImportInsPlans.Visible=false;//Import Ins Plans button is only visible when Public Health feature is enabled.
 			}
-			butManageAR.Visible=!ProgramProperties.IsAdvertisingDisabled(ProgramName.Transworld);
 		}
 
 		///<summary>-1 is also valid.</summary>
