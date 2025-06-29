@@ -70,10 +70,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\CDT\xCDT.csproj">
-      <Project>{76ba82e6-d8e1-45b1-8ed6-41d97b8d67ec}</Project>
-      <Name>xCDT</Name>
-    </ProjectReference>
     <ProjectReference Include="..\CodeBase\xCodeBase.csproj">
       <Project>{18f7bc78-4b99-48d3-a1f1-0d13a63e3cf9}</Project>
       <Name>xCodeBase</Name>
