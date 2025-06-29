@@ -36,4 +36,11 @@ jobs:
       - name: Perform build
         run: MSBuild .\OpenDental.sln /property:Configuration=${{ matrix.configuration }} /property:Platform="Any CPU"
 
+      - name: Save build output
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-${{ matrix.configuration }}
+          path: .\OpenDental\bin\${{ matrix.configuration }}
+          if-no-files-found: error
+
 
