@@ -1,0 +1,33 @@
+name: .NET Core Desktop CI
+
+on:
+  - push
+  - pull_request
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        configuration:
+          - Debug
+          - Release
+
+    runs-on: windows-2019
+
+    env:
+      Solution_Name: OpenDental.sln
+      
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # Add  MSBuild to the PATH: https://github.com/microsoft/setup-msbuild
+      - name: Setup MSBuild.exe
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Perform build
+        run: MSBuild .\OpenDental.sln /property:Configuration=${{ matrix.configuration }} /property:Platform="Any CPU"
+
+
