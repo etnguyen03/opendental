@@ -265,10 +265,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Required dlls\ODCrypt.dll</HintPath>
     </Reference>
-    <Reference Include="OpenDentalHelp, Version=24.2.54.0, Culture=neutral, processorArchitecture=x86">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Required dlls\OpenDentalHelp.dll</HintPath>
-    </Reference>
     <Reference Include="Org.Mentalis.Security, Version=1.0.13.715, Culture=neutral">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Required dlls\Org.Mentalis.Security.dll</HintPath>

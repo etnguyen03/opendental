@@ -13,7 +13,6 @@ using Microsoft.Win32;
 using OpenDental.UI;
 using CodeBase;
 using OpenDentBusiness;
-using OpenDentalHelp;
 
 namespace OpenDental {
 	//Jordan is the only one allowed to alter this file.
@@ -1340,40 +1339,6 @@ Refresh();
 			if(_rectangleButMin.Contains(e.Location) && MinimizeBox){
 				WindowState=FormWindowState.Minimized;
 				OnResizeEnd(new EventArgs());
-				return;
-			}
-			if(_regionButHelp.IsVisible(e.Location) && HasHelpButton){//IsVisible really means HitTest
-				string formName="";
-				if(GetHelpOverride()=="") {
-					formName=Name;
-				}
-				else {
-					formName=GetHelpOverride();
-				}
-				try {
-					bool isKeyValid=ODHelp.IsEncryptedKeyValid();//always true in debug
-					string manualPageURL=OpenDentalHelp.ODHelp.GetManualPage(formName,PrefC.GetString(PrefName.ProgramVersion),isKeyValid);
-					if(ODBuild.IsThinfinity()) {
-						Process.Start(manualPageURL);
-					}
-					else if(ODCloudClient.IsAppStream){
-						ODCloudClient.LaunchFileWithODCloudClient(manualPageURL);
-					}
-					else{
-						FrmHelpBrowser frmHelpBrowser=new FrmHelpBrowser();
-						frmHelpBrowser.EnableUI(enableUI:isKeyValid);//If false, then just the Help Feature page shows
-						frmHelpBrowser.GoToPage(manualPageURL);
-						frmHelpBrowser.Show();
-						//UIHelper.ForceBringToFront(frmHelpBrowser);
-					}
-					if(!isKeyValid) {
-						//comes up on top of locked browser.
-						MsgBox.Show("To use the Open Dental Help feature you must be on support.");
-					}
-				}
-				catch(Exception ex) {
-					MessageBox.Show(ex.Message);
-				}
 				return;
 			}
 		}
