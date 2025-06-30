@@ -1,0 +1,46 @@
+name: .NET Core Desktop CI
+
+on:
+  - push
+  - pull_request
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        configuration:
+          - Debug
+          - Release
+
+    runs-on: windows-2022
+
+    env:
+      Solution_Name: OpenDental.sln
+      
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # Add  MSBuild to the PATH: https://github.com/microsoft/setup-msbuild
+      - name: Setup MSBuild.exe
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Setup NuGet
+        uses: nuget/setup-nuget@v2
+    
+      - name: Install dependencies (nuget)
+        run: nuget restore .\OpenDental.sln
+
+      - name: Perform build
+        run: MSBuild .\OpenDental.sln /property:Configuration=${{ matrix.configuration }} /property:Platform="Any CPU"
+
+      - name: Save build output
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-${{ matrix.configuration }}
+          path: .\OpenDental\bin\${{ matrix.configuration }}
+          if-no-files-found: error
+
+
