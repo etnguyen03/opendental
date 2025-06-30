@@ -296,45 +296,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Required dlls\RdlViewer.dll</HintPath>
     </Reference>
-    <Reference Include="Serilog">
-      <HintPath>..\Required dlls\Serilog.dll</HintPath>
-    </Reference>
-    <Reference Include="Serilog.Enrichers.Environment">
-      <HintPath>..\Required dlls\Serilog.Enrichers.Environment.dll</HintPath>
-    </Reference>
-    <Reference Include="Serilog.Enrichers.Thread">
-      <HintPath>..\Required dlls\Serilog.Enrichers.Thread.dll</HintPath>
-    </Reference>
-    <Reference Include="Serilog.Extensions.Logging">
-      <HintPath>..\Required dlls\Serilog.Extensions.Logging.dll</HintPath>
-    </Reference>
-    <Reference Include="Serilog.Settings.Configuration">
-      <HintPath>..\Required dlls\Serilog.Settings.Configuration.dll</HintPath>
-    </Reference>
-    <Reference Include="Serilog.Sinks.AzureDocumentDB">
-      <HintPath>..\Required dlls\Serilog.Sinks.AzureDocumentDB.dll</HintPath>
-    </Reference>
-    <Reference Include="Serilog.Sinks.Console">
-      <HintPath>..\Required dlls\Serilog.Sinks.Console.dll</HintPath>
-    </Reference>
-    <Reference Include="Serilog.Sinks.Debug">
-      <HintPath>..\Required dlls\Serilog.Sinks.Debug.dll</HintPath>
-    </Reference>
-    <Reference Include="Serilog.Sinks.File">
-      <HintPath>..\Required dlls\Serilog.Sinks.File.dll</HintPath>
-    </Reference>
-    <Reference Include="Serilog.Sinks.Literate">
-      <HintPath>..\Required dlls\Serilog.Sinks.Literate.dll</HintPath>
-    </Reference>
-    <Reference Include="Serilog.Sinks.RollingFile">
-      <HintPath>..\Required dlls\Serilog.Sinks.RollingFile.dll</HintPath>
-    </Reference>
-    <Reference Include="Serilog.Sinks.Trace">
-      <HintPath>..\Required dlls\Serilog.Sinks.Trace.dll</HintPath>
-    </Reference>
-    <Reference Include="SerilogTraceListener">
-      <HintPath>..\Required dlls\SerilogTraceListener.dll</HintPath>
-    </Reference>
     <Reference Include="SharpDX, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Required dlls\SharpDX.dll</HintPath>
@@ -7735,6 +7696,7 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\FormAvaTax.resx">
       <DependentUpon>FormAvaTax.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\FormAutoNoteResponsePicker.resx">
       <DependentUpon>FormAutoNoteResponsePicker.cs</DependentUpon>
