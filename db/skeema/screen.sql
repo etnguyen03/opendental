@@ -1,0 +1,23 @@
+CREATE TABLE `screen` (
+  `ScreenNum` bigint(20) NOT NULL AUTO_INCREMENT,
+  `Gender` tinyint(3) unsigned NOT NULL DEFAULT 0,
+  `RaceOld` tinyint(4) NOT NULL,
+  `GradeLevel` tinyint(4) NOT NULL DEFAULT 0,
+  `Age` tinyint(3) unsigned NOT NULL DEFAULT 0,
+  `Urgency` tinyint(4) NOT NULL DEFAULT 0,
+  `HasCaries` tinyint(3) unsigned NOT NULL DEFAULT 0,
+  `NeedsSealants` tinyint(3) unsigned NOT NULL DEFAULT 0,
+  `CariesExperience` tinyint(3) unsigned NOT NULL DEFAULT 0,
+  `EarlyChildCaries` tinyint(3) unsigned NOT NULL DEFAULT 0,
+  `ExistingSealants` tinyint(3) unsigned NOT NULL DEFAULT 0,
+  `MissingAllTeeth` tinyint(3) unsigned NOT NULL DEFAULT 0,
+  `Birthdate` date NOT NULL DEFAULT '0000-00-00',
+  `ScreenGroupNum` bigint(20) NOT NULL,
+  `ScreenGroupOrder` smallint(5) unsigned NOT NULL DEFAULT 0,
+  `Comments` varchar(255) DEFAULT NULL,
+  `ScreenPatNum` bigint(20) NOT NULL,
+  `SheetNum` bigint(20) NOT NULL,
+  PRIMARY KEY (`ScreenNum`),
+  KEY `ScreenPatNum` (`ScreenPatNum`),
+  KEY `SheetNum` (`SheetNum`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;

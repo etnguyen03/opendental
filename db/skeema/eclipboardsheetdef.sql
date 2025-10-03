@@ -1,0 +1,20 @@
+CREATE TABLE `eclipboardsheetdef` (
+  `EClipboardSheetDefNum` bigint(20) NOT NULL AUTO_INCREMENT,
+  `SheetDefNum` bigint(20) NOT NULL,
+  `ClinicNum` bigint(20) NOT NULL,
+  `ResubmitInterval` bigint(20) NOT NULL,
+  `ItemOrder` int(11) NOT NULL,
+  `PrefillStatus` tinyint(4) NOT NULL,
+  `MinAge` int(11) NOT NULL DEFAULT -1,
+  `MaxAge` int(11) NOT NULL DEFAULT -1,
+  `IgnoreSheetDefNums` text NOT NULL,
+  `PrefillStatusOverride` bigint(20) NOT NULL,
+  `EFormDefNum` bigint(20) NOT NULL,
+  `Frequency` tinyint(4) NOT NULL,
+  PRIMARY KEY (`EClipboardSheetDefNum`),
+  KEY `SheetDefNum` (`SheetDefNum`),
+  KEY `ClinicNum` (`ClinicNum`),
+  KEY `ResubmitInterval` (`ResubmitInterval`),
+  KEY `PrefillStatusOverride` (`PrefillStatusOverride`),
+  KEY `EFormDefNum` (`EFormDefNum`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;

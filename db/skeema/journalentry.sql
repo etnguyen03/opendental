@@ -1,0 +1,21 @@
+CREATE TABLE `journalentry` (
+  `JournalEntryNum` bigint(20) NOT NULL AUTO_INCREMENT,
+  `TransactionNum` bigint(20) NOT NULL,
+  `AccountNum` bigint(20) NOT NULL,
+  `DateDisplayed` date NOT NULL DEFAULT '0001-01-01',
+  `DebitAmt` double NOT NULL DEFAULT 0,
+  `CreditAmt` double NOT NULL DEFAULT 0,
+  `Memo` text DEFAULT NULL,
+  `Splits` text DEFAULT NULL,
+  `CheckNumber` varchar(255) DEFAULT '',
+  `ReconcileNum` bigint(20) NOT NULL,
+  `SecUserNumEntry` bigint(20) NOT NULL,
+  `SecDateTEntry` datetime NOT NULL DEFAULT '0001-01-01 00:00:00',
+  `SecUserNumEdit` bigint(20) NOT NULL,
+  `SecDateTEdit` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`JournalEntryNum`),
+  KEY `indexAccountNum` (`AccountNum`),
+  KEY `indexTransactionNum` (`TransactionNum`),
+  KEY `SecUserNumEntry` (`SecUserNumEntry`),
+  KEY `SecUserNumEdit` (`SecUserNumEdit`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;

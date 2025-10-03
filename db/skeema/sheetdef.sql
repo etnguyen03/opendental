@@ -1,0 +1,20 @@
+CREATE TABLE `sheetdef` (
+  `SheetDefNum` bigint(20) NOT NULL AUTO_INCREMENT,
+  `Description` varchar(255) DEFAULT NULL,
+  `SheetType` int(11) NOT NULL,
+  `FontSize` float NOT NULL,
+  `FontName` varchar(255) DEFAULT NULL,
+  `Width` int(11) NOT NULL,
+  `Height` int(11) NOT NULL,
+  `IsLandscape` tinyint(4) NOT NULL,
+  `PageCount` int(11) NOT NULL,
+  `IsMultiPage` tinyint(4) NOT NULL,
+  `BypassGlobalLock` tinyint(4) NOT NULL,
+  `HasMobileLayout` tinyint(4) NOT NULL,
+  `DateTCreated` datetime NOT NULL DEFAULT '0001-01-01 00:00:00',
+  `RevID` int(11) NOT NULL,
+  `AutoCheckSaveImage` tinyint(4) NOT NULL DEFAULT 1,
+  `AutoCheckSaveImageDocCategory` bigint(20) NOT NULL,
+  PRIMARY KEY (`SheetDefNum`),
+  KEY `AutoCheckSaveImageDocCategory` (`AutoCheckSaveImageDocCategory`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;

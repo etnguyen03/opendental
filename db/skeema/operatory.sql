@@ -1,0 +1,21 @@
+CREATE TABLE `operatory` (
+  `OperatoryNum` bigint(20) NOT NULL AUTO_INCREMENT,
+  `OpName` varchar(255) DEFAULT '',
+  `Abbrev` varchar(255) DEFAULT '',
+  `ItemOrder` smallint(5) unsigned NOT NULL DEFAULT 0,
+  `IsHidden` tinyint(3) unsigned NOT NULL DEFAULT 0,
+  `ProvDentist` bigint(20) NOT NULL,
+  `ProvHygienist` bigint(20) NOT NULL,
+  `IsHygiene` tinyint(3) unsigned NOT NULL DEFAULT 0,
+  `ClinicNum` bigint(20) NOT NULL,
+  `DateTStamp` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `SetProspective` tinyint(4) NOT NULL,
+  `IsWebSched` tinyint(4) NOT NULL,
+  `IsNewPatAppt` tinyint(4) NOT NULL,
+  `OperatoryType` bigint(20) NOT NULL,
+  PRIMARY KEY (`OperatoryNum`),
+  KEY `ProvDentist` (`ProvDentist`),
+  KEY `ProvHygienist` (`ProvHygienist`),
+  KEY `ClinicNum` (`ClinicNum`),
+  KEY `OperatoryType` (`OperatoryType`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;

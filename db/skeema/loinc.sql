@@ -1,0 +1,23 @@
+CREATE TABLE `loinc` (
+  `LoincNum` bigint(20) NOT NULL AUTO_INCREMENT,
+  `LoincCode` varchar(255) NOT NULL,
+  `Component` varchar(255) NOT NULL,
+  `PropertyObserved` varchar(255) NOT NULL,
+  `TimeAspct` varchar(255) NOT NULL,
+  `SystemMeasured` varchar(255) NOT NULL,
+  `ScaleType` varchar(255) NOT NULL,
+  `MethodType` varchar(255) NOT NULL,
+  `StatusOfCode` varchar(255) NOT NULL,
+  `NameShort` varchar(255) NOT NULL,
+  `ClassType` varchar(255) NOT NULL,
+  `UnitsRequired` tinyint(4) NOT NULL,
+  `OrderObs` varchar(255) NOT NULL,
+  `HL7FieldSubfieldID` varchar(255) NOT NULL,
+  `ExternalCopyrightNotice` text NOT NULL,
+  `NameLongCommon` varchar(255) NOT NULL,
+  `UnitsUCUM` varchar(255) NOT NULL,
+  `RankCommonTests` int(11) NOT NULL,
+  `RankCommonOrders` int(11) NOT NULL,
+  PRIMARY KEY (`LoincNum`),
+  KEY `LoincCode` (`LoincCode`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;

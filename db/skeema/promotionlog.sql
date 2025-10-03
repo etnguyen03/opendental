@@ -1,0 +1,23 @@
+CREATE TABLE `promotionlog` (
+  `PromotionLogNum` bigint(20) NOT NULL AUTO_INCREMENT,
+  `PromotionNum` bigint(20) NOT NULL,
+  `PatNum` bigint(20) NOT NULL,
+  `MessageFk` bigint(20) NOT NULL,
+  `EmailHostingFK` bigint(20) NOT NULL,
+  `DateTimeSent` datetime NOT NULL DEFAULT '0001-01-01 00:00:00',
+  `PromotionStatus` tinyint(4) NOT NULL,
+  `ClinicNum` bigint(20) NOT NULL,
+  `SendStatus` tinyint(4) NOT NULL,
+  `MessageType` tinyint(4) NOT NULL,
+  `DateTimeEntry` datetime NOT NULL DEFAULT '0001-01-01 00:00:00',
+  `ResponseDescript` text NOT NULL,
+  `ApptReminderRuleNum` bigint(20) NOT NULL,
+  PRIMARY KEY (`PromotionLogNum`),
+  KEY `PromotionNum` (`PromotionNum`),
+  KEY `PatNum` (`PatNum`),
+  KEY `EmailMessageNum` (`MessageFk`),
+  KEY `EmailHostingFK` (`EmailHostingFK`),
+  KEY `ClinicNum` (`ClinicNum`),
+  KEY `MessageFk` (`MessageFk`),
+  KEY `ApptReminderRuleNum` (`ApptReminderRuleNum`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;

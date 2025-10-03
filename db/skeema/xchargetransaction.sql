@@ -1,0 +1,21 @@
+CREATE TABLE `xchargetransaction` (
+  `XChargeTransactionNum` bigint(20) NOT NULL AUTO_INCREMENT,
+  `TransType` varchar(255) NOT NULL,
+  `Amount` double NOT NULL,
+  `CCEntry` varchar(255) NOT NULL,
+  `PatNum` bigint(20) NOT NULL,
+  `Result` varchar(255) NOT NULL,
+  `ClerkID` varchar(255) NOT NULL,
+  `ResultCode` varchar(255) NOT NULL,
+  `Expiration` varchar(255) NOT NULL,
+  `CCType` varchar(255) NOT NULL,
+  `CreditCardNum` varchar(255) NOT NULL,
+  `BatchNum` varchar(255) NOT NULL,
+  `ItemNum` varchar(255) NOT NULL,
+  `ApprCode` varchar(255) NOT NULL,
+  `TransactionDateTime` datetime NOT NULL DEFAULT '0001-01-01 00:00:00',
+  `BatchTotal` double NOT NULL,
+  PRIMARY KEY (`XChargeTransactionNum`),
+  KEY `PatNum` (`PatNum`),
+  KEY `TransactionDateTime` (`TransactionDateTime`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;

@@ -1,0 +1,10 @@
+default-character-set=utf8
+default-collation=utf8_general_ci
+generator=skeema:1.12.3-community
+
+[development]
+flavor=mariadb:10.5
+host=localhost
+port=3306
+schema=opendental
+user=root

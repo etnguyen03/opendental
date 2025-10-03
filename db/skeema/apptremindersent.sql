@@ -1,0 +1,22 @@
+CREATE TABLE `apptremindersent` (
+  `ApptReminderSentNum` bigint(20) NOT NULL AUTO_INCREMENT,
+  `ApptNum` bigint(20) NOT NULL,
+  `ApptDateTime` datetime NOT NULL DEFAULT '0001-01-01 00:00:00',
+  `DateTimeSent` datetime NOT NULL DEFAULT '0001-01-01 00:00:00',
+  `TSPrior` bigint(20) NOT NULL,
+  `ApptReminderRuleNum` bigint(20) NOT NULL,
+  `PatNum` bigint(20) NOT NULL,
+  `ClinicNum` bigint(20) NOT NULL,
+  `SendStatus` tinyint(4) NOT NULL,
+  `MessageType` tinyint(4) NOT NULL,
+  `MessageFk` bigint(20) NOT NULL,
+  `DateTimeEntry` datetime NOT NULL DEFAULT '0001-01-01 00:00:00',
+  `ResponseDescript` text NOT NULL,
+  PRIMARY KEY (`ApptReminderSentNum`),
+  KEY `ApptNum` (`ApptNum`),
+  KEY `TSPrior` (`TSPrior`),
+  KEY `ApptReminderRuleNum` (`ApptReminderRuleNum`),
+  KEY `PatNum` (`PatNum`),
+  KEY `ClinicNum` (`ClinicNum`),
+  KEY `MessageFk` (`MessageFk`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;

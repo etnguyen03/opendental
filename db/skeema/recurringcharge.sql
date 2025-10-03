@@ -1,0 +1,22 @@
+CREATE TABLE `recurringcharge` (
+  `RecurringChargeNum` bigint(20) NOT NULL AUTO_INCREMENT,
+  `PatNum` bigint(20) NOT NULL,
+  `ClinicNum` bigint(20) NOT NULL,
+  `DateTimeCharge` datetime NOT NULL DEFAULT '0001-01-01 00:00:00',
+  `ChargeStatus` tinyint(4) NOT NULL,
+  `FamBal` double NOT NULL,
+  `PayPlanDue` double NOT NULL,
+  `TotalDue` double NOT NULL,
+  `RepeatAmt` double NOT NULL,
+  `ChargeAmt` double NOT NULL,
+  `UserNum` bigint(20) NOT NULL,
+  `PayNum` bigint(20) NOT NULL,
+  `CreditCardNum` bigint(20) NOT NULL,
+  `ErrorMsg` text NOT NULL,
+  PRIMARY KEY (`RecurringChargeNum`),
+  KEY `PatNum` (`PatNum`),
+  KEY `ClinicNum` (`ClinicNum`),
+  KEY `UserNum` (`UserNum`),
+  KEY `PayNum` (`PayNum`),
+  KEY `CreditCardNum` (`CreditCardNum`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;

@@ -1,0 +1,21 @@
+CREATE TABLE `repeatcharge` (
+  `RepeatChargeNum` bigint(20) NOT NULL AUTO_INCREMENT,
+  `PatNum` bigint(20) NOT NULL,
+  `ProcCode` varchar(15) DEFAULT NULL,
+  `ChargeAmt` double NOT NULL DEFAULT 0,
+  `DateStart` date NOT NULL DEFAULT '0001-01-01',
+  `DateStop` date NOT NULL DEFAULT '0001-01-01',
+  `Note` text DEFAULT NULL,
+  `CopyNoteToProc` tinyint(4) NOT NULL,
+  `CreatesClaim` tinyint(4) NOT NULL,
+  `IsEnabled` tinyint(4) NOT NULL,
+  `UsePrepay` tinyint(4) NOT NULL,
+  `Npi` text NOT NULL,
+  `ErxAccountId` text NOT NULL,
+  `ProviderName` text NOT NULL,
+  `ChargeAmtAlt` double NOT NULL,
+  `UnearnedTypes` varchar(4000) NOT NULL,
+  `Frequency` tinyint(4) NOT NULL DEFAULT 0,
+  PRIMARY KEY (`RepeatChargeNum`),
+  KEY `PatNum` (`PatNum`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;

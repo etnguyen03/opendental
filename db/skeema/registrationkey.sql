@@ -1,0 +1,20 @@
+CREATE TABLE `registrationkey` (
+  `RegistrationKeyNum` bigint(20) NOT NULL AUTO_INCREMENT,
+  `PatNum` bigint(20) NOT NULL,
+  `RegKey` varchar(4000) DEFAULT NULL,
+  `Note` varchar(4000) DEFAULT NULL,
+  `DateStarted` date NOT NULL,
+  `DateDisabled` date NOT NULL,
+  `DateEnded` date NOT NULL,
+  `IsForeign` tinyint(1) NOT NULL,
+  `UsesServerVersion` tinyint(4) NOT NULL,
+  `IsFreeVersion` tinyint(4) NOT NULL,
+  `IsOnlyForTesting` tinyint(4) NOT NULL,
+  `VotesAllotted` int(11) NOT NULL,
+  `IsResellerCustomer` tinyint(4) NOT NULL,
+  `HasEarlyAccess` tinyint(4) NOT NULL,
+  `DateTBackupScheduled` datetime NOT NULL DEFAULT '0001-01-01 00:00:00',
+  `BackupPassCode` varchar(32) NOT NULL,
+  PRIMARY KEY (`RegistrationKeyNum`),
+  KEY `PatNum` (`PatNum`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;

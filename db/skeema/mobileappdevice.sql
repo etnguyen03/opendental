@@ -1,0 +1,21 @@
+CREATE TABLE `mobileappdevice` (
+  `MobileAppDeviceNum` bigint(20) NOT NULL AUTO_INCREMENT,
+  `ClinicNum` bigint(20) NOT NULL,
+  `DeviceName` varchar(255) NOT NULL,
+  `UniqueID` varchar(255) NOT NULL,
+  `IsEclipboardEnabled` tinyint(4) NOT NULL,
+  `EclipboardLastAttempt` datetime NOT NULL DEFAULT '0001-01-01 00:00:00',
+  `EclipboardLastLogin` datetime NOT NULL DEFAULT '0001-01-01 00:00:00',
+  `PatNum` bigint(20) NOT NULL,
+  `LastCheckInActivity` datetime NOT NULL DEFAULT '0001-01-01 00:00:00',
+  `IsBYODDevice` tinyint(4) NOT NULL,
+  `DevicePage` tinyint(4) NOT NULL,
+  `UserNum` bigint(20) NOT NULL,
+  `IsODTouchEnabled` tinyint(4) NOT NULL,
+  `ODTouchLastLogin` datetime NOT NULL DEFAULT '0001-01-01 00:00:00',
+  `ODTouchLastAttempt` datetime NOT NULL DEFAULT '0001-01-01 00:00:00',
+  PRIMARY KEY (`MobileAppDeviceNum`),
+  KEY `ClinicNum` (`ClinicNum`),
+  KEY `PatNum` (`PatNum`),
+  KEY `UserNum` (`UserNum`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
