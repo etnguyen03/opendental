@@ -2,7 +2,7 @@
 
 The database schema is described in `skeema/` and is applied using [skeema](https://www.skeema.io/).
 
-Open Dental uses a MySQL database. As of writing, the latest version supported is 10.5;
+Open Dental uses a MariaDB database. As of writing, the latest version supported is 10.5;
 however, I want to get that version increased to the latest versions.
 
 There is a file `skeema/.skeema.SAMPLE` which you should copy to `skeema/.skeema`, then edit
