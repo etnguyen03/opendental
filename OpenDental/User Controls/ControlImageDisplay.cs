@@ -1372,7 +1372,7 @@ Here is the desired behavior:
 			}
 			Cursor=Cursors.WaitCursor;
 			if(IsMountItemSelected()){
-				if(ImageHelper.HasImageExtension(GetDocumentShowing(_idxSelectedInMount).FileName) || GetDocumentShowing(_idxSelectedInMount).FileName.EndsWith(".dcm"))
+				if(ImageHelper.HasImageExtension(GetDocumentShowing(_idxSelectedInMount).FileName) || GetDocumentShowing(_idxSelectedInMount).FileName.ToLower().EndsWith(".dcm"))
 				{
 					//normal images and dicom will have the bitmap and filedrop pulled from the screen
 					nodeTypeAndKey=new NodeTypeAndKey(EnumImageNodeType.Document,_documentArrayShowing[_idxSelectedInMount].DocNum);
@@ -1415,7 +1415,7 @@ Here is the desired behavior:
 			}
 			else if(IsDocumentShowing()){
 				nodeTypeAndKey=new NodeTypeAndKey(EnumImageNodeType.Document,GetDocumentShowing(0).DocNum);
-				if(ImageHelper.HasImageExtension(GetDocumentShowing(0).FileName) || GetDocumentShowing(0).FileName.EndsWith(".dcm")){
+				if(ImageHelper.HasImageExtension(GetDocumentShowing(0).FileName) || GetDocumentShowing(0).FileName.ToLower().EndsWith(".dcm")){
 					fileName=Path.GetTempPath()+GetDocumentShowing(0).FileName;
 					if(!ImageHelper.HasImageBeenEdited(GetDocumentShowing(0))) {//Do a file copy since no changes were made
 						string filePathSource=Documents.GetPath(GetDocumentShowing(0).DocNum);
@@ -4568,7 +4568,7 @@ Here is the desired behavior:
 					if(_bitmapArrayShowing[idx]==null){
 						return;//we should already have an image showing, so this shouldn't happen
 					}
-					if(_documentArrayShowing[idx].FileName.EndsWith(".dcm")){
+					if(_documentArrayShowing[idx].FileName.ToLower().EndsWith(".dcm")){
 						//This optimization doesn't matter because all dicom images need windowing.  We always get a new one.
 						//Obviously, this needs improvement.  We don't want to be reloading images from disk just because user is clicking on item in mount.
 					}
@@ -4581,7 +4581,7 @@ Here is the desired behavior:
 			//from here down, we must be getting the image from disk===================================================================================
 			Bitmap bitmapTemp=null;
 			//BitmapDicom bitmapDicom=null;
-			if(_documentArrayShowing[idx].FileName.EndsWith(".dcm")){
+			if(_documentArrayShowing[idx].FileName.ToLower().EndsWith(".dcm")){
 				_bitmapDicomRaw=ImageStore.OpenBitmapDicom(_documentArrayShowing[idx],PatFolder);
 				if(_bitmapDicomRaw==null){
 					return;
@@ -4596,7 +4596,7 @@ Here is the desired behavior:
 			if(_nodeTypeKeyCatSelected.ImageNodeType==EnumImageNodeType.Document){
 				//always IdxAndRaw
 				//single images simply load up the whole unscaled image. Mounts load the whole image, but maybe at a different scale to match mount scale.
-				if(_documentArrayShowing[idx].FileName.EndsWith(".dcm")){
+				if(_documentArrayShowing[idx].FileName.ToLower().EndsWith(".dcm")){
 					_bitmapArrayShowing[idx]=DicomHelper.ApplyWindowing(_bitmapDicomRaw,_documentArrayShowing[idx].WindowingMin,_documentArrayShowing[idx].WindowingMax);
 					return;
 				}
@@ -4632,7 +4632,7 @@ Here is the desired behavior:
 			//	scale=(double)_listMountItems[idx].Width/_arrayDocumentsShowing[idx].CropW;
 			//}
 			if(loadBitmapType==EnumLoadBitmapType.OnlyIdx || loadBitmapType==EnumLoadBitmapType.IdxAndRaw){
-				if(_documentArrayShowing[idx].FileName.EndsWith(".dcm")){
+				if(_documentArrayShowing[idx].FileName.ToLower().EndsWith(".dcm")){
 					bitmapTemp=DicomHelper.ApplyWindowing(_bitmapDicomRaw,_documentArrayShowing[idx].WindowingMin,_documentArrayShowing[idx].WindowingMax);
 					_bitmapArrayShowing[idx]=new Bitmap(bitmapTemp);
 				}
@@ -4642,7 +4642,7 @@ Here is the desired behavior:
 				}
 			}
 			if(loadBitmapType==EnumLoadBitmapType.IdxAndRaw || loadBitmapType==EnumLoadBitmapType.OnlyRaw){
-				if(_documentArrayShowing[idx].FileName.EndsWith(".dcm")){
+				if(_documentArrayShowing[idx].FileName.ToLower().EndsWith(".dcm")){
 					//already got _bitmapDicomRaw near beginning of this method
 				}
 				else{

@@ -91,7 +91,7 @@ namespace OpenDentBusiness {
 			if(!File.Exists(filename)){
 				return null;
 			}
-			DicomFile dicomFile=DicomFile.Open(filename);
+            DicomFile dicomFile=DicomFile.Open(filename);
 			try{
 				return GetFromDicomFile(dicomFile);
 			}

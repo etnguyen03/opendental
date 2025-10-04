@@ -208,7 +208,7 @@ namespace OpenDental {
 			if(_docNumSelected>0) {
 				Document document=Documents.GetByNum(_docNumSelected);
 				fileName=document.FileName;
-				if(fileName.EndsWith(".pdf")) {
+				if(fileName.ToLower().EndsWith(".pdf")) {
 					MessageBox.Show(this,"PDF attachments are not supported.");
 					return false;
 				}

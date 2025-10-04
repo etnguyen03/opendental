@@ -15,7 +15,6 @@ using CodeBase;
 using OpenDental.UI;
 using OpenDentBusiness;
 using OpenDentBusiness.Eclaims;
-using Dicom.Imaging.Mathematics;
 
 namespace OpenDental {
 	///<summary>As of 5/14/2024, this form will no longer send attachments to DentalXChange. We want users to use the right click attachment workflows instead of this form, so all the controls have been removed from the FormClaimEdit DXC tab. The DXC logic will remain in this form in case we ever need to revert.</summary>
@@ -520,7 +519,7 @@ namespace OpenDental {
 				//The filename property is the entire path of the file.
 				selectedFile=openFileDialog.FileName;
 			}
-			if(selectedFile.EndsWith(".pdf")) {
+			if(selectedFile.ToLower().EndsWith(".pdf")) {
 				MessageBox.Show(this,"PDF attachments are not supported.");
 				return;
 			}

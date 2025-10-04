@@ -163,7 +163,7 @@ namespace OpenDentBusiness {
 			Bitmap bitmapTemp=null;
 			Bitmap bitmapResult=null;
 			BitmapDicom bitmapDicomRaw=null;
-			if(document.FileName.EndsWith(".dcm")){
+			if(document.FileName.ToLower().EndsWith(".dcm")){
 				bitmapDicomRaw=ImageStore.OpenBitmapDicom(document,patFolder);
 				if(bitmapDicomRaw==null){
 					return null;
@@ -178,7 +178,7 @@ namespace OpenDentBusiness {
 			if(isSingleDoc){
 				//always IdxAndRaw
 				//single images simply load up the whole unscaled image. Mounts load the whole image, but maybe at a different scale to match mount scale.
-				if(document.FileName.EndsWith(".dcm")){
+				if(document.FileName.ToLower().EndsWith(".dcm")){
 					bitmapResult=DicomHelper.ApplyWindowing(bitmapDicomRaw,document.WindowingMin,document.WindowingMax);
 					bitmapTemp?.Dispose();
 					return bitmapResult;
@@ -207,7 +207,7 @@ namespace OpenDentBusiness {
 				return bitmapResult;
 			}
 			//From here down is mount=================================================================================================
-			if(document.FileName.EndsWith(".dcm")){
+			if(document.FileName.ToLower().EndsWith(".dcm")){
 				bitmapTemp=DicomHelper.ApplyWindowing(bitmapDicomRaw,document.WindowingMin,document.WindowingMax);
 				bitmapResult=new Bitmap(bitmapTemp);
 			}

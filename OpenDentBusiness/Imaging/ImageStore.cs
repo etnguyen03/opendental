@@ -256,7 +256,7 @@ namespace OpenDentBusiness {
 
 		///<summary>Can be null. Analogous to OpenImage.</summary>
 		public static BitmapDicom OpenBitmapDicom(Document doc,string patFolder,string localPath=""){
-			if(!doc.FileName.EndsWith(".dcm")){
+			if(!doc.FileName.ToLower().EndsWith(".dcm")){
 				return null;
 			}
 			if(PrefC.AtoZfolderUsed==DataStorageType.LocalAtoZ) {

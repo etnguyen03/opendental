@@ -549,7 +549,7 @@ namespace OpenDentBusiness {
 			Bitmap bitmapTemp=null;
 			Bitmap bitmapResult=null;
 			BitmapDicom bitmapDicomRaw=null;
-			if(document.FileName.EndsWith(".dcm")){
+			if(document.FileName.ToLower().EndsWith(".dcm")){
 				bitmapDicomRaw=ImageStore.OpenBitmapDicom(document,patFolder);
 				if(bitmapDicomRaw==null){
 					return null;
@@ -564,7 +564,7 @@ namespace OpenDentBusiness {
 			//if(isSingleDoc
 			//always IdxAndRaw
 			//single images simply load up the whole unscaled image. Mounts load the whole image, but maybe at a different scale to match mount scale.
-			if(document.FileName.EndsWith(".dcm")){
+			if(document.FileName.ToLower().EndsWith(".dcm")){
 				bitmapResult=DicomHelper.ApplyWindowing(bitmapDicomRaw,document.WindowingMin,document.WindowingMax);
 				bitmapTemp?.Dispose();
 				return bitmapResult;
@@ -595,7 +595,7 @@ namespace OpenDentBusiness {
 
 		/// <summary>Returns true if the document is an image that has been cropped, rotated, drawn on, or if the image has any windowing applied (brightness and contrast). Otherwise returns false.</summary>
 		public static bool HasImageBeenEdited(Document document) {
-			if(document==null || (!HasImageExtension(document.FileName) && !document.FileName.EndsWith(".dcm"))) {//not an image
+			if(document==null || (!HasImageExtension(document.FileName) && !document.FileName.ToLower().EndsWith(".dcm"))) {//not an image
 				return false;
 			}
 			if(document.CropH!=0 || document.CropW!=0 || document.CropX!=0 || document.CropY!=0 || document.DegreesRotated!=0 || document.IsFlipped==true) {	

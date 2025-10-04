@@ -114,11 +114,11 @@ namespace OpenDental {
 			if(formImagePickerPatient.DocNumSelected>0) {
 				document=Documents.GetByNum(formImagePickerPatient.DocNumSelected);
 				//We don't want to allow specific files to be attached here so warn the end user when they attempt to add an incompatible document as an image
-				if(!ImageHelper.HasImageExtension(document.FileName)&&!document.FileName.EndsWith(".pdf")&&!document.ImgType.In(ImageType.Photo,ImageType.Radiograph)) {
+				if(!ImageHelper.HasImageExtension(document.FileName)&&!document.FileName.ToLower().EndsWith(".pdf")&&!document.ImgType.In(ImageType.Photo,ImageType.Radiograph)) {
 					MsgBox.Show("Not allowed to attach selected file type as an image. Attach as a file instead.");
 					return null;
 				}
-				if(document.FileName.EndsWith(".pdf")) {
+				if(document.FileName.ToLower().EndsWith(".pdf")) {
 					if(PrefC.AtoZfolderUsed==DataStorageType.InDatabase) {
 						try {
 							byteArray=Convert.FromBase64String(document.RawBase64);
@@ -183,7 +183,7 @@ namespace OpenDental {
 				DateTime.Now.ToString("yyyyMMdd")+"_"+DateTime.Now.TimeOfDay.Ticks.ToString()
 					+"_"+MiscUtils.CreateRandomAlphaNumericString(4)+"_"+emailAttach.DisplayedFileName).Replace("\\","/");
 			string destinationFileName=FileAtoZ.CombinePaths(attachDir,emailAttach.ActualFileName);
-			if(document.FileName.EndsWith(".pdf")) {
+			if(document.FileName.ToLower().EndsWith(".pdf")) {
 				try {//pdf only
 					FileAtoZ.Copy(document.FileName,destinationFileName,FileAtoZSourceDestination.AtoZToAtoZ);
 				}
