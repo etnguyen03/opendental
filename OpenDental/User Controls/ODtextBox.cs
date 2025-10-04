@@ -193,21 +193,8 @@ namespace OpenDental {
 			this.DetectUrls=false;
 			if(System.ComponentModel.LicenseManager.UsageMode!=System.ComponentModel.LicenseUsageMode.Designtime
 				&& HunspellGlobal==null) {
-				if(ODBuild.IsDebug()) {
-					try {
-						HunspellGlobal=new Hunspell(WpfControls.Properties.Resources.en_US_aff,WpfControls.Properties.Resources.en_US_dic);
-					}
-					catch(Exception ex) {
-						ex.DoNothing();
-						System.IO.File.Copy(@"..\..\..\Required dlls\Hunspellx64.dll","Hunspellx64.dll");
-						System.IO.File.Copy(@"..\..\..\Required dlls\Hunspellx86.dll","Hunspellx86.dll");
-						HunspellGlobal=new Hunspell(WpfControls.Properties.Resources.en_US_aff,WpfControls.Properties.Resources.en_US_dic);
-					}
-				}
-				else {
-					HunspellGlobal=new Hunspell(WpfControls.Properties.Resources.en_US_aff,WpfControls.Properties.Resources.en_US_dic);
-				}
-			}
+                HunspellGlobal = new Hunspell(WpfControls.Properties.Resources.en_US_aff, WpfControls.Properties.Resources.en_US_dic);
+            }
 			EventHandler onClick=new EventHandler(menuItem_Click);
 			contextMenu.MenuItems.Add("",onClick);//These five menu items will hold the suggested spelling for misspelled words.  If no misspelled words, they will not be visible.
 			contextMenu.MenuItems.Add("",onClick);
