@@ -172,48 +172,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Required dlls\Interop.Word.dll</HintPath>
     </Reference>
-    <Reference Include="Intuit.Ipp.Core">
-      <HintPath>..\Required dlls\Intuit.Ipp.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="Intuit.Ipp.Data">
-      <HintPath>..\Required dlls\Intuit.Ipp.Data.dll</HintPath>
-    </Reference>
-    <Reference Include="Intuit.Ipp.DataService">
-      <HintPath>..\Required dlls\Intuit.Ipp.DataService.dll</HintPath>
-    </Reference>
-    <Reference Include="Intuit.Ipp.Diagnostics">
-      <HintPath>..\Required dlls\Intuit.Ipp.Diagnostics.dll</HintPath>
-    </Reference>
-    <Reference Include="Intuit.Ipp.EntitlementService">
-      <HintPath>..\Required dlls\Intuit.Ipp.EntitlementService.dll</HintPath>
-    </Reference>
-    <Reference Include="Intuit.Ipp.Exception">
-      <HintPath>..\Required dlls\Intuit.Ipp.Exception.dll</HintPath>
-    </Reference>
-    <Reference Include="Intuit.Ipp.GlobalTaxService">
-      <HintPath>..\Required dlls\Intuit.Ipp.GlobalTaxService.dll</HintPath>
-    </Reference>
-    <Reference Include="Intuit.Ipp.OAuth2PlatformClient">
-      <HintPath>..\Required dlls\Intuit.Ipp.OAuth2PlatformClient.dll</HintPath>
-    </Reference>
-    <Reference Include="Intuit.Ipp.QueryFilter">
-      <HintPath>..\Required dlls\Intuit.Ipp.QueryFilter.dll</HintPath>
-    </Reference>
-    <Reference Include="Intuit.Ipp.ReportService">
-      <HintPath>..\Required dlls\Intuit.Ipp.ReportService.dll</HintPath>
-    </Reference>
-    <Reference Include="Intuit.Ipp.Retry">
-      <HintPath>..\Required dlls\Intuit.Ipp.Retry.dll</HintPath>
-    </Reference>
-    <Reference Include="Intuit.Ipp.Security">
-      <HintPath>..\Required dlls\Intuit.Ipp.Security.dll</HintPath>
-    </Reference>
-    <Reference Include="Intuit.Ipp.Utility">
-      <HintPath>..\Required dlls\Intuit.Ipp.Utility.dll</HintPath>
-    </Reference>
-    <Reference Include="Intuit.Ipp.WebHooksService">
-      <HintPath>..\Required dlls\Intuit.Ipp.WebHooksService.dll</HintPath>
-    </Reference>
     <Reference Include="Ionic.Zip, Version=1.9.1.4, Culture=neutral, PublicKeyToken=edbe51ad942a3f5c, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Required dlls\Ionic.Zip.dll</HintPath>

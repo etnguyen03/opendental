@@ -4,11 +4,8 @@ using System.Data;
 using System.Drawing;
 using System.Globalization;
 using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 using OpenDentBusiness;
-using CodeBase;
-using Intuit.Ipp.Data;
 using OpenDental.UI;
 
 namespace OpenDental {

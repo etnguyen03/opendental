@@ -5,8 +5,6 @@ using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
 using OpenDentBusiness;
-using CodeBase;
-using Intuit.Ipp.Data;
 
 namespace OpenDental {
 	public partial class FormMapAreaContainerEdit:FormODBase {
