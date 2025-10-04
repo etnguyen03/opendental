@@ -8,7 +8,6 @@ using System.Windows.Forms;
 using CodeBase;
 using OpenDental.UI;
 using OpenDentBusiness;
-using Tamir.SharpSsh.java.lang;
 
 namespace OpenDental {
 	///<summary></summary>
