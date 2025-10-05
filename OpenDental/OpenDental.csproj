@@ -251,10 +251,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Required dlls\ODCrypt.dll</HintPath>
     </Reference>
-    <Reference Include="Org.Mentalis.Security, Version=1.0.13.715, Culture=neutral">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Required dlls\Org.Mentalis.Security.dll</HintPath>
-    </Reference>
     <Reference Include="PdfSharp, Version=1.2.1269.0, Culture=neutral, PublicKeyToken=f94615aa0424f9eb, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Required dlls\PdfSharp.dll</HintPath>

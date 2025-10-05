@@ -57,7 +57,6 @@ namespace OpenDental{
 			listBoxRegistration.Items.Add("CDT",Properties.Resources.CDT_Content_End_User_License1);
 			listBoxRegistration.Items.Add("Dropbox",Properties.Resources.Dropbox_Api);
 			listBoxRegistration.Items.Add("Drifty",Properties.Resources.Ionic);
-			listBoxRegistration.Items.Add("Mentalis",Properties.Resources.Mentalis);
 			listBoxRegistration.Items.Add("Microsoft",Properties.Resources.Microsoft);
 			listBoxRegistration.Items.Add("MigraDoc",Properties.Resources.MigraDoc);
 			listBoxRegistration.Items.Add("NDde",Properties.Resources.NDde);
