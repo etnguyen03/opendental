@@ -225,8 +225,8 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Required dlls\ODCrypt.dll</HintPath>
     </Reference>
-    <Reference Include="OpenPop">
-      <HintPath>..\Required dlls\OpenPop.dll</HintPath>
+    <Reference Include="OpenPop, Version=2.0.6.2, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\OpenPop.2.0.6.2\lib\net20\OpenPop.dll</HintPath>
     </Reference>
     <Reference Include="PdfSharp, Version=1.2.1269.0, Culture=neutral, PublicKeyToken=f94615aa0424f9eb, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
