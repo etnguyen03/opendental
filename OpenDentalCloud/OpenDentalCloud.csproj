@@ -69,8 +69,11 @@
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Dropbox.Api">
-      <HintPath>..\Required dlls\Dropbox.Api.dll</HintPath>
+    <Reference Include="Dropbox.Api, Version=7.0.0.0, Culture=neutral, PublicKeyToken=310f0e82fbb45d01, processorArchitecture=MSIL">
+      <HintPath>..\packages\Dropbox.Api.7.0.0\lib\netstandard2.0\Dropbox.Api.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.13.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="Renci.SshNet">
       <HintPath>..\Required dlls\Renci.SshNet.dll</HintPath>
@@ -104,6 +107,9 @@
       <Project>{18f7bc78-4b99-48d3-a1f1-0d13a63e3cf9}</Project>
       <Name>xCodeBase</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -76,7 +76,7 @@ namespace OpenDentalCloud {
 					}
 					using(MemoryStream memStream=new MemoryStream(ByteArray,index,curChunkSize)) {
 						if(i==1) {
-							UploadSessionStartResult result=await _client.Files.UploadSessionStartAsync(false,memStream);
+							UploadSessionStartResult result=await _client.Files.UploadSessionStartAsync(close: false, body: memStream);
 							sessionId=result.SessionId;
 						}
 						else {
@@ -84,12 +84,12 @@ namespace OpenDentalCloud {
 							if(lastChunk) {
 								//Always forcing Dropbox to overwrite any conflicting files.  
 								//Otherwise a Dropbox.Api.Files.UploadSessionFinishError.Path error will be returned by Dropbox if there is a "path/conflict/file/..."
-								await _client.Files.UploadSessionFinishAsync(cursor
-									,new CommitInfo(ODFileUtils.CombinePaths(Folder,FileName,'/'),WriteMode.Overwrite.Instance)
-									,memStream);
+								await _client.Files.UploadSessionFinishAsync(cursor,
+									new CommitInfo(ODFileUtils.CombinePaths(Folder,FileName,'/'),WriteMode.Overwrite.Instance),
+									body: memStream);
 							}
 							else {
-								await _client.Files.UploadSessionAppendV2Async(cursor,false,memStream);
+								await _client.Files.UploadSessionAppendV2Async(cursor, close: false, body: memStream);
 							}
 						}
 						index+=curChunkSize;
