@@ -10483,7 +10483,6 @@
     <None Include="Resources\MySql.txt" />
     <None Include="Resources\MigraDoc.txt" />
     <None Include="Resources\Microsoft.txt" />
-    <None Include="Resources\Mentalis.txt" />
     <None Include="Resources\Ionic.txt" />
     <None Include="Resources\Bsd.txt" />
     <None Include="Resources\Dropbox_Api.txt" />

@@ -909,24 +909,6 @@ namespace OpenDental.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Source Code License
-        ///
-        ///Copyright © 2002-2007, The Mentalis.org Team
-        ///All rights reserved.
-        ///
-        ///Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
-        ///
-        ///- Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-        ///
-        ///- Neither the name of the Mentalis.org Team, nor the names of its contributors may be used to endorse or promote products derived from this sof [rest of string was truncated]&quot;;.
-        /// </summary>
-        public static string Mentalis {
-            get {
-                return ResourceManager.GetString("Mentalis", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         public static System.Drawing.Bitmap Microphone_22px {
@@ -1315,8 +1297,7 @@ namespace OpenDental.Properties {
         ///    &lt;ControlName&gt;checkAutomateSalesTax&lt;/ControlName&gt;
         ///    &lt;ControlText&gt;Automate Sales Tax&lt;/ControlText&gt;
         ///    &lt;Details&gt;as procedures are completed, if the Procedure Code is marked &apos;Auto Tax&apos;, then add sales tax&lt;/Details&gt;
-        ///    &lt;WidthWindow&gt;0&lt;/WidthWindow&gt;
-        ///    &lt;H [rest of string was truncated]&quot;;.
+        ///    &lt;WidthWindow&gt;0&lt;/WidthWindow [rest of string was truncated]&quot;;.
         /// </summary>
         public static string PrefInfos {
             get {
@@ -1491,7 +1472,7 @@ namespace OpenDental.Properties {
         /// <summary>
         ///   Looks up a localized string similar to Sparks3D is a DirectX 11 plugin for Open Dental that is licensed separately.  Open Dental will still work fine without this plugin, but the older 3D &quot;SparksToothChart&quot; will require the user to install the DirectX 9 SDK.  To make the newer Sparks3D plugin work, the following two files must be present in the Sparks3D folder within the application folder:  Sparks3D.dll and Sparks3DXEngine.dll.  To disable the plugin for troubleshooting, rename the folder temporarily.
         ///
-        ///License:---------------------------------- [rest of string was truncated]&quot;;.
+        ///License:-------------------------------- [rest of string was truncated]&quot;;.
         /// </summary>
         public static string Sparks3D {
             get {
