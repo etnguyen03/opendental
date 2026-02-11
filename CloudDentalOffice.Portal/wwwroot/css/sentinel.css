@@ -1,0 +1,236 @@
+/* Cloud Dental Office - Sentinel Theme CSS */
+/* Absolute black backgrounds, holographic circuit veins, neon cyan/green accents */
+
+/* === ROOT VARIABLES === */
+:root {
+  /* Colors - Sentinel Brand Identity */
+  --absolute-black: #000000;
+  --dark-gray: #0a0a0a;
+  --medium-gray: #808080;
+  --light-gray: #b0b0b0;
+  --neon-cyan: #00ffff;
+  --neon-green: #00ff88;
+  --cyan-glow: rgba(0, 255, 255, 0.8);
+  --green-glow: rgba(0, 255, 136, 0.8);
+  
+  /* Typography */
+  --font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-weight-normal: 400;
+  --font-weight-bold: 700;
+  
+  /* Spacing */
+  --spacing-xs: 8px;
+  --spacing-sm: 16px;
+  --spacing-md: 24px;
+  --spacing-lg: 32px;
+  --spacing-xl: 48px;
+  
+  /* Border radius */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  
+  /* Shadows with cyan glow */
+  --shadow-sm: 0 2px 8px rgba(0, 255, 255, 0.15);
+  --shadow-md: 0 4px 16px rgba(0, 255, 255, 0.2);
+  --shadow-lg: 0 8px 32px rgba(0, 255, 255, 0.3);
+}
+
+/* === BASE STYLES === */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  font-family: var(--font-family);
+  font-weight: var(--font-weight-normal);
+  background: var(--absolute-black);
+  color: var(--light-gray);
+  line-height: 1.6;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: var(--font-weight-bold);
+  color: var(--neon-cyan);
+  margin-bottom: var(--spacing-sm);
+}
+
+h1 { font-size: 2.5rem; }
+h2 { font-size: 2rem; }
+h3 { font-size: 1.75rem; }
+h4 { font-size: 1.5rem; }
+h5 { font-size: 1.25rem; }
+h6 { font-size: 1rem; }
+
+a {
+  color: var(--neon-cyan);
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+a:hover {
+  color: var(--neon-green);
+  text-shadow: 0 0 8px var(--cyan-glow);
+}
+
+/* === CIRCUIT PATTERN BACKGROUND === */
+.circuit-veins {
+  background-image: 
+    linear-gradient(90deg, rgba(0, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(rgba(0, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 30px 30px;
+}
+
+/* === BUTTONS === */
+.btn-sentinel {
+  background: var(--dark-gray);
+  border: 2px solid var(--neon-cyan);
+  color: var(--neon-cyan);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--radius-md);
+  font-weight: var(--font-weight-bold);
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.btn-sentinel:hover {
+  background: var(--neon-cyan);
+  color: var(--absolute-black);
+  box-shadow: 0 0 20px var(--cyan-glow);
+  transform: translateY(-2px);
+}
+
+.btn-sentinel-secondary {
+  background: var(--dark-gray);
+  border: 2px solid var(--neon-green);
+  color: var(--neon-green);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--radius-md);
+  font-weight: var(--font-weight-bold);
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.btn-sentinel-secondary:hover {
+  background: var(--neon-green);
+  color: var(--absolute-black);
+  box-shadow: 0 0 20px var(--green-glow);
+  transform: translateY(-2px);
+}
+
+/* === CARDS === */
+.card-sentinel {
+  background: var(--dark-gray);
+  border: 1px solid var(--neon-cyan);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-md);
+  box-shadow: var(--shadow-md);
+  transition: all 0.3s ease;
+}
+
+.card-sentinel:hover {
+  border-color: var(--neon-green);
+  box-shadow: 0 0 30px rgba(0, 255, 255, 0.4);
+  transform: translateY(-4px);
+}
+
+/* === DENTAL-SPECIFIC STYLES === */
+.tooth-chart-container {
+  background: var(--dark-gray);
+  border: 2px solid var(--neon-cyan);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-md);
+  margin: var(--spacing-md) 0;
+}
+
+.treatment-plan-item {
+  background: var(--dark-gray);
+  border-left: 3px solid var(--neon-green);
+  padding: var(--spacing-sm);
+  margin: var(--spacing-xs) 0;
+  transition: all 0.3s ease;
+}
+
+.treatment-plan-item:hover {
+  border-left-color: var(--neon-cyan);
+  background: rgba(0, 255, 255, 0.05);
+  box-shadow: var(--shadow-sm);
+}
+
+.claim-status-pending {
+  color: var(--neon-cyan);
+  font-weight: var(--font-weight-bold);
+}
+
+.claim-status-approved {
+  color: var(--neon-green);
+  font-weight: var(--font-weight-bold);
+}
+
+.claim-status-denied {
+  color: #ff4444;
+  font-weight: var(--font-weight-bold);
+}
+
+/* === LOADING SPINNER === */
+@keyframes sentinel-pulse {
+  0%, 100% {
+    opacity: 1;
+    box-shadow: 0 0 20px var(--cyan-glow);
+  }
+  50% {
+    opacity: 0.6;
+    box-shadow: 0 0 40px var(--cyan-glow);
+  }
+}
+
+.loading-sentinel {
+  width: 60px;
+  height: 60px;
+  border: 4px solid var(--dark-gray);
+  border-top: 4px solid var(--neon-cyan);
+  border-radius: 50%;
+  animation: spin 1s linear infinite, sentinel-pulse 2s ease-in-out infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* === RESPONSIVE === */
+@media (max-width: 768px) {
+  h1 { font-size: 2rem; }
+  h2 { font-size: 1.75rem; }
+  h3 { font-size: 1.5rem; }
+  h4 { font-size: 1.25rem; }
+  
+  .card-sentinel {
+    padding: var(--spacing-sm);
+  }
+}
+
+/* === BLAZOR ERROR UI === */
+#blazor-error-ui {
+  background: var(--dark-gray);
+  border-top: 3px solid #ff4444;
+  bottom: 0;
+  box-shadow: 0 -4px 16px rgba(255, 68, 68, 0.3);
+  display: none;
+  left: 0;
+  padding: 0.6rem 1.5rem 0.7rem 1.5rem;
+  position: fixed;
+  width: 100%;
+  z-index: 1000;
+  color: var(--light-gray);
+}
+
+#blazor-error-ui .dismiss {
+  cursor: pointer;
+  position: absolute;
+  right: 0.75rem;
+  top: 0.5rem;
+  color: #ff4444;
+}

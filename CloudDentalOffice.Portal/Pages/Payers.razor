@@ -1,0 +1,243 @@
+@page "/payers"
+@using CloudDentalOffice.Portal.Models
+@using CloudDentalOffice.Portal.Services
+@inject IInsurancePlanService InsurancePlanService
+@inject ISnackbar Snackbar
+
+<PageTitle>Insurance Payers - Cloud Dental Office</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-4">
+    <MudText Typo="Typo.h4" Class="mb-4" Style="color: #00ffff;">
+        <MudIcon Icon="@Icons.Material.Filled.Business" Class="mr-2" />
+        Insurance Payers
+    </MudText>
+
+    <MudPaper Class="pa-4 mb-4" Elevation="3" Style="background: rgba(0, 255, 255, 0.05); border: 1px solid rgba(0, 255, 255, 0.2);">
+        <div class="d-flex justify-space-between align-center mb-3">
+            <MudTextField @bind-Value="searchText" 
+                          Placeholder="Search payers..." 
+                          Adornment="Adornment.Start" 
+                          AdornmentIcon="@Icons.Material.Filled.Search" 
+                          Immediate="true"
+                          Style="max-width: 400px;" />
+            
+            <MudButton Variant="Variant.Filled" 
+                       Color="Color.Primary" 
+                       StartIcon="@Icons.Material.Filled.Add"
+                       OnClick="OpenCreateDialog"
+                       Style="background: linear-gradient(135deg, #00ffff 0%, #00ff88 100%); color: #000000;">
+                Add New Payer
+            </MudButton>
+        </div>
+
+        <MudTable Items="@filteredPayers" 
+                  Hover="true" 
+                  Breakpoint="Breakpoint.Sm" 
+                  Loading="@loading"
+                  Dense="true"
+                  Style="background: transparent;">
+            <HeaderContent>
+                <MudTh Style="color: #00ffff;">Payer ID</MudTh>
+                <MudTh Style="color: #00ffff;">Payer Name</MudTh>
+                <MudTh Style="color: #00ffff;">Plan Type</MudTh>
+                <MudTh Style="color: #00ffff;">EDI Status</MudTh>
+                <MudTh Style="color: #00ffff;">Submission Type</MudTh>
+                <MudTh Style="color: #00ffff;">Active</MudTh>
+                <MudTh Style="color: #00ffff; text-align: center;">Actions</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="Payer ID">@context.PayerId</MudTd>
+                <MudTd DataLabel="Payer Name">
+                    <strong style="color: #00ff88;">@context.PayerName</strong>
+                    @if (!string.IsNullOrEmpty(context.PlanName))
+                    {
+                        <br/><small style="color: #ffffff80;">@context.PlanName</small>
+                    }
+                </MudTd>
+                <MudTd DataLabel="Plan Type">@context.PlanType</MudTd>
+                <MudTd DataLabel="EDI Status">
+                    @if (context.EdiEnabled)
+                    {
+                        <MudChip T="string" Size="Size.Small" Color="Color.Success" Style="background: rgba(0, 255, 136, 0.2); color: #00ff88;">
+                            <MudIcon Icon="@Icons.Material.Filled.CheckCircle" Size="Size.Small" Class="mr-1" />
+                            Enabled
+                        </MudChip>
+                    }
+                    else
+                    {
+                        <MudChip T="string" Size="Size.Small" Color="Color.Default" Style="background: rgba(255, 255, 255, 0.1); color: #ffffff80;">
+                            <MudIcon Icon="@Icons.Material.Filled.Cancel" Size="Size.Small" Class="mr-1" />
+                            Disabled
+                        </MudChip>
+                    }
+                </MudTd>
+                <MudTd DataLabel="Submission Type">
+                    @if (context.EdiEnabled && !string.IsNullOrEmpty(context.EdiSubmissionType))
+                    {
+                        <MudChip T="string" Size="Size.Small" Style="background: rgba(0, 255, 255, 0.2); color: #00ffff;">
+                            @if (context.EdiSubmissionType == "SFTP")
+                            {
+                                <MudIcon Icon="@Icons.Material.Filled.Upload" Size="Size.Small" Class="mr-1" />
+                                <text>SFTP</text>
+                            }
+                            else if (context.EdiSubmissionType == "API")
+                            {
+                                <MudIcon Icon="@Icons.Material.Filled.Api" Size="Size.Small" Class="mr-1" />
+                                <text>API</text>
+                            }
+                            else if (context.EdiSubmissionType == "BOTH")
+                            {
+                                <MudIcon Icon="@Icons.Material.Filled.SwapHoriz" Size="Size.Small" Class="mr-1" />
+                                <text>Both</text>
+                            }
+                            else
+                            {
+                                <text>@context.EdiSubmissionType</text>
+                            }
+                        </MudChip>
+                    }
+                    else
+                    {
+                        <span style="color: #ffffff40;">—</span>
+                    }
+                </MudTd>
+                <MudTd DataLabel="Active">
+                    @if (context.IsActive)
+                    {
+                        <MudIcon Icon="@Icons.Material.Filled.CheckCircle" Color="Color.Success" Size="Size.Small" />
+                    }
+                    else
+                    {
+                        <MudIcon Icon="@Icons.Material.Filled.Cancel" Color="Color.Default" Size="Size.Small" />
+                    }
+                </MudTd>
+                <MudTd DataLabel="Actions" Style="text-align: center;">
+                    <MudTooltip Text="Configure EDI">
+                        <MudIconButton Icon="@Icons.Material.Filled.Settings" 
+                                       Size="Size.Small" 
+                                       Color="Color.Primary"
+                                       OnClick="@(() => OpenEditDialog(context))" />
+                    </MudTooltip>
+                    @if (context.EdiEnabled)
+                    {
+                        <MudTooltip Text="Test Connection">
+                            <MudIconButton Icon="@Icons.Material.Filled.Cable" 
+                                           Size="Size.Small" 
+                                           Color="Color.Info"
+                                           OnClick="@(() => TestConnection(context))"
+                                           Disabled="@testingConnection" />
+                        </MudTooltip>
+                    }
+                </MudTd>
+            </RowTemplate>
+            <NoRecordsContent>
+                <MudText Typo="Typo.body1" Align="Align.Center" Style="color: #ffffff60; padding: 2rem;">
+                    No insurance payers found. Add your first payer to get started.
+                </MudText>
+            </NoRecordsContent>
+        </MudTable>
+    </MudPaper>
+</MudContainer>
+
+<PayerConfigDialog @ref="payerDialog" 
+                    OnSaved="OnPayerSaved" />
+
+@code {
+    private List<InsurancePlan> allPayers = new();
+    private List<InsurancePlan> filteredPayers = new();
+    private string searchText = "";
+    private bool loading = true;
+    private bool testingConnection = false;
+    private PayerConfigDialog? payerDialog;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadPayers();
+    }
+
+    private async Task LoadPayers()
+    {
+        loading = true;
+        allPayers = await InsurancePlanService.GetInsurancePlansAsync();
+        FilterPayers();
+        loading = false;
+    }
+
+    private void FilterPayers()
+    {
+        if (string.IsNullOrWhiteSpace(searchText))
+        {
+            filteredPayers = allPayers;
+        }
+        else
+        {
+            var search = searchText.ToLower();
+            filteredPayers = allPayers.Where(p =>
+                p.PayerName.ToLower().Contains(search) ||
+                p.PayerId.ToLower().Contains(search) ||
+                (p.PlanName?.ToLower().Contains(search) ?? false) ||
+                (p.PlanType?.ToLower().Contains(search) ?? false)
+            ).ToList();
+        }
+    }
+
+    private void OpenCreateDialog()
+    {
+        var newPayer = new InsurancePlan
+        {
+            IsActive = true,
+            EdiEnabled = false
+        };
+        payerDialog?.Show(newPayer);
+    }
+
+    private void OpenEditDialog(InsurancePlan payer)
+    {
+        payerDialog?.Show(payer);
+    }
+
+    private async Task OnPayerSaved()
+    {
+        await LoadPayers();
+        Snackbar.Add("Payer configuration saved successfully", Severity.Success);
+    }
+
+    private async Task TestConnection(InsurancePlan payer)
+    {
+        testingConnection = true;
+        StateHasChanged();
+
+        try
+        {
+            var success = await InsurancePlanService.TestEdiConnectionAsync(payer.InsurancePlanId);
+            
+            if (success)
+            {
+                Snackbar.Add($"Successfully connected to {payer.PayerName}!", Severity.Success);
+            }
+            else
+            {
+                Snackbar.Add($"Failed to connect to {payer.PayerName}. Check configuration.", Severity.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Connection test error: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            testingConnection = false;
+            StateHasChanged();
+        }
+    }
+
+    private string GetSearchText
+    {
+        get => searchText;
+        set
+        {
+            searchText = value;
+            FilterPayers();
+        }
+    }
+}

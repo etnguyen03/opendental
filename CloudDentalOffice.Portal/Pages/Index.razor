@@ -1,0 +1,163 @@
+@page "/"
+
+<PageTitle>Dashboard - Cloud Dental Office</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-4">
+    <!-- Hero Header -->
+    <MudPaper Class="pa-4 mb-4" Style="background: #0a0a0a; border: 1px solid #00ffff;">
+        <MudGrid>
+            <MudItem xs="12" md="8">
+                <MudText Typo="Typo.h3" Style="color: #00ffff; font-weight: bold;">
+                    Cloud Dental Office
+                </MudText>
+                <MudText Typo="Typo.subtitle1" Style="color: #b0b0b0;">
+                    Just emerged from the void - Modern dental practice management with integrated EDI
+                </MudText>
+            </MudItem>
+            <MudItem xs="12" md="4" Class="d-flex align-end justify-end">
+                <MudText Typo="Typo.caption" Style="color: rgba(0, 255, 255, 0.6);">
+                    v1.0 Production • February 2026
+                </MudText>
+            </MudItem>
+        </MudGrid>
+    </MudPaper>
+
+    <!-- Quick Stats -->
+    <MudGrid>
+        <MudItem xs="12" sm="6" md="3">
+            <MudPaper Class="pa-4" Style="background: #0a0a0a; border: 1px solid #00ffff;">
+                <MudStack Row="true" Justify="Justify.SpaceBetween">
+                    <div>
+                        <MudText Typo="Typo.subtitle2" Style="color: #b0b0b0;">Patients</MudText>
+                        <MudText Typo="Typo.h4" Style="color: #00ffff; font-weight: bold;">2,453</MudText>
+                    </div>
+                    <MudIcon Icon="@Icons.Material.Filled.People" Size="Size.Large" Style="color: #00ffff;" />
+                </MudStack>
+            </MudPaper>
+        </MudItem>
+        
+        <MudItem xs="12" sm="6" md="3">
+            <MudPaper Class="pa-4" Style="background: #0a0a0a; border: 1px solid #00ff88;">
+                <MudStack Row="true" Justify="Justify.SpaceBetween">
+                    <div>
+                        <MudText Typo="Typo.subtitle2" Style="color: #b0b0b0;">Today's Appointments</MudText>
+                        <MudText Typo="Typo.h4" Style="color: #00ff88; font-weight: bold;">28</MudText>
+                    </div>
+                    <MudIcon Icon="@Icons.Material.Filled.Event" Size="Size.Large" Style="color: #00ff88;" />
+                </MudStack>
+            </MudPaper>
+        </MudItem>
+        
+        <MudItem xs="12" sm="6" md="3">
+            <MudPaper Class="pa-4" Style="background: #0a0a0a; border: 1px solid #00ffff;">
+                <MudStack Row="true" Justify="Justify.SpaceBetween">
+                    <div>
+                        <MudText Typo="Typo.subtitle2" Style="color: #b0b0b0;">Pending Claims</MudText>
+                        <MudText Typo="Typo.h4" Style="color: #00ffff; font-weight: bold;">142</MudText>
+                    </div>
+                    <MudIcon Icon="@Icons.Material.Filled.Assignment" Size="Size.Large" Style="color: #00ffff;" />
+                </MudStack>
+            </MudPaper>
+        </MudItem>
+        
+        <MudItem xs="12" sm="6" md="3">
+            <MudPaper Class="pa-4" Style="background: #0a0a0a; border: 1px solid #00ff88;">
+                <MudStack Row="true" Justify="Justify.SpaceBetween">
+                    <div>
+                        <MudText Typo="Typo.subtitle2" Style="color: #b0b0b0;">Monthly Revenue</MudText>
+                        <MudText Typo="Typo.h4" Style="color: #00ff88; font-weight: bold;">$184K</MudText>
+                    </div>
+                    <MudIcon Icon="@Icons.Material.Filled.AttachMoney" Size="Size.Large" Style="color: #00ff888;" />
+                </MudStack>
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
+
+    <!-- EDI Integration Status -->
+    <MudPaper Class="pa-4 mt-4" Style="background: #0a0a0a; border: 1px solid #00ffff;">
+        <MudText Typo="Typo.h5" GutterBottom="true" Style="color: #00ffff; font-weight: bold;">
+            <MudIcon Icon="@Icons.Material.Filled.CloudSync" Class="mr-2" />
+            EDI Integration Status
+        </MudText>
+        
+        <MudGrid Class="mt-2">
+            <MudItem xs="12" md="6" lg="4">
+                <div class="pa-3" style="background: rgba(0, 255, 255, 0.05); border-left: 3px solid #00ffff; border-radius: 4px;">
+                    <MudText Typo="Typo.subtitle1" Style="color: #00ffff; font-weight: bold;">Claims (837D)</MudText>
+                    <MudText Typo="Typo.body2" Style="color: #b0b0b0;">Dental claims processing</MudText>
+                    <MudChip T="string" Size="Size.Small" Color="Color.Success" Class="mt-2">Active</MudChip>
+                </div>
+            </MudItem>
+            
+            <MudItem xs="12" md="6" lg="4">
+                <div class="pa-3" style="background: rgba(0, 255, 136, 0.05); border-left: 3px solid #00ff88; border-radius: 4px;">
+                    <MudText Typo="Typo.subtitle1" Style="color: #00ff88; font-weight: bold;">Eligibility (270/271)</MudText>
+                    <MudText Typo="Typo.body2" Style="color: #b0b0b0;">Real-time eligibility verification</MudText>
+                    <MudChip T="string" Size="Size.Small" Color="Color.Success" Class="mt-2">Active</MudChip>
+                </div>
+            </MudItem>
+            
+            <MudItem xs="12" md="6" lg="4">
+                <div class="pa-3" style="background: rgba(0, 255, 255, 0.05); border-left: 3px solid #00ffff; border-radius: 4px;">
+                    <MudText Typo="Typo.subtitle1" Style="color: #00ffff; font-weight: bold;">Claim Status (276/277)</MudText>
+                    <MudText Typo="Typo.body2" Style="color: #b0b0b0;">Claim status inquiries</MudText>
+                    <MudChip T="string" Size="Size.Small" Color="Color.Success" Class="mt-2">Active</MudChip>
+                </div>
+            </MudItem>
+            
+            <MudItem xs="12" md="6" lg="4">
+                <div class="pa-3" style="background: rgba(0, 255, 136, 0.05); border-left: 3px solid #00ff88; border-radius: 4px;">
+                    <MudText Typo="Typo.subtitle1" Style="color: #00ff88; font-weight: bold;">Prior Auth (278)</MudText>
+                    <MudText Typo="Typo.body2" Style="color: #b0b0b0;">Prior authorization requests</MudText>
+                    <MudChip T="string" Size="Size.Small" Color="Color.Success" Class="mt-2">Active</MudChip>
+                </div>
+            </MudItem>
+            
+            <MudItem xs="12" md="6" lg="4">
+                <div class="pa-3" style="background: rgba(0, 255, 255, 0.05); border-left: 3px solid #00ffff; border-radius: 4px;">
+                    <MudText Typo="Typo.subtitle1" Style="color: #00ffff; font-weight: bold;">Enrollment (834)</MudText>
+                    <MudText Typo="Typo.body2" Style="color: #b0b0b0;">Benefit enrollment & maintenance</MudText>
+                    <MudChip T="string" Size="Size.Small" Color="Color.Success" Class="mt-2">Active</MudChip>
+                </div>
+            </MudItem>
+            
+            <MudItem xs="12" md="6" lg="4">
+                <div class="pa-3" style="background: rgba(0, 255, 136, 0.05); border-left: 3px solid #00ff88; border-radius: 4px;">
+                    <MudText Typo="Typo.subtitle1" Style="color: #00ff88; font-weight: bold;">Remittance (835)</MudText>
+                    <MudText Typo="Typo.body2" Style="color: #b0b0b0;">Electronic remittance advice</MudText>
+                    <MudChip T="string" Size="Size.Small" Color="Color.Success" Class="mt-2">Active</MudChip>
+                </div>
+            </MudItem>
+        </MudGrid>
+    </MudPaper>
+
+    <!-- Recent Activity -->
+    <MudPaper Class="pa-4 mt-4" Style="background: #0a0a0a; border: 1px solid #00ffff;">
+        <MudText Typo="Typo.h5" GutterBottom="true" Style="color: #00ffff; font-weight: bold;">
+            Recent Activity
+        </MudText>
+        
+        <MudTimeline TimelineOrientation="TimelineOrientation.Vertical" TimelinePosition="TimelinePosition.Start">
+            <MudTimelineItem Color="Color.Success" Size="Size.Small">
+                <MudText Typo="Typo.body2" Style="color: #00ff88;">Claim #CLM-2024-0421 approved - $2,450.00</MudText>
+                <MudText Typo="Typo.caption" Style="color: #808080;">2 hours ago</MudText>
+            </MudTimelineItem>
+            <MudTimelineItem Color="Color.Info" Size="Size.Small">
+                <MudText Typo="Typo.body2" Style="color: #00ffff;">Eligibility verified for patient John Smith</MudText>
+                <MudText Typo="Typo.caption" Style="color: #808080;">3 hours ago</MudText>
+            </MudTimelineItem>
+            <MudTimelineItem Color="Color.Success" Size="Size.Small">
+                <MudText Typo="Typo.body2" Style="color: #00ff88;">Prior authorization approved - Crown #14</MudText>
+                <MudText Typo="Typo.caption" Style="color: #808080;">5 hours ago</MudText>
+            </MudTimelineItem>
+            <MudTimelineItem Color="Color.Info" Size="Size.Small">
+                <MudText Typo="Typo.body2" Style="color: #00ffff;">835 remittance processed - $12,340.00</MudText>
+                <MudText Typo="Typo.caption" Style="color: #808080;">Yesterday</MudText>
+            </MudTimelineItem>
+        </MudTimeline>
+    </MudPaper>
+</MudContainer>
+
+@code {
+    // Dashboard logic will go here
+}

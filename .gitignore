@@ -138,3 +138,35 @@ $RECYCLE.BIN/
 .DS_Store
 
 _NCrunch*
+
+# ==========================================
+# CloudDentalOffice - Sensitive Files
+# ==========================================
+
+# SQLite databases (contain encrypted credentials)
+*.db
+*.db-shm
+*.db-wal
+
+# Configuration files with secrets
+appsettings.Development.json
+appsettings.Production.json
+appsettings.*.json
+!appsettings.json
+
+# Certificates and keys
+*.pfx
+*.key
+*.pem
+*.p12
+
+# Azure/Cloud credentials
+local.settings.json
+.env
+.env.*
+
+# VS Code
+.vscode/
+
+# Rider
+.idea/

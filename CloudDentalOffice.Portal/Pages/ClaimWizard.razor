@@ -1,0 +1,462 @@
+@using CloudDentalOffice.Portal.Models
+@using CloudDentalOffice.Portal.Data
+@using Microsoft.EntityFrameworkCore
+@inject IClaimService ClaimService
+@inject IPatientService PatientService
+@inject IProviderService ProviderService
+@inject ISnackbar Snackbar
+@inject CloudDentalDbContext DbContext
+
+<MudDialog>
+    <DialogContent>
+        <MudTabs @ref="_tabs" Elevation="4" Rounded="true" Color="Color.Primary" Position="Position.Top">
+            
+            <!-- Step 1: Select Patient -->
+            <MudTabPanel Text="1. Patient" Icon="@Icons.Material.Filled.Person" Disabled="@(_activeStep > 0 && !_step1Complete)">
+                <MudText Typo="Typo.h6" Class="mb-4">Select Patient for Claim</MudText>
+                @if (_patients == null)
+                {
+                    <MudProgressLinear Indeterminate="true" Color="Color.Primary" />
+                }
+                else
+                {
+                    <MudAutocomplete T="Patient" Label="Patient" @bind-Value="_selectedPatient" 
+                                     SearchFunc="SearchPatients" ToStringFunc="@(p => p?.FullName ?? "")"
+                                     Required="true" Variant="Variant.Outlined" Clearable="true">
+                        <ItemTemplate Context="patient">
+                            <MudStack Row="true" Spacing="2">
+                                <MudText>@patient.FullName</MudText>
+                                <MudText Typo="Typo.caption">DOB: @patient.DateOfBirth.ToString("MM/dd/yyyy")</MudText>
+                            </MudStack>
+                        </ItemTemplate>
+                    </MudAutocomplete>
+
+                    @if (_selectedPatient != null && _selectedPatient.Insurances?.Any() == true)
+                    {
+                        <MudSelect T="PatientInsurance" Label="Insurance Coverage" @bind-Value="_selectedInsurance"
+                                   Variant="Variant.Outlined" Class="mt-4" Required="true">
+                            @foreach (var insurance in _selectedPatient.Insurances.Where(i => i.IsActive))
+                            {
+                                <MudSelectItem Value="@insurance">
+                                    @insurance.InsurancePlan?.PayerName - @insurance.SequenceNumber (@insurance.RelationshipToSubscriber)
+                                </MudSelectItem>
+                            }
+                        </MudSelect>
+                    }
+                    else if (_selectedPatient != null)
+                    {
+                        <MudAlert Severity="Severity.Warning" Class="mt-4" Style="background: #332800; border: 1px solid #ff9800; color: #ffffff;">
+                            <MudText Style="color: #ffffff; font-weight: bold;">
+                                ⚠️ This patient has no active insurance coverage.
+                            </MudText>
+                            <MudText Style="color: #ffcc80;" Class="mt-2">
+                                Please add insurance to this patient before creating a claim. 
+                                You can do this from the Patients page.
+                            </MudText>
+                        </MudAlert>
+                    }
+                }
+            </MudTabPanel>
+
+            <!-- Step 2: Select Provider -->
+            <MudTabPanel Text="2. Provider" Icon="@Icons.Material.Filled.LocalHospital" Disabled="@(!_step1Complete || (_activeStep > 1 && !_step2Complete))">
+                <MudText Typo="Typo.h6" Class="mb-4">Select Rendering Provider</MudText>
+                @if (_providers == null)
+                {
+                    <MudProgressLinear Indeterminate="true" Color="Color.Primary" />
+                }
+                else
+                {
+                    <MudSelect T="Provider" Label="Provider" @bind-Value="_selectedProvider"
+                               Variant="Variant.Outlined" Required="true">
+                        @foreach (var provider in _providers)
+                        {
+                            <MudSelectItem Value="@provider">
+                                Dr. @provider.FullName - NPI: @provider.NPI (@provider.Specialty)
+                            </MudSelectItem>
+                        }
+                    </MudSelect>
+
+                    <MudDatePicker Label="Service Date" @bind-Date="_serviceDate" 
+                                   Variant="Variant.Outlined" Class="mt-4" Required="true"
+                                   MaxDate="DateTime.Today" />
+                }
+            </MudTabPanel>
+
+            <!-- Step 3: Add Procedures -->
+            <MudTabPanel Text="3. Procedures" Icon="@Icons.Material.Filled.MedicalServices" Disabled="@(!_step2Complete || (_activeStep > 2 && !_step3Complete))">
+                <MudText Typo="Typo.h6" Class="mb-4">Add Dental Procedures</MudText>
+                
+                <MudGrid>
+                    <MudItem xs="12">
+                        <MudPaper Class="pa-4" Style="background: #0a0a0a; border: 1px solid rgba(0, 255, 255, 0.3);">
+                            <MudStack Row="true" Spacing="2" Class="mb-4">
+                                <MudTextField @bind-Value="_newProcedureCode" Label="CDT Code" 
+                                              Variant="Variant.Outlined" Style="max-width: 150px;" />
+                                <MudTextField @bind-Value="_newProcedureDescription" Label="Description" 
+                                              Variant="Variant.Outlined" />
+                                <MudNumericField @bind-Value="_newProcedureFee" Label="Fee" 
+                                                 Variant="Variant.Outlined" Format="C2" Min="0" Step="0.01M"
+                                                 Style="max-width: 120px;" />
+                                <MudTextField @bind-Value="_newToothNumber" Label="Tooth #" 
+                                              Variant="Variant.Outlined" Style="max-width: 100px;" />
+                                <MudButton Variant="Variant.Filled" Color="Color.Primary" 
+                                           OnClick="AddProcedure" StartIcon="@Icons.Material.Filled.Add">
+                                    Add
+                                </MudButton>
+                            </MudStack>
+
+                            <!-- Common Procedures Quick Add -->
+                            <MudText Typo="Typo.subtitle2" Class="mb-2" Style="color: #00ffff;">Common Procedures:</MudText>
+                            <MudStack Row="true" Spacing="1">
+                                <MudChip T="string" Size="Size.Small" OnClick="@(() => QuickAddProcedure("D0120", "Periodic Oral Evaluation", 75))">D0120 - Exam</MudChip>
+                                <MudChip T="string" Size="Size.Small" OnClick="@(() => QuickAddProcedure("D1110", "Adult Prophylaxis", 120))">D1110 - Cleaning</MudChip>
+                                <MudChip T="string" Size="Size.Small" OnClick="@(() => QuickAddProcedure("D0210", "Intraoral Periapical X-Ray", 40))">D0210 - X-Ray</MudChip>
+                                <MudChip T="string" Size="Size.Small" OnClick="@(() => QuickAddProcedure("D2391", "Resin 1 Surface Posterior", 185))">D2391 - Filling</MudChip>
+                                <MudChip T="string" Size="Size.Small" OnClick="@(() => QuickAddProcedure("D4341", "Periodontal Scaling", 250))">D4341 - Scaling</MudChip>
+                            </MudStack>
+                        </MudPaper>
+                    </MudItem>
+
+                    <MudItem xs="12">
+                        @if (_procedures.Any())
+                        {
+                            <MudTable Items="@_procedures" Dense="true" Hover="true">
+                                <HeaderContent>
+                                    <MudTh>CDT Code</MudTh>
+                                    <MudTh>Description</MudTh>
+                                    <MudTh>Tooth #</MudTh>
+                                    <MudTh>Fee</MudTh>
+                                    <MudTh>Actions</MudTh>
+                                </HeaderContent>
+                                <RowTemplate>
+                                    <MudTd>@context.ProcedureCode</MudTd>
+                                    <MudTd>@context.Description</MudTd>
+                                    <MudTd>@context.ToothNumber</MudTd>
+                                    <MudTd Style="color: #00ff88;">@context.Fee.ToString("C")</MudTd>
+                                    <MudTd>
+                                        <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error" 
+                                                       Size="Size.Small" OnClick="@(() => RemoveProcedure(context))" />
+                                    </MudTd>
+                                </RowTemplate>
+                            </MudTable>
+                            
+                            <MudPaper Class="pa-3 mt-2" Style="background: #0a0a0a;">
+                                <MudText Typo="Typo.h6" Style="color: #00ff88;">
+                                    Total Charge: @_procedures.Sum(p => p.Fee).ToString("C")
+                                </MudText>
+                            </MudPaper>
+                        }
+                        else
+                        {
+                            <MudAlert Severity="Severity.Info">
+                                No procedures added yet. Add at least one procedure to continue.
+                            </MudAlert>
+                        }
+                    </MudItem>
+                </MudGrid>
+            </MudTabPanel>
+
+            <!-- Step 4: Review and Submit -->
+            <MudTabPanel Text="4. Review" Icon="@Icons.Material.Filled.CheckCircle" Disabled="@(!_step3Complete)">
+                <MudText Typo="Typo.h6" Class="mb-4">Review Claim Details</MudText>
+                
+                <MudGrid>
+                    <MudItem xs="12" md="6">
+                        <MudPaper Class="pa-4" Style="background: #0a0a0a; border: 1px solid rgba(0, 255, 255, 0.3);">
+                            <MudText Typo="Typo.subtitle1" Style="color: #00ffff;" Class="mb-2">Patient Information</MudText>
+                            <MudText Typo="Typo.body2">Name: @_selectedPatient?.FullName</MudText>
+                            <MudText Typo="Typo.body2">DOB: @_selectedPatient?.DateOfBirth.ToString("MM/dd/yyyy")</MudText>
+                            <MudText Typo="Typo.body2">Insurance: @_selectedInsurance?.InsurancePlan?.PayerName</MudText>
+                            <MudText Typo="Typo.body2">Member ID: @_selectedInsurance?.MemberId</MudText>
+                        </MudPaper>
+                    </MudItem>
+
+                    <MudItem xs="12" md="6">
+                        <MudPaper Class="pa-4" Style="background: #0a0a0a; border: 1px solid rgba(0, 255, 255, 0.3);">
+                            <MudText Typo="Typo.subtitle1" Style="color: #00ffff;" Class="mb-2">Provider Information</MudText>
+                            <MudText Typo="Typo.body2">Provider: Dr. @_selectedProvider?.FullName</MudText>
+                            <MudText Typo="Typo.body2">NPI: @_selectedProvider?.NPI</MudText>
+                            <MudText Typo="Typo.body2">Specialty: @_selectedProvider?.Specialty</MudText>
+                            <MudText Typo="Typo.body2">Service Date: @_serviceDate?.ToString("MM/dd/yyyy")</MudText>
+                        </MudPaper>
+                    </MudItem>
+
+                    <MudItem xs="12">
+                        <MudPaper Class="pa-4" Style="background: #0a0a0a; border: 1px solid rgba(0, 255, 255, 0.3);">
+                            <MudText Typo="Typo.subtitle1" Style="color: #00ffff;" Class="mb-2">Procedures (@_procedures.Count)</MudText>
+                            @foreach (var proc in _procedures)
+                            {
+                                <MudText Typo="Typo.body2">
+                                    @proc.ProcedureCode - @proc.Description 
+                                    @if (!string.IsNullOrEmpty(proc.ToothNumber)) { <text>(Tooth #@proc.ToothNumber)</text> }
+                                    - @proc.Fee.ToString("C")
+                                </MudText>
+                            }
+                            <MudDivider Class="my-2" />
+                            <MudText Typo="Typo.h6" Style="color: #00ff88;">
+                                Total: @_procedures.Sum(p => p.Fee).ToString("C")
+                            </MudText>
+                        </MudPaper>
+                    </MudItem>
+                </MudGrid>
+            </MudTabPanel>
+
+        </MudTabs>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel" Variant="Variant.Text" Style="color: #00ffff;">Cancel</MudButton>
+        <MudButton OnClick="PreviousStep" Variant="Variant.Text" Disabled="@(_activeStep == 0)" Style="color: #00ffff;">
+            Back
+        </MudButton>
+        @if (_activeStep < 3)
+        {
+            <MudButton OnClick="NextStep" Variant="Variant.Filled" Color="Color.Primary" Disabled="@(!CanProceedToNextStep())" Style="color: #000000; font-weight: bold;">
+                Next
+            </MudButton>
+        }
+        else
+        {
+            <MudButton OnClick="SubmitClaim" Variant="Variant.Filled" Color="Color.Success" 
+                       Disabled="@(!CanSubmit() || _submitting)" Style="color: #000000; font-weight: bold;">
+                @if (_submitting)
+                {
+                    <MudProgressCircular Size="Size.Small" Indeterminate="true" />
+                    <text> Creating...</text>
+                }
+                else
+                {
+                    <text>Create Claim</text>
+                }
+            </MudButton>
+        }
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; } = null!;
+
+    private MudTabs? _tabs;
+    private int _activeStep = 0;
+    private bool _submitting = false;
+    private bool _step1Complete => _selectedPatient != null && _selectedInsurance != null;
+    private bool _step2Complete => _selectedProvider != null && _serviceDate != null;
+    private bool _step3Complete => _procedures.Any();
+
+    // Step 1: Patient Selection
+    private List<Patient>? _patients;
+    private Patient? _selectedPatient;
+    private PatientInsurance? _selectedInsurance;
+
+    // Step 2: Provider Selection
+    private List<Provider>? _providers;
+    private Provider? _selectedProvider;
+    private DateTime? _serviceDate = DateTime.Today;
+
+    // Step 3: Procedures
+    private List<ClaimProcedureDto> _procedures = new();
+    private string _newProcedureCode = "";
+    private string _newProcedureDescription = "";
+    private decimal _newProcedureFee = 0;
+    private string _newToothNumber = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadPatients();
+        await LoadProviders();
+    }
+
+    private async Task LoadPatients()
+    {
+        try
+        {
+            _patients = await PatientService.GetPatientsAsync();
+            // Eager load insurances
+            foreach (var patient in _patients)
+            {
+                if (patient.Insurances == null || !patient.Insurances.Any())
+                {
+                    var fullPatient = await DbContext.Patients
+                        .Include(p => p.Insurances)
+                            .ThenInclude(pi => pi.InsurancePlan)
+                        .FirstOrDefaultAsync(p => p.PatientId == patient.PatientId);
+                    if (fullPatient != null)
+                    {
+                        patient.Insurances = fullPatient.Insurances;
+                    }
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error loading patients: {ex.Message}", Severity.Error);
+        }
+    }
+
+    private async Task LoadProviders()
+    {
+        try
+        {
+            _providers = await ProviderService.GetProvidersAsync();
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error loading providers: {ex.Message}", Severity.Error);
+        }
+    }
+
+    private async Task<IEnumerable<Patient>> SearchPatients(string value, CancellationToken token)
+    {
+        if (string.IsNullOrEmpty(value) || _patients == null)
+            return _patients ?? Enumerable.Empty<Patient>();
+
+        return _patients.Where(p => p.FullName?.Contains(value, StringComparison.OrdinalIgnoreCase) ?? false);
+    }
+
+    private void QuickAddProcedure(string code, string description, decimal fee)
+    {
+        _newProcedureCode = code;
+        _newProcedureDescription = description;
+        _newProcedureFee = fee;
+    }
+
+    private void AddProcedure()
+    {
+        if (string.IsNullOrWhiteSpace(_newProcedureCode) || string.IsNullOrWhiteSpace(_newProcedureDescription))
+        {
+            Snackbar.Add("Please enter procedure code and description", Severity.Warning);
+            return;
+        }
+
+        if (_newProcedureFee <= 0)
+        {
+            Snackbar.Add("Please enter a valid fee amount", Severity.Warning);
+            return;
+        }
+
+        _procedures.Add(new ClaimProcedureDto
+        {
+            ProcedureCode = _newProcedureCode,
+            Description = _newProcedureDescription,
+            Fee = _newProcedureFee,
+            ToothNumber = _newToothNumber
+        });
+
+        // Clear inputs
+        _newProcedureCode = "";
+        _newProcedureDescription = "";
+        _newProcedureFee = 0;
+        _newToothNumber = "";
+
+        Snackbar.Add("Procedure added", Severity.Success);
+    }
+
+    private void RemoveProcedure(ClaimProcedureDto procedure)
+    {
+        _procedures.Remove(procedure);
+        Snackbar.Add("Procedure removed", Severity.Info);
+    }
+
+    private bool CanProceedToNextStep()
+    {
+        return _activeStep switch
+        {
+            0 => _step1Complete,
+            1 => _step2Complete,
+            2 => _step3Complete,
+            _ => false
+        };
+    }
+
+    private bool CanSubmit()
+    {
+        return _selectedPatient != null 
+            && _selectedInsurance != null 
+            && _selectedProvider != null 
+            && _serviceDate != null 
+            && _procedures.Any();
+    }
+
+    private void NextStep()
+    {
+        if (CanProceedToNextStep() && _activeStep < 3)
+        {
+            _activeStep++;
+            _tabs?.ActivatePanel(_activeStep);
+        }
+    }
+
+    private void PreviousStep()
+    {
+        if (_activeStep > 0)
+        {
+            _activeStep--;
+            _tabs?.ActivatePanel(_activeStep);
+        }
+    }
+
+    private async Task SubmitClaim()
+    {
+        if (!CanSubmit() || _submitting) return;
+
+        _submitting = true;
+        try
+        {
+            var claim = new Claim
+            {
+                PatientId = _selectedPatient!.PatientId,
+                ProviderId = _selectedProvider!.ProviderId,
+                PatientInsuranceId = _selectedInsurance!.PatientInsuranceId,
+                ServiceDateFrom = _serviceDate!.Value,
+                ServiceDateTo = _serviceDate!.Value,
+                Status = "Ready",
+                TotalChargeAmount = _procedures.Sum(p => p.Fee),
+                CreatedDate = DateTime.UtcNow
+            };
+
+            var createdClaim = await ClaimService.CreateClaimAsync(claim);
+
+            // Add procedures to the claim
+            foreach (var proc in _procedures)
+            {
+                var claimProc = new ClaimProcedure
+                {
+                    ClaimId = createdClaim.ClaimId,
+                    ServiceDate = _serviceDate.Value,
+                    CDTCode = proc.ProcedureCode,
+                    Description = proc.Description,
+                    ChargeAmount = proc.Fee,
+                    ToothNumber = proc.ToothNumber,
+                    LineNumber = _procedures.IndexOf(proc) + 1
+                };
+                await DbContext.ClaimProcedures.AddAsync(claimProc);
+            }
+            await DbContext.SaveChangesAsync();
+
+            Snackbar.Add($"Claim {createdClaim.ClaimNumber} created successfully!", Severity.Success);
+            MudDialog.Close(DialogResult.Ok(true));
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error creating claim: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            _submitting = false;
+        }
+    }
+
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+
+    // DTO for procedure list
+    private class ClaimProcedureDto
+    {
+        public string ProcedureCode { get; set; } = "";
+        public string Description { get; set; } = "";
+        public decimal Fee { get; set; }
+        public string? ToothNumber { get; set; }
+    }
+}

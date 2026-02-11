@@ -1,0 +1,235 @@
+@inherits LayoutComponentBase
+
+<MudThemeProvider Theme="_theme" />
+<MudPopoverProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+<MudLayout>
+    <MudAppBar Elevation="3" Dense="true" Style="border-bottom: 1px solid rgba(0, 255, 255, 0.3);">
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Primary" Edge="Edge.Start" OnClick="@ToggleDrawer" />
+        
+        <!-- The Sentinel Logo - Dental Edition -->
+        <img src="/images/logo-clouddental-sentinel-primary.svg" 
+             alt="Cloud Dental Office - The Sentinel" 
+             style="height: 32px; margin-left: 12px; margin-right: 16px; filter: drop-shadow(0 0 8px rgba(0, 255, 255, 0.4));" />
+        
+        <MudText Typo="Typo.h6" Style="color: #00ffff; font-weight: bold;">
+            Cloud Dental Office
+        </MudText>
+        
+        <MudSpacer />
+        
+        <MudIconButton Icon="@Icons.Material.Filled.Notifications" Color="Color.Primary" />
+        <MudIconButton Icon="@Icons.Material.Filled.AccountCircle" Color="Color.Primary" />
+    </MudAppBar>
+    
+    <MudDrawer @bind-Open="_drawerOpen" Elevation="2" 
+               Style="background: #0a0a0a; border-right: 1px solid rgba(0, 255, 255, 0.2);">
+        <MudDrawerHeader Style="background: #000000; border-bottom: 2px solid #00ffff;">
+            <MudText Typo="Typo.h6" Style="color: #00ffff; font-weight: bold;">The Sentinel</MudText>
+        </MudDrawerHeader>
+        <MudNavMenu>
+            <!-- Dashboard -->
+            <MudNavLink Href="/" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Dashboard"
+                        Style="border-left: 3px solid transparent; transition: all 0.3s ease;">
+                Dashboard
+            </MudNavLink>
+            
+            <!-- Practice Management -->
+            <MudNavGroup Title="Practice Management" Icon="@Icons.Material.Filled.Business" Expanded="true">
+                <MudNavLink Href="/patients" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.People">
+                    Patients
+                </MudNavLink>
+                <MudNavLink Href="/appointments" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Event">
+                    Appointments
+                </MudNavLink>
+                <MudNavLink Href="/treatment-plans" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Assignment">
+                    Treatment Plans
+                </MudNavLink>
+                <MudNavLink Href="/chart" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Medication">
+                    Clinical Chart
+                </MudNavLink>
+            </MudNavGroup>
+            
+            <!-- EDI & Claims -->
+            <MudNavGroup Title="EDI & Claims" Icon="@Icons.Material.Filled.CloudSync" Expanded="false">
+                <MudNavLink Href="/claims" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Assignment">
+                    Claims (837D)
+                </MudNavLink>
+                <MudNavLink Href="/payers" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Business">
+                    Insurance Payers
+                </MudNavLink>
+                <MudNavLink Href="/eligibility" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.ContactPage">
+                    Eligibility (270/271)
+                </MudNavLink>
+                <MudNavLink Href="/claim-status" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Info">
+                    Claim Status (276/277)
+                </MudNavLink>
+                <MudNavLink Href="/prior-auth" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Approval">
+                    Prior Auth (278)
+                </MudNavLink>
+                <MudNavLink Href="/enrollment" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.PersonAdd">
+                    Enrollment (834)
+                </MudNavLink>
+                <MudNavLink Href="/remittance" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Payment">
+                    Remittance (835)
+                </MudNavLink>
+            </MudNavGroup>
+            
+            <!-- Billing -->
+            <MudNavLink Href="/billing" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Receipt"
+                        Style="border-left: 3px solid transparent; transition: all 0.3s ease;">
+                Billing
+            </MudNavLink>
+            
+            <!-- Reports -->
+            <MudNavLink Href="/reports" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.BarChart"
+                        Style="border-left: 3px solid transparent; transition: all 0.3s ease;">
+                Reports
+            </MudNavLink>
+            
+            <!-- Providers -->
+            <MudNavLink Href="/providers" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.MedicalServices"
+                        Style="border-left: 3px solid transparent; transition: all 0.3s ease;">
+                Providers
+            </MudNavLink>
+            
+            <!-- Settings -->
+            <MudNavLink Href="/settings" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Settings"
+                        Style="border-left: 3px solid transparent; transition: all 0.3s ease;">
+                Settings
+            </MudNavLink>
+        </MudNavMenu>
+        
+        <!-- Footer branding in drawer -->
+        <div style="position: absolute; bottom: 0; left: 0; right: 0; padding: 16px; border-top: 1px solid rgba(0, 255, 255, 0.2); text-align: center;">
+            <MudText Typo="Typo.caption" Style="color: rgba(255, 255, 255, 0.4);">
+                The Sentinel
+            </MudText>
+            <MudText Typo="Typo.caption" Style="color: rgba(0, 255, 255, 0.6); margin-top: 4px;">
+                v1.0 Production
+            </MudText>
+        </div>
+    </MudDrawer>
+    
+    <MudMainContent>
+        <MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" Class="my-4">
+            @Body
+        </MudContainer>
+    </MudMainContent>
+</MudLayout>
+
+@code {
+    private bool _drawerOpen = true;
+
+    private MudTheme _theme = new()
+    {
+        // The Sentinel Theme - Obsidian & Neon (Cyan/Green focus)
+        PaletteLight = new PaletteLight
+        {
+            // Core brand colors
+            Primary = "#00ffff",           // Cyan - primary actions
+            Secondary = "#00ff88",         // Neon green - secondary elements  
+            Tertiary = "#00ddbb",          // Teal - tertiary accent
+            
+            // Backgrounds - absolute black
+            Background = "#000000",
+            BackgroundGray = "#0a0a0a",
+            Surface = "#0a0a0a",
+            DrawerBackground = "#0a0a0a",
+            AppbarBackground = "#000000",
+            
+            // Text colors
+            TextPrimary = "#e0e0e0",
+            TextSecondary = "#b0b0b0",
+            TextDisabled = "#808080",
+            
+            // Dividers and borders
+            Divider = "rgba(0, 255, 255, 0.12)",
+            DividerLight = "rgba(0, 255, 255, 0.06)",
+            
+            // Status colors
+            Success = "#00ff88",
+            Info = "#00ffff",
+            Warning = "#ffaa00",
+            Error = "#ff4444",
+            
+            // Actions
+            ActionDefault = "#00ffff",
+            ActionDisabled = "#808080",
+            ActionDisabledBackground = "rgba(255, 255, 255, 0.12)",
+            
+            // Table colors
+            TableLines = "rgba(0, 255, 255, 0.12)",
+            TableStriped = "rgba(0, 255, 255, 0.02)",
+            TableHover = "rgba(0, 255, 255, 0.04)",
+            
+            // Links
+            HoverOpacity = 0.8
+        },
+        
+        Typography = new Typography
+        {
+            Default = new Default
+            {
+                FontFamily = new[] { "Segoe UI", "-apple-system", "BlinkMacSystemFont", "sans-serif" },
+                FontSize = "0.875rem",
+                FontWeight = 400,
+                LineHeight = 1.43,
+                LetterSpacing = "0.01071em"
+            },
+            H1 = new H1
+            {
+                FontFamily = new[] { "Segoe UI", "sans-serif" },
+                FontSize = "2.5rem",
+                FontWeight = 700,
+                LineHeight = 1.2,
+                LetterSpacing = "-0.01562em"
+            },
+            H2 = new H2
+            {
+                FontFamily = new[] { "Segoe UI", "sans-serif" },
+                FontSize = "2rem",
+                FontWeight = 700,
+                LineHeight = 1.2,
+                LetterSpacing = "-0.00833em"
+            },
+            H3 = new H3
+            {
+                FontFamily = new[] { "Segoe UI", "sans-serif" },
+                FontSize = "1.75rem",
+                FontWeight = 700,
+                LineHeight = 1.2
+            },
+            H4 = new H4
+            {
+                FontFamily = new[] { "Segoe UI", "sans-serif" },
+                FontSize = "1.5rem",
+                FontWeight = 700,
+                LineHeight = 1.2,
+                LetterSpacing = "0.00735em"
+            },
+            H5 = new H5
+            {
+                FontFamily = new[] { "Segoe UI", "sans-serif" },
+                FontSize = "1.25rem",
+                FontWeight = 700,
+                LineHeight = 1.2
+            },
+            H6 = new H6
+            {
+                FontFamily = new[] { "Segoe UI", "sans-serif" },
+                FontSize = "1rem",
+                FontWeight = 700,
+                LineHeight = 1.2,
+                LetterSpacing = "0.0075em"
+            }
+        }
+    };
+
+    private void ToggleDrawer()
+    {
+        _drawerOpen = !_drawerOpen;
+    }
+}

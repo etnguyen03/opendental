@@ -1,0 +1,20 @@
+{
+  "DetailedErrors": true,
+  "Logging": {
+    "LogLevel": {
+      "Default": "Debug",
+      "Microsoft.AspNetCore": "Information"
+    }
+  },
+  
+  "EdiApi": {
+    "BaseUrl": "https://localhost:5001/api",
+    "ApiKey": "your-dev-api-key-here"
+  },
+  
+  "Database": {
+    "Provider": "Sqlite",
+    "ConnectionString": "Data Source=clouddental.db",
+    "EnableSensitiveDataLogging": true
+  }
+}

@@ -1,0 +1,127 @@
+@using CloudDentalOffice.Portal.Models
+@using Models = CloudDentalOffice.Portal.Models
+@inject IDialogService DialogService
+
+<MudDialog>
+    <DialogContent>
+        <MudForm @ref="_form" @bind-IsValid="@_formValid">
+            <MudGrid>
+                <!-- Personal Information -->
+                <MudItem xs="12">
+                    <MudText Typo="Typo.h6" Style="color: #00ffff;">Personal Information</MudText>
+                    <MudDivider Class="my-2" />
+                </MudItem>
+
+                <MudItem xs="12" md="4">
+                    <MudTextField @bind-Value="Patient.FirstName" Label="First Name" Required="true" />
+                </MudItem>
+                <MudItem xs="12" md="4">
+                    <MudTextField @bind-Value="Patient.MiddleName" Label="Middle Name" />
+                </MudItem>
+                <MudItem xs="12" md="4">
+                    <MudTextField @bind-Value="Patient.LastName" Label="Last Name" Required="true" />
+                </MudItem>
+
+                <MudItem xs="12" md="6">
+                    <MudDatePicker @bind-Date="@_dateOfBirth" Label="Date of Birth" Required="true" 
+                                   MaxDate="DateTime.Today" />
+                </MudItem>
+                <MudItem xs="12" md="6">
+                    <MudSelect @bind-Value="Patient.Gender" Label="Gender" Required="true">
+                        <MudSelectItem Value="@("M")">Male</MudSelectItem>
+                        <MudSelectItem Value="@("F")">Female</MudSelectItem>
+                        <MudSelectItem Value="@("O")">Other</MudSelectItem>
+                        <MudSelectItem Value="@("U")">Prefer not to say</MudSelectItem>
+                    </MudSelect>
+                </MudItem>
+
+                <MudItem xs="12" md="6">
+                    <MudTextField @bind-Value="Patient.SSN" Label="SSN" Mask="@(new PatternMask("000-00-0000"))" />
+                </MudItem>
+                <MudItem xs="12" md="6">
+                    <MudTextField @bind-Value="Patient.PreferredName" Label="Preferred Name" />
+                </MudItem>
+
+                <!-- Contact Information -->
+                <MudItem xs="12" Class="mt-4">
+                    <MudText Typo="Typo.h6" Style="color: #00ffff;">Contact Information</MudText>
+                    <MudDivider Class="my-2" />
+                </MudItem>
+
+                <MudItem xs="12" md="6">
+                    <MudTextField @bind-Value="Patient.PrimaryPhone" Label="Primary Phone" 
+                                  Mask="@(new PatternMask("(000) 000-0000"))" />
+                </MudItem>
+                <MudItem xs="12" md="6">
+                    <MudTextField @bind-Value="Patient.SecondaryPhone" Label="Secondary Phone" 
+                                  Mask="@(new PatternMask("(000) 000-0000"))" />
+                </MudItem>
+
+                <MudItem xs="12">
+                    <MudTextField @bind-Value="Patient.Email" Label="Email" InputType="InputType.Email" />
+                </MudItem>
+
+                <!-- Address -->
+                <MudItem xs="12">
+                    <MudTextField @bind-Value="Patient.Address1" Label="Address Line 1" />
+                </MudItem>
+                <MudItem xs="12">
+                    <MudTextField @bind-Value="Patient.Address2" Label="Address Line 2" />
+                </MudItem>
+
+                <MudItem xs="12" md="6">
+                    <MudTextField @bind-Value="Patient.City" Label="City" />
+                </MudItem>
+                <MudItem xs="12" md="3">
+                    <MudTextField @bind-Value="Patient.State" Label="State" MaxLength="2" />
+                </MudItem>
+                <MudItem xs="12" md="3">
+                    <MudTextField @bind-Value="Patient.ZipCode" Label="Zip Code" 
+                                  Mask="@(new PatternMask("00000"))" />
+                </MudItem>
+            </MudGrid>
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="Submit" Disabled="!_formValid">
+            Save Patient
+        </MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; } = null!;
+    [Parameter] public Models.Patient Patient { get; set; } = new();
+
+    private MudForm? _form;
+    private bool _formValid;
+    private DateTime? _dateOfBirth;
+
+    protected override void OnInitialized()
+    {
+        if (Patient.PatientId > 0)
+        {
+            _dateOfBirth = Patient.DateOfBirth;
+        }
+        else
+        {
+            _dateOfBirth = DateTime.Today.AddYears(-30);
+        }
+    }
+
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+
+    private void Submit()
+    {
+        if (_dateOfBirth.HasValue)
+        {
+            Patient.DateOfBirth = _dateOfBirth.Value;
+        }
+
+        MudDialog.Close(DialogResult.Ok(Patient));
+    }
+}

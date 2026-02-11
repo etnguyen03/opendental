@@ -1,0 +1,189 @@
+@page "/patients"
+@using CloudDentalOffice.Portal.Models
+@inject IPatientService PatientService
+@inject IDialogService DialogService
+@inject ISnackbar Snackbar
+
+<PageTitle>Patients - Cloud Dental Office</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-4">
+    <MudPaper Class="pa-4" Style="background: #0a0a0a; border: 1px solid #00ffff;">
+        <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
+            <div>
+                <MudText Typo="Typo.h4" Style="color: #00ffff; font-weight: bold;">
+                    <MudIcon Icon="@Icons.Material.Filled.People" Class="mr-2" />
+                    Patients
+                </MudText>
+                <MudText Typo="Typo.body2" Style="color: #b0b0b0;">
+                    Manage patient demographics and insurance information
+                </MudText>
+            </div>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="OpenAddPatientDialog"
+                       StartIcon="@Icons.Material.Filled.Add">
+                Add Patient
+            </MudButton>
+        </MudStack>
+    </MudPaper>
+
+    @if (!string.IsNullOrEmpty(_errorMessage))
+    {
+        <MudAlert Severity="Severity.Error" Class="mt-4">
+            <MudText Typo="Typo.body1" Style="font-family: monospace; white-space: pre-wrap;">@_errorMessage</MudText>
+        </MudAlert>
+    }
+
+    <MudPaper Class="pa-4 mt-4" Style="background: #0a0a0a; border: 1px solid rgba(0, 255, 255, 0.3);">
+        @if (_loading)
+        {
+            <MudProgressLinear Color="Color.Primary" Indeterminate="true" />
+        }
+        else
+        {
+            <MudTable Items="@_patients" Hover="true" Striped="true" Dense="true"
+                      Filter="new Func<Patient, bool>(FilterPatient)">
+                <ToolBarContent>
+                    <MudTextField @bind-Value="_searchString" Placeholder="Search patients..." Adornment="Adornment.Start"
+                                  AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium"
+                                  Immediate="true" Clearable="true" />
+                </ToolBarContent>
+                <HeaderContent>
+                    <MudTh Style="color: #00ffff;">Name</MudTh>
+                    <MudTh Style="color: #00ffff;">Date of Birth</MudTh>
+                    <MudTh Style="color: #00ffff;">Age</MudTh>
+                    <MudTh Style="color: #00ffff;">Phone</MudTh>
+                    <MudTh Style="color: #00ffff;">Email</MudTh>
+                    <MudTh Style="color: #00ffff;">Primary Insurance</MudTh>
+                    <MudTh Style="color: #00ffff;">Status</MudTh>
+                    <MudTh Style="color: #00ffff;">Actions</MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd DataLabel="Name">@context.FullName</MudTd>
+                    <MudTd DataLabel="DOB">@context.DateOfBirth.ToString("MM/dd/yyyy")</MudTd>
+                    <MudTd DataLabel="Age">@context.Age</MudTd>
+                    <MudTd DataLabel="Phone">@context.PrimaryPhone</MudTd>
+                    <MudTd DataLabel="Email">@context.Email</MudTd>
+                    <MudTd DataLabel="Insurance">
+                        @if (context.PrimaryInsurance != null)
+                        {
+                            <span>@context.PrimaryInsurance.InsurancePlan.PayerName</span>
+                        }
+                        else
+                        {
+                            <span style="color: #808080;">No insurance</span>
+                        }
+                    </MudTd>
+                    <MudTd DataLabel="Status">
+                        <MudChip T="string" Size="Size.Small" 
+                                 Color="@(context.Status == "Active" ? Color.Success : Color.Default)">
+                            @context.Status
+                        </MudChip>
+                    </MudTd>
+                    <MudTd DataLabel="Actions">
+                        <MudIconButton Icon="@Icons.Material.Filled.Edit" Size="Size.Small" Color="Color.Primary"
+                                       OnClick="@(() => OpenEditPatientDialog(context))" />
+                        <MudIconButton Icon="@Icons.Material.Filled.Visibility" Size="Size.Small" Color="Color.Info"
+                                       OnClick="@(() => ViewPatient(context))" />
+                    </MudTd>
+                </RowTemplate>
+                <NoRecordsContent>
+                    <MudText Style="color: #b0b0b0;">No patients found</MudText>
+                </NoRecordsContent>
+            </MudTable>
+        }
+    </MudPaper>
+</MudContainer>
+
+@code {
+    private List<Patient> _patients = new();
+    private bool _loading = true;
+    private string _searchString = "";
+    private string? _errorMessage = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadPatients();
+    }
+
+    private async Task LoadPatients()
+    {
+        _loading = true;
+        _errorMessage = null;
+        try
+        {
+            _patients = await PatientService.GetPatientsAsync();
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = $"Error loading patients: {ex.Message}\n{ex.StackTrace}";
+            Snackbar.Add($"Error loading patients: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+
+    private bool FilterPatient(Patient patient)
+    {
+        if (string.IsNullOrWhiteSpace(_searchString))
+            return true;
+
+        if (patient == null)
+            return false;
+
+        var search = _searchString.ToLower();
+        return (patient.FullName?.ToLower().Contains(search) ?? false)
+            || (patient.Email?.ToLower().Contains(search) ?? false)
+            || (patient.PrimaryPhone?.Contains(search) ?? false);
+    }
+
+    private async Task OpenAddPatientDialog()
+    {
+        var dialog = DialogService.Show<PatientDialog>("Add New Patient", 
+            new DialogParameters { ["Patient"] = new Patient() },
+            new DialogOptions { MaxWidth = MaxWidth.Medium, FullWidth = true });
+
+        var result = await dialog.Result;
+        if (!result.Canceled && result.Data is Patient patient)
+        {
+            try
+            {
+                await PatientService.CreatePatientAsync(patient);
+                Snackbar.Add($"Patient {patient.FullName} created successfully", Severity.Success);
+                await LoadPatients();
+            }
+            catch (Exception ex)
+            {
+                Snackbar.Add($"Error creating patient: {ex.Message}", Severity.Error);
+            }
+        }
+    }
+
+    private async Task OpenEditPatientDialog(Patient patient)
+    {
+        var dialog = DialogService.Show<PatientDialog>("Edit Patient",
+            new DialogParameters { ["Patient"] = patient },
+            new DialogOptions { MaxWidth = MaxWidth.Medium, FullWidth = true });
+
+        var result = await dialog.Result;
+        if (!result.Canceled && result.Data is Patient updatedPatient)
+        {
+            try
+            {
+                await PatientService.UpdatePatientAsync(updatedPatient);
+                Snackbar.Add($"Patient {updatedPatient.FullName} updated successfully", Severity.Success);
+                await LoadPatients();
+            }
+            catch (Exception ex)
+            {
+                Snackbar.Add($"Error updating patient: {ex.Message}", Severity.Error);
+            }
+        }
+    }
+
+    private void ViewPatient(Patient patient)
+    {
+        // Navigate to detailed patient view (to be implemented)
+        Snackbar.Add($"Viewing details for {patient.FullName}", Severity.Info);
+    }
+}

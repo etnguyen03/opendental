@@ -1,0 +1,197 @@
+@page "/claims"
+@using CloudDentalOffice.Portal.Models
+@inject IClaimService ClaimService
+@inject IDialogService DialogService
+@inject ISnackbar Snackbar
+
+<PageTitle>Claims (837D) - Cloud Dental Office</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-4">
+    <MudPaper Class="pa-4" Style="background: #0a0a0a; border: 1px solid #00ffff;">
+        <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
+            <div>
+                <MudText Typo="Typo.h4" Style="color: #00ffff; font-weight: bold;">
+                    <MudIcon Icon="@Icons.Material.Filled.Assignment" Class="mr-2" />
+                    Claims (837D)
+                </MudText>
+                <MudText Typo="Typo.body2" Style="color: #b0b0b0;">
+                    Electronic dental claim submission and tracking
+                </MudText>
+            </div>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="OpenClaimWizard"
+                       StartIcon="@Icons.Material.Filled.Add">
+                Create Claim
+            </MudButton>
+        </MudStack>
+    </MudPaper>
+
+    @if (!string.IsNullOrEmpty(_errorMessage))
+    {
+        <MudAlert Severity="Severity.Error" Class="mt-4">
+            <MudText Typo="Typo.body1" Style="font-family: monospace; white-space: pre-wrap;">@_errorMessage</MudText>
+        </MudAlert>
+    }
+
+    <MudPaper Class="pa-4 mt-4" Style="background: #0a0a0a; border: 1px solid rgba(0, 255, 255, 0.3);">
+        @if (_loading)
+        {
+            <MudProgressLinear Color="Color.Primary" Indeterminate="true" />
+        }
+        else
+        {
+            <MudTable Items="@_claims" Hover="true" Striped="true" Dense="true"
+                      Filter="new Func<Claim, bool>(FilterClaim)">
+                <ToolBarContent>
+                    <MudTextField @bind-Value="_searchString" Placeholder="Search claims..." Adornment="Adornment.Start"
+                                  AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium"
+                                  Immediate="true" Clearable="true" />
+                    <MudSpacer />
+                    <MudChip T="string" Color="Color.Info" Size="Size.Small">Total: @_claims.Count</MudChip>
+                </ToolBarContent>
+                <HeaderContent>
+                    <MudTh Style="color: #00ffff;">Claim Number</MudTh>
+                    <MudTh Style="color: #00ffff;">Patient</MudTh>
+                    <MudTh Style="color: #00ffff;">Provider</MudTh>
+                    <MudTh Style="color: #00ffff;">Service Date</MudTh>
+                    <MudTh Style="color: #00ffff;">Total Charge</MudTh>
+                    <MudTh Style="color: #00ffff;">Insurance</MudTh>
+                    <MudTh Style="color: #00ffff;">Status</MudTh>
+                    <MudTh Style="color: #00ffff;">Submitted</MudTh>
+                    <MudTh Style="color: #00ffff;">Actions</MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd DataLabel="Claim Number">
+                        <MudText Typo="Typo.body2" Style="color: #00ff88; font-weight: bold;">@context.ClaimNumber</MudText>
+                    </MudTd>
+                    <MudTd DataLabel="Patient">
+                        <MudText Typo="Typo.body2">@context.Patient?.FullName</MudText>
+                    </MudTd>
+                    <MudTd DataLabel="Provider">
+                        <MudText Typo="Typo.body2">@context.Provider?.FullName</MudText>
+                    </MudTd>
+                    <MudTd DataLabel="Service Date">
+                        <MudText Typo="Typo.body2">@context.ServiceDateFrom.ToString("MM/dd/yyyy")</MudText>
+                    </MudTd>
+                    <MudTd DataLabel="Total Charge">
+                        <MudText Typo="Typo.body2" Style="color: #00ff88;">@context.TotalChargeAmount.ToString("C")</MudText>
+                    </MudTd>
+                    <MudTd DataLabel="Insurance">
+                        <MudText Typo="Typo.body2">@context.PatientInsurance?.InsurancePlan?.PayerName</MudText>
+                    </MudTd>
+                    <MudTd DataLabel="Status">
+                        @{
+                            var statusColor = context.Status switch
+                            {
+                                "Draft" => Color.Default,
+                                "Ready" => Color.Info,
+                                "Submitted" => Color.Primary,
+                                "Accepted" => Color.Success,
+                                "Rejected" => Color.Error,
+                                "Paid" => Color.Success,
+                                _ => Color.Default
+                            };
+                        }
+                        <MudChip T="string" Color="statusColor" Size="Size.Small">@context.Status</MudChip>
+                    </MudTd>
+                    <MudTd DataLabel="Submitted">
+                        <MudText Typo="Typo.body2">
+                            @(context.SubmittedDate?.ToString("MM/dd/yyyy") ?? "-")
+                        </MudText>
+                    </MudTd>
+                    <MudTd DataLabel="Actions">
+                        <MudIconButton Icon="@Icons.Material.Filled.Visibility" Color="Color.Primary" 
+                                       Size="Size.Small" OnClick="@(() => ViewClaim(context))" 
+                                       Title="View Details" />
+                        @if (context.Status == "Draft" || context.Status == "Ready")
+                        {
+                            <MudIconButton Icon="@Icons.Material.Filled.Send" Color="Color.Success" 
+                                           Size="Size.Small" OnClick="@(() => SubmitClaim(context))" 
+                                           Title="Submit to EDI" />
+                        }
+                    </MudTd>
+                </RowTemplate>
+                <PagerContent>
+                    <MudTablePager />
+                </PagerContent>
+            </MudTable>
+        }
+    </MudPaper>
+</MudContainer>
+
+@code {
+    private List<Claim> _claims = new();
+    private bool _loading = true;
+    private string _searchString = "";
+    private string? _errorMessage = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadClaims();
+    }
+
+    private async Task LoadClaims()
+    {
+        _loading = true;
+        _errorMessage = null;
+        try
+        {
+            _claims = await ClaimService.GetClaimsAsync();
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = $"Error loading claims: {ex.Message}\n{ex.StackTrace}";
+            Snackbar.Add($"Error loading claims: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+
+    private bool FilterClaim(Claim claim)
+    {
+        if (string.IsNullOrWhiteSpace(_searchString))
+            return true;
+
+        if (claim == null)
+            return false;
+
+        var search = _searchString.ToLower();
+        return (claim.ClaimNumber?.ToLower().Contains(search) ?? false)
+            || (claim.Patient?.FullName?.ToLower().Contains(search) ?? false)
+            || (claim.Provider?.FullName?.ToLower().Contains(search) ?? false)
+            || (claim.Status?.ToLower().Contains(search) ?? false);
+    }
+
+    private async Task OpenClaimWizard()
+    {
+        var dialog = DialogService.Show<ClaimWizard>("Create New Claim",
+            new DialogOptions { MaxWidth = MaxWidth.Large, FullWidth = true });
+
+        var result = await dialog.Result;
+        if (!result.Canceled)
+        {
+            await LoadClaims();
+        }
+    }
+
+    private void ViewClaim(Claim claim)
+    {
+        Snackbar.Add($"Viewing claim {claim.ClaimNumber}", Severity.Info);
+        // TODO: Navigate to claim detail page or show detail dialog
+    }
+
+    private async Task SubmitClaim(Claim claim)
+    {
+        try
+        {
+            await ClaimService.SubmitClaimAsync(claim.ClaimId.ToString());
+            Snackbar.Add($"Claim {claim.ClaimNumber} submitted successfully!", Severity.Success);
+            await LoadClaims();
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error submitting claim: {ex.Message}", Severity.Error);
+        }
+    }
+}

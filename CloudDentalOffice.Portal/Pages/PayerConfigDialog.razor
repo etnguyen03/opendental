@@ -1,0 +1,321 @@
+@using CloudDentalOffice.Portal.Models
+@using CloudDentalOffice.Portal.Services
+@using System.Text
+@inject IInsurancePlanService InsurancePlanService
+@inject ISnackbar Snackbar
+
+<MudDialog>
+    <DialogContent>
+        <MudTabs Elevation="3" Rounded="true" ApplyEffectsToContainer="true" Color="Color.Primary">
+            <MudTabPanel Text="General" Icon="@Icons.Material.Filled.Info">
+                <MudContainer Class="pa-4">
+                    <MudTextField @bind-Value="payer.PayerId" 
+                                  Label="Payer ID" 
+                                  Required="true"
+                                  Variant="Variant.Outlined" 
+                                  Margin="Margin.Dense" />
+                    
+                    <MudTextField @bind-Value="payer.PayerName" 
+                                  Label="Payer Name" 
+                                  Required="true"
+                                  Variant="Variant.Outlined" 
+                                  Margin="Margin.Dense" 
+                                  Class="mt-3" />
+                    
+                    <MudTextField @bind-Value="payer.PlanName" 
+                                  Label="Plan Name (Optional)" 
+                                  Variant="Variant.Outlined" 
+                                  Margin="Margin.Dense" 
+                                  Class="mt-3" />
+                    
+                    <MudSelect @bind-Value="payer.PlanType" 
+                               Label="Plan Type" 
+                               Variant="Variant.Outlined" 
+                               Margin="Margin.Dense" 
+                               Class="mt-3">
+                        <MudSelectItem Value="@("PPO")">PPO</MudSelectItem>
+                        <MudSelectItem Value="@("HMO")">HMO</MudSelectItem>
+                        <MudSelectItem Value="@("Indemnity")">Indemnity</MudSelectItem>
+                        <MudSelectItem Value="@("DHMO")">DHMO</MudSelectItem>
+                        <MudSelectItem Value="@("EPO")">EPO</MudSelectItem>
+                    </MudSelect>
+
+                    <MudTextField @bind-Value="payer.EdiPayerId" 
+                                  Label="EDI Payer ID (for X12)" 
+                                  Variant="Variant.Outlined" 
+                                  Margin="Margin.Dense" 
+                                  Class="mt-3"
+                                  HelperText="Sometimes different from Payer ID" />
+                    
+                    <MudSwitch @bind-Value="payer.IsActive" 
+                               Label="Active" 
+                               Color="Color.Success" 
+                               Class="mt-3" />
+                </MudContainer>
+            </MudTabPanel>
+
+            <MudTabPanel Text="EDI Configuration" Icon="@Icons.Material.Filled.Send">
+                <MudContainer Class="pa-4">
+                    <MudSwitch @bind-Value="payer.EdiEnabled" 
+                               Label="Enable EDI Submission" 
+                               Color="Color.Primary" 
+                               Class="mb-4" />
+
+                    @if (payer.EdiEnabled)
+                    {
+                        <MudSelect @bind-Value="payer.EdiSubmissionType" 
+                                   Label="Submission Method" 
+                                   Variant="Variant.Outlined" 
+                                   Margin="Margin.Dense"
+                                   Required="true">
+                            <MudSelectItem Value="@("SFTP")">SFTP (File Upload)</MudSelectItem>
+                            <MudSelectItem Value="@("API")">CloudHealthOffice API</MudSelectItem>
+                            <MudSelectItem Value="@("BOTH")">Both (SFTP + API)</MudSelectItem>
+                        </MudSelect>
+                    }
+                </MudContainer>
+            </MudTabPanel>
+
+            @if (payer.EdiEnabled && (payer.EdiSubmissionType == "SFTP" || payer.EdiSubmissionType == "BOTH"))
+            {
+                <MudTabPanel Text="SFTP Settings" Icon="@Icons.Material.Filled.Upload">
+                    <MudContainer Class="pa-4">
+                        <MudAlert Severity="Severity.Info" Class="mb-3" Dense="true">
+                            Configure SFTP connection for traditional EDI X12 837D file upload
+                        </MudAlert>
+
+                        <MudTextField @bind-Value="payer.SftpHost" 
+                                      Label="SFTP Host" 
+                                      Required="true"
+                                      Variant="Variant.Outlined" 
+                                      Margin="Margin.Dense"
+                                      Placeholder="sftp.example.com" />
+                        
+                        <MudNumericField @bind-Value="sftpPort" 
+                                         Label="SFTP Port" 
+                                         Variant="Variant.Outlined" 
+                                         Margin="Margin.Dense" 
+                                         Class="mt-3"
+                                         Min="1"
+                                         Max="65535" />
+                        
+                        <MudTextField @bind-Value="payer.SftpUsername" 
+                                      Label="Username" 
+                                      Required="true"
+                                      Variant="Variant.Outlined" 
+                                      Margin="Margin.Dense" 
+                                      Class="mt-3" />
+                        
+                        <MudSwitch @bind-Value="payer.SftpUseSshKey" 
+                                   Label="Use SSH Key Authentication" 
+                                   Color="Color.Primary" 
+                                   Class="mt-3" />
+
+                        @if (payer.SftpUseSshKey)
+                        {
+                            <MudTextField @bind-Value="sshKeyPlaintext" 
+                                          Label="SSH Private Key" 
+                                          Lines="5"
+                                          Variant="Variant.Outlined" 
+                                          Margin="Margin.Dense" 
+                                          Class="mt-3"
+                                          Placeholder="-----BEGIN OPENSSH PRIVATE KEY-----" />
+                        }
+                        else
+                        {
+                            <MudTextField @bind-Value="passwordPlaintext" 
+                                          Label="Password" 
+                                          InputType="InputType.Password"
+                                          Required="true"
+                                          Variant="Variant.Outlined" 
+                                          Margin="Margin.Dense" 
+                                          Class="mt-3" />
+                        }
+                        
+                        <MudTextField @bind-Value="payer.SftpRemotePath" 
+                                      Label="Remote Path" 
+                                      Variant="Variant.Outlined" 
+                                      Margin="Margin.Dense" 
+                                      Class="mt-3"
+                                      Placeholder="/incoming/claims"
+                                      HelperText="Directory on SFTP server for claim files" />
+                    </MudContainer>
+                </MudTabPanel>
+            }
+
+            @if (payer.EdiEnabled && (payer.EdiSubmissionType == "API" || payer.EdiSubmissionType == "BOTH"))
+            {
+                <MudTabPanel Text="API Settings" Icon="@Icons.Material.Filled.Api">
+                    <MudContainer Class="pa-4">
+                        <MudAlert Severity="Severity.Info" Class="mb-3" Dense="true">
+                            Configure CloudHealthOffice or payer-specific API endpoint
+                        </MudAlert>
+
+                        <MudTextField @bind-Value="payer.ApiEndpoint" 
+                                      Label="API Endpoint URL" 
+                                      Required="true"
+                                      Variant="Variant.Outlined" 
+                                      Margin="Margin.Dense"
+                                      Placeholder="https://api.cloudhealthoffice.com" />
+                        
+                        <MudSelect @bind-Value="payer.ApiAuthType" 
+                                   Label="Authentication Type" 
+                                   Variant="Variant.Outlined" 
+                                   Margin="Margin.Dense" 
+                                   Class="mt-3">
+                            <MudSelectItem Value="@("ApiKey")">API Key (Header: X-API-Key)</MudSelectItem>
+                            <MudSelectItem Value="@("Bearer")">Bearer Token</MudSelectItem>
+                            <MudSelectItem Value="@("OAuth")">OAuth 2.0</MudSelectItem>
+                        </MudSelect>
+                        
+                        <MudTextField @bind-Value="apiKeyPlaintext" 
+                                      Label="API Key / Token" 
+                                      Required="true"
+                                      InputType="InputType.Password"
+                                      Variant="Variant.Outlined" 
+                                      Margin="Margin.Dense" 
+                                      Class="mt-3" />
+                    </MudContainer>
+                </MudTabPanel>
+            }
+        </MudTabs>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel" Variant="Variant.Text">Cancel</MudButton>
+        <MudButton OnClick="Save" 
+                   Variant="Variant.Filled" 
+                   Color="Color.Primary"
+                   Style="background: linear-gradient(135deg, #00ffff 0%, #00ff88 100%); color: #000000;">
+            Save Configuration
+        </MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] 
+    private MudDialogInstance? MudDialog { get; set; }
+
+    [Parameter]
+    public EventCallback OnSaved { get; set; }
+
+    private InsurancePlan payer = new();
+    private bool isNewPayer = false;
+    
+    // Plaintext fields for sensitive data (will be encrypted before saving)
+    private string passwordPlaintext = "";
+    private string sshKeyPlaintext = "";
+    private string apiKeyPlaintext = "";
+    private int? sftpPort = 22;
+
+    public void Show(InsurancePlan payerToEdit)
+    {
+        isNewPayer = payerToEdit.InsurancePlanId == 0;
+        
+        // Clone the payer to avoid modifying the original until save
+        payer = new InsurancePlan
+        {
+            InsurancePlanId = payerToEdit.InsurancePlanId,
+            PayerId = payerToEdit.PayerId,
+            PayerName = payerToEdit.PayerName,
+            PlanName = payerToEdit.PlanName,
+            PlanType = payerToEdit.PlanType,
+            EdiPayerId = payerToEdit.EdiPayerId,
+            IsActive = payerToEdit.IsActive,
+            EdiEnabled = payerToEdit.EdiEnabled,
+            EdiSubmissionType = payerToEdit.EdiSubmissionType,
+            SftpHost = payerToEdit.SftpHost,
+            SftpPort = payerToEdit.SftpPort,
+            SftpUsername = payerToEdit.SftpUsername,
+            SftpPasswordEncrypted = payerToEdit.SftpPasswordEncrypted,
+            SftpRemotePath = payerToEdit.SftpRemotePath,
+            SftpUseSshKey = payerToEdit.SftpUseSshKey,
+            SftpSshKeyEncrypted = payerToEdit.SftpSshKeyEncrypted,
+            ApiEndpoint = payerToEdit.ApiEndpoint,
+            ApiKeyEncrypted = payerToEdit.ApiKeyEncrypted,
+            ApiAuthType = payerToEdit.ApiAuthType,
+            CreatedDate = payerToEdit.CreatedDate,
+            ModifiedDate = payerToEdit.ModifiedDate
+        };
+
+        // Decrypt existing values for editing (simple base64 for now)
+        passwordPlaintext = DecryptValue(payer.SftpPasswordEncrypted);
+        sshKeyPlaintext = DecryptValue(payer.SftpSshKeyEncrypted);
+        apiKeyPlaintext = DecryptValue(payer.ApiKeyEncrypted);
+        sftpPort = payer.SftpPort ?? 22;
+
+        StateHasChanged();
+    }
+
+    private async Task Save()
+    {
+        try
+        {
+            // Encrypt sensitive values before saving (simple base64 for now - TODO: use Data Protection API)
+            if (!string.IsNullOrEmpty(passwordPlaintext))
+            {
+                payer.SftpPasswordEncrypted = EncryptValue(passwordPlaintext);
+            }
+
+            if (!string.IsNullOrEmpty(sshKeyPlaintext))
+            {
+                payer.SftpSshKeyEncrypted = EncryptValue(sshKeyPlaintext);
+            }
+
+            if (!string.IsNullOrEmpty(apiKeyPlaintext))
+            {
+                payer.ApiKeyEncrypted = EncryptValue(apiKeyPlaintext);
+            }
+
+            payer.SftpPort = sftpPort;
+
+            if (isNewPayer)
+            {
+                await InsurancePlanService.CreateInsurancePlanAsync(payer);
+            }
+            else
+            {
+                await InsurancePlanService.UpdateInsurancePlanAsync(payer);
+            }
+
+            await OnSaved.InvokeAsync();
+            MudDialog?.Close(DialogResult.Ok(true));
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error saving payer configuration: {ex.Message}", Severity.Error);
+        }
+    }
+
+    private void Cancel()
+    {
+        MudDialog?.Close(DialogResult.Cancel());
+    }
+
+    private string EncryptValue(string plaintext)
+    {
+        // TODO: Implement proper encryption using Data Protection API
+        // For now, simple base64 encoding (NOT SECURE - development only!)
+        if (string.IsNullOrEmpty(plaintext))
+            return string.Empty;
+
+        var bytes = Encoding.UTF8.GetBytes(plaintext);
+        return Convert.ToBase64String(bytes);
+    }
+
+    private string DecryptValue(string? encrypted)
+    {
+        // TODO: Implement proper decryption
+        if (string.IsNullOrEmpty(encrypted))
+            return string.Empty;
+
+        try
+        {
+            var bytes = Convert.FromBase64String(encrypted);
+            return Encoding.UTF8.GetString(bytes);
+        }
+        catch
+        {
+            return string.Empty;
+        }
+    }
+}
