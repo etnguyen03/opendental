@@ -1,68 +1,47 @@
 # Cloud Dental Office
 
-**Modern, SaaS-ready practice management system for dental providers**  
-Built as a cloud-native evolution of OpenDental — now with Blazor Server, better architecture, and streamlined payer interoperability.
+**Modern SaaS Practice Management System for Dental Providers**  
+A cloud-native evolution of OpenDental — rebuilt with Blazor Server, clean architecture, real-time UI, and deep payer interoperability.
 
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![.NET](https://img.shields.io/badge/.NET-8.0+-purple.svg)](https://dotnet.microsoft.com)
-![Blazor Server](https://img.shields.io/badge/Blazor%20Server-Powered-blue)
+[![.NET](https://img.shields.io/badge/.NET-8.0+-purple)](https://dotnet.microsoft.com)
+![Blazor Server](https://img.shields.io/badge/Blazor_Server-Powered-blue)
 
-### The Problem
+### The Vision
 
-Most dental practices still run on aging desktop software (like OpenDental on-prem).  
-Payer interoperability remains painful: slow eligibility checks, clunky claim submissions, delayed ERAs, and poor 835/837 handling.  
-Upgrading or replacing legacy practice management systems takes months and huge cost — we want to change that.
+Dental practices deserve better than aging desktop software.  
+Cloud Dental Office modernizes the proven OpenDental engine into a secure, browser-based SaaS platform with:
 
-### Cloud Dental Office
+- Responsive Blazor Server UI (no more remote desktop pain)
+- Multi-tenant architecture ready for DSOs and group practices
+- Native payer interoperability — electronic claims (837D), eligibility (270/271), ERA (835), status (276/277), prior auth (278), and more
+- Designed to pair perfectly with **[Cloud Health Office](https://github.com/aurelianware/cloudhealthoffice)** for true end-to-end provider ↔ payer automation
 
-A modernized, cloud-first fork of OpenDental that brings:
+Goal: Bring dental practices into the cloud era while preserving OpenDental's battle-tested clinical, charting, and billing logic — and dramatically improve payer connectivity.
 
-- **SaaS-ready** deployment (Blazor Server)
-- Clean, maintainable architecture
-- Strong focus on **provider ↔ payer interoperability**
-- Future support for real-time eligibility (270/271), electronic claims (837), ERA (835), and attachments (275)
-- Designed to work beautifully together with **[Cloud Health Office](https://github.com/aurelianware/cloudhealthoffice)** for end-to-end provider-payer automation
+### What You Get (Current + Near-Term)
 
-Goal: Give dental practices a modern, secure, cloud-native PMS without losing OpenDental's battle-tested clinical & billing logic — while dramatically improving payer connectivity.
+- Blazor Server → fast, responsive, secure server-side rendering
+- Modern dark UI theme with teal accents
+- Full claim lifecycle: create (multi-step wizard), review, submit, track
+- CDT code quick-select + tooth charting integration
+- Dashboard with KPIs (patients, appointments, pending claims, revenue)
+- EDI integration foundation (837D claims already working)
+- Side navigation ("The Sentinel") with Practice Management + EDI sections
+- Real-time feedback (toasts, status badges, activity timeline)
 
-### Key Features (Current + Roadmap)
+**Roadmap highlights**  
+- Full 270/271 real-time eligibility checks  
+- 835 ERA auto-posting & reconciliation  
+- 276/277 claim status polling  
+- 278 prior authorization requests  
+- Multi-location / DSO support  
+- Mobile-responsive improvements  
+- Azure / multi-cloud deployment templates  
+- OpenID Connect / Azure AD B2C auth
 
-✅ Blazor Server UI — responsive, modern, runs in any modern browser  
-✅ Forked from latest stable OpenDental — keeping core dental workflows intact  
-✅ .NET 8+, clean architecture improvements  
-✅ Multi-tenant SaaS foundation  
-🚧 Improved cloud database & storage (Azure/AWS/GCP)  
-🚧 Enhanced EDI & FHIR connectivity layer  
-🚧 Integration path with Cloud Health Office payer platform  
-🚧 Real-time eligibility, claim status, ERA auto-posting  
-🚧 Mobile/responsive improvements  
-🚧 Open-source under Apache 2.0
+### Quick Start (Local Development)
 
-### Quick Links
-
-- 🌐 Live product site (coming soon): https://clouddentaloffice.com (planned)  
-- 🏠 Companion payer platform: https://github.com/aurelianware/cloudhealthoffice  
-- 📖 Documentation: /docs folder (expanding soon)
-
-### Getting Started
-
-(Instructions coming in next few days — currently in active early development)
-
-1. Clone the repo
-2. Set up the database (migration scripts in /Database)
-3. Run the Blazor Server project
-
-Detailed quickstart guide → [QUICKSTART.md](QUICKSTART.md)
-
-### Why Open Source?
-
-We believe dental software deserves the same modernization and interoperability revolution that medical payer systems are starting to see.  
-By open-sourcing this, we hope to accelerate innovation for dental practices and DSOs worldwide.
-
-Star ⭐ the repo if you believe dental providers deserve better cloud software.
-
-### License
-
-Apache License 2.0 — see [LICENSE](LICENSE)
-
-Built with ❤️ by [Aurelianware](https://github.com/aurelianware)
+1. Clone the repo  
+   ```bash
+   git clone https://github.com/aurelianware/clouddentaloffice.git
