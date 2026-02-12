@@ -137,3 +137,19 @@ kubectl get ingress
 ```
 
 Visit `https://clouddentaloffice.com`
+
+## Step 7: CI/CD Automation (GitHub Actions)
+
+We have set up a workflow file in `.github/workflows/deploy-portal.yml` that automatically builds and updates the site whenever you push to the `main` branch.
+
+### Required Setup
+You must add a secret to your GitHub repository for this to work:
+
+1.  Go to **DigitalOcean** -> **API** -> **Generate New Token** (Select all scopes).
+2.  Copy the token.
+3.  Go to **GitHub Repo** -> **Settings** -> **Secrets and variables** -> **Actions**.
+4.  Click **New repository secret**.
+5.  **Name**: `DIGITALOCEAN_ACCESS_TOKEN`
+6.  **Value**: (Paste your token)
+
+Once added, any push to `main` will trigger a deployment in about 2-3 minutes.

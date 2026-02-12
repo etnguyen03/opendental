@@ -1,0 +1,71 @@
+name: Deploy Cloud Dental Portal
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'CloudDentalOffice.Portal/**'
+      - 'k8s/**'
+      - '.github/workflows/deploy-portal.yml'
+  workflow_dispatch:
+
+env:
+  REGISTRY: registry.digitalocean.com/clouddental
+  IMAGE_NAME: portal
+  CLUSTER_NAME: clouddentaloffice
+  DEPLOYMENT_FILE: k8s/deployment.yaml
+
+jobs:
+  build-and-deploy:
+    name: Build & Deploy to DOKS
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install doctl
+        uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+
+      - name: Log in to DO Container Registry
+        run: doctl registry login --expiry-seconds 1200
+
+      - name: Save DigitalOcean kubeconfig
+        run: doctl kubernetes cluster kubeconfig save ${{ env.CLUSTER_NAME }}
+
+      - name: Build and Push Docker image
+        run: |
+          # Create a short tag from the commit SHA
+          TAG=$(echo $GITHUB_SHA | head -c7)
+          
+          echo "Building image version: ${TAG}"
+          
+          # Build Docker image
+          # Note: GitHub Actions runners are AMD64 native, matching the DigitalOcean server architecture.
+          docker build \
+            -f CloudDentalOffice.Portal/Dockerfile \
+            -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${TAG} \
+            -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest \
+            .
+            
+          # Push images
+          docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${TAG}
+          docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+          
+          # Set the TAG as an output for the next step (optional, strictly speaking)
+          echo "TAG=${TAG}" >> $GITHUB_ENV
+
+      - name: Update Deployment Overlay & Deploy
+        run: |
+          # Update the deployment.yaml with the new image tag
+          # We use sed to replace the existing image line with the specific version we just built
+          sed -i "s|image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:.*|image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.TAG }}|" ${{ env.DEPLOYMENT_FILE }}
+          
+          # Apply the updated manifest to the cluster
+          kubectl apply -f ${{ env.DEPLOYMENT_FILE }}
+          
+          # Force a checkout of the rollout to ensure it completes successfully
+          kubectl rollout status deployment/clouddental-portal
