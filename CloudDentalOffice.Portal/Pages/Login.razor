@@ -1,0 +1,62 @@
+@page "/login"
+@attribute [AllowAnonymous]
+@using CloudDentalOffice.Portal.Services.Auth
+@inject IAuthService AuthService
+@inject AuthenticationStateProvider AuthStateProvider
+@inject NavigationManager Navigation
+
+<MudContainer MaxWidth="MaxWidth.Small" Class="mt-16">
+    <MudPaper Elevation="3" Class="pa-8">
+        <MudText Typo="Typo.h4" Align="Align.Center" Class="mb-4">Cloud Dental Office</MudText>
+        <MudText Typo="Typo.h6" Align="Align.Center" Class="mb-8">Login</MudText>
+
+        <MudForm @ref="form" @bind-IsValid="@success">
+            <MudTextField T="string" Label="Email" Required="true" RequiredError="Email is required!"
+                          @bind-Value="email" InputType="InputType.Email" />
+            <MudTextField T="string" Label="Password" Required="true" RequiredError="Password is required!"
+                          @bind-Value="password" InputType="InputType.Password" Class="mt-4" />
+
+            <div class="d-flex justify-space-between align-center mt-4">
+                <MudLink Href="/register">Create an account</MudLink>
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="@(!success)" OnClick="DoLogin">Login</MudButton>
+            </div>
+            
+            @if (!string.IsNullOrEmpty(error))
+            {
+                <MudAlert Severity="Severity.Error" Class="mt-4">@error</MudAlert>
+            }
+        </MudForm>
+    </MudPaper>
+</MudContainer>
+
+@code {
+    bool success;
+    MudForm form;
+    string email;
+    string password;
+    string error;
+
+    private async Task DoLogin()
+    {
+        error = null;
+        try
+        {
+            var token = await AuthService.LoginAsync(email, password);
+            if (!string.IsNullOrEmpty(token))
+            {
+                var customAuthStateProvider = (PortalAuthStateProvider)AuthStateProvider;
+                await customAuthStateProvider.LoginAsync(token);
+                Navigation.NavigateTo("/");
+            }
+            else
+            {
+                error = "Invalid email or password.";
+            }
+        }
+        catch (Exception ex)
+        {
+            error = "An error occurred during login.";
+            Console.WriteLine(ex);
+        }
+    }
+}

@@ -7,11 +7,15 @@ namespace CloudDentalOffice.Portal.Models;
 /// Treatment plan entity
 /// </summary>
 [Table("TreatmentPlans")]
-public class TreatmentPlan
+public class TreatmentPlan : ITenantEntity
 {
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int TreatmentPlanId { get; set; }
+
+    [Required]
+    [MaxLength(64)]
+    public string TenantId { get; set; } = string.Empty;
 
     [Required]
     public int PatientId { get; set; }

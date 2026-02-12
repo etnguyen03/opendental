@@ -1,19 +1,32 @@
-<Router AppAssembly="@typeof(App).Assembly">
-    <Found Context="routeData">
-        <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
-        <FocusOnNavigate RouteData="@routeData" Selector="h1" />
-    </Found>
-    <NotFound>
-        <PageTitle>Not found</PageTitle>
-        <LayoutView Layout="@typeof(MainLayout)">
-            <div class="d-flex flex-column align-center justify-center" style="height: 100vh;">
-                <MudIcon Icon="@Icons.Material.Filled.SearchOff" Size="Size.Large" Color="Color.Primary" />
-                <MudText Typo="Typo.h3" Class="mt-4">404 - Page Not Found</MudText>
-                <MudText Typo="Typo.body1" Color="Color.Secondary">The sequence you requested does not exist.</MudText>
-                <MudButton Href="/" Variant="Variant.Filled" Color="Color.Primary" Class="mt-4">
-                    Return to Dashboard
-                </MudButton>
-            </div>
-        </LayoutView>
-    </NotFound>
-</Router>
+<CascadingAuthenticationState>
+    <Router AppAssembly="@typeof(App).Assembly">
+        <Found Context="routeData">
+            <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)">
+                <NotAuthorized>
+                     @if (context.User.Identity?.IsAuthenticated != true)
+                     {
+                         <RedirectToLogin />
+                     }
+                     else
+                     {
+                        <p role="alert">You are not authorized to access this resource.</p>
+                     }
+                </NotAuthorized>
+            </AuthorizeRouteView>
+            <FocusOnNavigate RouteData="@routeData" Selector="h1" />
+        </Found>
+        <NotFound>
+            <PageTitle>Not found</PageTitle>
+            <LayoutView Layout="@typeof(MainLayout)">
+                <div class="d-flex flex-column align-center justify-center" style="height: 100vh;">
+                    <MudIcon Icon="@Icons.Material.Filled.SearchOff" Size="Size.Large" Color="Color.Primary" />
+                    <MudText Typo="Typo.h3" Class="mt-4">404 - Page Not Found</MudText>
+                    <MudText Typo="Typo.body1" Color="Color.Secondary">The sequence you requested does not exist.</MudText>
+                    <MudButton Href="/" Variant="Variant.Filled" Color="Color.Primary" Class="mt-4">
+                        Return to Dashboard
+                    </MudButton>
+                </div>
+            </LayoutView>
+        </NotFound>
+    </Router>
+</CascadingAuthenticationState>

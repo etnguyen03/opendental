@@ -7,11 +7,15 @@ namespace CloudDentalOffice.Portal.Models;
 /// Appointment entity
 /// </summary>
 [Table("Appointments")]
-public class Appointment
+public class Appointment : ITenantEntity
 {
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int AppointmentId { get; set; }
+
+    [Required]
+    [MaxLength(64)]
+    public string TenantId { get; set; } = string.Empty;
 
     [Required]
     public int PatientId { get; set; }

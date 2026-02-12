@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using CloudDentalOffice.Portal.Models;
+using CloudDentalOffice.Portal.Services.Tenancy;
 
 namespace CloudDentalOffice.Portal.Data;
 
@@ -8,12 +9,24 @@ namespace CloudDentalOffice.Portal.Data;
 /// </summary>
 public class CloudDentalDbContext : DbContext
 {
+    private readonly ITenantProvider _tenantProvider;
+
     public CloudDentalDbContext(DbContextOptions<CloudDentalDbContext> options)
-        : base(options)
+        : this(options, null)
     {
     }
 
+    public CloudDentalDbContext(
+        DbContextOptions<CloudDentalDbContext> options,
+        ITenantProvider? tenantProvider)
+        : base(options)
+    {
+        _tenantProvider = tenantProvider ?? new DefaultTenantProvider();
+    }
+
     // DbSets
+    public DbSet<TenantRegistry> Tenants => Set<TenantRegistry>();
+    public DbSet<User> Users => Set<User>();
     public DbSet<Patient> Patients => Set<Patient>();
     public DbSet<PatientInsurance> PatientInsurances => Set<PatientInsurance>();
     public DbSet<InsurancePlan> InsurancePlans => Set<InsurancePlan>();
@@ -28,12 +41,24 @@ public class CloudDentalDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
 
+        ConfigureTenantEntity<Patient>(modelBuilder);
+        ConfigureTenantEntity<PatientInsurance>(modelBuilder);
+        ConfigureTenantEntity<InsurancePlan>(modelBuilder);
+        ConfigureTenantEntity<Provider>(modelBuilder);
+        ConfigureTenantEntity<Appointment>(modelBuilder);
+        ConfigureTenantEntity<TreatmentPlan>(modelBuilder);
+        ConfigureTenantEntity<PlannedProcedure>(modelBuilder);
+        ConfigureTenantEntity<Claim>(modelBuilder);
+        ConfigureTenantEntity<ClaimProcedure>(modelBuilder);
+
         // Patient configuration
         modelBuilder.Entity<Patient>(entity =>
         {
             entity.HasIndex(e => e.LastName);
             entity.HasIndex(e => e.Email);
             entity.HasIndex(e => new { e.LastName, e.FirstName });
+            entity.HasIndex(e => e.TenantId);
+            entity.HasQueryFilter(e => e.TenantId == _tenantProvider.TenantId);
         });
 
         // PatientInsurance configuration
@@ -50,6 +75,8 @@ public class CloudDentalDbContext : DbContext
                 .OnDelete(DeleteBehavior.Restrict);
 
             entity.HasIndex(e => e.MemberId);
+            entity.HasIndex(e => e.TenantId);
+            entity.HasQueryFilter(e => e.TenantId == _tenantProvider.TenantId);
         });
 
         // InsurancePlan configuration
@@ -57,6 +84,16 @@ public class CloudDentalDbContext : DbContext
         {
             entity.HasIndex(e => e.PayerId);
             entity.HasIndex(e => e.PayerName);
+            entity.HasIndex(e => e.TenantId);
+            entity.HasQueryFilter(e => e.TenantId == _tenantProvider.TenantId);
+        });
+
+        // User configuration
+        modelBuilder.Entity<User>(entity =>
+        {
+            entity.HasIndex(e => e.Email).IsUnique();
+            entity.HasIndex(e => e.TenantId);
+            entity.HasQueryFilter(e => e.TenantId == _tenantProvider.TenantId);
         });
 
         // Provider configuration
@@ -64,6 +101,8 @@ public class CloudDentalDbContext : DbContext
         {
             entity.HasIndex(e => e.NPI).IsUnique();
             entity.HasIndex(e => new { e.LastName, e.FirstName });
+            entity.HasIndex(e => e.TenantId);
+            entity.HasQueryFilter(e => e.TenantId == _tenantProvider.TenantId);
         });
 
         // Appointment configuration
@@ -81,6 +120,8 @@ public class CloudDentalDbContext : DbContext
 
             entity.HasIndex(e => e.AppointmentDateTime);
             entity.HasIndex(e => new { e.AppointmentDateTime, e.ProviderId });
+            entity.HasIndex(e => e.TenantId);
+            entity.HasQueryFilter(e => e.TenantId == _tenantProvider.TenantId);
         });
 
         // TreatmentPlan configuration
@@ -97,6 +138,8 @@ public class CloudDentalDbContext : DbContext
                 .OnDelete(DeleteBehavior.Restrict);
 
             entity.HasIndex(e => e.Status);
+            entity.HasIndex(e => e.TenantId);
+            entity.HasQueryFilter(e => e.TenantId == _tenantProvider.TenantId);
         });
 
         // PlannedProcedure configuration
@@ -111,6 +154,8 @@ public class CloudDentalDbContext : DbContext
                 .WithMany()
                 .HasForeignKey(pp => pp.ClaimProcedureId)
                 .OnDelete(DeleteBehavior.SetNull);
+            entity.HasIndex(e => e.TenantId);
+            entity.HasQueryFilter(e => e.TenantId == _tenantProvider.TenantId);
         });
 
         // Claim configuration
@@ -134,6 +179,8 @@ public class CloudDentalDbContext : DbContext
             entity.HasIndex(e => e.ClaimNumber).IsUnique();
             entity.HasIndex(e => e.Status);
             entity.HasIndex(e => e.SubmittedDate);
+            entity.HasIndex(e => e.TenantId);
+            entity.HasQueryFilter(e => e.TenantId == _tenantProvider.TenantId);
         });
 
         // ClaimProcedure configuration
@@ -145,6 +192,8 @@ public class CloudDentalDbContext : DbContext
                 .OnDelete(DeleteBehavior.Cascade);
 
             entity.HasIndex(e => e.CDTCode);
+            entity.HasIndex(e => e.TenantId);
+            entity.HasQueryFilter(e => e.TenantId == _tenantProvider.TenantId);
         });
 
         // Seed data
@@ -153,76 +202,51 @@ public class CloudDentalDbContext : DbContext
 
     private void SeedData(ModelBuilder modelBuilder)
     {
-        // Seed Providers
-        modelBuilder.Entity<Provider>().HasData(
-            new Provider
-            {
-                ProviderId = 1,
-                NPI = "1234567890",
-                FirstName = "Sarah",
-                LastName = "Johnson",
-                Suffix = "DDS",
-                Specialty = "General Dentistry",
-                LicenseNumber = "DDS-12345",
-                LicenseState = "CA",
-                Email = "dr.johnson@clouddental.com",
-                Phone = "555-123-4567",
-                TaxId = "12-3456789",
-                IsActive = true,
-                CreatedDate = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc)
-            },
-            new Provider
-            {
-                ProviderId = 2,
-                NPI = "0987654321",
-                FirstName = "Michael",
-                LastName = "Chen",
-                Suffix = "DMD",
-                Specialty = "Orthodontics",
-                LicenseNumber = "DMD-54321",
-                LicenseState = "CA",
-                Email = "dr.chen@clouddental.com",
-                Phone = "555-987-6543",
-                TaxId = "98-7654321",
-                IsActive = true,
-                CreatedDate = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc)
-            }
-        );
+        // Seed data removed to prevent Npgsql migration issues
+    }
 
-        // Seed Insurance Plans
-        modelBuilder.Entity<InsurancePlan>().HasData(
-            new InsurancePlan
+    public override int SaveChanges()
+    {
+        ApplyTenantId();
+        return base.SaveChanges();
+    }
+
+    public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    {
+        ApplyTenantId();
+        return base.SaveChangesAsync(cancellationToken);
+    }
+
+    private void ApplyTenantId()
+    {
+        var tenantId = _tenantProvider.TenantId;
+        if (string.IsNullOrWhiteSpace(tenantId))
+        {
+            tenantId = TenantConstants.DefaultTenantId;
+        }
+
+        foreach (var entry in ChangeTracker.Entries<ITenantEntity>())
+        {
+            if (entry.State == EntityState.Added || entry.State == EntityState.Modified)
             {
-                InsurancePlanId = 1,
-                PayerId = "BCBS",
-                PayerName = "Blue Cross Blue Shield",
-                PlanName = "PPO Standard",
-                PlanType = "PPO",
-                Phone = "1-800-123-4567",
-                Address1 = "123 Insurance Way",
-                City = "San Francisco",
-                State = "CA",
-                ZipCode = "94102",
-                EdiPayerId = "BCBS001",
-                IsActive = true,
-                CreatedDate = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc)
-            },
-            new InsurancePlan
-            {
-                InsurancePlanId = 2,
-                PayerId = "DELTA",
-                PayerName = "Delta Dental",
-                PlanName = "Delta Premier",
-                PlanType = "PPO",
-                Phone = "1-800-765-4321",
-                Address1 = "456 Dental Plaza",
-                City = "Los Angeles",
-                State = "CA",
-                ZipCode = "90001",
-                EdiPayerId = "DELTA001",
-                IsActive = true,
-                CreatedDate = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc)
+                if (string.IsNullOrWhiteSpace(entry.Entity.TenantId))
+                {
+                    entry.Entity.TenantId = tenantId;
+                }
             }
-        );
+        }
+    }
+
+    private void ConfigureTenantEntity<TEntity>(ModelBuilder modelBuilder)
+        where TEntity : class, ITenantEntity
+    {
+        modelBuilder.Entity<TEntity>()
+            .Property(e => e.TenantId)
+            .HasMaxLength(64)
+            .IsRequired()
+            .HasDefaultValue(TenantConstants.DefaultTenantId);
+
+        modelBuilder.Entity<TEntity>()
+            .HasIndex(e => e.TenantId);
     }
 }

@@ -1,4 +1,10 @@
+using CloudDentalOffice.Portal.Services.Auth;
+using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 using CloudDentalOffice.Portal.Services;
+using CloudDentalOffice.Portal.Services.Tenancy;
 using CloudDentalOffice.Portal.Data;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
@@ -14,9 +20,37 @@ builder.Services.AddServerSideBlazor(options =>
     options.DetailedErrors = builder.Environment.IsDevelopment();
 });
 builder.Services.AddMudServices();
+builder.Services.AddHttpContextAccessor();
+
+// Configure JWT Authentication
+var jwtKey = builder.Configuration["Jwt:Key"] ?? "ThisIsASecretKeyForDevelopmentOnly_DoNotUseInProduction_MakeItLonger";
+var jwtIssuer = builder.Configuration["Jwt:Issuer"] ?? "CloudDentalOffice";
+var jwtAudience = builder.Configuration["Jwt:Audience"] ?? "CloudDentalOffice";
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = jwtIssuer,
+        ValidAudience = jwtAudience,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey))
+    };
+});
 
 // Add HttpClient for API calls
 builder.Services.AddHttpClient();
+
+// Tenant resolution (shared DB)
+builder.Services.AddScoped<ITenantProvider, HttpContextTenantProvider>();
 
 // Configure database
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") 
@@ -25,12 +59,19 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 
 builder.Services.AddDbContext<CloudDentalDbContext>(options =>
 {
-    options.UseSqlite(connectionString);
-    
     if (builder.Environment.IsDevelopment())
     {
+        options.UseSqlite(connectionString);
         options.EnableSensitiveDataLogging();
         options.EnableDetailedErrors();
+    }
+    else
+    {
+        // Production: Use PostgreSQL (DigitalOcean Managed DB)
+        options.UseNpgsql(connectionString, pgOptions => 
+        {
+            pgOptions.EnableRetryOnFailure(maxRetryCount: 10, maxRetryDelay: TimeSpan.FromSeconds(30), errorCodesToAdd: null);
+        });
     }
 });
 
@@ -61,6 +102,10 @@ builder.Services.AddScoped<IEdiX12Service, EdiX12Service>();
 builder.Services.AddScoped<IEdiSftpService, EdiSftpService>();
 builder.Services.AddScoped<ICloudHealthOfficeApiService, CloudHealthOfficeApiService>();
 builder.Services.AddScoped<IEdiSubmissionService, EdiSubmissionService>();
+builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddScoped<IStripeService, StripeService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<AuthenticationStateProvider, PortalAuthStateProvider>();
 
 var app = builder.Build();
 
@@ -91,6 +136,9 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapBlazorHub();
 app.MapFallbackToPage("/_Host");

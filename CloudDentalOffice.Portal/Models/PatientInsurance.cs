@@ -7,11 +7,15 @@ namespace CloudDentalOffice.Portal.Models;
 /// Patient insurance information
 /// </summary>
 [Table("PatientInsurances")]
-public class PatientInsurance
+public class PatientInsurance : ITenantEntity
 {
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int PatientInsuranceId { get; set; }
+
+    [Required]
+    [MaxLength(64)]
+    public string TenantId { get; set; } = string.Empty;
 
     // Foreign keys
     [Required]

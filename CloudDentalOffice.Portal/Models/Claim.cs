@@ -7,11 +7,15 @@ namespace CloudDentalOffice.Portal.Models;
 /// Dental claim (837D) entity
 /// </summary>
 [Table("Claims")]
-public class Claim
+public class Claim : ITenantEntity
 {
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int ClaimId { get; set; }
+
+    [Required]
+    [MaxLength(64)]
+    public string TenantId { get; set; } = string.Empty;
 
     [Required]
     [MaxLength(50)]

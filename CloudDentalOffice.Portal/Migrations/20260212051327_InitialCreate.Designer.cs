@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CloudDentalOffice.Portal.Migrations
 {
     [DbContext(typeof(CloudDentalDbContext))]
-    [Migration("20260211051125_AddEdiConfigToInsurancePlan")]
-    partial class AddEdiConfigToInsurancePlan
+    [Migration("20260212051327_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -62,6 +62,13 @@ namespace CloudDentalOffice.Portal.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("TenantId")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(64)
+                        .HasColumnType("TEXT")
+                        .HasDefaultValue("dev");
+
                     b.HasKey("AppointmentId");
 
                     b.HasIndex("AppointmentDateTime");
@@ -69,6 +76,8 @@ namespace CloudDentalOffice.Portal.Migrations
                     b.HasIndex("PatientId");
 
                     b.HasIndex("ProviderId");
+
+                    b.HasIndex("TenantId");
 
                     b.HasIndex("AppointmentDateTime", "ProviderId");
 
@@ -149,6 +158,13 @@ namespace CloudDentalOffice.Portal.Migrations
                     b.Property<DateTime?>("SubmittedDate")
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("TenantId")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(64)
+                        .HasColumnType("TEXT")
+                        .HasDefaultValue("dev");
+
                     b.Property<decimal>("TotalChargeAmount")
                         .HasColumnType("decimal(10,2)");
 
@@ -166,6 +182,8 @@ namespace CloudDentalOffice.Portal.Migrations
                     b.HasIndex("Status");
 
                     b.HasIndex("SubmittedDate");
+
+                    b.HasIndex("TenantId");
 
                     b.ToTable("Claims");
                 });
@@ -220,6 +238,13 @@ namespace CloudDentalOffice.Portal.Migrations
                         .HasMaxLength(10)
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("TenantId")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(64)
+                        .HasColumnType("TEXT")
+                        .HasDefaultValue("dev");
+
                     b.Property<string>("ToothNumber")
                         .HasMaxLength(10)
                         .HasColumnType("TEXT");
@@ -229,6 +254,8 @@ namespace CloudDentalOffice.Portal.Migrations
                     b.HasIndex("CDTCode");
 
                     b.HasIndex("ClaimId");
+
+                    b.HasIndex("TenantId");
 
                     b.ToTable("ClaimProcedures");
                 });
@@ -335,6 +362,13 @@ namespace CloudDentalOffice.Portal.Migrations
                         .HasMaxLength(2)
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("TenantId")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(64)
+                        .HasColumnType("TEXT")
+                        .HasDefaultValue("dev");
+
                     b.Property<string>("ZipCode")
                         .HasMaxLength(10)
                         .HasColumnType("TEXT");
@@ -345,45 +379,9 @@ namespace CloudDentalOffice.Portal.Migrations
 
                     b.HasIndex("PayerName");
 
-                    b.ToTable("InsurancePlans");
+                    b.HasIndex("TenantId");
 
-                    b.HasData(
-                        new
-                        {
-                            InsurancePlanId = 1,
-                            Address1 = "123 Insurance Way",
-                            City = "San Francisco",
-                            CreatedDate = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            EdiEnabled = false,
-                            EdiPayerId = "BCBS001",
-                            IsActive = true,
-                            PayerId = "BCBS",
-                            PayerName = "Blue Cross Blue Shield",
-                            Phone = "1-800-123-4567",
-                            PlanName = "PPO Standard",
-                            PlanType = "PPO",
-                            SftpUseSshKey = false,
-                            State = "CA",
-                            ZipCode = "94102"
-                        },
-                        new
-                        {
-                            InsurancePlanId = 2,
-                            Address1 = "456 Dental Plaza",
-                            City = "Los Angeles",
-                            CreatedDate = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            EdiEnabled = false,
-                            EdiPayerId = "DELTA001",
-                            IsActive = true,
-                            PayerId = "DELTA",
-                            PayerName = "Delta Dental",
-                            Phone = "1-800-765-4321",
-                            PlanName = "Delta Premier",
-                            PlanType = "PPO",
-                            SftpUseSshKey = false,
-                            State = "CA",
-                            ZipCode = "90001"
-                        });
+                    b.ToTable("InsurancePlans");
                 });
 
             modelBuilder.Entity("CloudDentalOffice.Portal.Models.Patient", b =>
@@ -469,6 +467,13 @@ namespace CloudDentalOffice.Portal.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("TenantId")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(64)
+                        .HasColumnType("TEXT")
+                        .HasDefaultValue("dev");
+
                     b.Property<string>("ZipCode")
                         .HasMaxLength(10)
                         .HasColumnType("TEXT");
@@ -478,6 +483,8 @@ namespace CloudDentalOffice.Portal.Migrations
                     b.HasIndex("Email");
 
                     b.HasIndex("LastName");
+
+                    b.HasIndex("TenantId");
 
                     b.HasIndex("LastName", "FirstName");
 
@@ -539,6 +546,13 @@ namespace CloudDentalOffice.Portal.Migrations
                         .HasMaxLength(11)
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("TenantId")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(64)
+                        .HasColumnType("TEXT")
+                        .HasDefaultValue("dev");
+
                     b.Property<DateTime?>("TerminationDate")
                         .HasColumnType("TEXT");
 
@@ -549,6 +563,8 @@ namespace CloudDentalOffice.Portal.Migrations
                     b.HasIndex("MemberId");
 
                     b.HasIndex("PatientId");
+
+                    b.HasIndex("TenantId");
 
                     b.ToTable("PatientInsurances");
                 });
@@ -596,6 +612,13 @@ namespace CloudDentalOffice.Portal.Migrations
                         .HasMaxLength(10)
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("TenantId")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(64)
+                        .HasColumnType("TEXT")
+                        .HasDefaultValue("dev");
+
                     b.Property<string>("ToothNumber")
                         .HasMaxLength(10)
                         .HasColumnType("TEXT");
@@ -606,6 +629,8 @@ namespace CloudDentalOffice.Portal.Migrations
                     b.HasKey("PlannedProcedureId");
 
                     b.HasIndex("ClaimProcedureId");
+
+                    b.HasIndex("TenantId");
 
                     b.HasIndex("TreatmentPlanId");
 
@@ -674,48 +699,52 @@ namespace CloudDentalOffice.Portal.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("TenantId")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(64)
+                        .HasColumnType("TEXT")
+                        .HasDefaultValue("dev");
+
                     b.HasKey("ProviderId");
 
                     b.HasIndex("NPI")
                         .IsUnique();
 
+                    b.HasIndex("TenantId");
+
                     b.HasIndex("LastName", "FirstName");
 
                     b.ToTable("Providers");
+                });
 
-                    b.HasData(
-                        new
-                        {
-                            ProviderId = 1,
-                            CreatedDate = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Email = "dr.johnson@clouddental.com",
-                            FirstName = "Sarah",
-                            IsActive = true,
-                            LastName = "Johnson",
-                            LicenseNumber = "DDS-12345",
-                            LicenseState = "CA",
-                            NPI = "1234567890",
-                            Phone = "555-123-4567",
-                            Specialty = "General Dentistry",
-                            Suffix = "DDS",
-                            TaxId = "12-3456789"
-                        },
-                        new
-                        {
-                            ProviderId = 2,
-                            CreatedDate = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Email = "dr.chen@clouddental.com",
-                            FirstName = "Michael",
-                            IsActive = true,
-                            LastName = "Chen",
-                            LicenseNumber = "DMD-54321",
-                            LicenseState = "CA",
-                            NPI = "0987654321",
-                            Phone = "555-987-6543",
-                            Specialty = "Orthodontics",
-                            Suffix = "DMD",
-                            TaxId = "98-7654321"
-                        });
+            modelBuilder.Entity("CloudDentalOffice.Portal.Models.TenantRegistry", b =>
+                {
+                    b.Property<string>("TenantId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Plan")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("StripeCustomerId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("StripeSubscriptionId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("TenantId");
+
+                    b.ToTable("Tenants");
                 });
 
             modelBuilder.Entity("CloudDentalOffice.Portal.Models.TreatmentPlan", b =>
@@ -754,6 +783,13 @@ namespace CloudDentalOffice.Portal.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("TenantId")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(64)
+                        .HasColumnType("TEXT")
+                        .HasDefaultValue("dev");
+
                     b.Property<string>("Title")
                         .HasMaxLength(255)
                         .HasColumnType("TEXT");
@@ -766,7 +802,49 @@ namespace CloudDentalOffice.Portal.Migrations
 
                     b.HasIndex("Status");
 
+                    b.HasIndex("TenantId");
+
                     b.ToTable("TreatmentPlans");
+                });
+
+            modelBuilder.Entity("CloudDentalOffice.Portal.Models.User", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("PasswordHash")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("TenantId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Email")
+                        .IsUnique();
+
+                    b.HasIndex("TenantId");
+
+                    b.ToTable("Users");
                 });
 
             modelBuilder.Entity("CloudDentalOffice.Portal.Models.Appointment", b =>

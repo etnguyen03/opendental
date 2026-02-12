@@ -170,3 +170,4 @@ local.settings.json
 
 # Rider
 .idea/
+clouddentaloffice-kubeconfig.yaml

@@ -7,11 +7,15 @@ namespace CloudDentalOffice.Portal.Models;
 /// Planned procedure within a treatment plan
 /// </summary>
 [Table("PlannedProcedures")]
-public class PlannedProcedure
+public class PlannedProcedure : ITenantEntity
 {
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int PlannedProcedureId { get; set; }
+
+    [Required]
+    [MaxLength(64)]
+    public string TenantId { get; set; } = string.Empty;
 
     [Required]
     public int TreatmentPlanId { get; set; }

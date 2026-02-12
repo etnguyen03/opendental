@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: clouddental-portal
+  namespace: default
+  labels:
+    app: clouddental-portal
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: clouddental-portal
+  template:
+    metadata:
+      labels:
+        app: clouddental-portal
+    spec:
+      imagePullSecrets:
+      - name: registry-clouddental
+      containers:
+      - name: portal
+        image: registry.digitalocean.com/clouddental/portal:v4
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 80
+        env:
+        - name: ASPNETCORE_ENVIRONMENT
+          value: "Production"
+        - name: ASPNETCORE_URLS
+          value: "http://+:80"
+        envFrom:
+        - secretRef:
+            name: clouddental-secrets
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"

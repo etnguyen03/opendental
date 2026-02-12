@@ -7,11 +7,15 @@ namespace CloudDentalOffice.Portal.Models;
 /// Patient entity - core demographic and insurance information
 /// </summary>
 [Table("Patients")]
-public class Patient
+public class Patient : ITenantEntity
 {
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int PatientId { get; set; }
+
+    [Required]
+    [MaxLength(64)]
+    public string TenantId { get; set; } = string.Empty;
 
     [Required]
     [MaxLength(100)]

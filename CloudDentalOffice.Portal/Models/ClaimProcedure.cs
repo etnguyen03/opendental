@@ -7,11 +7,15 @@ namespace CloudDentalOffice.Portal.Models;
 /// Individual procedure on a claim
 /// </summary>
 [Table("ClaimProcedures")]
-public class ClaimProcedure
+public class ClaimProcedure : ITenantEntity
 {
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int ClaimProcedureId { get; set; }
+
+    [Required]
+    [MaxLength(64)]
+    public string TenantId { get; set; } = string.Empty;
 
     [Required]
     public int ClaimId { get; set; }

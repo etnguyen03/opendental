@@ -7,11 +7,15 @@ namespace CloudDentalOffice.Portal.Models;
 /// Provider/dentist information
 /// </summary>
 [Table("Providers")]
-public class Provider
+public class Provider : ITenantEntity
 {
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int ProviderId { get; set; }
+
+    [Required]
+    [MaxLength(64)]
+    public string TenantId { get; set; } = string.Empty;
 
     [Required]
     [MaxLength(10)]

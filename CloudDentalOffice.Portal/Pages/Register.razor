@@ -1,0 +1,82 @@
+@page "/register"
+@attribute [AllowAnonymous]
+@using CloudDentalOffice.Portal.Services
+@using CloudDentalOffice.Portal.Services.Auth
+@inject IAuthService AuthService
+@inject NavigationManager Navigation
+@inject ISnackbar Snackbar
+
+<MudContainer MaxWidth="MaxWidth.Small" Class="mt-12">
+    <MudPaper Elevation="3" Class="pa-8">
+        <MudText Typo="Typo.h5" Align="Align.Center" Class="mb-6">Register Your Practice</MudText>
+
+        <MudForm @ref="form">
+             <MudTextField T="string" Label="Practice Name" Required="true" RequiredError="Practice Name is required!"
+                          @bind-Value="registerRequest.TenantName" Class="mb-4"/>
+
+            <MudGrid>
+                <MudItem xs="6">
+                    <MudTextField T="string" Label="First Name" Required="true" RequiredError="First Name is required!"
+                          @bind-Value="registerRequest.FirstName" />
+                </MudItem>
+                <MudItem xs="6">
+                    <MudTextField T="string" Label="Last Name" Required="true" RequiredError="Last Name is required!"
+                          @bind-Value="registerRequest.LastName" />
+                </MudItem>
+            </MudGrid>
+
+            <MudTextField T="string" Label="Email" Required="true" RequiredError="Email is required!"
+                          @bind-Value="registerRequest.Email" InputType="InputType.Email" Class="mt-4" />
+
+            <MudTextField T="string" Label="Password" Required="true" RequiredError="Password is required!"
+                          @bind-Value="registerRequest.Password" InputType="InputType.Password" Class="mt-4" />
+                          
+            <MudSelect T="string" Label="Plan" @bind-Value="registerRequest.PlanId" Class="mt-4">
+                <MudSelectItem Value="@("price_hobby")">Hobby ($20/mo)</MudSelectItem>
+                <MudSelectItem Value="@("price_pro")">Pro ($50/mo)</MudSelectItem>
+            </MudSelect>
+
+            <div class="d-flex flex-column align-center mt-6 gap-2">
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="DoRegister" FullWidth="true">Register</MudButton>
+                <MudLink Href="/login">Already have an account? Login</MudLink>
+            </div>
+            
+            @if (!string.IsNullOrEmpty(error))
+            {
+                <MudAlert Severity="Severity.Error" Class="mt-4">@error</MudAlert>
+            }
+        </MudForm>
+    </MudPaper>
+</MudContainer>
+
+@code {
+    MudForm form;
+    RegistrationRequest registerRequest = new RegistrationRequest();
+    string error;
+
+    private async Task DoRegister()
+    {
+        error = null;
+        try
+        {
+            await form.Validate();
+            if(!form.IsValid) return;
+
+            var success = await AuthService.RegisterAsync(registerRequest);
+            if (success)
+            {
+                Snackbar.Add("Registration successful! Please login.", Severity.Success);
+                Navigation.NavigateTo("/login");
+            }
+            else
+            {
+                error = "Registration failed. Email may already be in use.";
+            }
+        }
+        catch (Exception ex)
+        {
+            error = "An error occurred during registration.";
+            Console.WriteLine(ex);
+        }
+    }
+}

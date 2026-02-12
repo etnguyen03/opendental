@@ -3,8 +3,6 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
-
 namespace CloudDentalOffice.Portal.Migrations
 {
     /// <inheritdoc />
@@ -19,6 +17,7 @@ namespace CloudDentalOffice.Portal.Migrations
                 {
                     InsurancePlanId = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
+                    TenantId = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false, defaultValue: "dev"),
                     PayerId = table.Column<string>(type: "TEXT", maxLength: 10, nullable: false),
                     PayerName = table.Column<string>(type: "TEXT", maxLength: 255, nullable: false),
                     PlanName = table.Column<string>(type: "TEXT", maxLength: 255, nullable: true),
@@ -30,6 +29,18 @@ namespace CloudDentalOffice.Portal.Migrations
                     State = table.Column<string>(type: "TEXT", maxLength: 2, nullable: true),
                     ZipCode = table.Column<string>(type: "TEXT", maxLength: 10, nullable: true),
                     EdiPayerId = table.Column<string>(type: "TEXT", maxLength: 50, nullable: true),
+                    EdiEnabled = table.Column<bool>(type: "INTEGER", nullable: false),
+                    EdiSubmissionType = table.Column<string>(type: "TEXT", maxLength: 20, nullable: true),
+                    SftpHost = table.Column<string>(type: "TEXT", maxLength: 255, nullable: true),
+                    SftpPort = table.Column<int>(type: "INTEGER", nullable: true),
+                    SftpUsername = table.Column<string>(type: "TEXT", maxLength: 100, nullable: true),
+                    SftpPasswordEncrypted = table.Column<string>(type: "TEXT", maxLength: 500, nullable: true),
+                    SftpRemotePath = table.Column<string>(type: "TEXT", maxLength: 255, nullable: true),
+                    SftpUseSshKey = table.Column<bool>(type: "INTEGER", nullable: false),
+                    SftpSshKeyEncrypted = table.Column<string>(type: "TEXT", maxLength: 2000, nullable: true),
+                    ApiEndpoint = table.Column<string>(type: "TEXT", maxLength: 500, nullable: true),
+                    ApiKeyEncrypted = table.Column<string>(type: "TEXT", maxLength: 500, nullable: true),
+                    ApiAuthType = table.Column<string>(type: "TEXT", maxLength: 50, nullable: true),
                     IsActive = table.Column<bool>(type: "INTEGER", nullable: false),
                     CreatedDate = table.Column<DateTime>(type: "TEXT", nullable: false),
                     ModifiedDate = table.Column<DateTime>(type: "TEXT", nullable: true)
@@ -45,6 +56,7 @@ namespace CloudDentalOffice.Portal.Migrations
                 {
                     PatientId = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
+                    TenantId = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false, defaultValue: "dev"),
                     FirstName = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
                     LastName = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
                     MiddleName = table.Column<string>(type: "TEXT", maxLength: 50, nullable: true),
@@ -77,6 +89,7 @@ namespace CloudDentalOffice.Portal.Migrations
                 {
                     ProviderId = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
+                    TenantId = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false, defaultValue: "dev"),
                     NPI = table.Column<string>(type: "TEXT", maxLength: 10, nullable: false),
                     FirstName = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
                     LastName = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
@@ -98,11 +111,47 @@ namespace CloudDentalOffice.Portal.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Tenants",
+                columns: table => new
+                {
+                    TenantId = table.Column<string>(type: "TEXT", nullable: false),
+                    Name = table.Column<string>(type: "TEXT", nullable: false),
+                    Plan = table.Column<string>(type: "TEXT", nullable: true),
+                    IsActive = table.Column<bool>(type: "INTEGER", nullable: false),
+                    StripeCustomerId = table.Column<string>(type: "TEXT", nullable: true),
+                    StripeSubscriptionId = table.Column<string>(type: "TEXT", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Tenants", x => x.TenantId);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Users",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    TenantId = table.Column<string>(type: "TEXT", nullable: false),
+                    Email = table.Column<string>(type: "TEXT", nullable: false),
+                    PasswordHash = table.Column<string>(type: "TEXT", nullable: false),
+                    FirstName = table.Column<string>(type: "TEXT", nullable: false),
+                    LastName = table.Column<string>(type: "TEXT", nullable: false),
+                    Role = table.Column<string>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Users", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "PatientInsurances",
                 columns: table => new
                 {
                     PatientInsuranceId = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
+                    TenantId = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false, defaultValue: "dev"),
                     PatientId = table.Column<int>(type: "INTEGER", nullable: false),
                     InsurancePlanId = table.Column<int>(type: "INTEGER", nullable: false),
                     MemberId = table.Column<string>(type: "TEXT", maxLength: 50, nullable: false),
@@ -142,6 +191,7 @@ namespace CloudDentalOffice.Portal.Migrations
                 {
                     AppointmentId = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
+                    TenantId = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false, defaultValue: "dev"),
                     PatientId = table.Column<int>(type: "INTEGER", nullable: false),
                     ProviderId = table.Column<int>(type: "INTEGER", nullable: false),
                     AppointmentDateTime = table.Column<DateTime>(type: "TEXT", nullable: false),
@@ -176,6 +226,7 @@ namespace CloudDentalOffice.Portal.Migrations
                 {
                     TreatmentPlanId = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
+                    TenantId = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false, defaultValue: "dev"),
                     PatientId = table.Column<int>(type: "INTEGER", nullable: false),
                     ProviderId = table.Column<int>(type: "INTEGER", nullable: false),
                     Status = table.Column<string>(type: "TEXT", maxLength: 20, nullable: false),
@@ -210,6 +261,7 @@ namespace CloudDentalOffice.Portal.Migrations
                 {
                     ClaimId = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
+                    TenantId = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false, defaultValue: "dev"),
                     ClaimNumber = table.Column<string>(type: "TEXT", maxLength: 50, nullable: false),
                     PatientId = table.Column<int>(type: "INTEGER", nullable: false),
                     ProviderId = table.Column<int>(type: "INTEGER", nullable: false),
@@ -260,6 +312,7 @@ namespace CloudDentalOffice.Portal.Migrations
                 {
                     ClaimProcedureId = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
+                    TenantId = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false, defaultValue: "dev"),
                     ClaimId = table.Column<int>(type: "INTEGER", nullable: false),
                     CDTCode = table.Column<string>(type: "TEXT", maxLength: 10, nullable: false),
                     Description = table.Column<string>(type: "TEXT", maxLength: 255, nullable: false),
@@ -292,6 +345,7 @@ namespace CloudDentalOffice.Portal.Migrations
                 {
                     PlannedProcedureId = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
+                    TenantId = table.Column<string>(type: "TEXT", maxLength: 64, nullable: false, defaultValue: "dev"),
                     TreatmentPlanId = table.Column<int>(type: "INTEGER", nullable: false),
                     CDTCode = table.Column<string>(type: "TEXT", maxLength: 10, nullable: false),
                     Description = table.Column<string>(type: "TEXT", maxLength: 255, nullable: false),
@@ -322,24 +376,6 @@ namespace CloudDentalOffice.Portal.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.InsertData(
-                table: "InsurancePlans",
-                columns: new[] { "InsurancePlanId", "Address1", "Address2", "City", "CreatedDate", "EdiPayerId", "IsActive", "ModifiedDate", "PayerId", "PayerName", "Phone", "PlanName", "PlanType", "State", "ZipCode" },
-                values: new object[,]
-                {
-                    { 1, "123 Insurance Way", null, "San Francisco", new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "BCBS001", true, null, "BCBS", "Blue Cross Blue Shield", "1-800-123-4567", "PPO Standard", "PPO", "CA", "94102" },
-                    { 2, "456 Dental Plaza", null, "Los Angeles", new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "DELTA001", true, null, "DELTA", "Delta Dental", "1-800-765-4321", "Delta Premier", "PPO", "CA", "90001" }
-                });
-
-            migrationBuilder.InsertData(
-                table: "Providers",
-                columns: new[] { "ProviderId", "CreatedDate", "Email", "FirstName", "IsActive", "LastName", "LicenseNumber", "LicenseState", "MiddleName", "ModifiedDate", "NPI", "Phone", "Specialty", "Suffix", "TaxId" },
-                values: new object[,]
-                {
-                    { 1, new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "dr.johnson@clouddental.com", "Sarah", true, "Johnson", "DDS-12345", "CA", null, null, "1234567890", "555-123-4567", "General Dentistry", "DDS", "12-3456789" },
-                    { 2, new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "dr.chen@clouddental.com", "Michael", true, "Chen", "DMD-54321", "CA", null, null, "0987654321", "555-987-6543", "Orthodontics", "DMD", "98-7654321" }
-                });
-
             migrationBuilder.CreateIndex(
                 name: "IX_Appointments_AppointmentDateTime",
                 table: "Appointments",
@@ -361,6 +397,11 @@ namespace CloudDentalOffice.Portal.Migrations
                 column: "ProviderId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Appointments_TenantId",
+                table: "Appointments",
+                column: "TenantId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_ClaimProcedures_CDTCode",
                 table: "ClaimProcedures",
                 column: "CDTCode");
@@ -369,6 +410,11 @@ namespace CloudDentalOffice.Portal.Migrations
                 name: "IX_ClaimProcedures_ClaimId",
                 table: "ClaimProcedures",
                 column: "ClaimId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ClaimProcedures_TenantId",
+                table: "ClaimProcedures",
+                column: "TenantId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Claims_ClaimNumber",
@@ -402,6 +448,11 @@ namespace CloudDentalOffice.Portal.Migrations
                 column: "SubmittedDate");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Claims_TenantId",
+                table: "Claims",
+                column: "TenantId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_InsurancePlans_PayerId",
                 table: "InsurancePlans",
                 column: "PayerId");
@@ -410,6 +461,11 @@ namespace CloudDentalOffice.Portal.Migrations
                 name: "IX_InsurancePlans_PayerName",
                 table: "InsurancePlans",
                 column: "PayerName");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_InsurancePlans_TenantId",
+                table: "InsurancePlans",
+                column: "TenantId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_PatientInsurances_InsurancePlanId",
@@ -427,6 +483,11 @@ namespace CloudDentalOffice.Portal.Migrations
                 column: "PatientId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_PatientInsurances_TenantId",
+                table: "PatientInsurances",
+                column: "TenantId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Patients_Email",
                 table: "Patients",
                 column: "Email");
@@ -442,9 +503,19 @@ namespace CloudDentalOffice.Portal.Migrations
                 columns: new[] { "LastName", "FirstName" });
 
             migrationBuilder.CreateIndex(
+                name: "IX_Patients_TenantId",
+                table: "Patients",
+                column: "TenantId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_PlannedProcedures_ClaimProcedureId",
                 table: "PlannedProcedures",
                 column: "ClaimProcedureId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PlannedProcedures_TenantId",
+                table: "PlannedProcedures",
+                column: "TenantId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_PlannedProcedures_TreatmentPlanId",
@@ -463,6 +534,11 @@ namespace CloudDentalOffice.Portal.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_Providers_TenantId",
+                table: "Providers",
+                column: "TenantId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_TreatmentPlans_PatientId",
                 table: "TreatmentPlans",
                 column: "PatientId");
@@ -476,6 +552,22 @@ namespace CloudDentalOffice.Portal.Migrations
                 name: "IX_TreatmentPlans_Status",
                 table: "TreatmentPlans",
                 column: "Status");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_TreatmentPlans_TenantId",
+                table: "TreatmentPlans",
+                column: "TenantId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_Email",
+                table: "Users",
+                column: "Email",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Users_TenantId",
+                table: "Users",
+                column: "TenantId");
         }
 
         /// <inheritdoc />
@@ -486,6 +578,12 @@ namespace CloudDentalOffice.Portal.Migrations
 
             migrationBuilder.DropTable(
                 name: "PlannedProcedures");
+
+            migrationBuilder.DropTable(
+                name: "Tenants");
+
+            migrationBuilder.DropTable(
+                name: "Users");
 
             migrationBuilder.DropTable(
                 name: "ClaimProcedures");

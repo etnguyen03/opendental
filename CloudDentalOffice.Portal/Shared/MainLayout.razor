@@ -1,4 +1,7 @@
 @inherits LayoutComponentBase
+@inject AuthenticationStateProvider AuthStateProvider
+@inject NavigationManager Navigation
+@using CloudDentalOffice.Portal.Services.Auth
 
 <MudThemeProvider Theme="_theme" />
 <MudPopoverProvider />
@@ -22,6 +25,7 @@
         
         <MudIconButton Icon="@Icons.Material.Filled.Notifications" Color="Color.Primary" />
         <MudIconButton Icon="@Icons.Material.Filled.AccountCircle" Color="Color.Primary" />
+        <MudIconButton Icon="@Icons.Material.Filled.Logout" Color="Color.Primary" OnClick="Logout" Title="Logout" />
     </MudAppBar>
     
     <MudDrawer @bind-Open="_drawerOpen" Elevation="2" 
@@ -231,5 +235,14 @@
     private void ToggleDrawer()
     {
         _drawerOpen = !_drawerOpen;
+    }
+
+    private async Task Logout()
+    {
+        if (AuthStateProvider is PortalAuthStateProvider authProvider)
+        {
+            await authProvider.LogoutAsync();
+            Navigation.NavigateTo("/login", true);
+        }
     }
 }
