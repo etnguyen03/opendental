@@ -27,8 +27,7 @@ public class Claim : ITenantEntity
     [Required]
     public int ProviderId { get; set; }
 
-    [Required]
-    public int PatientInsuranceId { get; set; }
+    public int? PatientInsuranceId { get; set; }
 
     // Claim details
     [Required]
