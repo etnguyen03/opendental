@@ -73,9 +73,7 @@
                         Dental Chart
                     </MudText>
                     
-                    @if (_toothChartData.Any())
-                    {
-                        <MudStack AlignItems="AlignItems.Center" Spacing="4" Class="py-4">
+                    <MudStack AlignItems="AlignItems.Center" Spacing="4" Class="py-4">
                             <!-- Upper Arch -->
                             <MudPaper Class="pa-3" Style="background: #0a0a0a; border: 1px solid rgba(0, 255, 255, 0.2);">
                                 <MudText Typo="Typo.caption" Style="color: #808080;" Class="mb-2">Upper Arch (1-16)</MudText>
@@ -152,14 +150,6 @@
                                 </MudStack>
                             </MudPaper>
                         </MudStack>
-                    }
-                    else
-                    {
-                        <MudStack AlignItems="AlignItems.Center" Spacing="2" Class="py-4">
-                            <MudIcon Icon="@Icons.Material.Filled.Medication" Size="Size.Large" Style="color: #404040;" />
-                            <MudText Typo="Typo.body2" Style="color: #808080;">No tooth chart data available</MudText>
-                        </MudStack>
-                    }
                 </MudPaper>
 
                 <!-- Medical Alerts -->
