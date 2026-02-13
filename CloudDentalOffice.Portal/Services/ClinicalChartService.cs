@@ -1,5 +1,6 @@
 using CloudDentalOffice.Portal.Models;
 using CloudDentalOffice.Portal.Data;
+using CloudDentalOffice.Portal.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace CloudDentalOffice.Portal.Services;

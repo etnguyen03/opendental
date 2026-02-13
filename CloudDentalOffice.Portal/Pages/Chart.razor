@@ -181,7 +181,7 @@
                                     {
                                         @foreach (var allergy in _medicalInfo.Allergies)
                                         {
-                                            <MudChip Size="Size.Small" Color="Color.Error" Style="margin: 2px;">@allergy</MudChip>
+                                            <MudChip T="string" Size="Size.Small" Color="Color.Error" Style="margin: 2px;">@allergy</MudChip>
                                         }
                                     }
                                     else
@@ -198,10 +198,10 @@
                                     </MudText>
                                     @if (_medicalInfo.Medications.Any())
                                     {
-                                        <MudList Dense="true" Style="padding: 0;">
+                                        <MudList T="string" Dense="true" Style="padding: 0;">
                                             @foreach (var med in _medicalInfo.Medications)
                                             {
-                                                <MudListItem Style="color: #b0b0b0; padding: 2px 0;">
+                                                <MudListItem T="string" Style="color: #b0b0b0; padding: 2px 0;">
                                                     <MudText Typo="Typo.caption">• @med</MudText>
                                                 </MudListItem>
                                             }
@@ -250,7 +250,7 @@
                                 <MudTd Style="color: #b0b0b0;">@(context.Tooth ?? "-")</MudTd>
                                 <MudTd Style="color: #b0b0b0;">@context.Provider</MudTd>
                                 <MudTd>
-                                    <MudChip Size="Size.Small" Color="@GetStatusColor(context.Status)">@context.Status</MudChip>
+                                    <MudChip T="string" Size="Size.Small" Color="@GetStatusColor(context.Status)">@context.Status</MudChip>
                                 </MudTd>
                                 <MudTd Style="color: #b0b0b0;">@context.Fee.ToString("C")</MudTd>
                             </RowTemplate>
@@ -288,7 +288,7 @@
                                         <MudText Typo="Typo.caption" Style="color: #808080;">
                                             @note.NoteDate.ToString("MM/dd/yyyy hh:mm tt") - @note.CreatedBy
                                         </MudText>
-                                        <MudChip Size="Size.Small" Color="Color.Info">@note.NoteType</MudChip>
+                                        <MudChip T="string" Size="Size.Small" Color="Color.Info">@note.NoteType</MudChip>
                                     </MudStack>
                                     <MudText Typo="Typo.body2" Style="color: #b0b0b0;">@note.NoteText</MudText>
                                 </MudPaper>
