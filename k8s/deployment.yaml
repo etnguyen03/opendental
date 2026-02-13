@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: clouddental-portal
-  namespace: default
+  namespace: clouddental
   labels:
     app: clouddental-portal
 spec:
