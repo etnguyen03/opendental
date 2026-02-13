@@ -214,10 +214,16 @@
                             <MudIcon Icon="@Icons.Material.Filled.History" Class="mr-2" />
                             Treatment History
                         </MudText>
-                        <MudToggleIconButton @bind-Toggled="@_showPlannedProcedures"
-                                             Icon="@Icons.Material.Filled.CalendarToday" ToggledIcon="@Icons.Material.Filled.CalendarToday"
-                                             Color="@Color.Default" ToggledColor="@Color.Primary"
-                                             Title="Include Planned Procedures" ToggledTitle="Showing Planned Procedures" />
+                        <MudStack Row="true" Spacing="2">
+                            <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Small"
+                                       StartIcon="@Icons.Material.Filled.Add" OnClick="ShowAddProcedureDialog">
+                                Record Procedure
+                            </MudButton>
+                            <MudToggleIconButton @bind-Toggled="@_showPlannedProcedures"
+                                                 Icon="@Icons.Material.Filled.CalendarToday" ToggledIcon="@Icons.Material.Filled.CalendarToday"
+                                                 Color="@Color.Default" ToggledColor="@Color.Primary"
+                                                 Title="Include Planned Procedures" ToggledTitle="Showing Planned Procedures" />
+                        </MudStack>
                     </MudStack>
                     
                     @if (_completedProcedures.Any() || (_showPlannedProcedures && _plannedProcedures.Any()))
@@ -501,6 +507,34 @@
             {
                 Snackbar.Add($"Error adding note: {ex.Message}", Severity.Error);
             }
+        }
+    }
+
+    private async Task ShowAddProcedureDialog()
+    {
+        var parameters = new DialogParameters<AddEditProcedureDialog>
+        {
+            { x => x.PatientId, _selectedPatient!.PatientId },
+            { x => x.PatientName, _selectedPatient.FullName }
+        };
+
+        var options = new DialogOptions 
+        { 
+            CloseButton = true, 
+            MaxWidth = MaxWidth.Medium,
+            FullWidth = true,
+            BackdropClick = false
+        };
+
+        var dialog = await DialogService.ShowAsync<AddEditProcedureDialog>("Record Completed Procedure", parameters, options);
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            // Reload chart data to show the new procedure
+            await LoadPatientChartData(_selectedPatient.PatientId);
+            Snackbar.Add("Procedure recorded successfully!", Severity.Success);
+            StateHasChanged();
         }
     }
 

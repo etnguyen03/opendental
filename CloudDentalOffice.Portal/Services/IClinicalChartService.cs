@@ -10,6 +10,8 @@ public interface IClinicalChartService
     Task<ClinicalNoteDto> AddClinicalNoteAsync(int patientId, string noteText);
     Task<PatientMedicalInfoDto> GetPatientMedicalInfoAsync(int patientId);
     Task<Dictionary<string, List<ToothProcedureDto>>> GetToothChartDataAsync(int patientId);
+    Task<Procedure> CreateProcedureAsync(Procedure procedure);
+    Task<Procedure?> GetProcedureByIdAsync(int procedureId);
 }
 
 public class CompletedProcedureDto

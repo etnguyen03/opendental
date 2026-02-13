@@ -37,6 +37,8 @@ public class CloudDentalDbContext : DbContext
     public DbSet<Claim> Claims => Set<Claim>();
     public DbSet<ClaimProcedure> ClaimProcedures => Set<ClaimProcedure>();
     public DbSet<ProcedureCode> ProcedureCodes => Set<ProcedureCode>();
+    public DbSet<Procedure> Procedures => Set<Procedure>();
+    public DbSet<ClinicalNote> ClinicalNotes => Set<ClinicalNote>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -204,6 +206,53 @@ public class CloudDentalDbContext : DbContext
             entity.HasIndex(e => e.Category);
             entity.HasIndex(e => e.IsActive);
         });
+
+        // Procedure configuration
+        modelBuilder.Entity<Procedure>(entity =>
+        {
+            entity.HasOne(p => p.Patient)
+                .WithMany()
+                .HasForeignKey(p => p.PatientId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(p => p.Provider)
+                .WithMany()
+                .HasForeignKey(p => p.ProviderId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(p => p.Appointment)
+                .WithMany()
+                .HasForeignKey(p => p.AppointmentId)
+                .OnDelete(DeleteBehavior.SetNull);
+
+            entity.HasIndex(e => e.ServiceDate);
+            entity.HasIndex(e => e.CDTCode);
+            entity.HasIndex(e => e.TenantId);
+            entity.HasQueryFilter(e => e.TenantId == _tenantProvider.TenantId);
+        });
+        
+        ConfigureTenantEntity<Procedure>(modelBuilder);
+
+        // ClinicalNote configuration
+        modelBuilder.Entity<ClinicalNote>(entity =>
+        {
+            entity.HasOne(cn => cn.Patient)
+                .WithMany()
+                .HasForeignKey(cn => cn.PatientId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(cn => cn.Provider)
+                .WithMany()
+                .HasForeignKey(cn => cn.ProviderId)
+                .OnDelete(DeleteBehavior.SetNull);
+
+            entity.HasIndex(e => e.NoteDate);
+            entity.HasIndex(e => e.NoteType);
+            entity.HasIndex(e => e.TenantId);
+            entity.HasQueryFilter(e => e.TenantId == _tenantProvider.TenantId);
+        });
+
+        ConfigureTenantEntity<ClinicalNote>(modelBuilder);
 
         // Seed data
         SeedData(modelBuilder);

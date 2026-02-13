@@ -1,0 +1,278 @@
+@using CloudDentalOffice.Portal.Models
+@using MudBlazor
+@inject IClinicalChartService ClinicalChartService
+@inject IProviderService ProviderService
+@inject IProcedureCodeService ProcedureCodeService
+@inject ISnackbar Snackbar
+
+<MudDialog Style="background: #0a0a0a; border: 1px solid #00ffff;">
+    <DialogContent>
+        <MudContainer Style="max-width: 700px;">
+            <MudGrid>
+                <!-- Title Section -->
+                <MudItem xs="12">
+                    <MudText Typo="Typo.h5" Style="color: #00ffff; font-weight: bold;" Class="mb-3">
+                        <MudIcon Icon="@Icons.Material.Filled.MedicalServices" Size="Size.Medium" />
+                        Record Completed Procedure
+                    </MudText>
+                    <MudDivider Style="background: rgba(0, 255, 255, 0.3);" />
+                </MudItem>
+
+                @if (!string.IsNullOrEmpty(_validationMessage))
+                {
+                    <MudItem xs="12">
+                        <MudAlert Severity="Severity.Warning">@_validationMessage</MudAlert>
+                    </MudItem>
+                }
+
+                <!-- Patient Info (Read-only) -->
+                <MudItem xs="12">
+                    <MudPaper Class="pa-3" Style="background: #1a1a1a; border: 1px solid rgba(0, 255, 255, 0.2);">
+                        <MudText Typo="Typo.body1" Style="color: #b0b0b0;">
+                            <strong>Patient:</strong> @PatientName
+                        </MudText>
+                    </MudPaper>
+                </MudItem>
+
+                <!-- Procedure Code Selection with Autocomplete -->
+                <MudItem xs="12">
+                    <MudAutocomplete T="ProcedureCode" 
+                                     Value="@_selectedProcedureCode"
+                                     ValueChanged="@OnProcedureCodeSelected"
+                                     SearchFunc="@SearchProcedureCodes"
+                                     ToStringFunc="@(pc => pc?.DisplayName ?? "")"
+                                     Label="Procedure Code" 
+                                     Variant="Variant.Outlined"
+                                     Required="true"
+                                     Placeholder="Start typing code or description..."
+                                     Clearable="true"
+                                     AdornmentIcon="@Icons.Material.Filled.Search" />
+                </MudItem>
+
+                <!-- Description -->
+                <MudItem xs="12">
+                    <MudTextField @bind-Value="_procedure.Description" 
+                                  Label="Description" 
+                                  Variant="Variant.Outlined"
+                                  Required="true"
+                                  Lines="2" />
+                </MudItem>
+
+                <!-- Provider Selection -->
+                <MudItem xs="12" md="6">
+                    <MudSelect T="int" @bind-Value="_procedure.ProviderId" 
+                               Label="Provider" 
+                               Variant="Variant.Outlined"
+                               Required="true">
+                        @foreach (var provider in _providers)
+                        {
+                            <MudSelectItem Value="@provider.ProviderId">
+                                @provider.FullName
+                            </MudSelectItem>
+                        }
+                    </MudSelect>
+                </MudItem>
+
+                <!-- Service Date -->
+                <MudItem xs="12" md="6">
+                    <MudDatePicker @bind-Date="_serviceDate" 
+                                   Label="Service Date" 
+                                   Variant="Variant.Outlined"
+                                   Required="true"
+                                   MaxDate="DateTime.Today" />
+                </MudItem>
+
+                <!-- Tooth Number and Surface -->
+                <MudItem xs="12" md="6">
+                    <MudTextField @bind-Value="_procedure.ToothNumber" 
+                                  Label="Tooth Number (optional)" 
+                                  Variant="Variant.Outlined"
+                                  MaxLength="3"
+                                  HelperText="e.g., 1, 14, 27" />
+                </MudItem>
+
+                <MudItem xs="12" md="6">
+                    <MudTextField @bind-Value="_procedure.Surface" 
+                                  Label="Surface (optional)" 
+                                  Variant="Variant.Outlined"
+                                  MaxLength="10"
+                                  HelperText="e.g., MOD, DO, O" />
+                </MudItem>
+
+                <!-- Charge Amount -->
+                <MudItem xs="12" md="4">
+                    <MudNumericField @bind-Value="_procedure.ChargeAmount" 
+                                     Label="Charge Amount" 
+                                     Variant="Variant.Outlined"
+                                     Required="true"
+                                     Min="0"
+                                     Format="C2"
+                                     Adornment="Adornment.Start"
+                                     AdornmentIcon="@Icons.Material.Filled.AttachMoney" />
+                </MudItem>
+
+                <!-- Insurance and Patient Portions -->
+                <MudItem xs="12" md="4">
+                    <MudNumericField @bind-Value="_procedure.InsuranceEstimate" 
+                                     Label="Insurance Estimate" 
+                                     Variant="Variant.Outlined"
+                                     Min="0"
+                                     Format="C2" />
+                </MudItem>
+
+                <MudItem xs="12" md="4">
+                    <MudNumericField @bind-Value="_procedure.PatientPortion" 
+                                     Label="Patient Portion" 
+                                     Variant="Variant.Outlined"
+                                     Min="0"
+                                     Format="C2" />
+                </MudItem>
+
+                <!-- Clinical Notes for this procedure -->
+                <MudItem xs="12">
+                    <MudTextField @bind-Value="_procedure.Notes" 
+                                  Label="Procedure Notes (optional)" 
+                                  Variant="Variant.Outlined"
+                                  Lines="3"
+                                  HelperText="Any specific notes about this procedure" />
+                </MudItem>
+            </MudGrid>
+        </MudContainer>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel" Variant="Variant.Text">Cancel</MudButton>
+        <MudButton OnClick="Save" Variant="Variant.Filled" Color="Color.Primary" Disabled="@_saving">
+            @if (_saving)
+            {
+                <MudProgressCircular Size="Size.Small" Indeterminate="true" />
+                <span class="ml-2">Saving...</span>
+            }
+            else
+            {
+                <span>Record Procedure</span>
+            }
+        </MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] 
+    MudDialogInstance MudDialog { get; set; } = null!;
+
+    [Parameter]
+    public int PatientId { get; set; }
+
+    [Parameter]
+    public string PatientName { get; set; } = "";
+
+    private Procedure _procedure = new();
+    private List<Provider> _providers = new();
+    private ProcedureCode? _selectedProcedureCode = null;
+    private DateTime? _serviceDate = DateTime.Today;
+    private bool _saving = false;
+    private string? _validationMessage = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadProviders();
+        
+        _procedure = new Procedure
+        {
+            PatientId = PatientId,
+            ServiceDate = DateTime.Today,
+            Status = "Completed",
+            ChargeAmount = 0
+        };
+    }
+
+    private async Task LoadProviders()
+    {
+        try
+        {
+            _providers = await ProviderService.GetProvidersAsync();
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error loading providers: {ex.Message}", Severity.Error);
+        }
+    }
+
+    private async Task<IEnumerable<ProcedureCode>> SearchProcedureCodes(string searchTerm, CancellationToken token)
+    {
+        if (string.IsNullOrWhiteSpace(searchTerm) || searchTerm.Length < 2)
+            return new List<ProcedureCode>();
+
+        return await ProcedureCodeService.SearchProcedureCodesAsync(searchTerm);
+    }
+
+    private void OnProcedureCodeSelected(ProcedureCode? selectedCode)
+    {
+        _selectedProcedureCode = selectedCode;
+        if (selectedCode != null)
+        {
+            _procedure.CDTCode = selectedCode.Code;
+            _procedure.Description = selectedCode.Description;
+            _procedure.ChargeAmount = selectedCode.DefaultFee;
+        }
+    }
+
+    private async Task Save()
+    {
+        // Validation
+        if (string.IsNullOrWhiteSpace(_procedure.CDTCode))
+        {
+            _validationMessage = "Please select a procedure code.";
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(_procedure.Description))
+        {
+            _validationMessage = "Description is required.";
+            return;
+        }
+
+        if (_procedure.ProviderId == 0)
+        {
+            _validationMessage = "Please select a provider.";
+            return;
+        }
+
+        if (!_serviceDate.HasValue)
+        {
+            _validationMessage = "Service date is required.";
+            return;
+        }
+
+        if (_procedure.ChargeAmount <= 0)
+        {
+            _validationMessage = "Charge amount must be greater than zero.";
+            return;
+        }
+
+        try
+        {
+            _saving = true;
+            _validationMessage = null;
+
+            _procedure.ServiceDate = _serviceDate.Value;
+            
+            await ClinicalChartService.CreateProcedureAsync(_procedure);
+            
+            Snackbar.Add("Procedure recorded successfully!", Severity.Success);
+            MudDialog.Close(DialogResult.Ok(true));
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error saving procedure: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            _saving = false;
+        }
+    }
+
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+}

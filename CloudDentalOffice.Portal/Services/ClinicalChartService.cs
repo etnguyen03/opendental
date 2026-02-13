@@ -20,22 +20,21 @@ public class ClinicalChartService : IClinicalChartService
     {
         var tenantId = _tenantProvider.TenantId;
 
-        // Get completed procedures from claims
-        var completedProcs = await _context.ClaimProcedures
-            .Where(cp => cp.TenantId == tenantId && 
-                         cp.Claim.PatientId == patientId &&
-                         (cp.Claim.Status == "Paid" || cp.Claim.Status == "Submitted"))
-            .Select(cp => new CompletedProcedureDto
+        // Get completed procedures from Procedures table
+        var completedProcs = await _context.Procedures
+            .Include(p => p.Provider)
+            .Where(p => p.TenantId == tenantId && p.PatientId == patientId)
+            .Select(p => new CompletedProcedureDto
             {
-                ProcedureId = cp.ClaimProcedureId,
-                ServiceDate = cp.ServiceDate,
-                CDTCode = cp.CDTCode,
-                Description = cp.Description,
-                ToothNumber = cp.ToothNumber,
-                Surface = cp.Surface,
-                ProviderName = cp.Claim.Provider != null ? cp.Claim.Provider.FullName : "Unknown",
-                ChargeAmount = cp.ChargeAmount,
-                Status = cp.Claim.Status ?? "Unknown"
+                ProcedureId = p.ProcedureId,
+                ServiceDate = p.ServiceDate,
+                CDTCode = p.CDTCode,
+                Description = p.Description,
+                ToothNumber = p.ToothNumber,
+                Surface = p.Surface,
+                ProviderName = p.Provider.FullName,
+                ChargeAmount = p.ChargeAmount,
+                Status = p.Status
             })
             .OrderByDescending(p => p.ServiceDate)
             .ToListAsync();
@@ -60,42 +59,50 @@ public class ClinicalChartService : IClinicalChartService
 
     public async Task<List<ClinicalNoteDto>> GetClinicalNotesAsync(int patientId)
     {
-        // For now, return mock data until we add a ClinicalNotes table
-        await Task.CompletedTask;
-        
-        return new List<ClinicalNoteDto>
-        {
-            new ClinicalNoteDto
+        var tenantId = _tenantProvider.TenantId;
+
+        var notes = await _context.ClinicalNotes
+            .Include(cn => cn.Provider)
+            .Where(cn => cn.TenantId == tenantId && cn.PatientId == patientId)
+            .Select(cn => new ClinicalNoteDto
             {
-                NoteId = 1,
-                NoteDate = DateTime.Now.AddDays(-7),
-                NoteText = "Patient presented with tooth sensitivity on #14. Recommended sensitivity toothpaste.",
-                CreatedBy = "Dr. John Smith",
-                NoteType = "Clinical"
-            },
-            new ClinicalNoteDto
-            {
-                NoteId = 2,
-                NoteDate = DateTime.Now.AddDays(-30),
-                NoteText = "Completed routine cleaning. No cavities detected. Excellent oral hygiene.",
-                CreatedBy = "Dr. Sarah Johnson",
-                NoteType = "Clinical"
-            }
-        };
+                NoteId = cn.ClinicalNoteId,
+                NoteDate = cn.NoteDate,
+                NoteText = cn.NoteText,
+                CreatedBy = cn.Provider != null ? cn.Provider.FullName : (cn.CreatedBy ?? "Unknown"),
+                NoteType = cn.NoteType
+            })
+            .OrderByDescending(cn => cn.NoteDate)
+            .ToListAsync();
+
+        return notes;
     }
 
     public async Task<ClinicalNoteDto> AddClinicalNoteAsync(int patientId, string noteText)
     {
-        // TODO: Implement actual note creation when ClinicalNotes table is added
-        await Task.CompletedTask;
-        
+        var tenantId = _tenantProvider.TenantId;
+
+        var newNote = new ClinicalNote
+        {
+            TenantId = tenantId,
+            PatientId = patientId,
+            NoteDate = DateTime.UtcNow,
+            NoteText = noteText,
+            NoteType = "Clinical",
+            CreatedBy = "Current User", // TODO: Get from auth context
+            CreatedDate = DateTime.UtcNow
+        };
+
+        _context.ClinicalNotes.Add(newNote);
+        await _context.SaveChangesAsync();
+
         return new ClinicalNoteDto
         {
-            NoteId = new Random().Next(1000, 9999),
-            NoteDate = DateTime.Now,
-            NoteText = noteText,
-            CreatedBy = "Current User",
-            NoteType = "Clinical"
+            NoteId = newNote.ClinicalNoteId,
+            NoteDate = newNote.NoteDate,
+            NoteText = newNote.NoteText,
+            CreatedBy = newNote.CreatedBy ?? "Unknown",
+            NoteType = newNote.NoteType
         };
     }
 
@@ -120,22 +127,22 @@ public class ClinicalChartService : IClinicalChartService
         var tenantId = _tenantProvider.TenantId;
         var toothData = new Dictionary<string, List<ToothProcedureDto>>();
 
-        // Get completed procedures grouped by tooth
-        var completedByTooth = await _context.ClaimProcedures
-            .Where(cp => cp.TenantId == tenantId &&
-                         cp.Claim.PatientId == patientId &&
-                         !string.IsNullOrEmpty(cp.ToothNumber))
-            .GroupBy(cp => cp.ToothNumber!)
+        // Get completed procedures from Procedures table grouped by tooth
+        var completedByTooth = await _context.Procedures
+            .Where(p => p.TenantId == tenantId &&
+                        p.PatientId == patientId &&
+                        !string.IsNullOrEmpty(p.ToothNumber))
+            .GroupBy(p => p.ToothNumber!)
             .Select(g => new
             {
                 ToothNumber = g.Key,
-                Procedures = g.Select(cp => new ToothProcedureDto
+                Procedures = g.Select(p => new ToothProcedureDto
                 {
-                    CDTCode = cp.CDTCode,
-                    Description = cp.Description,
+                    CDTCode = p.CDTCode,
+                    Description = p.Description,
                     Status = "Completed",
                     Color = "#00ff00",
-                    ServiceDate = cp.ServiceDate
+                    ServiceDate = p.ServiceDate
                 }).ToList()
             })
             .ToListAsync();
@@ -179,5 +186,27 @@ public class ClinicalChartService : IClinicalChartService
         }
 
         return toothData;
+    }
+
+    public async Task<Procedure> CreateProcedureAsync(Procedure procedure)
+    {
+        var tenantId = _tenantProvider.TenantId;
+        procedure.TenantId = tenantId;
+        procedure.CreatedDate = DateTime.UtcNow;
+
+        _context.Procedures.Add(procedure);
+        await _context.SaveChangesAsync();
+
+        return procedure;
+    }
+
+    public async Task<Procedure?> GetProcedureByIdAsync(int procedureId)
+    {
+        var tenantId = _tenantProvider.TenantId;
+
+        return await _context.Procedures
+            .Include(p => p.Patient)
+            .Include(p => p.Provider)
+            .FirstOrDefaultAsync(p => p.TenantId == tenantId && p.ProcedureId == procedureId);
     }
 }
