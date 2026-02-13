@@ -36,7 +36,7 @@
                     <MudTextField Label="Email" Variant="Variant.Outlined" 
                                   Value="contact@clouddentaloffice.com" ReadOnly="true" />
                     <MudButton Variant="Variant.Filled" Color="Color.Primary" 
-                               OnClick="@(() => Snackbar.Add("Edit practice info coming soon!", Severity.Info))">
+                               OnClick="@(() => Snackbar.Add(\"Edit practice info coming soon!\", Severity.Info))">
                         Edit Practice Info
                     </MudButton>
                 </MudStack>
@@ -60,7 +60,7 @@
                     <MudSwitch T="bool" Label="Enable Electronic Claims Submission" 
                                Color="Color.Primary" Checked="true" ReadOnly="true" />
                     <MudButton Variant="Variant.Filled" Color="Color.Primary"
-                               OnClick="@(() => Snackbar.Add("EDI configuration coming soon!", Severity.Info))">
+                               OnClick="@(() => Snackbar.Add(\"EDI configuration coming soon!\", Severity.Info))">
                         Configure EDI
                     </MudButton>
                 </MudStack>
@@ -91,7 +91,7 @@
                     <MudSwitch T="bool" Label="Enable SMS Reminders" 
                                Color="Color.Primary" Checked="false" />
                     <MudButton Variant="Variant.Filled" Color="Color.Primary"
-                               OnClick="@(() => Snackbar.Add("Preferences saved!", Severity.Success))">
+                               OnClick="@(() => Snackbar.Add(\"Preferences saved!\", Severity.Success))">
                         Save Preferences
                     </MudButton>
                 </MudStack>
@@ -115,7 +115,7 @@
                     <MudSwitch T="bool" Label="Audit Logging Enabled" 
                                Color="Color.Primary" Checked="true" ReadOnly="true" />
                     <MudButton Variant="Variant.Outlined" Color="Color.Warning"
-                               OnClick="@(() => Snackbar.Add("Change password coming soon!", Severity.Info))">
+                               OnClick="@(() => Snackbar.Add(\"Change password coming soon!\", Severity.Info))">
                         Change Password
                     </MudButton>
                 </MudStack>
@@ -139,7 +139,7 @@
                     <MudTimePicker Label="Office Hours End" 
                                    Variant="Variant.Outlined" Time="@(new TimeSpan(17, 0, 0))" />
                     <MudButton Variant="Variant.Filled" Color="Color.Primary"
-                               OnClick="@(() => Snackbar.Add("Appointment settings saved!", Severity.Success))">
+                               OnClick="@(() => Snackbar.Add(\"Appointment settings saved!\", Severity.Success))">
                         Save Settings
                     </MudButton>
                 </MudStack>
@@ -163,7 +163,7 @@
                     <MudSwitch T="bool" Label="Accept ACH Payments" 
                                Color="Color.Primary" Checked="true" />
                     <MudButton Variant="Variant.Filled" Color="Color.Primary"
-                               OnClick="@(() => Snackbar.Add("Billing settings saved!", Severity.Success))">
+                               OnClick="@(() => Snackbar.Add(\"Billing settings saved!\", Severity.Success))">
                         Save Settings
                     </MudButton>
                 </MudStack>
