@@ -1,24 +1,24 @@
 using CloudDentalOffice.Portal.Models;
 using CloudDentalOffice.Portal.Data;
-using CloudDentalOffice.Portal.Services;
+using CloudDentalOffice.Portal.Services.Tenancy;
 using Microsoft.EntityFrameworkCore;
 
 namespace CloudDentalOffice.Portal.Services;
 
 public class ClinicalChartService : IClinicalChartService
 {
-    private readonly PortalDbContext _context;
-    private readonly ITenantService _tenantService;
+    private readonly CloudDentalDbContext _context;
+    private readonly ITenantProvider _tenantProvider;
 
-    public ClinicalChartService(PortalDbContext context, ITenantService tenantService)
+    public ClinicalChartService(CloudDentalDbContext context, ITenantProvider tenantProvider)
     {
         _context = context;
-        _tenantService = tenantService;
+        _tenantProvider = tenantProvider;
     }
 
     public async Task<List<CompletedProcedureDto>> GetCompletedProceduresAsync(int patientId)
     {
-        var tenantId = _tenantService.GetCurrentTenantId();
+        var tenantId = _tenantProvider.TenantId;
 
         // Get completed procedures from claims
         var completedProcs = await _context.ClaimProcedures
@@ -45,7 +45,7 @@ public class ClinicalChartService : IClinicalChartService
 
     public async Task<List<PlannedProcedure>> GetPlannedProceduresAsync(int patientId)
     {
-        var tenantId = _tenantService.GetCurrentTenantId();
+        var tenantId = _tenantProvider.TenantId;
 
         var plannedProcs = await _context.PlannedProcedures
             .Include(pp => pp.TreatmentPlan)
@@ -117,7 +117,7 @@ public class ClinicalChartService : IClinicalChartService
 
     public async Task<Dictionary<string, List<ToothProcedureDto>>> GetToothChartDataAsync(int patientId)
     {
-        var tenantId = _tenantService.GetCurrentTenantId();
+        var tenantId = _tenantProvider.TenantId;
         var toothData = new Dictionary<string, List<ToothProcedureDto>>();
 
         // Get completed procedures grouped by tooth
