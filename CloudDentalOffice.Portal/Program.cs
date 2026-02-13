@@ -49,8 +49,8 @@ builder.Services.AddAuthentication(options =>
 // Add HttpClient for API calls
 builder.Services.AddHttpClient();
 
-// Tenant resolution (shared DB)
-builder.Services.AddScoped<ITenantProvider, HttpContextTenantProvider>();
+// Tenant resolution (Blazor Server-compatible)
+builder.Services.AddScoped<ITenantProvider, BlazorTenantProvider>();
 
 // Configure database
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") 
