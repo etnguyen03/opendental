@@ -182,6 +182,9 @@
 
     protected override async Task OnInitializedAsync()
     {
+        // Small delay to ensure TenantProvider is initialized
+        await Task.Delay(50);
+        
         // Load patients and providers sequentially to avoid DbContext concurrency
         await LoadPatients();
         await LoadProviders();

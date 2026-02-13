@@ -76,8 +76,14 @@ public class AppointmentServiceImpl : IAppointmentService
         try
         {
             var tenantId = _tenantProvider.TenantId;
+            _logger.LogInformation("Creating appointment for tenant: {TenantId}, Patient: {PatientId}, Provider: {ProviderId}", 
+                tenantId, appointment.PatientId, appointment.ProviderId);
+            
             if (string.IsNullOrEmpty(tenantId))
+            {
+                _logger.LogError("Tenant ID is not available when creating appointment");
                 throw new InvalidOperationException("Tenant ID is not available");
+            }
 
             appointment.TenantId = tenantId;
             appointment.CreatedDate = DateTime.UtcNow;
@@ -85,13 +91,26 @@ public class AppointmentServiceImpl : IAppointmentService
             _context.Appointments.Add(appointment);
             await _context.SaveChangesAsync();
 
+            _logger.LogInformation("Appointment created successfully with ID: {AppointmentId}", appointment.AppointmentId);
+
             // Reload with navigation properties
-            return await GetAppointmentByIdAsync(appointment.AppointmentId.ToString()) 
-                   ?? throw new InvalidOperationException("Failed to retrieve created appointment");
+            var createdAppointment = await _context.Appointments
+                .Include(a => a.Patient)
+                .Include(a => a.Provider)
+                .FirstOrDefaultAsync(a => a.AppointmentId == appointment.AppointmentId && a.TenantId == tenantId);
+
+            if (createdAppointment == null)
+            {
+                _logger.LogError("Failed to reload appointment {AppointmentId} after creation", appointment.AppointmentId);
+                throw new InvalidOperationException("Failed to retrieve created appointment");
+            }
+
+            return createdAppointment;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error creating appointment");
+            _logger.LogError(ex, "Error creating appointment for Patient {PatientId}, Provider {ProviderId}", 
+                appointment.PatientId, appointment.ProviderId);
             throw;
         }
     }
