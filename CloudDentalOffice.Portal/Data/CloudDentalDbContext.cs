@@ -316,6 +316,74 @@ public class CloudDentalDbContext : DbContext
             new ProcedureCode { ProcedureCodeId = 37, Code = "D7210", Description = "Extraction, erupted tooth requiring removal of bone and/or sectioning of tooth", AbbrDesc = "Surgical Extraction", DefaultFee = 250.00m, Category = "Oral Surgery", IsActive = true, CreatedDate = DateTime.UtcNow },
             new ProcedureCode { ProcedureCodeId = 38, Code = "D7240", Description = "Removal of impacted tooth - completely bony", AbbrDesc = "Impacted Tooth", DefaultFee = 400.00m, Category = "Oral Surgery", IsActive = true, CreatedDate = DateTime.UtcNow }
         );
+
+        // Seed sample providers
+        modelBuilder.Entity<Provider>().HasData(
+            new Provider 
+            { 
+                ProviderId = 1, 
+                TenantId = TenantConstants.DefaultTenantId,
+                NPI = "1234567890",
+                FirstName = "John", 
+                LastName = "Smith", 
+                Suffix = "DDS",
+                Specialty = "General Dentistry",
+                LicenseNumber = "D12345",
+                LicenseState = "CA",
+                Email = "jsmith@clouddentaloffice.com",
+                Phone = "555-0101",
+                IsActive = true,
+                CreatedDate = DateTime.UtcNow
+            },
+            new Provider 
+            { 
+                ProviderId = 2, 
+                TenantId = TenantConstants.DefaultTenantId,
+                NPI = "2345678901",
+                FirstName = "Sarah", 
+                LastName = "Johnson", 
+                Suffix = "DMD",
+                Specialty = "Pediatric Dentistry",
+                LicenseNumber = "D23456",
+                LicenseState = "CA",
+                Email = "sjohnson@clouddentaloffice.com",
+                Phone = "555-0102",
+                IsActive = true,
+                CreatedDate = DateTime.UtcNow
+            },
+            new Provider 
+            { 
+                ProviderId = 3, 
+                TenantId = TenantConstants.DefaultTenantId,
+                NPI = "3456789012",
+                FirstName = "Michael", 
+                LastName = "Chen", 
+                Suffix = "DDS",
+                Specialty = "Oral Surgery",
+                LicenseNumber = "D34567",
+                LicenseState = "CA",
+                Email = "mchen@clouddentaloffice.com",
+                Phone = "555-0103",
+                IsActive = true,
+                CreatedDate = DateTime.UtcNow
+            },
+            new Provider 
+            { 
+                ProviderId = 4, 
+                TenantId = TenantConstants.DefaultTenantId,
+                NPI = "4567890123",
+                FirstName = "Emily", 
+                LastName = "Rodriguez", 
+                Suffix = "DMD",
+                Specialty = "Endodontics",
+                LicenseNumber = "D45678",
+                LicenseState = "CA",
+                Email = "erodriguez@clouddentaloffice.com",
+                Phone = "555-0104",
+                IsActive = true,
+                CreatedDate = DateTime.UtcNow
+            }
+        );
     }
 
     public override int SaveChanges()
