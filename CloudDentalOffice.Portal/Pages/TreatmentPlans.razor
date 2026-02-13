@@ -238,17 +238,74 @@
             Snackbar.Add("Please select a patient first", Severity.Warning);
             return;
         }
-        
-        Snackbar.Add("Treatment plan creation coming soon!", Severity.Info);
+
+        var parameters = new DialogParameters<AddEditTreatmentPlanDialog>
+        {
+            { x => x.PatientId, _selectedPatient.PatientId },
+            { x => x.PatientName, _selectedPatient.FullName }
+        };
+
+        var options = new DialogOptions 
+        { 
+            MaxWidth = MaxWidth.Large, 
+            FullWidth = true,
+            CloseButton = true
+        };
+
+        var dialog = await DialogService.ShowAsync<AddEditTreatmentPlanDialog>("New Treatment Plan", parameters, options);
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            await LoadTreatmentPlans();
+        }
     }
 
-    private void ViewTreatmentPlan(TreatmentPlan plan)
+    private async Task ViewTreatmentPlan(TreatmentPlan plan)
     {
-        Snackbar.Add($"View treatment plan: {plan.Title}", Severity.Info);
+        var parameters = new DialogParameters<ViewTreatmentPlanDialog>
+        {
+            { x => x.TreatmentPlan, plan }
+        };
+
+        var options = new DialogOptions 
+        { 
+            MaxWidth = MaxWidth.ExtraLarge, 
+            FullWidth = true,
+            CloseButton = true
+        };
+
+        var dialog = await DialogService.ShowAsync<ViewTreatmentPlanDialog>("Treatment Plan Details", parameters, options);
+        var result = await dialog.Result;
+
+        if (!result.Canceled && result.Data is bool shouldRefresh && shouldRefresh)
+        {
+            await LoadTreatmentPlans();
+        }
     }
 
-    private void EditTreatmentPlan(TreatmentPlan plan)
+    private async Task EditTreatmentPlan(TreatmentPlan plan)
     {
-        Snackbar.Add($"Edit treatment plan: {plan.Title}", Severity.Info);
+        var parameters = new DialogParameters<AddEditTreatmentPlanDialog>
+        {
+            { x => x.PatientId, plan.PatientId },
+            { x => x.PatientName, _selectedPatient?.FullName ?? "" },
+            { x => x.ExistingTreatmentPlan, plan }
+        };
+
+        var options = new DialogOptions 
+        { 
+            MaxWidth = MaxWidth.Large, 
+            FullWidth = true,
+            CloseButton = true
+        };
+
+        var dialog = await DialogService.ShowAsync<AddEditTreatmentPlanDialog>("Edit Treatment Plan", parameters, options);
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            await LoadTreatmentPlans();
+        }
     }
 }

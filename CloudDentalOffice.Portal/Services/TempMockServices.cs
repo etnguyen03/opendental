@@ -14,22 +14,6 @@ public class AppointmentService : IAppointmentService
     public Task DeleteAppointmentAsync(string appointmentId) => Task.CompletedTask;
 }
 
-public class TreatmentPlanService : ITreatmentPlanService
-{
-    public Task<List<TreatmentPlan>> GetTreatmentPlansAsync(string patientId) => Task.FromResult(new List<TreatmentPlan>());
-    public Task<TreatmentPlan?> GetTreatmentPlanByIdAsync(string treatmentPlanId) => Task.FromResult<TreatmentPlan?>(null);
-    public Task<TreatmentPlan> CreateTreatmentPlanAsync(TreatmentPlan plan) => Task.FromResult(plan);
-    public Task<TreatmentPlan> UpdateTreatmentPlanAsync(TreatmentPlan plan) => Task.FromResult(plan);
-}
-
-public class ProviderService : IProviderService
-{
-    public Task<List<Provider>> GetProvidersAsync() => Task.FromResult(new List<Provider>());
-    public Task<Provider?> GetProviderByIdAsync(string providerId) => Task.FromResult<Provider?>(null);
-    public Task<Provider> CreateProviderAsync(Provider provider) => Task.FromResult(provider);
-    public Task<Provider> UpdateProviderAsync(Provider provider) => Task.FromResult(provider);
-}
-
 public class BillingService : IBillingService
 {
     public Task<List<Invoice>> GetInvoicesAsync(DateTime startDate, DateTime endDate) => Task.FromResult(new List<Invoice>());

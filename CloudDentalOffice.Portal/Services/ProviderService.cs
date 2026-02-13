@@ -1,5 +1,6 @@
 using CloudDentalOffice.Portal.Data;
 using CloudDentalOffice.Portal.Models;
+using CloudDentalOffice.Portal.Services.Tenancy;
 using Microsoft.EntityFrameworkCore;
 
 namespace CloudDentalOffice.Portal.Services;
@@ -10,11 +11,13 @@ namespace CloudDentalOffice.Portal.Services;
 public class ProviderServiceImpl : IProviderService
 {
     private readonly CloudDentalDbContext _context;
+    private readonly ITenantProvider _tenantProvider;
     private readonly ILogger<ProviderServiceImpl> _logger;
 
-    public ProviderServiceImpl(CloudDentalDbContext context, ILogger<ProviderServiceImpl> logger)
+    public ProviderServiceImpl(CloudDentalDbContext context, ITenantProvider tenantProvider, ILogger<ProviderServiceImpl> logger)
     {
         _context = context;
+        _tenantProvider = tenantProvider;
         _logger = logger;
     }
 
@@ -22,8 +25,12 @@ public class ProviderServiceImpl : IProviderService
     {
         try
         {
+            var tenantId = _tenantProvider.TenantId;
+            if (string.IsNullOrEmpty(tenantId))
+                throw new InvalidOperationException("Tenant ID is not available");
+
             return await _context.Providers
-                .Where(p => p.IsActive)
+                .Where(p => p.TenantId == tenantId && p.IsActive)
                 .OrderBy(p => p.LastName)
                 .ThenBy(p => p.FirstName)
                 .ToListAsync();
@@ -42,8 +49,12 @@ public class ProviderServiceImpl : IProviderService
 
         try
         {
+            var tenantId = _tenantProvider.TenantId;
+            if (string.IsNullOrEmpty(tenantId))
+                throw new InvalidOperationException("Tenant ID is not available");
+
             return await _context.Providers
-                .FirstOrDefaultAsync(p => p.ProviderId == id);
+                .FirstOrDefaultAsync(p => p.TenantId == tenantId && p.ProviderId == id);
         }
         catch (Exception ex)
         {
@@ -56,6 +67,11 @@ public class ProviderServiceImpl : IProviderService
     {
         try
         {
+            var tenantId = _tenantProvider.TenantId;
+            if (string.IsNullOrEmpty(tenantId))
+                throw new InvalidOperationException("Tenant ID is not available");
+
+            provider.TenantId = tenantId;
             provider.CreatedDate = DateTime.UtcNow;
             _context.Providers.Add(provider);
             await _context.SaveChangesAsync();
@@ -74,11 +90,34 @@ public class ProviderServiceImpl : IProviderService
     {
         try
         {
-            _context.Providers.Update(provider);
+            var tenantId = _tenantProvider.TenantId;
+            if (string.IsNullOrEmpty(tenantId))
+                throw new InvalidOperationException("Tenant ID is not available");
+
+            var existingProvider = await _context.Providers
+                .FirstOrDefaultAsync(p => p.TenantId == tenantId && p.ProviderId == provider.ProviderId);
+
+            if (existingProvider == null)
+                throw new InvalidOperationException("Provider not found or access denied");
+
+            existingProvider.FirstName = provider.FirstName;
+            existingProvider.MiddleName = provider.MiddleName;
+            existingProvider.LastName = provider.LastName;
+            existingProvider.Suffix = provider.Suffix;
+            existingProvider.Specialty = provider.Specialty;
+            existingProvider.NPI = provider.NPI;
+            existingProvider.LicenseNumber = provider.LicenseNumber;
+            existingProvider.DEANumber = provider.DEANumber;
+            existingProvider.TaxonomyCode = provider.TaxonomyCode;
+            existingProvider.Phone = provider.Phone;
+            existingProvider.Email = provider.Email;
+            existingProvider.IsActive = provider.IsActive;
+            existingProvider.ModifiedDate = DateTime.UtcNow;
+
             await _context.SaveChangesAsync();
 
             _logger.LogInformation("Updated provider {ProviderName}", provider.FullName);
-            return provider;
+            return existingProvider;
         }
         catch (Exception ex)
         {

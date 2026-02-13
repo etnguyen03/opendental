@@ -1,0 +1,363 @@
+@using CloudDentalOffice.Portal.Models
+@inject ITreatmentPlanService TreatmentPlanService
+@inject IProviderService ProviderService
+@inject ISnackbar Snackbar
+
+<MudDialog Style="background: #0a0a0a; border: 1px solid #00ffff;">
+    <DialogContent>
+        <MudContainer Style="max-width: 800px;">
+            <MudGrid>
+                <!-- Title Section -->
+                <MudItem xs="12">
+                    <MudText Typo="Typo.h5" Style="color: #00ffff; font-weight: bold;" Class="mb-3">
+                        <MudIcon Icon="@Icons.Material.Filled.Assignment" Size="Size.Medium" />
+                        @(IsEditMode ? "Edit Treatment Plan" : "Create New Treatment Plan")
+                    </MudText>
+                    <MudDivider Style="background: rgba(0, 255, 255, 0.3);" />
+                </MudItem>
+
+                <!-- Patient Info (Read-only) -->
+                <MudItem xs="12">
+                    <MudPaper Class="pa-3" Style="background: #1a1a1a; border: 1px solid rgba(0, 255, 255, 0.2);">
+                        <MudText Typo="Typo.body1" Style="color: #b0b0b0;">
+                            <strong>Patient:</strong> @PatientName
+                        </MudText>
+                    </MudPaper>
+                </MudItem>
+
+                <!-- Treatment Plan Title -->
+                <MudItem xs="12">
+                    <MudTextField @bind-Value="_treatmentPlan.Title" 
+                                  Label="Treatment Plan Title" 
+                                  Variant="Variant.Outlined"
+                                  Required="true"
+                                  HelperText="Enter a descriptive title for this treatment plan" />
+                </MudItem>
+
+                <!-- Provider Selection -->
+                <MudItem xs="12" md="6">
+                    <MudSelect T="int?" @bind-Value="_selectedProviderId" 
+                               Label="Provider" 
+                               Variant="Variant.Outlined"
+                               Required="true">
+                        @foreach (var provider in _providers)
+                        {
+                            <MudSelectItem Value="@((int?)provider.ProviderId)">
+                                @provider.FullName (@provider.NPI)
+                            </MudSelectItem>
+                        }
+                    </MudSelect>
+                </MudItem>
+
+                <!-- Status Selection -->
+                <MudItem xs="12" md="6">
+                    <MudSelect T="string" @bind-Value="_treatmentPlan.Status" 
+                               Label="Status" 
+                               Variant="Variant.Outlined">
+                        <MudSelectItem Value="@("Draft")">Draft</MudSelectItem>
+                        <MudSelectItem Value="@("Proposed")">Proposed</MudSelectItem>
+                        <MudSelectItem Value="@("Accepted")">Accepted</MudSelectItem>
+                        <MudSelectItem Value="@("InProgress")">In Progress</MudSelectItem>
+                        <MudSelectItem Value="@("Completed")">Completed</MudSelectItem>
+                    </MudSelect>
+                </MudItem>
+
+                <!-- Dates -->
+                <MudItem xs="12" md="4">
+                    <MudDatePicker @bind-Date="_presentedDate" 
+                                   Label="Presented Date" 
+                                   Variant="Variant.Outlined"
+                                   Clearable="true" />
+                </MudItem>
+
+                <MudItem xs="12" md="4">
+                    <MudDatePicker @bind-Date="_acceptedDate" 
+                                   Label="Accepted Date" 
+                                   Variant="Variant.Outlined"
+                                   Clearable="true" />
+                </MudItem>
+
+                <MudItem xs="12" md="4">
+                    <MudTextField Value="@_treatmentPlan.CreatedDate.ToString("MM/dd/yyyy")" 
+                                  Label="Created Date" 
+                                  Variant="Variant.Outlined"
+                                  ReadOnly="true" />
+                </MudItem>
+
+                <!-- Notes -->
+                <MudItem xs="12">
+                    <MudTextField @bind-Value="_treatmentPlan.Notes" 
+                                  Label="Notes" 
+                                  Variant="Variant.Outlined"
+                                  Lines="4"
+                                  HelperText="Enter any notes or special instructions for this treatment plan" />
+                </MudItem>
+
+                <!-- Procedures Section -->
+                <MudItem xs="12">
+                    <MudPaper Class="pa-3" Style="background: #1a1a1a; border: 1px solid rgba(0, 255, 255, 0.2);">
+                        <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="mb-3">
+                            <MudText Typo="Typo.h6" Style="color: #00ffff;">
+                                <MudIcon Icon="@Icons.Material.Filled.ListAlt" Size="Size.Small" /> 
+                                Planned Procedures (@_procedures.Count)
+                            </MudText>
+                            <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Small"
+                                       OnClick="AddProcedure" StartIcon="@Icons.Material.Filled.Add">
+                                Add Procedure
+                            </MudButton>
+                        </MudStack>
+
+                        @if (_procedures.Any())
+                        {
+                            <MudTable Items="@_procedures" Dense="true" Hover="true" Striped="true">
+                                <HeaderContent>
+                                    <MudTh Style="color: #00ffff;">Code</MudTh>
+                                    <MudTh Style="color: #00ffff;">Description</MudTh>
+                                    <MudTh Style="color: #00ffff;">Tooth</MudTh>
+                                    <MudTh Style="color: #00ffff;">Surface</MudTh>
+                                    <MudTh Style="color: #00ffff;">Fee</MudTh>
+                                    <MudTh Style="color: #00ffff;">Priority</MudTh>
+                                    <MudTh Style="color: #00ffff;">Actions</MudTh>
+                                </HeaderContent>
+                                <RowTemplate>
+                                    <MudTd DataLabel="Code">
+                                        <MudTextField @bind-Value="context.ProcedureCode" Variant="Variant.Text" 
+                                                      Margin="Margin.Dense" />
+                                    </MudTd>
+                                    <MudTd DataLabel="Description">
+                                        <MudTextField @bind-Value="context.Description" Variant="Variant.Text" 
+                                                      Margin="Margin.Dense" />
+                                    </MudTd>
+                                    <MudTd DataLabel="Tooth">
+                                        <MudTextField @bind-Value="context.ToothNumber" Variant="Variant.Text" 
+                                                      Margin="Margin.Dense" />
+                                    </MudTd>
+                                    <MudTd DataLabel="Surface">
+                                        <MudTextField @bind-Value="context.Surface" Variant="Variant.Text" 
+                                                      Margin="Margin.Dense" />
+                                    </MudTd>
+                                    <MudTd DataLabel="Fee">
+                                        <MudNumericField @bind-Value="context.EstimatedFee" Variant="Variant.Text" 
+                                                         Margin="Margin.Dense" Min="0" Format="C2" />
+                                    </MudTd>
+                                    <MudTd DataLabel="Priority">
+                                        <MudSelect T="string" @bind-Value="context.Priority" Variant="Variant.Text" 
+                                                   Margin="Margin.Dense">
+                                            <MudSelectItem Value="@("Low")">Low</MudSelectItem>
+                                            <MudSelectItem Value="@("Medium")">Medium</MudSelectItem>
+                                            <MudSelectItem Value="@("High")">High</MudSelectItem>
+                                        </MudSelect>
+                                    </MudTd>
+                                    <MudTd DataLabel="Actions">
+                                        <MudIconButton Icon="@Icons.Material.Filled.Delete" Size="Size.Small" 
+                                                       Color="Color.Error" OnClick="@(() => RemoveProcedure(context))" />
+                                    </MudTd>
+                                </RowTemplate>
+                            </MudTable>
+                        }
+                        else
+                        {
+                            <MudText Typo="Typo.body2" Style="color: #b0b0b0;" Class="pa-4 text-center">
+                                No procedures added yet. Click "Add Procedure" to get started.
+                            </MudText>
+                        }
+
+                        <!-- Total Estimated Cost -->
+                        @if (_procedures.Any())
+                        {
+                            <MudDivider Style="background: rgba(0, 255, 255, 0.3);" Class="my-3" />
+                            <MudStack Row="true" Justify="Justify.FlexEnd">
+                                <MudText Typo="Typo.h6" Style="color: #00ff88;">
+                                    Total Estimated Cost: @CalculateTotalCost().ToString("C")
+                                </MudText>
+                            </MudStack>
+                        }
+                    </MudPaper>
+                </MudItem>
+
+                <!-- Validation Messages -->
+                @if (!string.IsNullOrEmpty(_validationMessage))
+                {
+                    <MudItem xs="12">
+                        <MudAlert Severity="Severity.Warning">@_validationMessage</MudAlert>
+                    </MudItem>
+                }
+            </MudGrid>
+        </MudContainer>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel" Color="Color.Default">Cancel</MudButton>
+        <MudButton OnClick="Save" Color="Color.Primary" Variant="Variant.Filled" Disabled="@_saving">
+            @if (_saving)
+            {
+                <MudProgressCircular Size="Size.Small" Indeterminate="true" />
+            }
+            else
+            {
+                <text>@(IsEditMode ? "Update" : "Create") Treatment Plan</text>
+            }
+        </MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter]
+    MudDialogInstance MudDialog { get; set; } = null!;
+
+    [Parameter]
+    public int PatientId { get; set; }
+
+    [Parameter]
+    public string PatientName { get; set; } = "";
+
+    [Parameter]
+    public TreatmentPlan? ExistingTreatmentPlan { get; set; }
+
+    private TreatmentPlan _treatmentPlan = new();
+    private List<PlannedProcedure> _procedures = new();
+    private List<Provider> _providers = new();
+    private int? _selectedProviderId;
+    private DateTime? _presentedDate;
+    private DateTime? _acceptedDate;
+    private bool _saving = false;
+    private string? _validationMessage;
+
+    private bool IsEditMode => ExistingTreatmentPlan != null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Load providers
+        await LoadProviders();
+
+        if (IsEditMode && ExistingTreatmentPlan != null)
+        {
+            // Edit mode - load existing treatment plan
+            _treatmentPlan = new TreatmentPlan
+            {
+                TreatmentPlanId = ExistingTreatmentPlan.TreatmentPlanId,
+                TenantId = ExistingTreatmentPlan.TenantId,
+                PatientId = ExistingTreatmentPlan.PatientId,
+                ProviderId = ExistingTreatmentPlan.ProviderId,
+                Title = ExistingTreatmentPlan.Title,
+                Status = ExistingTreatmentPlan.Status,
+                CreatedDate = ExistingTreatmentPlan.CreatedDate,
+                PresentedDate = ExistingTreatmentPlan.PresentedDate,
+                AcceptedDate = ExistingTreatmentPlan.AcceptedDate,
+                Notes = ExistingTreatmentPlan.Notes,
+                TotalEstimatedCost = ExistingTreatmentPlan.TotalEstimatedCost
+            };
+
+            _selectedProviderId = ExistingTreatmentPlan.ProviderId;
+            _presentedDate = ExistingTreatmentPlan.PresentedDate;
+            _acceptedDate = ExistingTreatmentPlan.AcceptedDate;
+            _procedures = ExistingTreatmentPlan.PlannedProcedures.ToList();
+        }
+        else
+        {
+            // Create mode - initialize new treatment plan
+            _treatmentPlan = new TreatmentPlan
+            {
+                PatientId = PatientId,
+                Status = "Draft",
+                CreatedDate = DateTime.UtcNow,
+                Title = $"Treatment Plan - {DateTime.Now:MM/dd/yyyy}"
+            };
+        }
+    }
+
+    private async Task LoadProviders()
+    {
+        try
+        {
+            _providers = await ProviderService.GetProvidersAsync();
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error loading providers: {ex.Message}", Severity.Error);
+        }
+    }
+
+    private void AddProcedure()
+    {
+        _procedures.Add(new PlannedProcedure
+        {
+            TreatmentPlanId = _treatmentPlan.TreatmentPlanId,
+            ProcedureCode = "",
+            Description = "",
+            EstimatedFee = 0,
+            Priority = "Medium",
+            Status = "Planned"
+        });
+    }
+
+    private void RemoveProcedure(PlannedProcedure procedure)
+    {
+        _procedures.Remove(procedure);
+    }
+
+    private decimal CalculateTotalCost()
+    {
+        return _procedures.Sum(p => p.EstimatedFee);
+    }
+
+    private async Task Save()
+    {
+        // Validation
+        if (string.IsNullOrWhiteSpace(_treatmentPlan.Title))
+        {
+            _validationMessage = "Please enter a title for the treatment plan.";
+            return;
+        }
+
+        if (!_selectedProviderId.HasValue)
+        {
+            _validationMessage = "Please select a provider.";
+            return;
+        }
+
+        if (_procedures.Count == 0)
+        {
+            _validationMessage = "Please add at least one procedure to the treatment plan.";
+            return;
+        }
+
+        try
+        {
+            _saving = true;
+            _validationMessage = null;
+
+            // Update dates from nullable DateTime fields
+            _treatmentPlan.ProviderId = _selectedProviderId.Value;
+            _treatmentPlan.PresentedDate = _presentedDate;
+            _treatmentPlan.AcceptedDate = _acceptedDate;
+            _treatmentPlan.TotalEstimatedCost = CalculateTotalCost();
+            _treatmentPlan.PlannedProcedures = _procedures;
+
+            if (IsEditMode)
+            {
+                await TreatmentPlanService.UpdateTreatmentPlanAsync(_treatmentPlan);
+                Snackbar.Add("Treatment plan updated successfully!", Severity.Success);
+            }
+            else
+            {
+                await TreatmentPlanService.CreateTreatmentPlanAsync(_treatmentPlan);
+                Snackbar.Add("Treatment plan created successfully!", Severity.Success);
+            }
+
+            MudDialog.Close(DialogResult.Ok(true));
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error saving treatment plan: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            _saving = false;
+        }
+    }
+
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+}

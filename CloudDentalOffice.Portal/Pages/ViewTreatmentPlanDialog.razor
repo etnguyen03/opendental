@@ -1,0 +1,308 @@
+@using CloudDentalOffice.Portal.Models
+@inject ITreatmentPlanService TreatmentPlanService
+@inject ISnackbar Snackbar
+
+<MudDialog Style="background: #0a0a0a; border: 1px solid #00ffff;">
+    <DialogContent>
+        <MudContainer Style="max-width: 900px;">
+            <MudGrid>
+                <!-- Header Section -->
+                <MudItem xs="12">
+                    <MudText Typo="Typo.h5" Style="color: #00ffff; font-weight: bold;" Class="mb-2">
+                        @TreatmentPlan.Title
+                    </MudText>
+                    <MudDivider Style="background: rgba(0, 255, 255, 0.3);" />
+                </MudItem>
+
+                <!-- Patient and Provider Info -->
+                <MudItem xs="12" md="6">
+                    <MudPaper Class="pa-3" Style="background: #1a1a1a; border: 1px solid rgba(0, 255, 255, 0.2);">
+                        <MudText Typo="Typo.h6" Style="color: #00ffff;" Class="mb-2">
+                            <MudIcon Icon="@Icons.Material.Filled.Person" Size="Size.Small" /> Patient Information
+                        </MudText>
+                        <MudText Typo="Typo.body2" Style="color: #b0b0b0;">
+                            <strong>Name:</strong> @TreatmentPlan.Patient?.FullName
+                        </MudText>
+                        <MudText Typo="Typo.body2" Style="color: #b0b0b0;">
+                            <strong>Patient ID:</strong> @TreatmentPlan.PatientId
+                        </MudText>
+                    </MudPaper>
+                </MudItem>
+
+                <MudItem xs="12" md="6">
+                    <MudPaper Class="pa-3" Style="background: #1a1a1a; border: 1px solid rgba(0, 255, 255, 0.2);">
+                        <MudText Typo="Typo.h6" Style="color: #00ffff;" Class="mb-2">
+                            <MudIcon Icon="@Icons.Material.Filled.MedicalServices" Size="Size.Small" /> Provider Information
+                        </MudText>
+                        <MudText Typo="Typo.body2" Style="color: #b0b0b0;">
+                            <strong>Provider:</strong> @(TreatmentPlan.Provider?.FullName ?? "Not Assigned")
+                        </MudText>
+                        <MudText Typo="Typo.body2" Style="color: #b0b0b0;">
+                            <strong>NPI:</strong> @(TreatmentPlan.Provider?.NPI ?? "N/A")
+                        </MudText>
+                    </MudPaper>
+                </MudItem>
+
+                <!-- Status and Dates -->
+                <MudItem xs="12">
+                    <MudPaper Class="pa-3" Style="background: #1a1a1a; border: 1px solid rgba(0, 255, 255, 0.2);">
+                        <MudText Typo="Typo.h6" Style="color: #00ffff;" Class="mb-2">
+                            <MudIcon Icon="@Icons.Material.Filled.Event" Size="Size.Small" /> Status & Dates
+                        </MudText>
+                        <MudGrid>
+                            <MudItem xs="12" md="3">
+                                <MudText Typo="Typo.body2" Style="color: #b0b0b0;">
+                                    <strong>Status:</strong>
+                                </MudText>
+                                <MudChip T="string" Color="@GetStatusColor(TreatmentPlan.Status)" Size="Size.Small" Class="mt-1">
+                                    @TreatmentPlan.Status
+                                </MudChip>
+                            </MudItem>
+                            <MudItem xs="12" md="3">
+                                <MudText Typo="Typo.body2" Style="color: #b0b0b0;">
+                                    <strong>Created:</strong> @TreatmentPlan.CreatedDate.ToString("MM/dd/yyyy")
+                                </MudText>
+                            </MudItem>
+                            <MudItem xs="12" md="3">
+                                <MudText Typo="Typo.body2" Style="color: #b0b0b0;">
+                                    <strong>Presented:</strong> @(TreatmentPlan.PresentedDate?.ToString("MM/dd/yyyy") ?? "Not Presented")
+                                </MudText>
+                            </MudItem>
+                            <MudItem xs="12" md="3">
+                                <MudText Typo="Typo.body2" Style="color: #b0b0b0;">
+                                    <strong>Accepted:</strong> @(TreatmentPlan.AcceptedDate?.ToString("MM/dd/yyyy") ?? "Not Accepted")
+                                </MudText>
+                            </MudItem>
+                        </MudGrid>
+                    </MudPaper>
+                </MudItem>
+
+                <!-- Planned Procedures -->
+                <MudItem xs="12">
+                    <MudPaper Class="pa-3" Style="background: #1a1a1a; border: 1px solid rgba(0, 255, 255, 0.2);">
+                        <MudText Typo="Typo.h6" Style="color: #00ffff;" Class="mb-3">
+                            <MudIcon Icon="@Icons.Material.Filled.ListAlt" Size="Size.Small" /> 
+                            Planned Procedures (@TreatmentPlan.PlannedProcedures.Count)
+                        </MudText>
+                        
+                        @if (TreatmentPlan.PlannedProcedures.Any())
+                        {
+                            <MudTable Items="@TreatmentPlan.PlannedProcedures" Dense="true" Hover="true" Striped="true">
+                                <HeaderContent>
+                                    <MudTh Style="color: #00ffff;">Code</MudTh>
+                                    <MudTh Style="color: #00ffff;">Description</MudTh>
+                                    <MudTh Style="color: #00ffff;">Tooth</MudTh>
+                                    <MudTh Style="color: #00ffff;">Surface</MudTh>
+                                    <MudTh Style="color: #00ffff;">Est. Fee</MudTh>
+                                    <MudTh Style="color: #00ffff;">Priority</MudTh>
+                                </HeaderContent>
+                                <RowTemplate>
+                                    <MudTd DataLabel="Code">
+                                        <MudText Typo="Typo.body2" Style="font-family: monospace;">
+                                            @context.ProcedureCode
+                                        </MudText>
+                                    </MudTd>
+                                    <MudTd DataLabel="Description">
+                                        <MudText Typo="Typo.body2">@context.Description</MudText>
+                                    </MudTd>
+                                    <MudTd DataLabel="Tooth">
+                                        <MudText Typo="Typo.body2">@(context.ToothNumber ?? "N/A")</MudText>
+                                    </MudTd>
+                                    <MudTd DataLabel="Surface">
+                                        <MudText Typo="Typo.body2">@(context.Surface ?? "N/A")</MudText>
+                                    </MudTd>
+                                    <MudTd DataLabel="Fee">
+                                        <MudText Typo="Typo.body2" Style="color: #00ff88;">
+                                            @context.EstimatedFee.ToString("C")
+                                        </MudText>
+                                    </MudTd>
+                                    <MudTd DataLabel="Priority">
+                                        <MudChip T="string" Color="@GetPriorityColor(context.Priority)" Size="Size.Small">
+                                            @context.Priority
+                                        </MudChip>
+                                    </MudTd>
+                                </RowTemplate>
+                            </MudTable>
+                        }
+                        else
+                        {
+                            <MudText Typo="Typo.body2" Style="color: #b0b0b0;" Class="pa-4 text-center">
+                                No procedures in this treatment plan
+                            </MudText>
+                        }
+                    </MudPaper>
+                </MudItem>
+
+                <!-- Financial Summary -->
+                <MudItem xs="12">
+                    <MudPaper Class="pa-3" Style="background: #1a1a1a; border: 1px solid rgba(0, 255, 255, 0.2);">
+                        <MudText Typo="Typo.h6" Style="color: #00ffff;" Class="mb-2">
+                            <MudIcon Icon="@Icons.Material.Filled.AttachMoney" Size="Size.Small" /> Financial Summary
+                        </MudText>
+                        <MudGrid>
+                            <MudItem xs="12" md="4">
+                                <MudText Typo="Typo.body2" Style="color: #b0b0b0;">
+                                    <strong>Total Estimated Cost:</strong>
+                                </MudText>
+                                <MudText Typo="Typo.h5" Style="color: #00ff88;" Class="mt-1">
+                                    @TreatmentPlan.TotalEstimatedCost.ToString("C")
+                                </MudText>
+                            </MudItem>
+                            <MudItem xs="12" md="4">
+                                <MudText Typo="Typo.body2" Style="color: #b0b0b0;">
+                                    <strong>Number of Procedures:</strong>
+                                </MudText>
+                                <MudText Typo="Typo.h5" Style="color: #00ffff;" Class="mt-1">
+                                    @TreatmentPlan.PlannedProcedures.Count
+                                </MudText>
+                            </MudItem>
+                            <MudItem xs="12" md="4">
+                                <MudText Typo="Typo.body2" Style="color: #b0b0b0;">
+                                    <strong>Average per Procedure:</strong>
+                                </MudText>
+                                <MudText Typo="Typo.h5" Style="color: #00ffff;" Class="mt-1">
+                                    @((TreatmentPlan.PlannedProcedures.Count > 0 
+                                        ? TreatmentPlan.TotalEstimatedCost / TreatmentPlan.PlannedProcedures.Count 
+                                        : 0).ToString("C"))
+                                </MudText>
+                            </MudItem>
+                        </MudGrid>
+                    </MudPaper>
+                </MudItem>
+
+                <!-- Notes Section -->
+                <MudItem xs="12">
+                    <MudPaper Class="pa-3" Style="background: #1a1a1a; border: 1px solid rgba(0, 255, 255, 0.2);">
+                        <MudText Typo="Typo.h6" Style="color: #00ffff;" Class="mb-2">
+                            <MudIcon Icon="@Icons.Material.Filled.Notes" Size="Size.Small" /> Notes
+                        </MudText>
+                        <MudText Typo="Typo.body2" Style="color: #b0b0b0; white-space: pre-wrap;">
+                            @(TreatmentPlan.Notes ?? "No notes available")
+                        </MudText>
+                    </MudPaper>
+                </MudItem>
+
+                <!-- Status Update Section -->
+                @if (TreatmentPlan.Status != "Completed" && TreatmentPlan.Status != "Cancelled")
+                {
+                    <MudItem xs="12">
+                        <MudPaper Class="pa-3" Style="background: #1a1a1a; border: 1px solid rgba(255, 165, 0, 0.3);">
+                            <MudText Typo="Typo.h6" Style="color: #ffa500;" Class="mb-3">
+                                <MudIcon Icon="@Icons.Material.Filled.Update" Size="Size.Small" /> Update Status
+                            </MudText>
+                            <MudGrid>
+                                <MudItem xs="12" md="6">
+                                    <MudSelect T="string" Label="New Status" @bind-Value="_newStatus" Variant="Variant.Outlined">
+                                        <MudSelectItem Value="@("Draft")">Draft</MudSelectItem>
+                                        <MudSelectItem Value="@("Proposed")">Proposed</MudSelectItem>
+                                        <MudSelectItem Value="@("Accepted")">Accepted</MudSelectItem>
+                                        <MudSelectItem Value="@("InProgress")">In Progress</MudSelectItem>
+                                        <MudSelectItem Value="@("Completed")">Completed</MudSelectItem>
+                                        <MudSelectItem Value="@("Cancelled")">Cancelled</MudSelectItem>
+                                    </MudSelect>
+                                </MudItem>
+                                <MudItem xs="12" md="6" Class="d-flex align-center">
+                                    <MudButton Variant="Variant.Filled" Color="Color.Warning" 
+                                               OnClick="UpdateStatus" Disabled="@(_updating || _newStatus == TreatmentPlan.Status)"
+                                               FullWidth="true">
+                                        @if (_updating)
+                                        {
+                                            <MudProgressCircular Size="Size.Small" Indeterminate="true" />
+                                        }
+                                        else
+                                        {
+                                            <text>Update Status</text>
+                                        }
+                                    </MudButton>
+                                </MudItem>
+                            </MudGrid>
+                        </MudPaper>
+                    </MudItem>
+                }
+            </MudGrid>
+        </MudContainer>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Close" Color="Color.Default">Close</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter]
+    MudDialogInstance MudDialog { get; set; } = null!;
+
+    [Parameter]
+    public TreatmentPlan TreatmentPlan { get; set; } = null!;
+
+    private string _newStatus = "";
+    private bool _updating = false;
+
+    protected override void OnInitialized()
+    {
+        _newStatus = TreatmentPlan.Status;
+    }
+
+    private Color GetStatusColor(string status)
+    {
+        return status switch
+        {
+            "Draft" => Color.Default,
+            "Proposed" => Color.Info,
+            "Accepted" => Color.Success,
+            "InProgress" => Color.Warning,
+            "Completed" => Color.Success,
+            "Cancelled" => Color.Error,
+            _ => Color.Default
+        };
+    }
+
+    private Color GetPriorityColor(string? priority)
+    {
+        return priority switch
+        {
+            "High" => Color.Error,
+            "Medium" => Color.Warning,
+            "Low" => Color.Info,
+            _ => Color.Default
+        };
+    }
+
+    private async Task UpdateStatus()
+    {
+        try
+        {
+            _updating = true;
+            
+            // Update the treatment plan status
+            TreatmentPlan.Status = _newStatus;
+            
+            // Set appropriate dates based on status
+            if (_newStatus == "Proposed" && !TreatmentPlan.PresentedDate.HasValue)
+            {
+                TreatmentPlan.PresentedDate = DateTime.UtcNow;
+            }
+            else if (_newStatus == "Accepted" && !TreatmentPlan.AcceptedDate.HasValue)
+            {
+                TreatmentPlan.AcceptedDate = DateTime.UtcNow;
+            }
+            
+            await TreatmentPlanService.UpdateTreatmentPlanAsync(TreatmentPlan);
+            
+            Snackbar.Add($"Treatment plan status updated to {_newStatus}", Severity.Success);
+            MudDialog.Close(DialogResult.Ok(true));
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error updating status: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            _updating = false;
+        }
+    }
+
+    private void Close()
+    {
+        MudDialog.Cancel();
+    }
+}
