@@ -143,7 +143,7 @@
         }
     }
 
-    private async Task<IEnumerable<Patient>> SearchPatients(string searchString)
+    private async Task<IEnumerable<Patient>> SearchPatients(string searchString, CancellationToken token)
     {
         if (string.IsNullOrWhiteSpace(searchString))
             return _allPatients.Take(10);
