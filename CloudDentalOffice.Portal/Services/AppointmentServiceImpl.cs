@@ -1,5 +1,6 @@
 using CloudDentalOffice.Portal.Data;
 using CloudDentalOffice.Portal.Models;
+using CloudDentalOffice.Portal.Services.Tenancy;
 using Microsoft.EntityFrameworkCore;
 
 namespace CloudDentalOffice.Portal.Services;
@@ -10,11 +11,13 @@ namespace CloudDentalOffice.Portal.Services;
 public class AppointmentServiceImpl : IAppointmentService
 {
     private readonly CloudDentalDbContext _context;
+    private readonly ITenantProvider _tenantProvider;
     private readonly ILogger<AppointmentServiceImpl> _logger;
 
-    public AppointmentServiceImpl(CloudDentalDbContext context, ILogger<AppointmentServiceImpl> logger)
+    public AppointmentServiceImpl(CloudDentalDbContext context, ITenantProvider tenantProvider, ILogger<AppointmentServiceImpl> logger)
     {
         _context = context;
+        _tenantProvider = tenantProvider;
         _logger = logger;
     }
 
@@ -22,6 +25,10 @@ public class AppointmentServiceImpl : IAppointmentService
     {
         try
         {
+            var tenantId = _tenantProvider.TenantId;
+            if (string.IsNullOrEmpty(tenantId))
+                throw new InvalidOperationException("Tenant ID is not available");
+
             // Get appointments for the specific date
             // Assuming appointments store full DateTime, we compare Date part
             var targetDate = date.Date;
@@ -30,7 +37,7 @@ public class AppointmentServiceImpl : IAppointmentService
             return await _context.Appointments
                 .Include(a => a.Patient)
                 .Include(a => a.Provider)
-                .Where(a => a.AppointmentDateTime >= targetDate && a.AppointmentDateTime < nextDate)
+                .Where(a => a.TenantId == tenantId && a.AppointmentDateTime >= targetDate && a.AppointmentDateTime < nextDate)
                 .OrderBy(a => a.AppointmentDateTime)
                 .ToListAsync();
         }
@@ -48,10 +55,14 @@ public class AppointmentServiceImpl : IAppointmentService
 
         try
         {
+            var tenantId = _tenantProvider.TenantId;
+            if (string.IsNullOrEmpty(tenantId))
+                throw new InvalidOperationException("Tenant ID is not available");
+
             return await _context.Appointments
                 .Include(a => a.Patient)
                 .Include(a => a.Provider)
-                .FirstOrDefaultAsync(a => a.AppointmentId == id);
+                .FirstOrDefaultAsync(a => a.TenantId == tenantId && a.AppointmentId == id);
         }
         catch (Exception ex)
         {
@@ -64,9 +75,19 @@ public class AppointmentServiceImpl : IAppointmentService
     {
         try
         {
+            var tenantId = _tenantProvider.TenantId;
+            if (string.IsNullOrEmpty(tenantId))
+                throw new InvalidOperationException("Tenant ID is not available");
+
+            appointment.TenantId = tenantId;
+            appointment.CreatedDate = DateTime.UtcNow;
+
             _context.Appointments.Add(appointment);
             await _context.SaveChangesAsync();
-            return appointment;
+
+            // Reload with navigation properties
+            return await GetAppointmentByIdAsync(appointment.AppointmentId.ToString()) 
+                   ?? throw new InvalidOperationException("Failed to retrieve created appointment");
         }
         catch (Exception ex)
         {
@@ -79,9 +100,31 @@ public class AppointmentServiceImpl : IAppointmentService
     {
         try
         {
-            _context.Entry(appointment).State = EntityState.Modified;
+            var tenantId = _tenantProvider.TenantId;
+            if (string.IsNullOrEmpty(tenantId))
+                throw new InvalidOperationException("Tenant ID is not available");
+
+            var existingAppointment = await _context.Appointments
+                .FirstOrDefaultAsync(a => a.TenantId == tenantId && a.AppointmentId == appointment.AppointmentId);
+
+            if (existingAppointment == null)
+                throw new InvalidOperationException("Appointment not found or access denied");
+
+            existingAppointment.PatientId = appointment.PatientId;
+            existingAppointment.ProviderId = appointment.ProviderId;
+            existingAppointment.AppointmentDateTime = appointment.AppointmentDateTime;
+            existingAppointment.DurationMinutes = appointment.DurationMinutes;
+            existingAppointment.AppointmentType = appointment.AppointmentType;
+            existingAppointment.Status = appointment.Status;
+            existingAppointment.Notes = appointment.Notes;
+            existingAppointment.ReasonForVisit = appointment.ReasonForVisit;
+            existingAppointment.ModifiedDate = DateTime.UtcNow;
+
             await _context.SaveChangesAsync();
-            return appointment;
+
+            // Reload with navigation properties
+            return await GetAppointmentByIdAsync(appointment.AppointmentId.ToString()) 
+                   ?? throw new InvalidOperationException("Failed to retrieve updated appointment");
         }
         catch (Exception ex)
         {
@@ -97,7 +140,13 @@ public class AppointmentServiceImpl : IAppointmentService
 
         try
         {
-            var appointment = await _context.Appointments.FindAsync(id);
+            var tenantId = _tenantProvider.TenantId;
+            if (string.IsNullOrEmpty(tenantId))
+                throw new InvalidOperationException("Tenant ID is not available");
+
+            var appointment = await _context.Appointments
+                .FirstOrDefaultAsync(a => a.TenantId == tenantId && a.AppointmentId == id);
+
             if (appointment != null)
             {
                 _context.Appointments.Remove(appointment);

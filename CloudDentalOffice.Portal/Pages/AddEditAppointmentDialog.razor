@@ -1,0 +1,343 @@
+@using CloudDentalOffice.Portal.Models
+@using MudBlazor
+@inject IAppointmentService AppointmentService
+@inject IPatientService PatientService
+@inject IProviderService ProviderService
+@inject ISnackbar Snackbar
+
+<MudDialog Style="background: #0a0a0a; border: 1px solid #00ffff;">
+    <DialogContent>
+        <MudContainer Style="max-width: 700px;">
+            <MudGrid>
+                <!-- Title Section -->
+                <MudItem xs="12">
+                    <MudText Typo="Typo.h5" Style="color: #00ffff; font-weight: bold;" Class="mb-3">
+                        <MudIcon Icon="@Icons.Material.Filled.Event" Size="Size.Medium" />
+                        @(IsEditMode ? "Edit Appointment" : "Schedule New Appointment")
+                    </MudText>
+                    <MudDivider Style="background: rgba(0, 255, 255, 0.3);" />
+                </MudItem>
+
+                <!-- Patient Selection -->
+                <MudItem xs="12">
+                    @if (PreselectedPatientId.HasValue)
+                    {
+                        <MudPaper Class="pa-3" Style="background: #1a1a1a; border: 1px solid rgba(0, 255, 255, 0.2);">
+                            <MudText Typo="Typo.body1" Style="color: #b0b0b0;">
+                                <strong>Patient:</strong> @_selectedPatient?.FullName
+                            </MudText>
+                        </MudPaper>
+                    }
+                    else
+                    {
+                        <MudAutocomplete T="Patient" @bind-Value="_selectedPatient" 
+                                         Label="Search Patient" 
+                                         SearchFunc="@SearchPatients"
+                                         ToStringFunc="@(p => p?.FullName ?? "")"
+                                         Variant="Variant.Outlined" 
+                                         Required="true"
+                                         AdornmentIcon="@Icons.Material.Filled.Search" />
+                    }
+                </MudItem>
+
+                <!-- Provider Selection -->
+                <MudItem xs="12" md="6">
+                    <MudSelect T="int?" @bind-Value="_selectedProviderId" 
+                               Label="Provider" 
+                               Variant="Variant.Outlined"
+                               Required="true">
+                        @foreach (var provider in _providers)
+                        {
+                            <MudSelectItem Value="@((int?)provider.ProviderId)">
+                                @provider.FullName
+                            </MudSelectItem>
+                        }
+                    </MudSelect>
+                </MudItem>
+
+                <!-- Status Selection -->
+                <MudItem xs="12" md="6">
+                    <MudSelect T="string" @bind-Value="_appointment.Status" 
+                               Label="Status" 
+                               Variant="Variant.Outlined">
+                        <MudSelectItem Value="@("Scheduled")">Scheduled</MudSelectItem>
+                        <MudSelectItem Value="@("Confirmed")">Confirmed</MudSelectItem>
+                        <MudSelectItem Value="@("Checked-In")">Checked-In</MudSelectItem>
+                        <MudSelectItem Value="@("InProgress")">In Progress</MudSelectItem>
+                        <MudSelectItem Value="@("Completed")">Completed</MudSelectItem>
+                        <MudSelectItem Value="@("Cancelled")">Cancelled</MudSelectItem>
+                        <MudSelectItem Value="@("NoShow")">No Show</MudSelectItem>
+                    </MudSelect>
+                </MudItem>
+
+                <!-- Date and Time -->
+                <MudItem xs="12" md="6">
+                    <MudDatePicker @bind-Date="_appointmentDate" 
+                                   Label="Appointment Date" 
+                                   Variant="Variant.Outlined"
+                                   Required="true" />
+                </MudItem>
+
+                <MudItem xs="12" md="6">
+                    <MudTimePicker @bind-Time="_appointmentTime" 
+                                   Label="Appointment Time" 
+                                   Variant="Variant.Outlined"
+                                   Required="true"
+                                   TimeFormat="hh:mm tt" />
+                </MudItem>
+
+                <!-- Appointment Type and Duration -->
+                <MudItem xs="12" md="8">
+                    <MudSelect T="string" @bind-Value="_appointment.AppointmentType" 
+                               Label="Appointment Type" 
+                               Variant="Variant.Outlined"
+                               Required="true">
+                        <MudSelectItem Value="@("Consultation")">Consultation</MudSelectItem>
+                        <MudSelectItem Value="@("Exam")">Exam</MudSelectItem>
+                        <MudSelectItem Value="@("Cleaning")">Cleaning</MudSelectItem>
+                        <MudSelectItem Value="@("Filling")">Filling</MudSelectItem>
+                        <MudSelectItem Value="@("Crown")">Crown</MudSelectItem>
+                        <MudSelectItem Value="@("Root Canal")">Root Canal</MudSelectItem>
+                        <MudSelectItem Value="@("Extraction")">Extraction</MudSelectItem>
+                        <MudSelectItem Value="@("Implant")">Implant</MudSelectItem>
+                        <MudSelectItem Value="@("Orthodontics")">Orthodontics</MudSelectItem>
+                        <MudSelectItem Value="@("X-Ray")">X-Ray</MudSelectItem>
+                        <MudSelectItem Value="@("Emergency")">Emergency</MudSelectItem>
+                        <MudSelectItem Value="@("Follow-up")">Follow-up</MudSelectItem>
+                    </MudSelect>
+                </MudItem>
+
+                <MudItem xs="12" md="4">
+                    <MudNumericField @bind-Value="_appointment.DurationMinutes" 
+                                     Label="Duration (min)" 
+                                     Variant="Variant.Outlined"
+                                     Min="15"
+                                     Step="15"
+                                     Required="true" />
+                </MudItem>
+
+                <!-- Reason for Visit -->
+                <MudItem xs="12">
+                    <MudTextField @bind-Value="_appointment.ReasonForVisit" 
+                                  Label="Reason for Visit" 
+                                  Variant="Variant.Outlined"
+                                  MaxLength="100" />
+                </MudItem>
+
+                <!-- Notes -->
+                <MudItem xs="12">
+                    <MudTextField @bind-Value="_appointment.Notes" 
+                                  Label="Notes" 
+                                  Variant="Variant.Outlined"
+                                  Lines="3"
+                                  MaxLength="1000" />
+                </MudItem>
+
+                <!-- Validation Messages -->
+                @if (!string.IsNullOrEmpty(_validationMessage))
+                {
+                    <MudItem xs="12">
+                        <MudAlert Severity="Severity.Warning">@_validationMessage</MudAlert>
+                    </MudItem>
+                }
+            </MudGrid>
+        </MudContainer>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel" Color="Color.Default">Cancel</MudButton>
+        <MudButton OnClick="Save" Color="Color.Primary" Variant="Variant.Filled" Disabled="@_saving">
+            @if (_saving)
+            {
+                <MudProgressCircular Size="Size.Small" Indeterminate="true" />
+            }
+            else
+            {
+                <text>@(IsEditMode ? "Update" : "Schedule") Appointment</text>
+            }
+        </MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter]
+    MudDialogInstance MudDialog { get; set; } = null!;
+
+    [Parameter]
+    public int? PreselectedPatientId { get; set; }
+
+    [Parameter]
+    public Appointment? ExistingAppointment { get; set; }
+
+    private Appointment _appointment = new();
+    private Patient? _selectedPatient;
+    private List<Patient> _allPatients = new();
+    private List<Provider> _providers = new();
+    private int? _selectedProviderId;
+    private DateTime? _appointmentDate;
+    private TimeSpan? _appointmentTime;
+    private bool _saving = false;
+    private string? _validationMessage;
+
+    private bool IsEditMode => ExistingAppointment != null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Load patients and providers
+        await Task.WhenAll(LoadPatients(), LoadProviders());
+
+        if (IsEditMode && ExistingAppointment != null)
+        {
+            // Edit mode - load existing appointment
+            _appointment = new Appointment
+            {
+                AppointmentId = ExistingAppointment.AppointmentId,
+                TenantId = ExistingAppointment.TenantId,
+                PatientId = ExistingAppointment.PatientId,
+                ProviderId = ExistingAppointment.ProviderId,
+                AppointmentDateTime = ExistingAppointment.AppointmentDateTime,
+                DurationMinutes = ExistingAppointment.DurationMinutes,
+                AppointmentType = ExistingAppointment.AppointmentType,
+                Status = ExistingAppointment.Status,
+                Notes = ExistingAppointment.Notes,
+                ReasonForVisit = ExistingAppointment.ReasonForVisit,
+                CreatedDate = ExistingAppointment.CreatedDate
+            };
+
+            _selectedPatient = ExistingAppointment.Patient;
+            _selectedProviderId = ExistingAppointment.ProviderId;
+            _appointmentDate = ExistingAppointment.AppointmentDateTime.Date;
+            _appointmentTime = ExistingAppointment.AppointmentDateTime.TimeOfDay;
+        }
+        else
+        {
+            // Create mode - initialize new appointment
+            if (PreselectedPatientId.HasValue)
+            {
+                _selectedPatient = _allPatients.FirstOrDefault(p => p.PatientId == PreselectedPatientId.Value);
+            }
+
+            _appointment = new Appointment
+            {
+                Status = "Scheduled",
+                DurationMinutes = 60,
+                AppointmentType = "Exam"
+            };
+
+            _appointmentDate = DateTime.Today;
+            _appointmentTime = TimeSpan.FromHours(9); // Default to 9 AM
+        }
+    }
+
+    private async Task LoadPatients()
+    {
+        try
+        {
+            _allPatients = await PatientService.GetPatientsAsync();
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error loading patients: {ex.Message}", Severity.Error);
+        }
+    }
+
+    private async Task LoadProviders()
+    {
+        try
+        {
+            _providers = await ProviderService.GetProvidersAsync();
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error loading providers: {ex.Message}", Severity.Error);
+        }
+    }
+
+    private async Task<IEnumerable<Patient>> SearchPatients(string searchString, CancellationToken token)
+    {
+        if (string.IsNullOrWhiteSpace(searchString))
+            return _allPatients.Take(10);
+
+        return _allPatients
+            .Where(p => p.FullName.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            .Take(10);
+    }
+
+    private async Task Save()
+    {
+        // Validation
+        if (_selectedPatient == null && !PreselectedPatientId.HasValue)
+        {
+            _validationMessage = "Please select a patient.";
+            return;
+        }
+
+        if (!_selectedProviderId.HasValue)
+        {
+            _validationMessage = "Please select a provider.";
+            return;
+        }
+
+        if (!_appointmentDate.HasValue)
+        {
+            _validationMessage = "Please select an appointment date.";
+            return;
+        }
+
+        if (!_appointmentTime.HasValue)
+        {
+            _validationMessage = "Please select an appointment time.";
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(_appointment.AppointmentType))
+        {
+            _validationMessage = "Please select an appointment type.";
+            return;
+        }
+
+        try
+        {
+            _saving = true;
+            _validationMessage = null;
+
+            // Combine date and time
+            _appointment.AppointmentDateTime = _appointmentDate.Value.Date + _appointmentTime.Value;
+            _appointment.ProviderId = _selectedProviderId.Value;
+            
+            if (_selectedPatient != null)
+            {
+                _appointment.PatientId = _selectedPatient.PatientId;
+            }
+            else if (PreselectedPatientId.HasValue)
+            {
+                _appointment.PatientId = PreselectedPatientId.Value;
+            }
+
+            if (IsEditMode)
+            {
+                await AppointmentService.UpdateAppointmentAsync(_appointment);
+                Snackbar.Add("Appointment updated successfully!", Severity.Success);
+            }
+            else
+            {
+                await AppointmentService.CreateAppointmentAsync(_appointment);
+                Snackbar.Add("Appointment scheduled successfully!", Severity.Success);
+            }
+
+            MudDialog.Close(DialogResult.Ok(true));
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error saving appointment: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            _saving = false;
+        }
+    }
+
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+}
