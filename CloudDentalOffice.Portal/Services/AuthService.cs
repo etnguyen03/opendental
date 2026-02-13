@@ -111,7 +111,77 @@ public class AuthService : IAuthService
         _context.Tenants.Add(tenant);
         _context.Users.Add(user);
 
+        // 4. Seed default providers for new tenant
+        var defaultProviders = new List<Provider>
+        {
+            new Provider 
+            { 
+                TenantId = tenantId,
+                NPI = "1234567890",
+                FirstName = "John", 
+                LastName = "Smith", 
+                Suffix = "DDS",
+                Specialty = "General Dentistry",
+                LicenseNumber = "D12345",
+                LicenseState = "CA",
+                Email = "jsmith@example.com",
+                Phone = "555-0101",
+                IsActive = true,
+                CreatedDate = DateTime.UtcNow
+            },
+            new Provider 
+            { 
+                TenantId = tenantId,
+                NPI = "2345678901",
+                FirstName = "Sarah", 
+                LastName = "Johnson", 
+                Suffix = "DMD",
+                Specialty = "Pediatric Dentistry",
+                LicenseNumber = "D23456",
+                LicenseState = "CA",
+                Email = "sjohnson@example.com",
+                Phone = "555-0102",
+                IsActive = true,
+                CreatedDate = DateTime.UtcNow
+            },
+            new Provider 
+            { 
+                TenantId = tenantId,
+                NPI = "3456789012",
+                FirstName = "Michael", 
+                LastName = "Chen", 
+                Suffix = "DDS",
+                Specialty = "Oral Surgery",
+                LicenseNumber = "D34567",
+                LicenseState = "CA",
+                Email = "mchen@example.com",
+                Phone = "555-0103",
+                IsActive = true,
+                CreatedDate = DateTime.UtcNow
+            },
+            new Provider 
+            { 
+                TenantId = tenantId,
+                NPI = "4567890123",
+                FirstName = "Emily", 
+                LastName = "Rodriguez", 
+                Suffix = "DMD",
+                Specialty = "Endodontics",
+                LicenseNumber = "D45678",
+                LicenseState = "CA",
+                Email = "erodriguez@example.com",
+                Phone = "555-0104",
+                IsActive = true,
+                CreatedDate = DateTime.UtcNow
+            }
+        };
+
+        _context.Providers.AddRange(defaultProviders);
+
         await _context.SaveChangesAsync();
+        
+        _logger.LogInformation("Created new tenant {TenantId} with {ProviderCount} default providers", tenantId, defaultProviders.Count);
+        
         return true;
     }
 }
