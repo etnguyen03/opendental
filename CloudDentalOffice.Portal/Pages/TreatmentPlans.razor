@@ -1,7 +1,9 @@
 @page "/treatment-plans"
+@page "/treatment-plans/{PatientId:int}"
 @using CloudDentalOffice.Portal.Models
 @inject ITreatmentPlanService TreatmentPlanService
 @inject IPatientService PatientService
+@inject NavigationManager Navigation
 @inject IDialogService DialogService
 @inject ISnackbar Snackbar
 
@@ -138,6 +140,9 @@
 </MudContainer>
 
 @code {
+    [Parameter]
+    public int? PatientId { get; set; }
+    
     private List<TreatmentPlan> _treatmentPlans = new();
     private List<Patient> _allPatients = new();
     private Patient? _selectedPatient = null;
@@ -147,6 +152,24 @@
     protected override async Task OnInitializedAsync()
     {
         await LoadPatients();
+        
+        // If PatientId is provided, load that patient
+        if (PatientId.HasValue)
+        {
+            try
+            {
+                _selectedPatient = await PatientService.GetPatientByIdAsync(PatientId.Value.ToString());
+                if (_selectedPatient != null)
+                {
+                    await LoadTreatmentPlans();
+                }
+            }
+            catch (Exception ex)
+            {
+                _errorMessage = $"Error loading patient: {ex.Message}";
+                Snackbar.Add(_errorMessage, Severity.Error);
+            }
+        }
     }
 
     private async Task LoadPatients()

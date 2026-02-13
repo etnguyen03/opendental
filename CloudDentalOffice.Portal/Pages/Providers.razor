@@ -1,0 +1,154 @@
+@page "/providers"
+@using CloudDentalOffice.Portal.Models
+@inject IProviderService ProviderService
+@inject IDialogService DialogService
+@inject ISnackbar Snackbar
+
+<PageTitle>Providers - Cloud Dental Office</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-4">
+    <MudPaper Class="pa-4" Style="background: #0a0a0a; border: 1px solid #00ffff;">
+        <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
+            <div>
+                <MudText Typo="Typo.h4" Style="color: #00ffff; font-weight: bold;">
+                    <MudIcon Icon="@Icons.Material.Filled.MedicalServices" Class="mr-2" />
+                    Providers
+                </MudText>
+                <MudText Typo="Typo.body2" Style="color: #b0b0b0;">
+                    Manage dental providers and credentials
+                </MudText>
+            </div>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="OpenAddProviderDialog"
+                       StartIcon="@Icons.Material.Filled.Add">
+                Add Provider
+            </MudButton>
+        </MudStack>
+    </MudPaper>
+
+    @if (!string.IsNullOrEmpty(_errorMessage))
+    {
+        <MudAlert Severity="Severity.Error" Class="mt-4">
+            <MudText Typo="Typo.body1" Style="font-family: monospace; white-space: pre-wrap;">@_errorMessage</MudText>
+        </MudAlert>
+    }
+
+    <MudPaper Class="pa-4 mt-4" Style="background: #0a0a0a; border: 1px solid rgba(0, 255, 255, 0.3);">
+        @if (_loading)
+        {
+            <MudProgressLinear Color="Color.Primary" Indeterminate="true" />
+        }
+        else
+        {
+            <MudTable Items="@_providers" Hover="true" Striped="true" Dense="true"
+                      Filter="new Func<Provider, bool>(FilterProvider)">
+                <ToolBarContent>
+                    <MudTextField @bind-Value="_searchString" Placeholder="Search providers..." Adornment="Adornment.Start"
+                                  AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium"
+                                  Immediate="true" Clearable="true" />
+                </ToolBarContent>
+                <HeaderContent>
+                    <MudTh Style="color: #00ffff;">Name</MudTh>
+                    <MudTh Style="color: #00ffff;">Specialty</MudTh>
+                    <MudTh Style="color: #00ffff;">NPI</MudTh>
+                    <MudTh Style="color: #00ffff;">License Number</MudTh>
+                    <MudTh Style="color: #00ffff;">Phone</MudTh>
+                    <MudTh Style="color: #00ffff;">Email</MudTh>
+                    <MudTh Style="color: #00ffff;">Status</MudTh>
+                    <MudTh Style="color: #00ffff;">Actions</MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd DataLabel="Name">
+                        <MudText Typo="Typo.body2" Style="font-weight: bold;">@context.FullName</MudText>
+                    </MudTd>
+                    <MudTd DataLabel="Specialty">
+                        <MudText Typo="Typo.body2">@(context.Specialty ?? "General Dentistry")</MudText>
+                    </MudTd>
+                    <MudTd DataLabel="NPI">
+                        <MudText Typo="Typo.body2" Style="color: #00ff88;">@context.NPI</MudText>
+                    </MudTd>
+                    <MudTd DataLabel="License">
+                        <MudText Typo="Typo.body2">@context.LicenseNumber</MudText>
+                    </MudTd>
+                    <MudTd DataLabel="Phone">
+                        <MudText Typo="Typo.body2">@context.Phone</MudText>
+                    </MudTd>
+                    <MudTd DataLabel="Email">
+                        <MudText Typo="Typo.body2">@context.Email</MudText>
+                    </MudTd>
+                    <MudTd DataLabel="Status">
+                        <MudChip T="string" Size="Size.Small" 
+                                 Color="@(context.Status == "Active" ? Color.Success : Color.Default)">
+                            @context.Status
+                        </MudChip>
+                    </MudTd>
+                    <MudTd DataLabel="Actions">
+                        <MudIconButton Icon="@Icons.Material.Filled.Edit" Size="Size.Small" Color="Color.Primary"
+                                       OnClick="@(() => EditProvider(context))" />
+                        <MudIconButton Icon="@Icons.Material.Filled.Visibility" Size="Size.Small" Color="Color.Info"
+                                       OnClick="@(() => ViewProvider(context))" />
+                    </MudTd>
+                </RowTemplate>
+                <NoRecordsContent>
+                    <MudText Style="color: #b0b0b0;">No providers found</MudText>
+                </NoRecordsContent>
+            </MudTable>
+        }
+    </MudPaper>
+</MudContainer>
+
+@code {
+    private List<Provider> _providers = new();
+    private bool _loading = true;
+    private string _searchString = "";
+    private string? _errorMessage = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadProviders();
+    }
+
+    private async Task LoadProviders()
+    {
+        try
+        {
+            _loading = true;
+            _errorMessage = null;
+            _providers = await ProviderService.GetProvidersAsync();
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = $"Error loading providers: {ex.Message}";
+            Snackbar.Add(_errorMessage, Severity.Error);
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+
+    private bool FilterProvider(Provider provider)
+    {
+        if (string.IsNullOrWhiteSpace(_searchString))
+            return true;
+            
+        return provider.FullName.Contains(_searchString, StringComparison.OrdinalIgnoreCase) ||
+               (provider.Specialty?.Contains(_searchString, StringComparison.OrdinalIgnoreCase) ?? false) ||
+               provider.NPI.Contains(_searchString, StringComparison.OrdinalIgnoreCase) ||
+               provider.Email.Contains(_searchString, StringComparison.OrdinalIgnoreCase);
+    }
+
+    private void OpenAddProviderDialog()
+    {
+        Snackbar.Add("Add provider dialog coming soon!", Severity.Info);
+    }
+
+    private void EditProvider(Provider provider)
+    {
+        Snackbar.Add($"Edit provider: {provider.FullName}", Severity.Info);
+    }
+
+    private void ViewProvider(Provider provider)
+    {
+        Snackbar.Add($"View provider details: {provider.FullName}", Severity.Info);
+    }
+}

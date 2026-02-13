@@ -1,0 +1,153 @@
+@page "/billing"
+@using CloudDentalOffice.Portal.Models
+@inject IBillingService BillingService
+@inject IDialogService DialogService
+@inject ISnackbar Snackbar
+
+<PageTitle>Billing - Cloud Dental Office</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-4">
+    <MudPaper Class="pa-4" Style="background: #0a0a0a; border: 1px solid #00ffff;">
+        <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
+            <div>
+                <MudText Typo="Typo.h4" Style="color: #00ffff; font-weight: bold;">
+                    <MudIcon Icon="@Icons.Material.Filled.Receipt" Class="mr-2" />
+                    Billing & Invoices
+                </MudText>
+                <MudText Typo="Typo.body2" Style="color: #b0b0b0;">
+                    Manage patient billing and invoices
+                </MudText>
+            </div>
+            <MudStack Row="true" Spacing="2">
+                <MudDateRangePicker @bind-DateRange="_dateRange" Label="Date Range" 
+                                    Color="Color.Primary" Variant="Variant.Outlined" />
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="LoadInvoices"
+                           StartIcon="@Icons.Material.Filled.Refresh">
+                    Refresh
+                </MudButton>
+            </MudStack>
+        </MudStack>
+    </MudPaper>
+
+    @if (!string.IsNullOrEmpty(_errorMessage))
+    {
+        <MudAlert Severity="Severity.Error" Class="mt-4">
+            <MudText Typo="Typo.body1" Style="font-family: monospace; white-space: pre-wrap;">@_errorMessage</MudText>
+        </MudAlert>
+    }
+
+    <MudPaper Class="pa-4 mt-4" Style="background: #0a0a0a; border: 1px solid rgba(0, 255, 255, 0.3);">
+        @if (_loading)
+        {
+            <MudProgressLinear Color="Color.Primary" Indeterminate="true" />
+        }
+        else
+        {
+            <MudTable Items="@_invoices" Hover="true" Striped="true" Dense="true">
+                <ToolBarContent>
+                    <MudText Typo="Typo.h6" Style="color: #00ffff;">Invoices</MudText>
+                    <MudSpacer />
+                    <MudChip T="string" Color="Color.Info" Size="Size.Small">Total: @_invoices.Count</MudChip>
+                </ToolBarContent>
+                <HeaderContent>
+                    <MudTh Style="color: #00ffff;">Invoice #</MudTh>
+                    <MudTh Style="color: #00ffff;">Patient</MudTh>
+                    <MudTh Style="color: #00ffff;">Date</MudTh>
+                    <MudTh Style="color: #00ffff;">Total Amount</MudTh>
+                    <MudTh Style="color: #00ffff;">Paid Amount</MudTh>
+                    <MudTh Style="color: #00ffff;">Balance</MudTh>
+                    <MudTh Style="color: #00ffff;">Status</MudTh>
+                    <MudTh Style="color: #00ffff;">Actions</MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd DataLabel="Invoice #">
+                        <MudText Typo="Typo.body2" Style="color: #00ff88; font-weight: bold;">@context.InvoiceId</MudText>
+                    </MudTd>
+                    <MudTd DataLabel="Patient">
+                        <MudText Typo="Typo.body2">@context.PatientName</MudText>
+                    </MudTd>
+                    <MudTd DataLabel="Date">
+                        <MudText Typo="Typo.body2">@context.InvoiceDate.ToString("MM/dd/yyyy")</MudText>
+                    </MudTd>
+                    <MudTd DataLabel="Total">
+                        <MudText Typo="Typo.body2">@context.TotalAmount.ToString("C")</MudText>
+                    </MudTd>
+                    <MudTd DataLabel="Paid">
+                        <MudText Typo="Typo.body2" Style="color: #00ff88;">@context.PaidAmount.ToString("C")</MudText>
+                    </MudTd>
+                    <MudTd DataLabel="Balance">
+                        <MudText Typo="Typo.body2" Style="@(context.Balance > 0 ? "color: #ff6b6b;" : "color: #00ff88;")">
+                            @context.Balance.ToString("C")
+                        </MudText>
+                    </MudTd>
+                    <MudTd DataLabel="Status">
+                        @{
+                            var statusColor = context.Status switch
+                            {
+                                "Paid" => Color.Success,
+                                "Partial" => Color.Warning,
+                                "Unpaid" => Color.Error,
+                                _ => Color.Default
+                            };
+                        }
+                        <MudChip T="string" Color="statusColor" Size="Size.Small">@context.Status</MudChip>
+                    </MudTd>
+                    <MudTd DataLabel="Actions">
+                        <MudIconButton Icon="@Icons.Material.Filled.Visibility" Size="Size.Small" Color="Color.Info"
+                                       OnClick="@(() => ViewInvoice(context))" />
+                        <MudIconButton Icon="@Icons.Material.Filled.Payment" Size="Size.Small" Color="Color.Success"
+                                       OnClick="@(() => ProcessPayment(context))" />
+                    </MudTd>
+                </RowTemplate>
+                <NoRecordsContent>
+                    <MudText Style="color: #b0b0b0;">No invoices found for the selected date range</MudText>
+                </NoRecordsContent>
+            </MudTable>
+        }
+    </MudPaper>
+</MudContainer>
+
+@code {
+    private List<Invoice> _invoices = new();
+    private bool _loading = false;
+    private DateRange? _dateRange = new DateRange(DateTime.Today.AddMonths(-1), DateTime.Today);
+    private string? _errorMessage = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadInvoices();
+    }
+
+    private async Task LoadInvoices()
+    {
+        try
+        {
+            _loading = true;
+            _errorMessage = null;
+            
+            if (_dateRange?.Start != null && _dateRange?.End != null)
+            {
+                _invoices = await BillingService.GetInvoicesAsync(_dateRange.Start.Value, _dateRange.End.Value);
+            }
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = $"Error loading invoices: {ex.Message}";
+            Snackbar.Add(_errorMessage, Severity.Error);
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+
+    private void ViewInvoice(Invoice invoice)
+    {
+        Snackbar.Add($"View invoice: {invoice.InvoiceId}", Severity.Info);
+    }
+
+    private void ProcessPayment(Invoice invoice)
+    {
+        Snackbar.Add($"Process payment for invoice: {invoice.InvoiceId}", Severity.Info);
+    }
+}

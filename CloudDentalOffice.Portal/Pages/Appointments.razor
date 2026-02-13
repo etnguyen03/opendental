@@ -1,6 +1,9 @@
 @page "/appointments"
+@page "/appointments/{PatientId:int}"
 @using CloudDentalOffice.Portal.Models
 @inject IAppointmentService AppointmentService
+@inject IPatientService PatientService
+@inject NavigationManager Navigation
 @inject IDialogService DialogService
 @inject ISnackbar Snackbar
 
@@ -12,11 +15,18 @@
             <div>
                 <MudText Typo="Typo.h4" Style="color: #00ffff; font-weight: bold;">
                     <MudIcon Icon="@Icons.Material.Filled.Event" Class="mr-2" />
-                    Appointments
+                    Appointments @(_selectedPatient != null ? $"- {_selectedPatient.FullName}" : "")
                 </MudText>
                 <MudText Typo="Typo.body2" Style="color: #b0b0b0;">
-                    Schedule and manage patient appointments
+                    @(_selectedPatient != null ? $"Viewing appointments for {_selectedPatient.FullName}" : "Schedule and manage patient appointments")
                 </MudText>
+                @if (_selectedPatient != null)
+                {
+                    <MudButton Variant="Variant.Text" Color="Color.Default" Size="Size.Small" 
+                               OnClick="@(() => Navigation.NavigateTo("/appointments"))" Class="mt-1">
+                        View All Appointments
+                    </MudButton>
+                }
             </div>
             <MudStack Row="true" Spacing="2">
                 <MudDatePicker Date="_selectedDate" Label="Select Date" 
@@ -115,13 +125,28 @@
 </MudContainer>
 
 @code {
+    [Parameter]
+    public int? PatientId { get; set; }
+    
     private List<Appointment> _appointments = new();
+    private Patient? _selectedPatient = null;
     private bool _loading = true;
     private DateTime? _selectedDate = DateTime.Today;
     private string? _errorMessage = null;
 
     protected override async Task OnInitializedAsync()
     {
+        if (PatientId.HasValue)
+        {
+            try
+            {
+                _selectedPatient = await PatientService.GetPatientByIdAsync(PatientId.Value.ToString());
+            }
+            catch (Exception ex)
+            {
+                Snackbar.Add($"Error loading patient: {ex.Message}", Severity.Error);
+            }
+        }
         await LoadAppointments();
     }
 
@@ -134,7 +159,17 @@
             
             if (_selectedDate.HasValue)
             {
-                _appointments = await AppointmentService.GetAppointmentsAsync(_selectedDate.Value);
+                var allAppointments = await AppointmentService.GetAppointmentsAsync(_selectedDate.Value);
+                
+                // Filter by patient if specified
+                if (PatientId.HasValue)
+                {
+                    _appointments = allAppointments.Where(a => a.PatientId == PatientId.Value).ToList();
+                }
+                else
+                {
+                    _appointments = allAppointments;
+                }
             }
         }
         catch (Exception ex)

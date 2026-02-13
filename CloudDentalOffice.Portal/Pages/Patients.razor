@@ -1,6 +1,7 @@
 @page "/patients"
 @using CloudDentalOffice.Portal.Models
 @inject IPatientService PatientService
+@inject NavigationManager Navigation
 @inject IDialogService DialogService
 @inject ISnackbar Snackbar
 
@@ -79,10 +80,29 @@
                         </MudChip>
                     </MudTd>
                     <MudTd DataLabel="Actions">
-                        <MudIconButton Icon="@Icons.Material.Filled.Edit" Size="Size.Small" Color="Color.Primary"
-                                       OnClick="@(() => OpenEditPatientDialog(context))" />
-                        <MudIconButton Icon="@Icons.Material.Filled.Visibility" Size="Size.Small" Color="Color.Info"
-                                       OnClick="@(() => ViewPatient(context))" />
+                        <MudMenu Icon="@Icons.Material.Filled.MoreVert" Size="Size.Small" Color="Color.Default">
+                            <MudMenuItem Icon="@Icons.Material.Filled.Event" 
+                                        OnClick="@(() => Navigation.NavigateTo($"/appointments/{context.PatientId}"))">
+                                Appointments
+                            </MudMenuItem>
+                            <MudMenuItem Icon="@Icons.Material.Filled.Assignment" 
+                                        OnClick="@(() => Navigation.NavigateTo($"/treatment-plans/{context.PatientId}"))">
+                                Treatment Plans
+                            </MudMenuItem>
+                            <MudMenuItem Icon="@Icons.Material.Filled.Medication" 
+                                        OnClick="@(() => Navigation.NavigateTo($"/chart/{context.PatientId}"))">
+                                Clinical Chart
+                            </MudMenuItem>
+                            <MudDivider />
+                            <MudMenuItem Icon="@Icons.Material.Filled.Edit" 
+                                        OnClick="@(() => OpenEditPatientDialog(context))">
+                                Edit Patient
+                            </MudMenuItem>
+                            <MudMenuItem Icon="@Icons.Material.Filled.Visibility" 
+                                        OnClick="@(() => ViewPatient(context))">
+                                View Details
+                            </MudMenuItem>
+                        </MudMenu>
                     </MudTd>
                 </RowTemplate>
                 <NoRecordsContent>
