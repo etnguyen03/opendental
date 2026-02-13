@@ -16,6 +16,21 @@ public class TreatmentPlanService : ITreatmentPlanService
         _tenantProvider = tenantProvider;
     }
 
+    public async Task<List<TreatmentPlan>> GetAllTreatmentPlansAsync()
+    {
+        var tenantId = _tenantProvider.TenantId;
+        if (string.IsNullOrEmpty(tenantId))
+            throw new InvalidOperationException("Tenant ID is not available");
+
+        return await _context.TreatmentPlans
+            .Include(tp => tp.Patient)
+            .Include(tp => tp.Provider)
+            .Include(tp => tp.PlannedProcedures)
+            .Where(tp => tp.TenantId == tenantId)
+            .OrderByDescending(tp => tp.CreatedDate)
+            .ToListAsync();
+    }
+
     public async Task<List<TreatmentPlan>> GetTreatmentPlansAsync(string patientId)
     {
         var tenantId = _tenantProvider.TenantId;

@@ -24,6 +24,7 @@ public interface IAppointmentService
 
 public interface ITreatmentPlanService
 {
+    Task<List<TreatmentPlan>> GetAllTreatmentPlansAsync();
     Task<List<TreatmentPlan>> GetTreatmentPlansAsync(string patientId);
     Task<TreatmentPlan?> GetTreatmentPlanByIdAsync(string treatmentPlanId);
     Task<TreatmentPlan> CreateTreatmentPlanAsync(TreatmentPlan plan);

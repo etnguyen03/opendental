@@ -4,6 +4,10 @@
 @inject IPatientService PatientService
 @inject IAppointmentService AppointmentService
 @inject IClaimService ClaimService
+@inject ITreatmentPlanService TreatmentPlanService
+@inject IDialogService DialogService
+@inject NavigationManager NavigationManager
+@inject ISnackbar Snackbar
 
 <PageTitle>Dashboard - Cloud Dental Office</PageTitle>
 
@@ -28,13 +32,19 @@
     </MudPaper>
 
     <!-- Quick Stats -->
+    @if (_loading)
+    {
+        <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="mb-4" />
+    }
+    
     <MudGrid>
         <MudItem xs="12" sm="6" md="3">
-            <MudPaper Class="pa-4" Style="background: #0a0a0a; border: 1px solid #00ffff;">
+            <MudPaper Class="pa-4 cursor-pointer" Style="background: #0a0a0a; border: 1px solid #00ffff;" @onclick="@(() => NavigationManager.NavigateTo("/patients"))">
                 <MudStack Row="true" Justify="Justify.SpaceBetween">
                     <div>
-                        <MudText Typo="Typo.subtitle2" Style="color: #b0b0b0;">Patients</MudText>
+                        <MudText Typo="Typo.subtitle2" Style="color: #b0b0b0;">Total Patients</MudText>
                         <MudText Typo="Typo.h4" Style="color: #00ffff; font-weight: bold;">@_patientCount</MudText>
+                        <MudText Typo="Typo.caption" Style="color: #808080;">Active records</MudText>
                     </div>
                     <MudIcon Icon="@Icons.Material.Filled.People" Size="Size.Large" Style="color: #00ffff;" />
                 </MudStack>
@@ -42,11 +52,12 @@
         </MudItem>
         
         <MudItem xs="12" sm="6" md="3">
-            <MudPaper Class="pa-4" Style="background: #0a0a0a; border: 1px solid #00ff88;">
+            <MudPaper Class="pa-4 cursor-pointer" Style="background: #0a0a0a; border: 1px solid #00ff88;" @onclick="@(() => NavigationManager.NavigateTo("/appointments"))">
                 <MudStack Row="true" Justify="Justify.SpaceBetween">
                     <div>
                         <MudText Typo="Typo.subtitle2" Style="color: #b0b0b0;">Today's Appointments</MudText>
-                        <MudText Typo="Typo.h4" Style="color: #00ff88; font-weight: bold;">@_appointmentCount</MudText>
+                        <MudText Typo="Typo.h4" Style="color: #00ff88; font-weight: bold;">@_todayAppointmentCount</MudText>
+                        <MudText Typo="Typo.caption" Style="color: #808080;">@_confirmedCount confirmed</MudText>
                     </div>
                     <MudIcon Icon="@Icons.Material.Filled.Event" Size="Size.Large" Style="color: #00ff88;" />
                 </MudStack>
@@ -54,120 +65,305 @@
         </MudItem>
         
         <MudItem xs="12" sm="6" md="3">
-            <MudPaper Class="pa-4" Style="background: #0a0a0a; border: 1px solid #00ffff;">
+            <MudPaper Class="pa-4 cursor-pointer" Style="background: #0a0a0a; border: 1px solid #ffaa00;" @onclick="@(() => NavigationManager.NavigateTo("/treatmentplans"))">
                 <MudStack Row="true" Justify="Justify.SpaceBetween">
                     <div>
-                        <MudText Typo="Typo.subtitle2" Style="color: #b0b0b0;">Pending Claims</MudText>
-                        <MudText Typo="Typo.h4" Style="color: #00ffff; font-weight: bold;">@_pendingClaimCount</MudText>
+                        <MudText Typo="Typo.subtitle2" Style="color: #b0b0b0;">Pending Plans</MudText>
+                        <MudText Typo="Typo.h4" Style="color: #ffaa00; font-weight: bold;">@_pendingPlanCount</MudText>
+                        <MudText Typo="Typo.caption" Style="color: #808080;">@_totalPlanValue.ToString("C0") value</MudText>
                     </div>
-                    <MudIcon Icon="@Icons.Material.Filled.Assignment" Size="Size.Large" Style="color: #00ffff;" />
+                    <MudIcon Icon="@Icons.Material.Filled.Assignment" Size="Size.Large" Style="color: #ffaa00;" />
                 </MudStack>
             </MudPaper>
         </MudItem>
         
         <MudItem xs="12" sm="6" md="3">
-            <MudPaper Class="pa-4" Style="background: #0a0a0a; border: 1px solid #00ff88;">
+            <MudPaper Class="pa-4 cursor-pointer" Style="background: #0a0a0a; border: 1px solid #00ffff;" @onclick="@(() => NavigationManager.NavigateTo("/claims"))">
                 <MudStack Row="true" Justify="Justify.SpaceBetween">
                     <div>
-                        <MudText Typo="Typo.subtitle2" Style="color: #b0b0b0;">Monthly Revenue</MudText>
-                        <MudText Typo="Typo.h4" Style="color: #00ff88; font-weight: bold;">@_monthlyRevenue.ToString("C0")</MudText>
+                        <MudText Typo="Typo.subtitle2" Style="color: #b0b0b0;">Pending Claims</MudText>
+                        <MudText Typo="Typo.h4" Style="color: #00ffff; font-weight: bold;">@_pendingClaimCount</MudText>
+                        <MudText Typo="Typo.caption" Style="color: #808080;">@_pendingClaimValue.ToString("C0") amount</MudText>
                     </div>
-                    <MudIcon Icon="@Icons.Material.Filled.AttachMoney" Size="Size.Large" Style="color: #00ff888;" />
+                    <MudIcon Icon="@Icons.Material.Filled.ReceiptLong" Size="Size.Large" Style="color: #00ffff;" />
                 </MudStack>
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
+
+    <!-- Revenue & Claims Breakdown -->
+    <MudGrid Class="mt-4">
+        <MudItem xs="12" md="6">
+            <MudPaper Class="pa-4" Style="background: #0a0a0a; border: 1px solid #00ff88;">
+                <MudText Typo="Typo.h6" Style="color: #00ff88; font-weight: bold;" Class="mb-3">
+                    <MudIcon Icon="@Icons.Material.Filled.TrendingUp" Class="mr-2" />
+                    Revenue Summary
+                </MudText>
+                <MudDivider Style="background: rgba(0, 255, 136, 0.3);" Class="mb-3" />
+                
+                <MudGrid>
+                    <MudItem xs="6">
+                        <MudText Typo="Typo.caption" Style="color: #b0b0b0;">This Month</MudText>
+                        <MudText Typo="Typo.h5" Style="color: #00ff88; font-weight: bold;">@_monthlyRevenue.ToString("C")</MudText>
+                    </MudItem>
+                    <MudItem xs="6">
+                        <MudText Typo="Typo.caption" Style="color: #b0b0b0;">Outstanding</MudText>
+                        <MudText Typo="Typo.h5" Style="color: #ffaa00; font-weight: bold;">@_outstandingAmount.ToString("C")</MudText>
+                    </MudItem>
+                </MudGrid>
+            </MudPaper>
+        </MudItem>
+
+        <MudItem xs="12" md="6">
+            <MudPaper Class="pa-4" Style="background: #0a0a0a; border: 1px solid #00ffff;">
+                <MudText Typo="Typo.h6" Style="color: #00ffff; font-weight: bold;" Class="mb-3">
+                    <MudIcon Icon="@Icons.Material.Filled.Assessment" Class="mr-2" />
+                    Claims Status
+                </MudText>
+                <MudDivider Style="background: rgba(0, 255, 255, 0.3);" Class="mb-3" />
+                
+                <MudStack Spacing="2">
+                    <MudStack Row="true" Justify="Justify.SpaceBetween">
+                        <MudText Typo="Typo.body2" Style="color: #b0b0b0;">Draft</MudText>
+                        <MudChip T="string" Size="Size.Small" Style="background: rgba(128, 128, 128, 0.2);">@_draftClaimCount</MudChip>
+                    </MudStack>
+                    <MudStack Row="true" Justify="Justify.SpaceBetween">
+                        <MudText Typo="Typo.body2" Style="color: #b0b0b0;">Submitted</MudText>
+                        <MudChip T="string" Size="Size.Small" Color="Color.Info">@_submittedClaimCount</MudChip>
+                    </MudStack>
+                    <MudStack Row="true" Justify="Justify.SpaceBetween">
+                        <MudText Typo="Typo.body2" Style="color: #b0b0b0;">Paid</MudText>
+                        <MudChip T="string" Size="Size.Small" Color="Color.Success">@_paidClaimCount</MudChip>
+                    </MudStack>
+                </MudStack>
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
+
+    <!-- Quick Actions -->
+    <MudPaper Class="pa-4 mt-4" Style="background: #0a0a0a; border: 1px solid #00ffff;">
+        <MudText Typo="Typo.h6" Style="color: #00ffff; font-weight: bold;" Class="mb-3">
+            <MudIcon Icon="@Icons.Material.Filled.FlashOn" Class="mr-2" />
+            Quick Actions
+        </MudText>
+        <MudGrid>
+            <MudItem xs="12" sm="6" md="3">
+                <MudButton Variant="Variant.Filled" 
+                           Color="Color.Primary" 
+                           FullWidth="true"
+                           StartIcon="@Icons.Material.Filled.PersonAdd"
+                           OnClick="@(() => NavigationManager.NavigateTo("/patients"))">
+                    Add Patient
+                </MudButton>
+            </MudItem>
+            <MudItem xs="12" sm="6" md="3">
+                <MudButton Variant="Variant.Filled" 
+                           Color="Color.Success" 
+                           FullWidth="true"
+                           StartIcon="@Icons.Material.Filled.EventAvailable"
+                           OnClick="@(() => NavigationManager.NavigateTo("/appointments"))">
+                    Schedule Appointment
+                </MudButton>
+            </MudItem>
+            <MudItem xs="12" sm="6" md="3">
+                <MudButton Variant="Variant.Filled" 
+                           Color="Color.Info" 
+                           FullWidth="true"
+                           StartIcon="@Icons.Material.Filled.Assignment"
+                           OnClick="@(() => NavigationManager.NavigateTo("/treatmentplans"))">
+                    Create Treatment Plan
+                </MudButton>
+            </MudItem>
+            <MudItem xs="12" sm="6" md="3">
+                <MudButton Variant="Variant.Filled" 
+                           Color="Color.Warning" 
+                           FullWidth="true"
+                           StartIcon="@Icons.Material.Filled.Send"
+                           OnClick="@(() => NavigationManager.NavigateTo("/claims"))">
+                    Submit Claim
+                </MudButton>
+            </MudItem>
+        </MudGrid>
+    </MudPaper>
+
+    <!-- Recent Appointments & Treatment Plans -->
+    <MudGrid Class="mt-4">
+        <MudItem xs="12" md="6">
+            <MudPaper Class="pa-4" Style="background: #0a0a0a; border: 1px solid #00ff88;">
+                <MudStack Row="true" Justify="Justify.SpaceBetween" Class="mb-3">
+                    <MudText Typo="Typo.h6" Style="color: #00ff88; font-weight: bold;">
+                        <MudIcon Icon="@Icons.Material.Filled.Schedule" Class="mr-2" />
+                        Upcoming Appointments
+                    </MudText>
+                    <MudButton Size="Size.Small" 
+                               Variant="Variant.Text" 
+                               Color="Color.Primary"
+                               OnClick="@(() => NavigationManager.NavigateTo("/appointments"))">
+                        View All
+                    </MudButton>
+                </MudStack>
+                <MudDivider Style="background: rgba(0, 255, 136, 0.3);" Class="mb-3" />
+                
+                @if (_recentAppointments.Any())
+                {
+                    <MudStack Spacing="2">
+                        @foreach (var apt in _recentAppointments.Take(5))
+                        {
+                            <MudPaper Class="pa-2" Style="background: rgba(0, 255, 136, 0.05);">
+                                <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
+                                    <div>
+                                        <MudText Typo="Typo.body2" Style="color: #00ffff;">@apt.Patient?.FullName</MudText>
+                                        <MudText Typo="Typo.caption" Style="color: #b0b0b0;">
+                                            @apt.AppointmentDateTime.ToString("MMM dd, h:mm tt") - @apt.AppointmentType
+                                        </MudText>
+                                    </div>
+                                    <MudChip T="string" Size="Size.Small" Color="@GetAppointmentStatusColor(apt.Status)">
+                                        @apt.Status
+                                    </MudChip>
+                                </MudStack>
+                            </MudPaper>
+                        }
+                    </MudStack>
+                }
+                else
+                {
+                    <MudText Typo="Typo.body2" Style="color: #808080;" Align="Align.Center" Class="pa-4">
+                        No upcoming appointments
+                    </MudText>
+                }
+            </MudPaper>
+        </MudItem>
+
+        <MudItem xs="12" md="6">
+            <MudPaper Class="pa-4" Style="background: #0a0a0a; border: 1px solid #ffaa00;">
+                <MudStack Row="true" Justify="Justify.SpaceBetween" Class="mb-3">
+                    <MudText Typo="Typo.h6" Style="color: #ffaa00; font-weight: bold;">
+                        <MudIcon Icon="@Icons.Material.Filled.MedicalServices" Class="mr-2" />
+                        Recent Treatment Plans
+                    </MudText>
+                    <MudButton Size="Size.Small" 
+                               Variant="Variant.Text" 
+                               Color="Color.Primary"
+                               OnClick="@(() => NavigationManager.NavigateTo("/treatmentplans"))">
+                        View All
+                    </MudButton>
+                </MudStack>
+                <MudDivider Style="background: rgba(255, 170, 0, 0.3);" Class="mb-3" />
+                
+                @if (_recentTreatmentPlans.Any())
+                {
+                    <MudStack Spacing="2">
+                        @foreach (var plan in _recentTreatmentPlans.Take(5))
+                        {
+                            <MudPaper Class="pa-2" Style="background: rgba(255, 170, 0, 0.05);">
+                                <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
+                                    <div>
+                                        <MudText Typo="Typo.body2" Style="color: #00ffff;">@plan.Patient?.FullName</MudText>
+                                        <MudText Typo="Typo.caption" Style="color: #b0b0b0;">
+                                            @(plan.Title ?? "Treatment Plan") - @plan.TotalEstimatedCost.ToString("C")
+                                        </MudText>
+                                    </div>
+                                    <MudChip T="string" Size="Size.Small" Color="@GetPlanStatusColor(plan.Status)">
+                                        @plan.Status
+                                    </MudChip>
+                                </MudStack>
+                            </MudPaper>
+                        }
+                    </MudStack>
+                }
+                else
+                {
+                    <MudText Typo="Typo.body2" Style="color: #808080;" Align="Align.Center" Class="pa-4">
+                        No recent treatment plans
+                    </MudText>
+                }
             </MudPaper>
         </MudItem>
     </MudGrid>
 
     <!-- EDI Integration Status -->
     <MudPaper Class="pa-4 mt-4" Style="background: #0a0a0a; border: 1px solid #00ffff;">
-        <MudText Typo="Typo.h5" GutterBottom="true" Style="color: #00ffff; font-weight: bold;">
+        <MudText Typo="Typo.h6" GutterBottom="true" Style="color: #00ffff; font-weight: bold;">
             <MudIcon Icon="@Icons.Material.Filled.CloudSync" Class="mr-2" />
-            EDI Integration Status
+            EDI Transactions (H IPAA-Compliant)
         </MudText>
+        <MudDivider Style="background: rgba(0, 255, 255, 0.3);" Class="mb-3" />
         
         <MudGrid Class="mt-2">
-            <MudItem xs="12" md="6" lg="4">
-                <div class="pa-3" style="background: rgba(0, 255, 255, 0.05); border-left: 3px solid #00ffff; border-radius: 4px;">
-                    <MudText Typo="Typo.subtitle1" Style="color: #00ffff; font-weight: bold;">Claims (837D)</MudText>
-                    <MudText Typo="Typo.body2" Style="color: #b0b0b0;">Dental claims processing</MudText>
-                    <MudChip T="string" Size="Size.Small" Color="Color.Success" Class="mt-2">Active</MudChip>
+            <MudItem xs="12" sm="6" md="4" lg="2">
+                <div class="pa-2 text-center" style="background: rgba(0, 255, 255, 0.05); border: 1px solid rgba(0, 255, 255, 0.2); border-radius: 4px;">
+                    <MudText Typo="Typo.h6" Style="color: #00ffff; font-weight: bold;">837D</MudText>
+                    <MudText Typo="Typo.caption" Style="color: #b0b0b0;">Dental Claims</MudText>
+                    <MudChip T="string" Size="Size.Small" Color="Color.Success" Class="mt-1">Active</MudChip>
                 </div>
             </MudItem>
             
-            <MudItem xs="12" md="6" lg="4">
-                <div class="pa-3" style="background: rgba(0, 255, 136, 0.05); border-left: 3px solid #00ff88; border-radius: 4px;">
-                    <MudText Typo="Typo.subtitle1" Style="color: #00ff88; font-weight: bold;">Eligibility (270/271)</MudText>
-                    <MudText Typo="Typo.body2" Style="color: #b0b0b0;">Real-time eligibility verification</MudText>
-                    <MudChip T="string" Size="Size.Small" Color="Color.Success" Class="mt-2">Active</MudChip>
+            <MudItem xs="12" sm="6" md="4" lg="2">
+                <div class="pa-2 text-center" style="background: rgba(0, 255, 136, 0.05); border: 1px solid rgba(0, 255, 136, 0.2); border-radius: 4px;">
+                    <MudText Typo="Typo.h6" Style="color: #00ff88; font-weight: bold;">270/271</MudText>
+                    <MudText Typo="Typo.caption" Style="color: #b0b0b0;">Eligibility</MudText>
+                    <MudChip T="string" Size="Size.Small" Color="Color.Success" Class="mt-1">Active</MudChip>
                 </div>
             </MudItem>
             
-            <MudItem xs="12" md="6" lg="4">
-                <div class="pa-3" style="background: rgba(0, 255, 255, 0.05); border-left: 3px solid #00ffff; border-radius: 4px;">
-                    <MudText Typo="Typo.subtitle1" Style="color: #00ffff; font-weight: bold;">Claim Status (276/277)</MudText>
-                    <MudText Typo="Typo.body2" Style="color: #b0b0b0;">Claim status inquiries</MudText>
-                    <MudChip T="string" Size="Size.Small" Color="Color.Success" Class="mt-2">Active</MudChip>
+            <MudItem xs="12" sm="6" md="4" lg="2">
+                <div class="pa-2 text-center" style="background: rgba(0, 255, 255, 0.05); border: 1px solid rgba(0, 255, 255, 0.2); border-radius: 4px;">
+                    <MudText Typo="Typo.h6" Style="color: #00ffff; font-weight: bold;">276/277</MudText>
+                    <MudText Typo="Typo.caption" Style="color: #b0b0b0;">Claim Status</MudText>
+                    <MudChip T="string" Size="Size.Small" Color="Color.Success" Class="mt-1">Active</MudChip>
                 </div>
             </MudItem>
             
-            <MudItem xs="12" md="6" lg="4">
-                <div class="pa-3" style="background: rgba(0, 255, 136, 0.05); border-left: 3px solid #00ff88; border-radius: 4px;">
-                    <MudText Typo="Typo.subtitle1" Style="color: #00ff88; font-weight: bold;">Prior Auth (278)</MudText>
-                    <MudText Typo="Typo.body2" Style="color: #b0b0b0;">Prior authorization requests</MudText>
-                    <MudChip T="string" Size="Size.Small" Color="Color.Success" Class="mt-2">Active</MudChip>
+            <MudItem xs="12" sm="6" md="4" lg="2">
+                <div class="pa-2 text-center" style="background: rgba(0, 255, 136, 0.05); border: 1px solid rgba(0, 255, 136, 0.2); border-radius: 4px;">
+                    <MudText Typo="Typo.h6" Style="color: #00ff88; font-weight: bold;">278</MudText>
+                    <MudText Typo="Typo.caption" Style="color: #b0b0b0;">Prior Auth</MudText>
+                    <MudChip T="string" Size="Size.Small" Color="Color.Success" Class="mt-1">Active</MudChip>
                 </div>
             </MudItem>
             
-            <MudItem xs="12" md="6" lg="4">
-                <div class="pa-3" style="background: rgba(0, 255, 255, 0.05); border-left: 3px solid #00ffff; border-radius: 4px;">
-                    <MudText Typo="Typo.subtitle1" Style="color: #00ffff; font-weight: bold;">Enrollment (834)</MudText>
-                    <MudText Typo="Typo.body2" Style="color: #b0b0b0;">Benefit enrollment & maintenance</MudText>
-                    <MudChip T="string" Size="Size.Small" Color="Color.Success" Class="mt-2">Active</MudChip>
+            <MudItem xs="12" sm="6" md="4" lg="2">
+                <div class="pa-2 text-center" style="background: rgba(0, 255, 255, 0.05); border: 1px solid rgba(0, 255, 255, 0.2); border-radius: 4px;">
+                    <MudText Typo="Typo.h6" Style="color: #00ffff; font-weight: bold;">834</MudText>
+                    <MudText Typo="Typo.caption" Style="color: #b0b0b0;">Enrollment</MudText>
+                    <MudChip T="string" Size="Size.Small" Color="Color.Success" Class="mt-1">Active</MudChip>
                 </div>
             </MudItem>
             
-            <MudItem xs="12" md="6" lg="4">
-                <div class="pa-3" style="background: rgba(0, 255, 136, 0.05); border-left: 3px solid #00ff88; border-radius: 4px;">
-                    <MudText Typo="Typo.subtitle1" Style="color: #00ff88; font-weight: bold;">Remittance (835)</MudText>
-                    <MudText Typo="Typo.body2" Style="color: #b0b0b0;">Electronic remittance advice</MudText>
-                    <MudChip T="string" Size="Size.Small" Color="Color.Success" Class="mt-2">Active</MudChip>
+            <MudItem xs="12" sm="6" md="4" lg="2">
+                <div class="pa-2 text-center" style="background: rgba(0, 255, 136, 0.05); border: 1px solid rgba(0, 255, 136, 0.2); border-radius: 4px;">
+                    <MudText Typo="Typo.h6" Style="color: #00ff88; font-weight: bold;">835</MudText>
+                    <MudText Typo="Typo.caption" Style="color: #b0b0b0;">Remittance</MudText>
+                    <MudChip T="string" Size="Size.Small" Color="Color.Success" Class="mt-1">Active</MudChip>
                 </div>
             </MudItem>
         </MudGrid>
     </MudPaper>
-
-    <!-- Recent Activity -->
-    <MudPaper Class="pa-4 mt-4" Style="background: #0a0a0a; border: 1px solid #00ffff;">
-        <MudText Typo="Typo.h5" GutterBottom="true" Style="color: #00ffff; font-weight: bold;">
-            Recent Activity
-        </MudText>
-        
-        <MudTimeline TimelineOrientation="TimelineOrientation.Vertical" TimelinePosition="TimelinePosition.Start">
-            <MudTimelineItem Color="Color.Success" Size="Size.Small">
-                <MudText Typo="Typo.body2" Style="color: #00ff88;">Claim #CLM-2024-0421 approved - $2,450.00</MudText>
-                <MudText Typo="Typo.caption" Style="color: #808080;">2 hours ago</MudText>
-            </MudTimelineItem>
-            <MudTimelineItem Color="Color.Info" Size="Size.Small">
-                <MudText Typo="Typo.body2" Style="color: #00ffff;">Eligibility verified for patient John Smith</MudText>
-                <MudText Typo="Typo.caption" Style="color: #808080;">3 hours ago</MudText>
-            </MudTimelineItem>
-            <MudTimelineItem Color="Color.Success" Size="Size.Small">
-                <MudText Typo="Typo.body2" Style="color: #00ff88;">Prior authorization approved - Crown #14</MudText>
-                <MudText Typo="Typo.caption" Style="color: #808080;">5 hours ago</MudText>
-            </MudTimelineItem>
-            <MudTimelineItem Color="Color.Info" Size="Size.Small">
-                <MudText Typo="Typo.body2" Style="color: #00ffff;">835 remittance processed - $12,340.00</MudText>
-                <MudText Typo="Typo.caption" Style="color: #808080;">Yesterday</MudText>
-            </MudTimelineItem>
-        </MudTimeline>
-    </MudPaper>
 </MudContainer>
 
 @code {
+    // Counters
     private int _patientCount = 0;
-    private int _appointmentCount = 0;
+    private int _todayAppointmentCount = 0;
+    private int _confirmedCount = 0;
+    private int _pendingPlanCount = 0;
+    private decimal _totalPlanValue = 0;
     private int _pendingClaimCount = 0;
+    private decimal _pendingClaimValue = 0;
+    
+    // Claims breakdown
+    private int _draftClaimCount = 0;
+    private int _submittedClaimCount = 0;
+    private int _paidClaimCount = 0;
+    
+    // Revenue
     private decimal _monthlyRevenue = 0;
+    private decimal _outstandingAmount = 0;
+    
+    // Recent data
+    private List<Appointment> _recentAppointments = new();
+    private List<TreatmentPlan> _recentTreatmentPlans = new();
+    
     private bool _loading = true;
 
     protected override async Task OnInitializedAsync()
@@ -178,25 +374,97 @@
             
             // Parallel execution for performance
             var patientsTask = PatientService.GetPatientsAsync();
-            var appointmentsTask = AppointmentService.GetAppointmentsAsync(DateTime.UtcNow);
+            var appointmentsTask = AppointmentService.GetAppointmentsAsync(DateTime.Today);
             var claimsTask = ClaimService.GetClaimsAsync();
+            var treatmentPlansTask = TreatmentPlanService.GetAllTreatmentPlansAsync();
 
-            await Task.WhenAll(patientsTask, appointmentsTask, claimsTask);
+            await Task.WhenAll(patientsTask, appointmentsTask, claimsTask, treatmentPlansTask);
 
-            _patientCount = (await patientsTask).Count;
-            _appointmentCount = (await appointmentsTask).Count;
-            _pendingClaimCount = (await claimsTask).Count(c => c.Status == "Submitted" || c.Status == "Pending"); // Assuming simple status filter
+            var patients = await patientsTask;
+            var appointments = await appointmentsTask;
+            var claims = await claimsTask;
+            var treatmentPlans = await treatmentPlansTask;
+
+            // Patient count
+            _patientCount = patients.Count;
             
-            // Revenue logic pending TreatmentPlanService implementation
-            _monthlyRevenue = 0;
+            // Appointments
+            _todayAppointmentCount = appointments.Count;
+            _confirmedCount = appointments.Count(a => a.Status == "Confirmed" || a.Status == "Checked-In");
+            _recentAppointments = appointments
+                .Where(a => a.AppointmentDateTime >= DateTime.Now)
+                .OrderBy(a => a.AppointmentDateTime)
+                .ToList();
+            
+            // Treatment Plans
+            _pendingPlanCount = treatmentPlans.Count(tp => tp.Status == "Proposed" || tp.Status == "Draft");
+            _totalPlanValue = treatmentPlans
+                .Where(tp => tp.Status == "Proposed" || tp.Status == "Draft")
+                .Sum(tp => tp.TotalEstimatedCost);
+            _recentTreatmentPlans = treatmentPlans
+                .OrderByDescending(tp => tp.CreatedDate)
+                .ToList();
+            
+            // Claims
+            _draftClaimCount = claims.Count(c => c.Status == "Draft");
+            _submittedClaimCount = claims.Count(c => c.Status == "Submitted");
+            _paidClaimCount = claims.Count(c => c.Status == "Paid");
+            _pendingClaimCount = claims.Count(c => c.Status == "Draft" || c.Status == "Ready" || c.Status == "Submitted");
+            _pendingClaimValue = claims
+                .Where(c => c.Status == "Draft" || c.Status == "Ready" || c.Status == "Submitted")
+                .Sum(c => c.TotalChargeAmount);
+            
+            // Revenue calculations
+            var thisMonth = DateTime.Today.Month;
+            var thisYear = DateTime.Today.Year;
+            _monthlyRevenue = claims
+                .Where(c => c.Status == "Paid" && 
+                           c.ProcessedDate.HasValue &&
+                           c.ProcessedDate.Value.Month == thisMonth &&
+                           c.ProcessedDate.Value.Year == thisYear)
+                .Sum(c => c.PaidAmount);
+            
+            _outstandingAmount = claims
+                .Where(c => c.Status != "Paid" && c.Status != "Rejected" && c.Status != "Denied")
+                .Sum(c => c.TotalChargeAmount - c.PaidAmount);
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Error loading dashboard: {ex.Message}");
+            Snackbar.Add($"Error loading dashboard data: {ex.Message}", Severity.Error);
         }
         finally
         {
             _loading = false;
         }
+    }
+    
+    private Color GetAppointmentStatusColor(string status)
+    {
+        return status switch
+        {
+            "Scheduled" => Color.Default,
+            "Confirmed" => Color.Info,
+            "Checked-In" => Color.Primary,
+            "InProgress" => Color.Warning,
+            "Completed" => Color.Success,
+            "Cancelled" => Color.Error,
+            "NoShow" => Color.Error,
+            _ => Color.Default
+        };
+    }
+    
+    private Color GetPlanStatusColor(string status)
+    {
+        return status switch
+        {
+            "Draft" => Color.Default,
+            "Proposed" => Color.Info,
+            "Accepted" => Color.Success,
+            "InProgress" => Color.Warning,
+            "Completed" => Color.Success,
+            "Cancelled" => Color.Error,
+            _ => Color.Default
+        };
     }
 }
