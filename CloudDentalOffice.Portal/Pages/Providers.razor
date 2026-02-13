@@ -137,18 +137,66 @@
                (provider.Email?.Contains(_searchString, StringComparison.OrdinalIgnoreCase) ?? false);
     }
 
-    private void OpenAddProviderDialog()
+    private async Task OpenAddProviderDialog()
     {
-        Snackbar.Add("Add provider dialog coming soon!", Severity.Info);
+        var parameters = new DialogParameters<AddEditProviderDialog>();
+        
+        var options = new DialogOptions 
+        { 
+            MaxWidth = MaxWidth.Medium, 
+            FullWidth = true,
+            CloseButton = true,
+            BackdropClick = false
+        };
+
+        var dialog = await DialogService.ShowAsync<AddEditProviderDialog>("Add Provider", parameters, options);
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            await LoadProviders();
+        }
     }
 
-    private void EditProvider(Provider provider)
+    private async Task EditProvider(Provider provider)
     {
-        Snackbar.Add($"Edit provider: {provider.FullName}", Severity.Info);
+        var parameters = new DialogParameters<AddEditProviderDialog>
+        {
+            { x => x.ExistingProvider, provider }
+        };
+        
+        var options = new DialogOptions 
+        { 
+            MaxWidth = MaxWidth.Medium, 
+            FullWidth = true,
+            CloseButton = true,
+            BackdropClick = false
+        };
+
+        var dialog = await DialogService.ShowAsync<AddEditProviderDialog>("Edit Provider", parameters, options);
+        var result = await dialog.Result;
+
+        if (!result.Canceled)
+        {
+            await LoadProviders();
+        }
     }
 
-    private void ViewProvider(Provider provider)
+    private async Task ViewProvider(Provider provider)
     {
-        Snackbar.Add($"View provider details: {provider.FullName}", Severity.Info);
+        var parameters = new DialogParameters<AddEditProviderDialog>
+        {
+            { x => x.ExistingProvider, provider }
+        };
+        
+        var options = new DialogOptions 
+        { 
+            MaxWidth = MaxWidth.Medium, 
+            FullWidth = true,
+            CloseButton = true,
+            BackdropClick = false
+        };
+
+        await DialogService.ShowAsync<AddEditProviderDialog>("View Provider", parameters, options);
     }
 }

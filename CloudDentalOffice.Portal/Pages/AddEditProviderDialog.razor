@@ -1,0 +1,270 @@
+@using CloudDentalOffice.Portal.Models
+@using MudBlazor
+@inject IProviderService ProviderService
+@inject ISnackbar Snackbar
+
+<MudDialog Style="background: #0a0a0a; border: 1px solid #00ffff;">
+    <DialogContent>
+        <MudContainer Style="max-width: 800px;">
+            <MudGrid>
+                <!-- Title Section -->
+                <MudItem xs="12">
+                    <MudText Typo="Typo.h5" Style="color: #00ffff; font-weight: bold;" Class="mb-3">
+                        <MudIcon Icon="@Icons.Material.Filled.MedicalServices" Size="Size.Medium" />
+                        @(IsEditMode ? "Edit Provider" : "Add New Provider")
+                    </MudText>
+                    <MudDivider Style="background: rgba(0, 255, 255, 0.3);" />
+                </MudItem>
+
+                @if (!string.IsNullOrEmpty(_validationMessage))
+                {
+                    <MudItem xs="12">
+                        <MudAlert Severity="Severity.Warning">@_validationMessage</MudAlert>
+                    </MudItem>
+                }
+
+                <!-- Basic Information -->
+                <MudItem xs="12">
+                    <MudText Typo="Typo.h6" Style="color: #00ffff;" Class="mb-2">
+                        <MudIcon Icon="@Icons.Material.Filled.Person" Size="Size.Small" />
+                        Basic Information
+                    </MudText>
+                </MudItem>
+
+                <MudItem xs="12" md="4">
+                    <MudTextField @bind-Value="_provider.FirstName" 
+                                  Label="First Name" 
+                                  Variant="Variant.Outlined"
+                                  Required="true" />
+                </MudItem>
+
+                <MudItem xs="12" md="4">
+                    <MudTextField @bind-Value="_provider.MiddleName" 
+                                  Label="Middle Name" 
+                                  Variant="Variant.Outlined" />
+                </MudItem>
+
+                <MudItem xs="12" md="4">
+                    <MudTextField @bind-Value="_provider.LastName" 
+                                  Label="Last Name" 
+                                  Variant="Variant.Outlined"
+                                  Required="true" />
+                </MudItem>
+
+                <MudItem xs="12" md="6">
+                    <MudTextField @bind-Value="_provider.Suffix" 
+                                  Label="Suffix (DDS, DMD, etc.)" 
+                                  Variant="Variant.Outlined"
+                                  MaxLength="10" />
+                </MudItem>
+
+                <MudItem xs="12" md="6">
+                    <MudTextField @bind-Value="_provider.Specialty" 
+                                  Label="Specialty" 
+                                  Variant="Variant.Outlined"
+                                  Placeholder="General Dentistry, Orthodontics, etc." />
+                </MudItem>
+
+                <!-- Professional Credentials -->
+                <MudItem xs="12">
+                    <MudText Typo="Typo.h6" Style="color: #00ffff;" Class="mb-2 mt-3">
+                        <MudIcon Icon="@Icons.Material.Filled.Badge" Size="Size.Small" />
+                        Professional Credentials
+                    </MudText>
+                </MudItem>
+
+                <MudItem xs="12" md="6">
+                    <MudTextField @bind-Value="_provider.NPI" 
+                                  Label="NPI Number" 
+                                  Variant="Variant.Outlined"
+                                  Required="true"
+                                  MaxLength="10"
+                                  HelperText="10-digit National Provider Identifier" />
+                </MudItem>
+
+                <MudItem xs="12" md="6">
+                    <MudTextField @bind-Value="_provider.TaxId" 
+                                  Label="Tax ID / EIN" 
+                                  Variant="Variant.Outlined"
+                                  MaxLength="20" />
+                </MudItem>
+
+                <MudItem xs="12" md="8">
+                    <MudTextField @bind-Value="_provider.LicenseNumber" 
+                                  Label="License Number" 
+                                  Variant="Variant.Outlined" />
+                </MudItem>
+
+                <MudItem xs="12" md="4">
+                    <MudSelect T="string" @bind-Value="_provider.LicenseState" 
+                               Label="License State" 
+                               Variant="Variant.Outlined">
+                        @foreach (var state in _usStates)
+                        {
+                            <MudSelectItem Value="@state">@state</MudSelectItem>
+                        }
+                    </MudSelect>
+                </MudItem>
+
+                <!-- Contact Information -->
+                <MudItem xs="12">
+                    <MudText Typo="Typo.h6" Style="color: #00ffff;" Class="mb-2 mt-3">
+                        <MudIcon Icon="@Icons.Material.Filled.ContactPhone" Size="Size.Small" />
+                        Contact Information
+                    </MudText>
+                </MudItem>
+
+                <MudItem xs="12" md="6">
+                    <MudTextField @bind-Value="_provider.Email" 
+                                  Label="Email" 
+                                  Variant="Variant.Outlined"
+                                  InputType="InputType.Email" />
+                </MudItem>
+
+                <MudItem xs="12" md="6">
+                    <MudTextField @bind-Value="_provider.Phone" 
+                                  Label="Phone" 
+                                  Variant="Variant.Outlined"
+                                  InputType="InputType.Telephone" />
+                </MudItem>
+
+                <!-- Status -->
+                <MudItem xs="12" md="6">
+                    <MudSwitch @bind-Value="_provider.IsActive" 
+                               Label="Active Provider" 
+                               Color="Color.Success"
+                               UncheckedColor="Color.Default" />
+                </MudItem>
+            </MudGrid>
+        </MudContainer>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel" Variant="Variant.Text">Cancel</MudButton>
+        <MudButton OnClick="Save" Variant="Variant.Filled" Color="Color.Primary" Disabled="@_saving">
+            @if (_saving)
+            {
+                <MudProgressCircular Size="Size.Small" Indeterminate="true" />
+                <span class="ml-2">Saving...</span>
+            }
+            else
+            {
+                <span>@(IsEditMode ? "Update" : "Add") Provider</span>
+            }
+        </MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] 
+    MudDialogInstance MudDialog { get; set; } = null!;
+
+    [Parameter]
+    public Provider? ExistingProvider { get; set; }
+
+    private Provider _provider = new();
+    private bool _saving = false;
+    private string? _validationMessage = null;
+
+    private readonly string[] _usStates = new[]
+    {
+        "AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA",
+        "HI", "ID", "IL", "IN", "IA", "KS", "KY", "LA", "ME", "MD",
+        "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ",
+        "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC",
+        "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY"
+    };
+
+    private bool IsEditMode => ExistingProvider != null;
+
+    protected override void OnInitialized()
+    {
+        if (IsEditMode && ExistingProvider != null)
+        {
+            _provider = new Provider
+            {
+                ProviderId = ExistingProvider.ProviderId,
+                TenantId = ExistingProvider.TenantId,
+                NPI = ExistingProvider.NPI,
+                FirstName = ExistingProvider.FirstName,
+                LastName = ExistingProvider.LastName,
+                MiddleName = ExistingProvider.MiddleName,
+                Suffix = ExistingProvider.Suffix,
+                Specialty = ExistingProvider.Specialty,
+                LicenseNumber = ExistingProvider.LicenseNumber,
+                LicenseState = ExistingProvider.LicenseState,
+                Email = ExistingProvider.Email,
+                Phone = ExistingProvider.Phone,
+                TaxId = ExistingProvider.TaxId,
+                IsActive = ExistingProvider.IsActive,
+                CreatedDate = ExistingProvider.CreatedDate
+            };
+        }
+        else
+        {
+            _provider = new Provider
+            {
+                IsActive = true
+            };
+        }
+    }
+
+    private async Task Save()
+    {
+        // Validation
+        if (string.IsNullOrWhiteSpace(_provider.FirstName))
+        {
+            _validationMessage = "First name is required.";
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(_provider.LastName))
+        {
+            _validationMessage = "Last name is required.";
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(_provider.NPI))
+        {
+            _validationMessage = "NPI number is required.";
+            return;
+        }
+
+        if (_provider.NPI.Length != 10 || !_provider.NPI.All(char.IsDigit))
+        {
+            _validationMessage = "NPI must be exactly 10 digits.";
+            return;
+        }
+
+        try
+        {
+            _saving = true;
+            _validationMessage = null;
+
+            if (IsEditMode)
+            {
+                await ProviderService.UpdateProviderAsync(_provider);
+                Snackbar.Add("Provider updated successfully!", Severity.Success);
+            }
+            else
+            {
+                await ProviderService.CreateProviderAsync(_provider);
+                Snackbar.Add("Provider added successfully!", Severity.Success);
+            }
+
+            MudDialog.Close(DialogResult.Ok(true));
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error saving provider: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            _saving = false;
+        }
+    }
+
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+}

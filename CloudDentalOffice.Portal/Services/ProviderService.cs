@@ -107,8 +107,10 @@ public class ProviderServiceImpl : IProviderService
             existingProvider.Specialty = provider.Specialty;
             existingProvider.NPI = provider.NPI;
             existingProvider.LicenseNumber = provider.LicenseNumber;
+            existingProvider.LicenseState = provider.LicenseState;
             existingProvider.Phone = provider.Phone;
             existingProvider.Email = provider.Email;
+            existingProvider.TaxId = provider.TaxId;
             existingProvider.IsActive = provider.IsActive;
             existingProvider.ModifiedDate = DateTime.UtcNow;
 
