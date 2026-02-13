@@ -135,9 +135,9 @@
                     <MudTextField Label="Appointment Reminder (hours before)" 
                                   Variant="Variant.Outlined" Value="24" Type="number" />
                     <MudTimePicker Label="Office Hours Start" 
-                                   Variant="Variant.Outlined" Time="new TimeSpan(8, 0, 0)" />
+                                   Variant="Variant.Outlined" Time="@(new TimeSpan(8, 0, 0))" />
                     <MudTimePicker Label="Office Hours End" 
-                                   Variant="Variant.Outlined" Time="new TimeSpan(17, 0, 0)" />
+                                   Variant="Variant.Outlined" Time="@(new TimeSpan(17, 0, 0))" />
                     <MudButton Variant="Variant.Filled" Color="Color.Primary"
                                OnClick="@(() => Snackbar.Add("Appointment settings saved!", Severity.Success))">
                         Save Settings

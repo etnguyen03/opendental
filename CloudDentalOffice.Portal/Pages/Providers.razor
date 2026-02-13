@@ -77,8 +77,8 @@
                     </MudTd>
                     <MudTd DataLabel="Status">
                         <MudChip T="string" Size="Size.Small" 
-                                 Color="@(context.Status == "Active" ? Color.Success : Color.Default)">
-                            @context.Status
+                                 Color="@(context.IsActive ? Color.Success : Color.Default)">
+                            @(context.IsActive ? "Active" : "Inactive")
                         </MudChip>
                     </MudTd>
                     <MudTd DataLabel="Actions">
@@ -134,7 +134,7 @@
         return provider.FullName.Contains(_searchString, StringComparison.OrdinalIgnoreCase) ||
                (provider.Specialty?.Contains(_searchString, StringComparison.OrdinalIgnoreCase) ?? false) ||
                provider.NPI.Contains(_searchString, StringComparison.OrdinalIgnoreCase) ||
-               provider.Email.Contains(_searchString, StringComparison.OrdinalIgnoreCase);
+               (provider.Email?.Contains(_searchString, StringComparison.OrdinalIgnoreCase) ?? false);
     }
 
     private void OpenAddProviderDialog()
