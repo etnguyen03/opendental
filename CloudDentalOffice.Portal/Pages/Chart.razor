@@ -492,8 +492,7 @@
         { 
             CloseButton = true, 
             MaxWidth = MaxWidth.Medium,
-            FullWidth = true,
-            DisableBackdropClick = true
+            FullWidth = true
         };
 
         var dialog = await DialogService.ShowAsync<AddClinicalNoteDialog>("Add Clinical Note", parameters, options);
