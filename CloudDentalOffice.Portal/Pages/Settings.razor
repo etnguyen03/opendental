@@ -36,12 +36,14 @@
                     <MudTextField Label="Email" Variant="Variant.Outlined" 
                                   Value="contact@clouddentaloffice.com" ReadOnly="true" />
                     <MudButton Variant="Variant.Filled" Color="Color.Primary" 
-                               OnClick="@(() => Snackbar.Add(\"Edit practice info coming soon!\", Severity.Info))">
+                               OnClick="OnEditPracticeInfo">
                         Edit Practice Info
                     </MudButton>
                 </MudStack>
             </MudPaper>
-        </MudItem>
+        </MudItem
+
+>
 
         <!-- EDI Configuration -->
         <MudItem xs="12" md="6">
@@ -60,7 +62,7 @@
                     <MudSwitch T="bool" Label="Enable Electronic Claims Submission" 
                                Color="Color.Primary" Checked="true" ReadOnly="true" />
                     <MudButton Variant="Variant.Filled" Color="Color.Primary"
-                               OnClick="@(() => Snackbar.Add(\"EDI configuration coming soon!\", Severity.Info))">
+                               OnClick="OnConfigureEdi">
                         Configure EDI
                     </MudButton>
                 </MudStack>
@@ -76,22 +78,22 @@
                 </MudText>
                 <MudStack Spacing="3">
                     <MudSelect T="string" Label="Date Format" Variant="Variant.Outlined" Value="MM/dd/yyyy">
-                        <MudSelectItem Value="@("MM/dd/yyyy")">MM/DD/YYYY</MudSelectItem>
-                        <MudSelectItem Value="@("dd/MM/yyyy")">DD/MM/YYYY</MudSelectItem>
-                        <MudSelectItem Value="@("yyyy-MM-dd")">YYYY-MM-DD</MudSelectItem>
+                        <MudSelectItem Value='"MM/dd/yyyy"'>MM/DD/YYYY</MudSelectItem>
+                        <MudSelectItem Value='"dd/MM/yyyy"'>DD/MM/YYYY</MudSelectItem>
+                        <MudSelectItem Value='"yyyy-MM-dd"'>YYYY-MM-DD</MudSelectItem>
                     </MudSelect>
                     <MudSelect T="string" Label="Time Zone" Variant="Variant.Outlined" Value="America/New_York">
-                        <MudSelectItem Value="@("America/New_York")">Eastern Time</MudSelectItem>
-                        <MudSelectItem Value="@("America/Chicago")">Central Time</MudSelectItem>
-                        <MudSelectItem Value="@("America/Denver")">Mountain Time</MudSelectItem>
-                        <MudSelectItem Value="@("America/Los_Angeles")">Pacific Time</MudSelectItem>
+                        <MudSelectItem Value='"America/New_York"'>Eastern Time</MudSelectItem>
+                        <MudSelectItem Value='"America/Chicago"'>Central Time</MudSelectItem>
+                        <MudSelectItem Value='"America/Denver"'>Mountain Time</MudSelectItem>
+                        <MudSelectItem Value='"America/Los_Angeles"'>Pacific Time</MudSelectItem>
                     </MudSelect>
                     <MudSwitch T="bool" Label="Enable Email Notifications" 
                                Color="Color.Primary" Checked="true" />
                     <MudSwitch T="bool" Label="Enable SMS Reminders" 
                                Color="Color.Primary" Checked="false" />
                     <MudButton Variant="Variant.Filled" Color="Color.Primary"
-                               OnClick="@(() => Snackbar.Add(\"Preferences saved!\", Severity.Success))">
+                               OnClick="OnSavePreferences">
                         Save Preferences
                     </MudButton>
                 </MudStack>
@@ -115,7 +117,7 @@
                     <MudSwitch T="bool" Label="Audit Logging Enabled" 
                                Color="Color.Primary" Checked="true" ReadOnly="true" />
                     <MudButton Variant="Variant.Outlined" Color="Color.Warning"
-                               OnClick="@(() => Snackbar.Add(\"Change password coming soon!\", Severity.Info))">
+                               OnClick="OnChangePassword">
                         Change Password
                     </MudButton>
                 </MudStack>
@@ -134,12 +136,8 @@
                                   Variant="Variant.Outlined" Value="60" Type="number" />
                     <MudTextField Label="Appointment Reminder (hours before)" 
                                   Variant="Variant.Outlined" Value="24" Type="number" />
-                    <MudTimePicker Label="Office Hours Start" 
-                                   Variant="Variant.Outlined" Time="@(new TimeSpan(8, 0, 0))" />
-                    <MudTimePicker Label="Office Hours End" 
-                                   Variant="Variant.Outlined" Time="@(new TimeSpan(17, 0, 0))" />
                     <MudButton Variant="Variant.Filled" Color="Color.Primary"
-                               OnClick="@(() => Snackbar.Add(\"Appointment settings saved!\", Severity.Success))">
+                               OnClick="OnSaveAppointmentSettings">
                         Save Settings
                     </MudButton>
                 </MudStack>
@@ -163,7 +161,7 @@
                     <MudSwitch T="bool" Label="Accept ACH Payments" 
                                Color="Color.Primary" Checked="true" />
                     <MudButton Variant="Variant.Filled" Color="Color.Primary"
-                               OnClick="@(() => Snackbar.Add(\"Billing settings saved!\", Severity.Success))">
+                               OnClick="OnSaveBillingSettings">
                         Save Settings
                     </MudButton>
                 </MudStack>
@@ -173,5 +171,33 @@
 </MudContainer>
 
 @code {
-    // Settings page with read-only defaults for now
+    private void OnEditPracticeInfo()
+    {
+        Snackbar.Add("Edit practice info coming soon!", Severity.Info);
+    }
+
+    private void OnConfigureEdi()
+    {
+        Snackbar.Add("EDI configuration coming soon!", Severity.Info);
+    }
+
+    private void OnSavePreferences()
+    {
+        Snackbar.Add("Preferences saved!", Severity.Success);
+    }
+
+    private void OnChangePassword()
+    {
+        Snackbar.Add("Change password coming soon!", Severity.Info);
+    }
+
+    private void OnSaveAppointmentSettings()
+    {
+        Snackbar.Add("Appointment settings saved!", Severity.Success);
+    }
+
+    private void OnSaveBillingSettings()
+    {
+        Snackbar.Add("Billing settings saved!", Severity.Success);
+    }
 }
