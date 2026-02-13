@@ -148,4 +148,116 @@ public static class DbInitializer
 
         context.SaveChanges();
     }
+
+    public static void SeedClaims(CloudDentalDbContext context, string tenantId = "dev")
+    {
+        // Check if claims already exist for this tenant
+        if (context.Claims.IgnoreQueryFilters().Any(c => c.TenantId == tenantId))
+        {
+            Console.WriteLine($"Claims already exist for tenant {tenantId}");
+            return;
+        }
+
+        var provider = context.Providers.IgnoreQueryFilters()
+            .FirstOrDefault(p => p.TenantId == tenantId);
+        
+        if (provider == null)
+        {
+            Console.WriteLine($"No provider found for tenant {tenantId}");
+            return;
+        }
+
+        var patients = context.Patients.IgnoreQueryFilters()
+            .Where(p => p.TenantId == tenantId)
+            .Take(10)
+            .ToList();
+
+        if (!patients.Any())
+        {
+            Console.WriteLine($"No patients found for tenant {tenantId}");
+            return;
+        }
+
+        int claimCounter = 0;
+        foreach (var patient in patients)
+        {
+            claimCounter++;
+            
+            // Determine claim status
+            string status = claimCounter <= 3 ? "Paid" : 
+                           claimCounter <= 6 ? "Submitted" : "Draft";
+
+            var claim = new Claim
+            {
+                TenantId = tenantId,
+                PatientId = patient.PatientId,
+                ProviderId = provider.ProviderId,
+                ClaimNumber = $"CLM-{DateTime.UtcNow:yyyyMMdd}-{claimCounter:D4}",
+                Status = status,
+                ClaimType = "Primary",
+                ServiceDateFrom = DateTime.UtcNow.AddDays(-30),
+                TotalChargeAmount = 450.00m,
+                CreatedDate = DateTime.UtcNow.AddDays(-28)
+            };
+
+            // Set additional fields for paid claims
+            if (status == "Paid")
+            {
+                claim.SubmittedDate = DateTime.UtcNow.AddDays(-28);
+                claim.ProcessedDate = DateTime.UtcNow.AddDays(-15);
+                claim.PaidAmount = 360.00m;
+                claim.PatientResponsibility = 90.00m;
+            }
+            else if (status == "Submitted")
+            {
+                claim.SubmittedDate = DateTime.UtcNow.AddDays(-10);
+            }
+
+            context.Claims.Add(claim);
+            context.SaveChanges(); // Save to get ClaimId
+
+            // Add procedures
+            var procedures = new[]
+            {
+                new ClaimProcedure
+                {
+                    TenantId = tenantId,
+                    ClaimId = claim.ClaimId,
+                    CDTCode = "D0150",
+                    Description = "Comprehensive oral evaluation",
+                    ServiceDate = claim.ServiceDateFrom,
+                    ChargeAmount = 85.00m,
+                    AllowedAmount = status == "Paid" ? 68.00m : null,
+                    PaidAmount = status == "Paid" ? 68.00m : null
+                },
+                new ClaimProcedure
+                {
+                    TenantId = tenantId,
+                    ClaimId = claim.ClaimId,
+                    CDTCode = "D1110",
+                    Description = "Prophylaxis - adult",
+                    ServiceDate = claim.ServiceDateFrom,
+                    ChargeAmount = 125.00m,
+                    AllowedAmount = status == "Paid" ? 100.00m : null,
+                    PaidAmount = status == "Paid" ? 100.00m : null
+                },
+                new ClaimProcedure
+                {
+                    TenantId = tenantId,
+                    ClaimId = claim.ClaimId,
+                    CDTCode = "D0210",
+                    Description = "Intraoral - complete series",
+                    ServiceDate = claim.ServiceDateFrom,
+                    ChargeAmount = 240.00m,
+                    AllowedAmount = status == "Paid" ? 192.00m : null,
+                    PaidAmount = status == "Paid" ? 192.00m : null
+                }
+            };
+
+            context.ClaimProcedures.AddRange(procedures);
+        }
+
+        context.SaveChanges();
+        Console.WriteLine($"Seeded {claimCounter} claims for tenant {tenantId}");
+    }
 }
