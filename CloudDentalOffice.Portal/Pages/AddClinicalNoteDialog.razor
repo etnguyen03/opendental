@@ -1,0 +1,58 @@
+@using MudBlazor
+
+<MudDialog>
+    <DialogContent>
+        <MudPaper Class="pa-4" Style="background: #0a0a0a; border: 1px solid rgba(0, 255, 255, 0.3);">
+            <MudText Typo="Typo.body1" Style="color: #00ffff;" Class="mb-3">
+                Patient: @PatientName
+            </MudText>
+            
+            <MudTextField @bind-Value="_noteText" 
+                          Label="Clinical Note" 
+                          Variant="Variant.Outlined" 
+                          Lines="6"
+                          AutoFocus="true"
+                          MaxLength="2000"
+                          Counter="2000"
+                          Placeholder="Enter clinical observations, treatment notes, or important information..."
+                          Style="margin-bottom: 16px;" />
+
+            <MudSelect @bind-Value="_noteType" Label="Note Type" Variant="Variant.Outlined">
+                <MudSelectItem Value="@("Clinical")">Clinical</MudSelectItem>
+                <MudSelectItem Value="@("Alert")">Alert</MudSelectItem>
+                <MudSelectItem Value="@("Condition")">Condition</MudSelectItem>
+                <MudSelectItem Value="@("Treatment")">Treatment</MudSelectItem>
+            </MudSelect>
+        </MudPaper>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel" Variant="Variant.Text">Cancel</MudButton>
+        <MudButton Color="Color.Primary" 
+                   OnClick="Submit" 
+                   Variant="Variant.Filled"
+                   Disabled="@string.IsNullOrWhiteSpace(_noteText)">
+            Add Note
+        </MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] 
+    MudDialogInstance MudDialog { get; set; } = null!;
+
+    [Parameter]
+    public string PatientName { get; set; } = string.Empty;
+
+    private string _noteText = string.Empty;
+    private string _noteType = "Clinical";
+
+    void Submit()
+    {
+        if (!string.IsNullOrWhiteSpace(_noteText))
+        {
+            MudDialog.Close(DialogResult.Ok(_noteText));
+        }
+    }
+
+    void Cancel() => MudDialog.Cancel();
+}

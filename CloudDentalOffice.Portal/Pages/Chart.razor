@@ -1,7 +1,9 @@
 @page "/chart"
 @page "/chart/{PatientId:int}"
 @using CloudDentalOffice.Portal.Models
+@using CloudDentalOffice.Portal.Services
 @inject IPatientService PatientService
+@inject IClinicalChartService ClinicalChartService
 @inject NavigationManager Navigation
 @inject IDialogService DialogService
 @inject ISnackbar Snackbar
@@ -66,56 +68,244 @@
 
                 <!-- Dental Chart Visualization -->
                 <MudPaper Class="pa-4" Style="background: #1a1a1a; border: 1px solid rgba(0, 255, 255, 0.3);">
-                    <MudText Typo="Typo.h6" Style="color: #00ffff;" Class="mb-4">Dental Chart</MudText>
+                    <MudText Typo="Typo.h6" Style="color: #00ffff;" Class="mb-4">
+                        <MudIcon Icon="@Icons.Material.Filled.Medication" Class="mr-2" />
+                        Dental Chart
+                    </MudText>
                     
-                    <!-- Placeholder for tooth chart -->
-                    <MudStack AlignItems="AlignItems.Center" Spacing="4" Class="py-4">
-                        <MudText Typo="Typo.body1" Style="color: #b0b0b0;">
-                            Interactive dental chart coming soon
-                        </MudText>
-                        
-                        <!-- Upper Arch Placeholder -->
-                        <MudPaper Class="pa-3" Style="background: #0a0a0a; border: 1px solid rgba(0, 255, 255, 0.2);">
-                            <MudText Typo="Typo.caption" Style="color: #808080;" Class="mb-2">Upper Arch</MudText>
-                            <MudStack Row="true" Spacing="2">
-                                @foreach (var tooth in Enumerable.Range(1, 16))
-                                {
-                                    <MudPaper Class="pa-2" Style="background: #1a1a1a; width: 40px; height: 60px; border: 1px solid #404040; display: flex; align-items: center; justify-content: center;">
-                                        <MudText Typo="Typo.caption" Style="color: #808080;">@tooth</MudText>
-                                    </MudPaper>
-                                }
-                            </MudStack>
-                        </MudPaper>
+                    @if (_toothChartData.Any())
+                    {
+                        <MudStack AlignItems="AlignItems.Center" Spacing="4" Class="py-4">
+                            <!-- Upper Arch -->
+                            <MudPaper Class="pa-3" Style="background: #0a0a0a; border: 1px solid rgba(0, 255, 255, 0.2);">
+                                <MudText Typo="Typo.caption" Style="color: #808080;" Class="mb-2">Upper Arch (1-16)</MudText>
+                                <MudStack Row="true" Spacing="1">
+                                    @for (int tooth = 1; tooth <= 16; tooth++)
+                                    {
+                                        var toothNum = tooth.ToString();
+                                        var hasProcs = _toothChartData.ContainsKey(toothNum);
+                                        var borderColor = hasProcs ? "2px solid #00ffff" : "1px solid #404040";
+                                        var bgColor = hasProcs ? "#1a3a3a" : "#1a1a1a";
+                                        
+                                        <MudTooltip Text="@GetToothTooltip(toothNum)" Delay="300">
+                                            <MudPaper Class="pa-1" Style="@($"background: {bgColor}; width: 45px; height: 70px; border: {borderColor}; display: flex; flex-direction: column; align-items: center; justify-content: space-between; cursor: pointer;")"
+                                                      @onclick="@(() => ShowToothDetails(toothNum))">
+                                                <MudText Typo="Typo.caption" Style="color: #b0b0b0; font-weight: bold;">@tooth</MudText>
+                                                @if (hasProcs)
+                                                {
+                                                    var procCount = _toothChartData[toothNum].Count;
+                                                    var procColor = _toothChartData[toothNum].First().Color;
+                                                    <MudIcon Icon="@Icons.Material.Filled.Circle" Size="Size.Small" 
+                                                             Style="@($"color: {procColor};")" />
+                                                    <MudText Typo="Typo.caption" Style="color: #808080;">@procCount</MudText>
+                                                }
+                                            </MudPaper>
+                                        </MudTooltip>
+                                    }
+                                </MudStack>
+                            </MudPaper>
 
-                        <!-- Lower Arch Placeholder -->
-                        <MudPaper Class="pa-3" Style="background: #0a0a0a; border: 1px solid rgba(0, 255, 255, 0.2);">
-                            <MudText Typo="Typo.caption" Style="color: #808080;" Class="mb-2">Lower Arch</MudText>
-                            <MudStack Row="true" Spacing="2">
-                                @foreach (var tooth in Enumerable.Range(17, 16))
-                                {
-                                    <MudPaper Class="pa-2" Style="background: #1a1a1a; width: 40px; height: 60px; border: 1px solid #404040; display: flex; align-items: center; justify-content: center;">
-                                        <MudText Typo="Typo.caption" Style="color: #808080;">@tooth</MudText>
-                                    </MudPaper>
-                                }
-                            </MudStack>
-                        </MudPaper>
-                    </MudStack>
+                            <!-- Lower Arch -->
+                            <MudPaper Class="pa-3" Style="background: #0a0a0a; border: 1px solid rgba(0, 255, 255, 0.2);">
+                                <MudText Typo="Typo.caption" Style="color: #808080;" Class="mb-2">Lower Arch (17-32)</MudText>
+                                <MudStack Row="true" Spacing="1">
+                                    @for (int tooth = 17; tooth <= 32; tooth++)
+                                    {
+                                        var toothNum = tooth.ToString();
+                                        var hasProcs = _toothChartData.ContainsKey(toothNum);
+                                        var borderColor = hasProcs ? "2px solid #00ffff" : "1px solid #404040";
+                                        var bgColor = hasProcs ? "#1a3a3a" : "#1a1a1a";
+                                        
+                                        <MudTooltip Text="@GetToothTooltip(toothNum)" Delay="300">
+                                            <MudPaper Class="pa-1" Style="@($"background: {bgColor}; width: 45px; height: 70px; border: {borderColor}; display: flex; flex-direction: column; align-items: center; justify-content: space-between; cursor: pointer;")"
+                                                      @onclick="@(() => ShowToothDetails(toothNum))">
+                                                <MudText Typo="Typo.caption" Style="color: #b0b0b0; font-weight: bold;">@tooth</MudText>
+                                                @if (hasProcs)
+                                                {
+                                                    var procCount = _toothChartData[toothNum].Count;
+                                                    var procColor = _toothChartData[toothNum].First().Color;
+                                                    <MudIcon Icon="@Icons.Material.Filled.Circle" Size="Size.Small" 
+                                                             Style="@($"color: {procColor};")" />
+                                                    <MudText Typo="Typo.caption" Style="color: #808080;">@procCount</MudText>
+                                                }
+                                            </MudPaper>
+                                        </MudTooltip>
+                                    }
+                                </MudStack>
+                            </MudPaper>
+
+                            <!-- Legend -->
+                            <MudPaper Class="pa-3" Style="background: #0a0a0a; border: 1px solid rgba(0, 255, 255, 0.1);">
+                                <MudStack Row="true" Spacing="4" AlignItems="AlignItems.Center">
+                                    <MudStack Row="true" Spacing="1" AlignItems="AlignItems.Center">
+                                        <MudIcon Icon="@Icons.Material.Filled.Circle" Size="Size.Small" Style="color: #00ff00;" />
+                                        <MudText Typo="Typo.caption" Style="color: #b0b0b0;">Completed</MudText>
+                                    </MudStack>
+                                    <MudStack Row="true" Spacing="1" AlignItems="AlignItems.Center">
+                                        <MudIcon Icon="@Icons.Material.Filled.Circle" Size="Size.Small" Style="color: #ffff00;" />
+                                        <MudText Typo="Typo.caption" Style="color: #b0b0b0;">Planned</MudText>
+                                    </MudStack>
+                                    <MudStack Row="true" Spacing="1" AlignItems="AlignItems.Center">
+                                        <MudIcon Icon="@Icons.Material.Filled.Circle" Size="Size.Small" Style="color: #ff0000;" />
+                                        <MudText Typo="Typo.caption" Style="color: #b0b0b0;">Watch/Condition</MudText>
+                                    </MudStack>
+                                </MudStack>
+                            </MudPaper>
+                        </MudStack>
+                    }
+                    else
+                    {
+                        <MudStack AlignItems="AlignItems.Center" Spacing="2" Class="py-4">
+                            <MudIcon Icon="@Icons.Material.Filled.Medication" Size="Size.Large" Style="color: #404040;" />
+                            <MudText Typo="Typo.body2" Style="color: #808080;">No tooth chart data available</MudText>
+                        </MudStack>
+                    }
+                </MudPaper>
+
+                <!-- Medical Alerts -->
+                <MudPaper Class="pa-4" Style="background: #1a1a1a; border: 1px solid rgba(255, 100, 100, 0.3);">
+                    <MudText Typo="Typo.h6" Style="color: #ff6464;" Class="mb-3">
+                        <MudIcon Icon="@Icons.Material.Filled.HealthAndSafety" Class="mr-2" />
+                        Medical Information
+                    </MudText>
+                    @if (_medicalInfo != null)
+                    {
+                        <MudGrid>
+                            <MudItem xs="12" md="6">
+                                <MudPaper Class="pa-3" Style="background: #0a0a0a; border: 1px solid rgba(255, 100, 100, 0.2);">
+                                    <MudText Typo="Typo.subtitle2" Style="color: #ff6464;" Class="mb-2">
+                                        <MudIcon Icon="@Icons.Material.Filled.Warning" Size="Size.Small" Class="mr-1" />
+                                        Allergies
+                                    </MudText>
+                                    @if (_medicalInfo.Allergies.Any())
+                                    {
+                                        @foreach (var allergy in _medicalInfo.Allergies)
+                                        {
+                                            <MudChip Size="Size.Small" Color="Color.Error" Style="margin: 2px;">@allergy</MudChip>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <MudText Typo="Typo.body2" Style="color: #808080;">No known allergies</MudText>
+                                    }
+                                </MudPaper>
+                            </MudItem>
+                            <MudItem xs="12" md="6">
+                                <MudPaper Class="pa-3" Style="background: #0a0a0a; border: 1px solid rgba(255, 200, 100, 0.2);">
+                                    <MudText Typo="Typo.subtitle2" Style="color: #ffcc64;" Class="mb-2">
+                                        <MudIcon Icon="@Icons.Material.Filled.Medication" Size="Size.Small" Class="mr-1" />
+                                        Medications
+                                    </MudText>
+                                    @if (_medicalInfo.Medications.Any())
+                                    {
+                                        <MudList Dense="true" Style="padding: 0;">
+                                            @foreach (var med in _medicalInfo.Medications)
+                                            {
+                                                <MudListItem Style="color: #b0b0b0; padding: 2px 0;">
+                                                    <MudText Typo="Typo.caption">• @med</MudText>
+                                                </MudListItem>
+                                            }
+                                        </MudList>
+                                    }
+                                    else
+                                    {
+                                        <MudText Typo="Typo.body2" Style="color: #808080;">No medications listed</MudText>
+                                    }
+                                </MudPaper>
+                            </MudItem>
+                        </MudGrid>
+                    }
                 </MudPaper>
 
                 <!-- Treatment History -->
                 <MudPaper Class="pa-4" Style="background: #1a1a1a; border: 1px solid rgba(0, 255, 255, 0.3);">
-                    <MudText Typo="Typo.h6" Style="color: #00ffff;" Class="mb-3">Treatment History</MudText>
-                    <MudText Typo="Typo.body2" Style="color: #b0b0b0;">
-                        Treatment history functionality coming soon
-                    </MudText>
+                    <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="mb-3">
+                        <MudText Typo="Typo.h6" Style="color: #00ffff;">
+                            <MudIcon Icon="@Icons.Material.Filled.History" Class="mr-2" />
+                            Treatment History
+                        </MudText>
+                        <MudToggleIconButton @bind-Toggled="@_showPlannedProcedures"
+                                             Icon="@Icons.Material.Filled.CalendarToday" ToggledIcon="@Icons.Material.Filled.CalendarToday"
+                                             Color="@Color.Default" ToggledColor="@Color.Primary"
+                                             Title="Include Planned Procedures" ToggledTitle="Showing Planned Procedures" />
+                    </MudStack>
+                    
+                    @if (_completedProcedures.Any() || (_showPlannedProcedures && _plannedProcedures.Any()))
+                    {
+                        <MudTable Items="@GetDisplayProcedures()" Dense="true" Hover="true" Striped="true"
+                                  Style="background: #0a0a0a;">
+                            <HeaderContent>
+                                <MudTh Style="color: #00ffff;">Date</MudTh>
+                                <MudTh Style="color: #00ffff;">Code</MudTh>
+                                <MudTh Style="color: #00ffff;">Description</MudTh>
+                                <MudTh Style="color: #00ffff;">Tooth</MudTh>
+                                <MudTh Style="color: #00ffff;">Provider</MudTh>
+                                <MudTh Style="color: #00ffff;">Status</MudTh>
+                                <MudTh Style="color: #00ffff;">Fee</MudTh>
+                            </HeaderContent>
+                            <RowTemplate>
+                                <MudTd Style="color: #b0b0b0;">@context.Date.ToString("MM/dd/yyyy")</MudTd>
+                                <MudTd Style="color: #00ffff;">@context.Code</MudTd>
+                                <MudTd Style="color: #b0b0b0;">@context.Description</MudTd>
+                                <MudTd Style="color: #b0b0b0;">@(context.Tooth ?? "-")</MudTd>
+                                <MudTd Style="color: #b0b0b0;">@context.Provider</MudTd>
+                                <MudTd>
+                                    <MudChip Size="Size.Small" Color="@GetStatusColor(context.Status)">@context.Status</MudChip>
+                                </MudTd>
+                                <MudTd Style="color: #b0b0b0;">@context.Fee.ToString("C")</MudTd>
+                            </RowTemplate>
+                        </MudTable>
+                    }
+                    else
+                    {
+                        <MudStack AlignItems="AlignItems.Center" Spacing="2" Class="py-6">
+                            <MudIcon Icon="@Icons.Material.Filled.History" Size="Size.Large" Style="color: #404040;" />
+                            <MudText Typo="Typo.body2" Style="color: #808080;">No treatment history available</MudText>
+                        </MudStack>
+                    }
                 </MudPaper>
 
                 <!-- Notes and Observations -->
                 <MudPaper Class="pa-4" Style="background: #1a1a1a; border: 1px solid rgba(0, 255, 255, 0.3);">
-                    <MudText Typo="Typo.h6" Style="color: #00ffff;" Class="mb-3">Clinical Notes</MudText>
-                    <MudText Typo="Typo.body2" Style="color: #b0b0b0;">
-                        Clinical notes functionality coming soon
-                    </MudText>
+                    <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="mb-3">
+                        <MudText Typo="Typo.h6" Style="color: #00ffff;">
+                            <MudIcon Icon="@Icons.Material.Filled.NoteAlt" Class="mr-2" />
+                            Clinical Notes
+                        </MudText>
+                        <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Small"
+                                   StartIcon="@Icons.Material.Filled.Add" OnClick="ShowAddNoteDialog">
+                            Add Note
+                        </MudButton>
+                    </MudStack>
+                    
+                    @if (_clinicalNotes.Any())
+                    {
+                        <MudStack Spacing="2">
+                            @foreach (var note in _clinicalNotes.OrderByDescending(n => n.NoteDate))
+                            {
+                                <MudPaper Class="pa-3" Style="background: #0a0a0a; border-left: 3px solid #00ffff;">
+                                    <MudStack Row="true" Justify="Justify.SpaceBetween" Class="mb-2">
+                                        <MudText Typo="Typo.caption" Style="color: #808080;">
+                                            @note.NoteDate.ToString("MM/dd/yyyy hh:mm tt") - @note.CreatedBy
+                                        </MudText>
+                                        <MudChip Size="Size.Small" Color="Color.Info">@note.NoteType</MudChip>
+                                    </MudStack>
+                                    <MudText Typo="Typo.body2" Style="color: #b0b0b0;">@note.NoteText</MudText>
+                                </MudPaper>
+                            }
+                        </MudStack>
+                    }
+                    else
+                    {
+                        <MudStack AlignItems="AlignItems.Center" Spacing="2" Class="py-6">
+                            <MudIcon Icon="@Icons.Material.Filled.NoteAlt" Size="Size.Large" Style="color: #404040;" />
+                            <MudText Typo="Typo.body2" Style="color: #808080;">No clinical notes available</MudText>
+                            <MudButton Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Small"
+                                       StartIcon="@Icons.Material.Filled.Add" OnClick="ShowAddNoteDialog">
+                                Add First Note
+                            </MudButton>
+                        </MudStack>
+                    }
                 </MudPaper>
             </MudStack>
         }
@@ -129,6 +319,14 @@
     private List<Patient> _allPatients = new();
     private Patient? _selectedPatient = null;
     private string? _errorMessage = null;
+    
+    private List<CompletedProcedureDto> _completedProcedures = new();
+    private List<PlannedProcedure> _plannedProcedures = new();
+    private List<ClinicalNoteDto> _clinicalNotes = new();
+    private PatientMedicalInfoDto? _medicalInfo = null;
+    private Dictionary<string, List<ToothProcedureDto>> _toothChartData = new();
+    
+    private bool _showPlannedProcedures = true;
 
     protected override async Task OnInitializedAsync()
     {
@@ -142,6 +340,7 @@
                 _selectedPatient = await PatientService.GetPatientByIdAsync(PatientId.Value.ToString());
                 if (_selectedPatient != null)
                 {
+                    await LoadPatientChartData(_selectedPatient.PatientId);
                     Snackbar.Add($"Viewing chart for {_selectedPatient.FullName}", Severity.Info);
                 }
             }
@@ -166,6 +365,23 @@
         }
     }
 
+    private async Task LoadPatientChartData(int patientId)
+    {
+        try
+        {
+            _completedProcedures = await ClinicalChartService.GetCompletedProceduresAsync(patientId);
+            _plannedProcedures = await ClinicalChartService.GetPlannedProceduresAsync(patientId);
+            _clinicalNotes = await ClinicalChartService.GetClinicalNotesAsync(patientId);
+            _medicalInfo = await ClinicalChartService.GetPatientMedicalInfoAsync(patientId);
+            _toothChartData = await ClinicalChartService.GetToothChartDataAsync(patientId);
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = $"Error loading chart data: {ex.Message}";
+            Snackbar.Add(_errorMessage, Severity.Error);
+        }
+    }
+
     private async Task<IEnumerable<Patient>> SearchPatients(string searchString, CancellationToken token)
     {
         if (string.IsNullOrWhiteSpace(searchString))
@@ -181,6 +397,7 @@
         _selectedPatient = patient;
         if (patient != null)
         {
+            await LoadPatientChartData(patient.PatientId);
             Snackbar.Add($"Viewing chart for {patient.FullName}", Severity.Info);
         }
     }
@@ -188,5 +405,124 @@
     private void ClearPatientSelection()
     {
         _selectedPatient = null;
+        _completedProcedures.Clear();
+        _plannedProcedures.Clear();
+        _clinicalNotes.Clear();
+        _medicalInfo = null;
+        _toothChartData.Clear();
+    }
+
+    private string GetToothTooltip(string toothNum)
+    {
+        if (!_toothChartData.ContainsKey(toothNum))
+            return $"Tooth #{toothNum} - No procedures";
+
+        var procs = _toothChartData[toothNum];
+        var lines = procs.Select(p => $"• {p.CDTCode}: {p.Description} ({p.Status})");
+        return $"Tooth #{toothNum}\n" + string.Join("\n", lines);
+    }
+
+    private void ShowToothDetails(string toothNum)
+    {
+        if (_toothChartData.ContainsKey(toothNum))
+        {
+            var procs = _toothChartData[toothNum];
+            var message = string.Join(", ", procs.Select(p => $"{p.CDTCode} ({p.Status})"));
+            Snackbar.Add($"Tooth #{toothNum}: {message}", Severity.Info, config => config.VisibleStateDuration = 3000);
+        }
+        else
+        {
+            Snackbar.Add($"Tooth #{toothNum}: No procedures", Severity.Info);
+        }
+    }
+
+    private IEnumerable<ProcedureDisplayDto> GetDisplayProcedures()
+    {
+        var completed = _completedProcedures.Select(p => new ProcedureDisplayDto
+        {
+            Date = p.ServiceDate,
+            Code = p.CDTCode,
+            Description = p.Description,
+            Tooth = p.ToothNumber,
+            Provider = p.ProviderName,
+            Status = "Completed",
+            Fee = p.ChargeAmount
+        });
+
+        if (_showPlannedProcedures)
+        {
+            var planned = _plannedProcedures.Select(p => new ProcedureDisplayDto
+            {
+                Date = p.CreatedDate,
+                Code = p.CDTCode,
+                Description = p.Description,
+                Tooth = p.ToothNumber,
+                Provider = "Planned",
+                Status = p.Status,
+                Fee = p.EstimatedFee
+            });
+
+            return completed.Concat(planned).OrderByDescending(p => p.Date);
+        }
+
+        return completed.OrderByDescending(p => p.Date);
+    }
+
+    private Color GetStatusColor(string status)
+    {
+        return status.ToLower() switch
+        {
+            "completed" => Color.Success,
+            "paid" => Color.Success,
+            "planned" => Color.Warning,
+            "scheduled" => Color.Info,
+            "cancelled" => Color.Error,
+            _ => Color.Default
+        };
+    }
+
+    private async Task ShowAddNoteDialog()
+    {
+        var parameters = new DialogParameters
+        {
+            ["PatientName"] = _selectedPatient?.FullName ?? "Unknown"
+        };
+
+        var options = new DialogOptions 
+        { 
+            CloseButton = true, 
+            MaxWidth = MaxWidth.Medium,
+            FullWidth = true,
+            DisableBackdropClick = true
+        };
+
+        var dialog = await DialogService.ShowAsync<AddClinicalNoteDialog>("Add Clinical Note", parameters, options);
+        var result = await dialog.Result;
+
+        if (!result.Canceled && result.Data is string noteText)
+        {
+            try
+            {
+                var newNote = await ClinicalChartService.AddClinicalNoteAsync(_selectedPatient!.PatientId, noteText);
+                _clinicalNotes.Add(newNote);
+                Snackbar.Add("Clinical note added successfully", Severity.Success);
+                StateHasChanged();
+            }
+            catch (Exception ex)
+            {
+                Snackbar.Add($"Error adding note: {ex.Message}", Severity.Error);
+            }
+        }
+    }
+
+    private class ProcedureDisplayDto
+    {
+        public DateTime Date { get; set; }
+        public string Code { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
+        public string? Tooth { get; set; }
+        public string Provider { get; set; } = string.Empty;
+        public string Status { get; set; } = string.Empty;
+        public decimal Fee { get; set; }
     }
 }

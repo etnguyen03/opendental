@@ -97,6 +97,7 @@ builder.Services.AddScoped<IEdiService, EdiService>();
 builder.Services.AddScoped<IProviderService, ProviderServiceImpl>();
 builder.Services.AddScoped<IBillingService, BillingService>();
 builder.Services.AddScoped<IInsurancePlanService, InsurancePlanService>();
+builder.Services.AddScoped<IClinicalChartService, ClinicalChartService>();
 
 // Add EDI submission services
 builder.Services.AddScoped<IEdiX12Service, EdiX12Service>();
