@@ -95,6 +95,7 @@ builder.Services.AddScoped<IAppointmentService, AppointmentServiceImpl>();
 builder.Services.AddScoped<ITreatmentPlanService, TreatmentPlanService>();
 builder.Services.AddScoped<IEdiService, EdiService>();
 builder.Services.AddScoped<IProviderService, ProviderServiceImpl>();
+builder.Services.AddScoped<IProcedureCodeService, ProcedureCodeServiceImpl>();
 builder.Services.AddScoped<IBillingService, BillingService>();
 builder.Services.AddScoped<IInsurancePlanService, InsurancePlanService>();
 builder.Services.AddScoped<IClinicalChartService, ClinicalChartService>();

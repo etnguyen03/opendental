@@ -2,6 +2,7 @@
 @using MudBlazor
 @inject ITreatmentPlanService TreatmentPlanService
 @inject IProviderService ProviderService
+@inject IProcedureCodeService ProcedureCodeService
 @inject ISnackbar Snackbar
 
 <MudDialog Style="background: #0a0a0a; border: 1px solid #00ffff;">
@@ -121,8 +122,18 @@
                                 </HeaderContent>
                                 <RowTemplate>
                                     <MudTd DataLabel="Code">
-                                        <MudTextField @bind-Value="context.CDTCode" Variant="Variant.Text" 
-                                                      Margin="Margin.Dense" />
+                                        <MudAutocomplete T="ProcedureCode" 
+                                                         Value="@GetProcedureCodeForRow(context)"
+                                                         ValueChanged="@(code => OnProcedureCodeSelected(context, code))"
+                                                         SearchFunc="@SearchProcedureCodes"
+                                                         ToStringFunc="@(pc => pc?.Code ?? "")"
+                                                         Variant="Variant.Text"
+                                                         Margin="Margin.Dense"
+                                                         Placeholder="Search code..."
+                                                         Clearable="true"
+                                                         ResetValueOnEmptyText="true"
+                                                         CoerceText="false"
+                                                         CoerceValue="false" />
                                     </MudTd>
                                     <MudTd DataLabel="Description">
                                         <MudTextField @bind-Value="context.Description" Variant="Variant.Text" 
@@ -208,6 +219,7 @@
     private TreatmentPlan _treatmentPlan = new();
     private List<PlannedProcedure> _procedures = new();
     private List<Provider> _providers = new();
+    private Dictionary<PlannedProcedure, ProcedureCode?> _procedureCodeCache = new();
     private int? _selectedProviderId;
     private DateTime? _presentedDate;
     private DateTime? _acceptedDate;
@@ -268,16 +280,48 @@
         }
     }
 
+    private async Task<IEnumerable<ProcedureCode>> SearchProcedureCodes(string searchTerm, CancellationToken token)
+    {
+        if (string.IsNullOrWhiteSpace(searchTerm) || searchTerm.Length < 2)
+            return new List<ProcedureCode>();
+
+        return await ProcedureCodeService.SearchProcedureCodesAsync(searchTerm);
+    }
+
+    private ProcedureCode? GetProcedureCodeForRow(PlannedProcedure procedure)
+    {
+        if (_procedureCodeCache.TryGetValue(procedure, out var cachedCode))
+            return cachedCode;
+        return null;
+    }
+
+    private void OnProcedureCodeSelected(PlannedProcedure procedure, ProcedureCode? selectedCode)
+    {
+        if (selectedCode != null)
+        {
+            procedure.CDTCode = selectedCode.Code;
+            procedure.Description = selectedCode.Description;
+            procedure.EstimatedFee = selectedCode.DefaultFee;
+            _procedureCodeCache[procedure] = selectedCode;
+        }
+        else
+        {
+            // Clear the cache when autocomplete is cleared
+            _procedureCodeCache.Remove(procedure);
+        }
+    }
+
     private void AddProcedure()
     {
-        _procedures.Add(new PlannedProcedure
+        var newProcedure = new PlannedProcedure
         {
             TreatmentPlanId = _treatmentPlan.TreatmentPlanId,
             CDTCode = "",
             Description = "",
             EstimatedFee = 0,
             Status = "Planned"
-        });
+        };
+        _procedures.Add(newProcedure);
     }
 
     private void RemoveProcedure(PlannedProcedure procedure)

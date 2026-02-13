@@ -36,6 +36,7 @@ public class CloudDentalDbContext : DbContext
     public DbSet<PlannedProcedure> PlannedProcedures => Set<PlannedProcedure>();
     public DbSet<Claim> Claims => Set<Claim>();
     public DbSet<ClaimProcedure> ClaimProcedures => Set<ClaimProcedure>();
+    public DbSet<ProcedureCode> ProcedureCodes => Set<ProcedureCode>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -196,13 +197,76 @@ public class CloudDentalDbContext : DbContext
             entity.HasQueryFilter(e => e.TenantId == _tenantProvider.TenantId);
         });
 
+        // ProcedureCode configuration
+        modelBuilder.Entity<ProcedureCode>(entity =>
+        {
+            entity.HasIndex(e => e.Code).IsUnique();
+            entity.HasIndex(e => e.Category);
+            entity.HasIndex(e => e.IsActive);
+        });
+
         // Seed data
         SeedData(modelBuilder);
     }
 
     private void SeedData(ModelBuilder modelBuilder)
     {
-        // Seed data removed to prevent Npgsql migration issues
+        // Seed common dental procedure codes
+        modelBuilder.Entity<ProcedureCode>().HasData(
+            // Diagnostic
+            new ProcedureCode { ProcedureCodeId = 1, Code = "D0120", Description = "Periodic oral evaluation - established patient", AbbrDesc = "Periodic Exam", DefaultFee = 75.00m, Category = "Diagnostic", IsActive = true, CreatedDate = DateTime.UtcNow },
+            new ProcedureCode { ProcedureCodeId = 2, Code = "D0140", Description = "Limited oral evaluation - problem focused", AbbrDesc = "Limited Exam", DefaultFee = 65.00m, Category = "Diagnostic", IsActive = true, CreatedDate = DateTime.UtcNow },
+            new ProcedureCode { ProcedureCodeId = 3, Code = "D0150", Description = "Comprehensive oral evaluation - new or established patient", AbbrDesc = "Comp Exam", DefaultFee = 95.00m, Category = "Diagnostic", IsActive = true, CreatedDate = DateTime.UtcNow },
+            new ProcedureCode { ProcedureCodeId = 4, Code = "D0210", Description = "Intraoral - complete series of radiographic images", AbbrDesc = "FMX", DefaultFee = 125.00m, Category = "Diagnostic", IsActive = true, CreatedDate = DateTime.UtcNow },
+            new ProcedureCode { ProcedureCodeId = 5, Code = "D0220", Description = "Intraoral - periapical first radiographic image", AbbrDesc = "PA", DefaultFee = 35.00m, Category = "Diagnostic", IsActive = true, CreatedDate = DateTime.UtcNow },
+            new ProcedureCode { ProcedureCodeId = 6, Code = "D0230", Description = "Intraoral - periapical each additional radiographic image", AbbrDesc = "PA Add'l", DefaultFee = 25.00m, Category = "Diagnostic", IsActive = true, CreatedDate = DateTime.UtcNow },
+            new ProcedureCode { ProcedureCodeId = 7, Code = "D0270", Description = "Bitewing - single radiographic image", AbbrDesc = "BW Single", DefaultFee = 30.00m, Category = "Diagnostic", IsActive = true, CreatedDate = DateTime.UtcNow },
+            new ProcedureCode { ProcedureCodeId = 8, Code = "D0274", Description = "Bitewings - four radiographic images", AbbrDesc = "4 BWs", DefaultFee = 65.00m, Category = "Diagnostic", IsActive = true, CreatedDate = DateTime.UtcNow },
+            new ProcedureCode { ProcedureCodeId = 9, Code = "D0330", Description = "Panoramic radiographic image", AbbrDesc = "Pano", DefaultFee = 95.00m, Category = "Diagnostic", IsActive = true, CreatedDate = DateTime.UtcNow },
+            
+            // Preventive
+            new ProcedureCode { ProcedureCodeId = 10, Code = "D1110", Description = "Prophylaxis - adult", AbbrDesc = "Adult Prophy", DefaultFee = 95.00m, Category = "Preventive", IsActive = true, CreatedDate = DateTime.UtcNow },
+            new ProcedureCode { ProcedureCodeId = 11, Code = "D1120", Description = "Prophylaxis - child", AbbrDesc = "Child Prophy", DefaultFee = 75.00m, Category = "Preventive", IsActive = true, CreatedDate = DateTime.UtcNow },
+            new ProcedureCode { ProcedureCodeId = 12, Code = "D1206", Description = "Topical application of fluoride varnish", AbbrDesc = "Fluoride Varnish", DefaultFee = 35.00m, Category = "Preventive", IsActive = true, CreatedDate = DateTime.UtcNow },
+            new ProcedureCode { ProcedureCodeId = 13, Code = "D1208", Description = "Topical application of fluoride - excluding varnish", AbbrDesc = "Fluoride Treatment", DefaultFee = 30.00m, Category = "Preventive", IsActive = true, CreatedDate = DateTime.UtcNow },
+            new ProcedureCode { ProcedureCodeId = 14, Code = "D1351", Description = "Sealant - per tooth", AbbrDesc = "Sealant", DefaultFee = 55.00m, Category = "Preventive", IsActive = true, CreatedDate = DateTime.UtcNow },
+            
+            // Restorative
+            new ProcedureCode { ProcedureCodeId = 15, Code = "D2140", Description = "Amalgam - one surface, primary or permanent", AbbrDesc = "Amalgam 1 Surf", DefaultFee = 140.00m, Category = "Restorative", IsActive = true, CreatedDate = DateTime.UtcNow },
+            new ProcedureCode { ProcedureCodeId = 16, Code = "D2150", Description = "Amalgam - two surfaces, primary or permanent", AbbrDesc = "Amalgam 2 Surf", DefaultFee = 175.00m, Category = "Restorative", IsActive = true, CreatedDate = DateTime.UtcNow },
+            new ProcedureCode { ProcedureCodeId = 17, Code = "D2160", Description = "Amalgam - three surfaces, primary or permanent", AbbrDesc = "Amalgam 3 Surf", DefaultFee = 210.00m, Category = "Restorative", IsActive = true, CreatedDate = DateTime.UtcNow },
+            new ProcedureCode { ProcedureCodeId = 18, Code = "D2330", Description = "Resin-based composite - one surface, anterior", AbbrDesc = "Comp 1 Surf Ant", DefaultFee = 155.00m, Category = "Restorative", IsActive = true, CreatedDate = DateTime.UtcNow },
+            new ProcedureCode { ProcedureCodeId = 19, Code = "D2331", Description = "Resin-based composite - two surfaces, anterior", AbbrDesc = "Comp 2 Surf Ant", DefaultFee = 185.00m, Category = "Restorative", IsActive = true, CreatedDate = DateTime.UtcNow },
+            new ProcedureCode { ProcedureCodeId = 20, Code = "D2332", Description = "Resin-based composite - three surfaces, anterior", AbbrDesc = "Comp 3 Surf Ant", DefaultFee = 220.00m, Category = "Restorative", IsActive = true, CreatedDate = DateTime.UtcNow },
+            new ProcedureCode { ProcedureCodeId = 21, Code = "D2391", Description = "Resin-based composite - one surface, posterior", AbbrDesc = "Comp 1 Surf Post", DefaultFee = 165.00m, Category = "Restorative", IsActive = true, CreatedDate = DateTime.UtcNow },
+            new ProcedureCode { ProcedureCodeId = 22, Code = "D2392", Description = "Resin-based composite - two surfaces, posterior", AbbrDesc = "Comp 2 Surf Post", DefaultFee = 195.00m, Category = "Restorative", IsActive = true, CreatedDate = DateTime.UtcNow },
+            new ProcedureCode { ProcedureCodeId = 23, Code = "D2393", Description = "Resin-based composite - three surfaces, posterior", AbbrDesc = "Comp 3 Surf Post", DefaultFee = 235.00m, Category = "Restorative", IsActive = true, CreatedDate = DateTime.UtcNow },
+            
+            // Endodontics
+            new ProcedureCode { ProcedureCodeId = 24, Code = "D3310", Description = "Endodontic therapy, anterior tooth", AbbrDesc = "RCT Anterior", DefaultFee = 750.00m, Category = "Endodontics", IsActive = true, CreatedDate = DateTime.UtcNow },
+            new ProcedureCode { ProcedureCodeId = 25, Code = "D3320", Description = "Endodontic therapy, premolar tooth", AbbrDesc = "RCT Premolar", DefaultFee = 900.00m, Category = "Endodontics", IsActive = true, CreatedDate = DateTime.UtcNow },
+            new ProcedureCode { ProcedureCodeId = 26, Code = "D3330", Description = "Endodontic therapy, molar tooth", AbbrDesc = "RCT Molar", DefaultFee = 1150.00m, Category = "Endodontics", IsActive = true, CreatedDate = DateTime.UtcNow },
+            
+            // Periodontics
+            new ProcedureCode { ProcedureCodeId = 27, Code = "D4341", Description = "Periodontal scaling and root planing - four or more teeth per quadrant", AbbrDesc = "SRP per Quad", DefaultFee = 240.00m, Category = "Periodontics", IsActive = true, CreatedDate = DateTime.UtcNow },
+            new ProcedureCode { ProcedureCodeId = 28, Code = "D4342", Description = "Periodontal scaling and root planing - one to three teeth per quadrant", AbbrDesc = "SRP 1-3 Teeth", DefaultFee = 140.00m, Category = "Periodontics", IsActive = true, CreatedDate = DateTime.UtcNow },
+            
+            // Prosthodontics - Removable
+            new ProcedureCode { ProcedureCodeId = 29, Code = "D5110", Description = "Complete denture - maxillary", AbbrDesc = "Upper Denture", DefaultFee = 1500.00m, Category = "Prosthodontics", IsActive = true, CreatedDate = DateTime.UtcNow },
+            new ProcedureCode { ProcedureCodeId = 30, Code = "D5120", Description = "Complete denture - mandibular", AbbrDesc = "Lower Denture", DefaultFee = 1500.00m, Category = "Prosthodontics", IsActive = true, CreatedDate = DateTime.UtcNow },
+            new ProcedureCode { ProcedureCodeId = 31, Code = "D5213", Description = "Partial denture - maxillary, resin base", AbbrDesc = "Upper Partial", DefaultFee = 1200.00m, Category = "Prosthodontics", IsActive = true, CreatedDate = DateTime.UtcNow },
+            new ProcedureCode { ProcedureCodeId = 32, Code = "D5214", Description = "Partial denture - mandibular, resin base", AbbrDesc = "Lower Partial", DefaultFee = 1200.00m, Category = "Prosthodontics", IsActive = true, CreatedDate = DateTime.UtcNow },
+            
+            // Prosthodontics - Fixed
+            new ProcedureCode { ProcedureCodeId = 33, Code = "D6240", Description = "Pontic - porcelain fused to high noble metal", AbbrDesc = "PFM Pontic", DefaultFee = 950.00m, Category = "Prosthodontics", IsActive = true, CreatedDate = DateTime.UtcNow },
+            new ProcedureCode { ProcedureCodeId = 34, Code = "D6750", Description = "Crown - porcelain fused to high noble metal", AbbrDesc = "PFM Crown", DefaultFee = 1100.00m, Category = "Prosthodontics", IsActive = true, CreatedDate = DateTime.UtcNow },
+            new ProcedureCode { ProcedureCodeId = 35, Code = "D6010", Description = "Surgical placement of endosteal implant", AbbrDesc = "Implant Placement", DefaultFee = 2000.00m, Category = "Prosthodontics", IsActive = true, CreatedDate = DateTime.UtcNow },
+            
+            // Oral Surgery
+            new ProcedureCode { ProcedureCodeId = 36, Code = "D7140", Description = "Extraction, erupted tooth or exposed root", AbbrDesc = "Simple Extraction", DefaultFee = 150.00m, Category = "Oral Surgery", IsActive = true, CreatedDate = DateTime.UtcNow },
+            new ProcedureCode { ProcedureCodeId = 37, Code = "D7210", Description = "Extraction, erupted tooth requiring removal of bone and/or sectioning of tooth", AbbrDesc = "Surgical Extraction", DefaultFee = 250.00m, Category = "Oral Surgery", IsActive = true, CreatedDate = DateTime.UtcNow },
+            new ProcedureCode { ProcedureCodeId = 38, Code = "D7240", Description = "Removal of impacted tooth - completely bony", AbbrDesc = "Impacted Tooth", DefaultFee = 400.00m, Category = "Oral Surgery", IsActive = true, CreatedDate = DateTime.UtcNow }
+        );
     }
 
     public override int SaveChanges()

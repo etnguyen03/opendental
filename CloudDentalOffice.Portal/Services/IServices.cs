@@ -48,6 +48,14 @@ public interface IProviderService
     Task<Provider> UpdateProviderAsync(Provider provider);
 }
 
+public interface IProcedureCodeService
+{
+    Task<List<ProcedureCode>> SearchProcedureCodesAsync(string searchTerm);
+    Task<ProcedureCode?> GetProcedureCodeByCodeAsync(string code);
+    Task<List<ProcedureCode>> GetAllProcedureCodesAsync();
+    Task<ProcedureCode> CreateProcedureCodeAsync(ProcedureCode procedureCode);
+}
+
 public interface IBillingService
 {
     Task<List<Invoice>> GetInvoicesAsync(DateTime startDate, DateTime endDate);
