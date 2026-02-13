@@ -422,11 +422,11 @@
                            c.ProcessedDate.HasValue &&
                            c.ProcessedDate.Value.Month == thisMonth &&
                            c.ProcessedDate.Value.Year == thisYear)
-                .Sum(c => c.PaidAmount);
+                .Sum(c => c.PaidAmount ?? 0m);
             
             _outstandingAmount = claims
                 .Where(c => c.Status != "Paid" && c.Status != "Rejected" && c.Status != "Denied")
-                .Sum(c => c.TotalChargeAmount - c.PaidAmount);
+                .Sum(c => c.TotalChargeAmount - (c.PaidAmount ?? 0m));
         }
         catch (Exception ex)
         {
