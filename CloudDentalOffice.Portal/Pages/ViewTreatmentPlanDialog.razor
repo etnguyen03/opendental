@@ -95,12 +95,12 @@
                                     <MudTh Style="color: #00ffff;">Tooth</MudTh>
                                     <MudTh Style="color: #00ffff;">Surface</MudTh>
                                     <MudTh Style="color: #00ffff;">Est. Fee</MudTh>
-                                    <MudTh Style="color: #00ffff;">Priority</MudTh>
+                                    <MudTh Style="color: #00ffff;">Status</MudTh>
                                 </HeaderContent>
                                 <RowTemplate>
                                     <MudTd DataLabel="Code">
                                         <MudText Typo="Typo.body2" Style="font-family: monospace;">
-                                            @context.ProcedureCode
+                                            @context.CDTCode
                                         </MudText>
                                     </MudTd>
                                     <MudTd DataLabel="Description">
@@ -117,10 +117,8 @@
                                             @context.EstimatedFee.ToString("C")
                                         </MudText>
                                     </MudTd>
-                                    <MudTd DataLabel="Priority">
-                                        <MudChip T="string" Color="@GetPriorityColor(context.Priority)" Size="Size.Small">
-                                            @context.Priority
-                                        </MudChip>
+                                    <MudTd DataLabel="Status">
+                                        <MudText Typo="Typo.body2">@context.Status</MudText>
                                     </MudTd>
                                 </RowTemplate>
                             </MudTable>
@@ -178,7 +176,7 @@
                             <MudIcon Icon="@Icons.Material.Filled.Notes" Size="Size.Small" /> Notes
                         </MudText>
                         <MudText Typo="Typo.body2" Style="color: #b0b0b0; white-space: pre-wrap;">
-                            @(TreatmentPlan.Notes ?? "No notes available")
+                            @(TreatmentPlan.Description ?? "No notes available")
                         </MudText>
                     </MudPaper>
                 </MudItem>
@@ -253,17 +251,6 @@
             "InProgress" => Color.Warning,
             "Completed" => Color.Success,
             "Cancelled" => Color.Error,
-            _ => Color.Default
-        };
-    }
-
-    private Color GetPriorityColor(string? priority)
-    {
-        return priority switch
-        {
-            "High" => Color.Error,
-            "Medium" => Color.Warning,
-            "Low" => Color.Info,
             _ => Color.Default
         };
     }

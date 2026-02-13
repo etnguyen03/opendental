@@ -85,9 +85,9 @@
                                   ReadOnly="true" />
                 </MudItem>
 
-                <!-- Notes -->
+                <!-- Description/Notes -->
                 <MudItem xs="12">
-                    <MudTextField @bind-Value="_treatmentPlan.Notes" 
+                    <MudTextField @bind-Value="_treatmentPlan.Description" 
                                   Label="Notes" 
                                   Variant="Variant.Outlined"
                                   Lines="4"
@@ -117,12 +117,11 @@
                                     <MudTh Style="color: #00ffff;">Tooth</MudTh>
                                     <MudTh Style="color: #00ffff;">Surface</MudTh>
                                     <MudTh Style="color: #00ffff;">Fee</MudTh>
-                                    <MudTh Style="color: #00ffff;">Priority</MudTh>
                                     <MudTh Style="color: #00ffff;">Actions</MudTh>
                                 </HeaderContent>
                                 <RowTemplate>
                                     <MudTd DataLabel="Code">
-                                        <MudTextField @bind-Value="context.ProcedureCode" Variant="Variant.Text" 
+                                        <MudTextField @bind-Value="context.CDTCode" Variant="Variant.Text" 
                                                       Margin="Margin.Dense" />
                                     </MudTd>
                                     <MudTd DataLabel="Description">
@@ -140,14 +139,6 @@
                                     <MudTd DataLabel="Fee">
                                         <MudNumericField @bind-Value="context.EstimatedFee" Variant="Variant.Text" 
                                                          Margin="Margin.Dense" Min="0" Format="C2" />
-                                    </MudTd>
-                                    <MudTd DataLabel="Priority">
-                                        <MudSelect T="string" @bind-Value="context.Priority" Variant="Variant.Text" 
-                                                   Margin="Margin.Dense">
-                                            <MudSelectItem Value="@("Low")">Low</MudSelectItem>
-                                            <MudSelectItem Value="@("Medium")">Medium</MudSelectItem>
-                                            <MudSelectItem Value="@("High")">High</MudSelectItem>
-                                        </MudSelect>
                                     </MudTd>
                                     <MudTd DataLabel="Actions">
                                         <MudIconButton Icon="@Icons.Material.Filled.Delete" Size="Size.Small" 
@@ -244,7 +235,7 @@
                 CreatedDate = ExistingTreatmentPlan.CreatedDate,
                 PresentedDate = ExistingTreatmentPlan.PresentedDate,
                 AcceptedDate = ExistingTreatmentPlan.AcceptedDate,
-                Notes = ExistingTreatmentPlan.Notes,
+                Description = ExistingTreatmentPlan.Description,
                 TotalEstimatedCost = ExistingTreatmentPlan.TotalEstimatedCost
             };
 
@@ -283,10 +274,9 @@
         _procedures.Add(new PlannedProcedure
         {
             TreatmentPlanId = _treatmentPlan.TreatmentPlanId,
-            ProcedureCode = "",
+            CDTCode = "",
             Description = "",
             EstimatedFee = 0,
-            Priority = "Medium",
             Status = "Planned"
         });
     }

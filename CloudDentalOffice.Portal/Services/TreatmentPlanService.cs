@@ -132,12 +132,11 @@ public class TreatmentPlanService : ITreatmentPlanService
                 
                 if (existingProc != null)
                 {
-                    existingProc.ProcedureCode = procedure.ProcedureCode;
+                    existingProc.CDTCode = procedure.CDTCode;
                     existingProc.Description = procedure.Description;
                     existingProc.ToothNumber = procedure.ToothNumber;
                     existingProc.Surface = procedure.Surface;
                     existingProc.EstimatedFee = procedure.EstimatedFee;
-                    existingProc.Priority = procedure.Priority;
                     existingProc.Status = procedure.Status;
                     existingProc.ModifiedDate = DateTime.UtcNow;
                 }
