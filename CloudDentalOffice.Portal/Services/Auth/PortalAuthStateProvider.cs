@@ -59,4 +59,6 @@ public class PortalAuthStateProvider : AuthenticationStateProvider
     public async Task LogoutAsync()
     {
         await _localStorage.DeleteAsync("authToken");
+        NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
+    }
 }
