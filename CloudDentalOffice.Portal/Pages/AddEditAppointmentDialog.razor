@@ -182,8 +182,9 @@
 
     protected override async Task OnInitializedAsync()
     {
-        // Load patients and providers
-        await Task.WhenAll(LoadPatients(), LoadProviders());
+        // Load patients and providers sequentially to avoid DbContext concurrency
+        await LoadPatients();
+        await LoadProviders();
 
         if (IsEditMode && ExistingAppointment != null)
         {

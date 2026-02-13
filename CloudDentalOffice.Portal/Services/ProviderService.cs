@@ -26,18 +26,26 @@ public class ProviderServiceImpl : IProviderService
         try
         {
             var tenantId = _tenantProvider.TenantId;
+            _logger.LogInformation("Loading providers for tenant: {TenantId}", tenantId);
+            
             if (string.IsNullOrEmpty(tenantId))
+            {
+                _logger.LogWarning("Tenant ID is not available when loading providers");
                 throw new InvalidOperationException("Tenant ID is not available");
+            }
 
-            return await _context.Providers
+            var providers = await _context.Providers
                 .Where(p => p.TenantId == tenantId && p.IsActive)
                 .OrderBy(p => p.LastName)
                 .ThenBy(p => p.FirstName)
                 .ToListAsync();
+            
+            _logger.LogInformation("Found {Count} active providers for tenant {TenantId}", providers.Count, tenantId);
+            return providers;
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error retrieving providers");
+            _logger.LogError(ex, "Error retrieving providers for tenant {TenantId}", _tenantProvider.TenantId);
             return new List<Provider>();
         }
     }
