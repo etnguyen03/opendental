@@ -6,7 +6,12 @@ metadata:
   labels:
     app: clouddental-portal
 spec:
-  replicas: 2
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 0
+      maxUnavailable: 1
   selector:
     matchLabels:
       app: clouddental-portal
@@ -34,7 +39,7 @@ spec:
         resources:
           requests:
             memory: "128Mi"
-            cpu: "100m"
+            cpu: "50m"
           limits:
             memory: "512Mi"
-            cpu: "500m"
+            cpu: "250m"
