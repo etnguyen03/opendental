@@ -19,7 +19,7 @@ spec:
       - name: registry-clouddental
       containers:
       - name: portal
-        image: registry.digitalocean.com/clouddental/portal:v5
+        image: registry.digitalocean.com/clouddental/portal:v6
         imagePullPolicy: Always
         ports:
         - containerPort: 80

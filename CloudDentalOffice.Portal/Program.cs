@@ -117,6 +117,10 @@ using (var scope = app.Services.CreateScope())
     try
     {
         dbContext.Database.Migrate();
+        
+        // Seed initial data
+        CloudDentalOffice.Portal.Data.DbInitializer.Initialize(dbContext);
+
         var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
         logger.LogInformation("Database migrations applied successfully");
     }
