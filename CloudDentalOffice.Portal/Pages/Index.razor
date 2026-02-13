@@ -385,18 +385,12 @@
             // Small delay to ensure TenantProvider is fully initialized
             await Task.Delay(50);
             
-            // Parallel execution for performance
-            var patientsTask = PatientService.GetPatientsAsync();
-            var appointmentsTask = AppointmentService.GetAppointmentsAsync(DateTime.Today);
-            var claimsTask = ClaimService.GetClaimsAsync();
-            var treatmentPlansTask = TreatmentPlanService.GetAllTreatmentPlansAsync();
-
-            await Task.WhenAll(patientsTask, appointmentsTask, claimsTask, treatmentPlansTask);
-
-            var patients = await patientsTask;
-            var appointments = await appointmentsTask;
-            var claims = await claimsTask;
-            var treatmentPlans = await treatmentPlansTask;
+            // Sequential execution to avoid DbContext concurrency issues
+            // DbContext is NOT thread-safe and cannot handle parallel operations
+            var patients = await PatientService.GetPatientsAsync();
+            var appointments = await AppointmentService.GetAppointmentsAsync(DateTime.Today);
+            var claims = await ClaimService.GetClaimsAsync();
+            var treatmentPlans = await TreatmentPlanService.GetAllTreatmentPlansAsync();
 
             // Patient count
             _patientCount = patients.Count;
