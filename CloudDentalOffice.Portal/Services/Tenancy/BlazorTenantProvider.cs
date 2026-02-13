@@ -10,33 +10,60 @@ namespace CloudDentalOffice.Portal.Services.Tenancy;
 public class BlazorTenantProvider : ITenantProvider
 {
     private readonly AuthenticationStateProvider _authStateProvider;
-    private ClaimsPrincipal? _cachedUser;
-    private string? _cachedTenantId;
+    private string? _tenantId;
+    private ClaimsPrincipal? _user;
+    private bool _initialized;
 
     public BlazorTenantProvider(AuthenticationStateProvider authStateProvider)
     {
         _authStateProvider = authStateProvider;
     }
 
+    private void EnsureInitialized()
+    {
+        if (_initialized) return;
+
+        // Get authentication state synchronously - this works because the state
+        // is already loaded by the time components render
+        var authStateTask = _authStateProvider.GetAuthenticationStateAsync();
+        if (authStateTask.IsCompleted)
+        {
+            var authState = authStateTask.Result;
+            _user = authState.User;
+            
+            if (_user?.Identity?.IsAuthenticated == true)
+            {
+                // Extract tenant from claims
+                var claimTenant = _user.FindFirst("tenant_id")?.Value
+                    ?? _user.FindFirst("tenantId")?.Value
+                    ?? _user.FindFirst("tid")?.Value
+                    ?? _user.FindFirst("tenant")?.Value;
+
+                _tenantId = !string.IsNullOrWhiteSpace(claimTenant)
+                    ? claimTenant.Trim()
+                    : TenantConstants.DefaultTenantId;
+            }
+            else
+            {
+                _tenantId = TenantConstants.DefaultTenantId;
+            }
+        }
+        else
+        {
+            // During pre-rendering, default to dev tenant
+            _tenantId = TenantConstants.DefaultTenantId;
+            _user = new ClaimsPrincipal(new ClaimsIdentity());
+        }
+
+        _initialized = true;
+    }
+
     public ClaimsPrincipal? User
     {
         get
         {
-            if (_cachedUser == null)
-            {
-                // Synchronously get the user from the current async context
-                var task = _authStateProvider.GetAuthenticationStateAsync();
-                if (task.IsCompleted)
-                {
-                    _cachedUser = task.Result.User;
-                }
-                else
-                {
-                    // If not completed, this is likely during pre-rendering
-                    _cachedUser = new ClaimsPrincipal(new ClaimsIdentity());
-                }
-            }
-            return _cachedUser;
+            EnsureInitialized();
+            return _user;
         }
     }
 
@@ -44,38 +71,8 @@ public class BlazorTenantProvider : ITenantProvider
     {
         get
         {
-            if (_cachedTenantId != null)
-            {
-                return _cachedTenantId;
-            }
-
-            var user = User;
-            if (user == null || !user.Identity?.IsAuthenticated == true)
-            {
-                _cachedTenantId = TenantConstants.DefaultTenantId;
-                return _cachedTenantId;
-            }
-
-            // Look for tenant claim in order of preference
-            var claimTenant = user.FindFirst("tenant_id")?.Value
-                ?? user.FindFirst("tenantId")?.Value
-                ?? user.FindFirst("tid")?.Value
-                ?? user.FindFirst("tenant")?.Value;
-
-            _cachedTenantId = !string.IsNullOrWhiteSpace(claimTenant) 
-                ? claimTenant.Trim() 
-                : TenantConstants.DefaultTenantId;
-
-            return _cachedTenantId;
+            EnsureInitialized();
+            return _tenantId ?? TenantConstants.DefaultTenantId;
         }
-    }
-
-    /// <summary>
-    /// Clear cached values when authentication state changes (login/logout)
-    /// </summary>
-    public void ClearCache()
-    {
-        _cachedUser = null;
-        _cachedTenantId = null;
     }
 }

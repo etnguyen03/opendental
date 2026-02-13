@@ -1,6 +1,5 @@
 using System.Security.Claims;
 using CloudDentalOffice.Portal.Services;
-using CloudDentalOffice.Portal.Services.Tenancy;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
 using System.IdentityModel.Tokens.Jwt;
@@ -10,12 +9,10 @@ namespace CloudDentalOffice.Portal.Services.Auth;
 public class PortalAuthStateProvider : AuthenticationStateProvider
 {
     private readonly ProtectedLocalStorage _localStorage;
-    private readonly ITenantProvider _tenantProvider;
     
-    public PortalAuthStateProvider(ProtectedLocalStorage localStorage, ITenantProvider tenantProvider)
+    public PortalAuthStateProvider(ProtectedLocalStorage localStorage)
     {
         _localStorage = localStorage;
-        _tenantProvider = tenantProvider;
     }
 
     public override async Task<AuthenticationState> GetAuthenticationStateAsync()
@@ -56,24 +53,10 @@ public class PortalAuthStateProvider : AuthenticationStateProvider
         await _localStorage.SetAsync("authToken", token);
         
         // Clear tenant cache to force reload from new token
-        if (_tenantProvider is BlazorTenantProvider blazorProvider)
-        {
-            blazorProvider.ClearCache();
-        }
-        
         NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
     }
 
     public async Task LogoutAsync()
     {
         await _localStorage.DeleteAsync("authToken");
-        
-        // Clear tenant cache on logout
-        if (_tenantProvider is BlazorTenantProvider blazorProvider)
-        {
-            blazorProvider.ClearCache();
-        }
-        
-        NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
-    }
 }
