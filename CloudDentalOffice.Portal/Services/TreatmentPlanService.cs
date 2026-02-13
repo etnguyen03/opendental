@@ -96,7 +96,6 @@ public class TreatmentPlanService : ITreatmentPlanService
         existingPlan.Status = plan.Status;
         existingPlan.Title = plan.Title;
         existingPlan.Description = plan.Description;
-        existingPlan.Notes = plan.Notes;
         existingPlan.PresentedDate = plan.PresentedDate;
         existingPlan.AcceptedDate = plan.AcceptedDate;
         existingPlan.CompletedDate = plan.CompletedDate;

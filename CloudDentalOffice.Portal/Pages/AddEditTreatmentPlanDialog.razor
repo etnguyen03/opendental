@@ -235,8 +235,7 @@
                 CreatedDate = ExistingTreatmentPlan.CreatedDate,
                 PresentedDate = ExistingTreatmentPlan.PresentedDate,
                 AcceptedDate = ExistingTreatmentPlan.AcceptedDate,
-                Description = ExistingTreatmentPlan.Description,
-                TotalEstimatedCost = ExistingTreatmentPlan.TotalEstimatedCost
+                Description = ExistingTreatmentPlan.Description
             };
 
             _selectedProviderId = ExistingTreatmentPlan.ProviderId;
@@ -321,7 +320,6 @@
             _treatmentPlan.ProviderId = _selectedProviderId.Value;
             _treatmentPlan.PresentedDate = _presentedDate;
             _treatmentPlan.AcceptedDate = _acceptedDate;
-            _treatmentPlan.TotalEstimatedCost = CalculateTotalCost();
             _treatmentPlan.PlannedProcedures = _procedures;
 
             if (IsEditMode)

@@ -41,7 +41,7 @@
                             @foreach (var insurance in _patientInsurances)
                             {
                                 <MudSelectItem Value="@((int?)insurance.PatientInsuranceId)">
-                                    @insurance.InsurancePlan?.PayerName (@insurance.Relationship)
+                                    @insurance.InsurancePlan?.PayerName (@insurance.RelationshipToSubscriber)
                                 </MudSelectItem>
                             }
                         </MudSelect>
@@ -124,7 +124,9 @@
                                                       Margin="Margin.Dense" />
                                     </MudTd>
                                     <MudTd DataLabel="Date">
-                                        <MudDatePicker @bind-Date="@GetServiceDate(context)" Variant="Variant.Text" 
+                                        <MudDatePicker Date="@context.ServiceDate" 
+                                                       DateChanged="@(d => context.ServiceDate = d ?? DateTime.Today)"
+                                                       Variant="Variant.Text" 
                                                        Margin="Margin.Dense" DateFormat="MM/dd/yyyy" />
                                     </MudTd>
                                     <MudTd DataLabel="Tooth">
@@ -342,11 +344,6 @@
         {
             _procedures[i].LineNumber = i + 1;
         }
-    }
-
-    private DateTime? GetServiceDate(ClaimProcedure procedure)
-    {
-        return procedure.ServiceDate;
     }
 
     private decimal CalculateTotalCharge()

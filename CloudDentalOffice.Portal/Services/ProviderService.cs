@@ -107,8 +107,6 @@ public class ProviderServiceImpl : IProviderService
             existingProvider.Specialty = provider.Specialty;
             existingProvider.NPI = provider.NPI;
             existingProvider.LicenseNumber = provider.LicenseNumber;
-            existingProvider.DEANumber = provider.DEANumber;
-            existingProvider.TaxonomyCode = provider.TaxonomyCode;
             existingProvider.Phone = provider.Phone;
             existingProvider.Email = provider.Email;
             existingProvider.IsActive = provider.IsActive;
