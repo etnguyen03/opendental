@@ -28,13 +28,13 @@
                 </MudText>
                 <MudStack Spacing="3">
                     <MudTextField Label="Practice Name" Variant="Variant.Outlined" 
-                                  Value="Cloud Dental Office" ReadOnly="true" />
+                                  Value="Cloud Dental Office" ReadOnly="@true" />
                     <MudTextField Label="Address" Variant="Variant.Outlined" 
-                                  Value="123 Main St, Suite 100" ReadOnly="true" />
+                                  Value="123 Main St, Suite 100" ReadOnly="@true" />
                     <MudTextField Label="Phone" Variant="Variant.Outlined" 
-                                  Value="(555) 123-4567" ReadOnly="true" />
+                                  Value="(555) 123-4567" ReadOnly="@true" />
                     <MudTextField Label="Email" Variant="Variant.Outlined" 
-                                  Value="contact@clouddentaloffice.com" ReadOnly="true" />
+                                  Value="contact@clouddentaloffice.com" ReadOnly="@true" />
                     <MudButton Variant="Variant.Filled" Color="Color.Primary" 
                                OnClick="OnEditPracticeInfo">
                         Edit Practice Info
@@ -52,13 +52,13 @@
                 </MudText>
                 <MudStack Spacing="3">
                     <MudTextField Label="Sender ID" Variant="Variant.Outlined" 
-                                  Value="CLOUDDENTAL001" ReadOnly="true" />
+                                  Value="CLOUDDENTAL001" ReadOnly="@true" />
                     <MudTextField Label="Receiver ID" Variant="Variant.Outlined" 
-                                  Value="EDI_CLEARINGHOUSE" ReadOnly="true" />
+                                  Value="EDI_CLEARINGHOUSE" ReadOnly="@true" />
                     <MudTextField Label="API Endpoint" Variant="Variant.Outlined" 
-                                  Value="https://edi.cloudhealthoffice.com/api" ReadOnly="true" />
+                                  Value="https://edi.cloudhealthoffice.com/api" ReadOnly="@true" />
                     <MudSwitch T="bool" Label="Enable Electronic Claims Submission" 
-                               Color="Color.Primary" Checked="true" ReadOnly="true" />
+                               Color="Color.Primary" Checked="true" Disabled="@true" />
                     <MudButton Variant="Variant.Filled" Color="Color.Primary"
                                OnClick="OnConfigureEdi">
                         Configure EDI
@@ -107,13 +107,13 @@
                 </MudText>
                 <MudStack Spacing="3">
                     <MudSwitch T="bool" Label="Require Strong Passwords" 
-                               Color="Color.Primary" Checked="true" ReadOnly="true" />
+                               Color="Color.Primary" Checked="true" Disabled="@true" />
                     <MudSwitch T="bool" Label="Enable Two-Factor Authentication" 
                                Color="Color.Primary" Checked="false" />
                     <MudSwitch T="bool" Label="Session Timeout (30 minutes)" 
-                               Color="Color.Primary" Checked="true" ReadOnly="true" />
+                               Color="Color.Primary" Checked="true" Disabled="@true" />
                     <MudSwitch T="bool" Label="Audit Logging Enabled" 
-                               Color="Color.Primary" Checked="true" ReadOnly="true" />
+                               Color="Color.Primary" Checked="true" Disabled="@true" />
                     <MudButton Variant="Variant.Outlined" Color="Color.Warning"
                                OnClick="OnChangePassword">
                         Change Password
@@ -151,7 +151,7 @@
                 </MudText>
                 <MudStack Spacing="3">
                     <MudTextField Label="Tax ID (EIN)" Variant="Variant.Outlined" 
-                                  Value="12-3456789" ReadOnly="true" />
+                                  Value="12-3456789" ReadOnly="@true" />
                     <MudTextField Label="Default Payment Terms (days)" 
                                   Variant="Variant.Outlined" Value="30" Type="number" />
                     <MudSwitch T="bool" Label="Accept Credit Cards" 
