@@ -282,10 +282,16 @@
 
     private async Task<IEnumerable<ProcedureCode>> SearchProcedureCodes(string searchTerm, CancellationToken token)
     {
-        if (string.IsNullOrWhiteSpace(searchTerm) || searchTerm.Length < 2)
+        try
+        {
+            // Allow search with any input, including empty (shows top codes)
+            return await ProcedureCodeService.SearchProcedureCodesAsync(searchTerm ?? "");
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error searching procedure codes: {ex.Message}", Severity.Error);
             return new List<ProcedureCode>();
-
-        return await ProcedureCodeService.SearchProcedureCodesAsync(searchTerm);
+        }
     }
 
     private ProcedureCode? GetProcedureCodeForRow(PlannedProcedure procedure)
