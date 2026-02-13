@@ -45,7 +45,7 @@
                 <MudText Typo="Typo.h6" Style="color: #b0b0b0;">
                     Select a patient to view treatment plans
                 </MudText>
-                <MudAutocomplete T="Patient" @bind-Value="_selectedPatient" Label="Search Patient"
+                <MudAutocomplete T="Patient" Value="_selectedPatient" Label="Search Patient"
                                  SearchFunc="@SearchPatients" ToStringFunc="@(p => p?.FullName ?? "")"
                                  Variant="Variant.Outlined" Color="Color.Primary"
                                  AdornmentIcon="@Icons.Material.Filled.Search"

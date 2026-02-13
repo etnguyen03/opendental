@@ -19,7 +19,7 @@
                 </MudText>
             </div>
             <MudStack Row="true" Spacing="2">
-                <MudDatePicker @bind-Date="_selectedDate" Label="Select Date" 
+                <MudDatePicker Date="_selectedDate" Label="Select Date" 
                                Color="Color.Primary" Variant="Variant.Outlined"
                                DateChanged="@OnDateChanged" />
                 <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="OpenAddAppointmentDialog"
