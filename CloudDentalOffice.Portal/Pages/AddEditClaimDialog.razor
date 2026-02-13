@@ -1,0 +1,430 @@
+@using CloudDentalOffice.Portal.Models
+@using MudBlazor
+@inject IClaimService ClaimService
+@inject IPatientService PatientService
+@inject IProviderService ProviderService
+@inject ISnackbar Snackbar
+
+<MudDialog Style="background: #0a0a0a; border: 1px solid #00ffff;">
+    <DialogContent>
+        <MudContainer Style="max-width: 900px;">
+            <MudGrid>
+                <!-- Title Section -->
+                <MudItem xs="12">
+                    <MudText Typo="Typo.h5" Style="color: #00ffff; font-weight: bold;" Class="mb-3">
+                        <MudIcon Icon="@Icons.Material.Filled.Assignment" Size="Size.Medium" />
+                        @(IsEditMode ? "Edit Claim" : "Create New Claim")
+                    </MudText>
+                    <MudDivider Style="background: rgba(0, 255, 255, 0.3);" />
+                </MudItem>
+
+                <!-- Patient Selection -->
+                <MudItem xs="12">
+                    <MudAutocomplete T="Patient" @bind-Value="_selectedPatient" 
+                                     Label="Search Patient" 
+                                     SearchFunc="@SearchPatients"
+                                     ToStringFunc="@(p => p?.FullName ?? "")"
+                                     Variant="Variant.Outlined" 
+                                     Required="true"
+                                     AdornmentIcon="@Icons.Material.Filled.Search"
+                                     ValueChanged="@OnPatientSelected" />
+                </MudItem>
+
+                <!-- Insurance Selection -->
+                @if (_selectedPatient != null && _patientInsurances.Any())
+                {
+                    <MudItem xs="12" md="6">
+                        <MudSelect T="int?" @bind-Value="_selectedInsuranceId" 
+                                   Label="Patient Insurance" 
+                                   Variant="Variant.Outlined"
+                                   Required="true">
+                            @foreach (var insurance in _patientInsurances)
+                            {
+                                <MudSelectItem Value="@((int?)insurance.PatientInsuranceId)">
+                                    @insurance.InsurancePlan?.PayerName (@insurance.Relationship)
+                                </MudSelectItem>
+                            }
+                        </MudSelect>
+                    </MudItem>
+                }
+
+                <!-- Provider Selection -->
+                <MudItem xs="12" md="6">
+                    <MudSelect T="int?" @bind-Value="_selectedProviderId" 
+                               Label="Provider" 
+                               Variant="Variant.Outlined"
+                               Required="true">
+                        @foreach (var provider in _providers)
+                        {
+                            <MudSelectItem Value="@((int?)provider.ProviderId)">
+                                @provider.FullName (@provider.NPI)
+                            </MudSelectItem>
+                        }
+                    </MudSelect>
+                </MudItem>
+
+                <!-- Claim Details -->
+                <MudItem xs="12" md="4">
+                    <MudSelect T="string" @bind-Value="_claim.ClaimType" 
+                               Label="Claim Type" 
+                               Variant="Variant.Outlined">
+                        <MudSelectItem Value="@("Primary")">Primary</MudSelectItem>
+                        <MudSelectItem Value="@("Secondary")">Secondary</MudSelectItem>
+                        <MudSelectItem Value="@("Tertiary")">Tertiary</MudSelectItem>
+                    </MudSelect>
+                </MudItem>
+
+                <MudItem xs="12" md="4">
+                    <MudDatePicker @bind-Date="_serviceDateFrom" 
+                                   Label="Service Date From" 
+                                   Variant="Variant.Outlined"
+                                   Required="true" />
+                </MudItem>
+
+                <MudItem xs="12" md="4">
+                    <MudDatePicker @bind-Date="_serviceDateTo" 
+                                   Label="Service Date To" 
+                                   Variant="Variant.Outlined"
+                                   Clearable="true" />
+                </MudItem>
+
+                <!-- Procedures Section -->
+                <MudItem xs="12">
+                    <MudPaper Class="pa-3" Style="background: #1a1a1a; border: 1px solid rgba(0, 255, 255, 0.2);">
+                        <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="mb-3">
+                            <MudText Typo="Typo.h6" Style="color: #00ffff;">
+                                <MudIcon Icon="@Icons.Material.Filled.MedicalServices" Size="Size.Small" /> 
+                                Procedures (@_procedures.Count)
+                            </MudText>
+                            <MudButton Variant="Variant.Filled" Color="Color.Primary" Size="Size.Small"
+                                       OnClick="AddProcedure" StartIcon="@Icons.Material.Filled.Add">
+                                Add Procedure
+                            </MudButton>
+                        </MudStack>
+
+                        @if (_procedures.Any())
+                        {
+                            <MudTable Items="@_procedures" Dense="true" Hover="true" Striped="true">
+                                <HeaderContent>
+                                    <MudTh Style="color: #00ffff;">CDT Code</MudTh>
+                                    <MudTh Style="color: #00ffff;">Description</MudTh>
+                                    <MudTh Style="color: #00ffff;">Date</MudTh>
+                                    <MudTh Style="color: #00ffff;">Tooth</MudTh>
+                                    <MudTh Style="color: #00ffff;">Surface</MudTh>
+                                    <MudTh Style="color: #00ffff;">Charge</MudTh>
+                                    <MudTh Style="color: #00ffff;">Actions</MudTh>
+                                </HeaderContent>
+                                <RowTemplate>
+                                    <MudTd DataLabel="CDT Code">
+                                        <MudTextField @bind-Value="context.CDTCode" Variant="Variant.Text" 
+                                                      Margin="Margin.Dense" MaxLength="10" />
+                                    </MudTd>
+                                    <MudTd DataLabel="Description">
+                                        <MudTextField @bind-Value="context.Description" Variant="Variant.Text" 
+                                                      Margin="Margin.Dense" />
+                                    </MudTd>
+                                    <MudTd DataLabel="Date">
+                                        <MudDatePicker @bind-Date="@GetServiceDate(context)" Variant="Variant.Text" 
+                                                       Margin="Margin.Dense" DateFormat="MM/dd/yyyy" />
+                                    </MudTd>
+                                    <MudTd DataLabel="Tooth">
+                                        <MudTextField @bind-Value="context.ToothNumber" Variant="Variant.Text" 
+                                                      Margin="Margin.Dense" MaxLength="10" />
+                                    </MudTd>
+                                    <MudTd DataLabel="Surface">
+                                        <MudTextField @bind-Value="context.Surface" Variant="Variant.Text" 
+                                                      Margin="Margin.Dense" MaxLength="10" />
+                                    </MudTd>
+                                    <MudTd DataLabel="Charge">
+                                        <MudNumericField @bind-Value="context.ChargeAmount" Variant="Variant.Text" 
+                                                         Margin="Margin.Dense" Min="0" Format="C2" />
+                                    </MudTd>
+                                    <MudTd DataLabel="Actions">
+                                        <MudIconButton Icon="@Icons.Material.Filled.Delete" Size="Size.Small" 
+                                                       Color="Color.Error" OnClick="@(() => RemoveProcedure(context))" />
+                                    </MudTd>
+                                </RowTemplate>
+                            </MudTable>
+                            
+                            <!-- Total -->
+                            <MudDivider Style="background: rgba(0, 255, 255, 0.3);" Class="my-3" />
+                            <MudStack Row="true" Justify="Justify.FlexEnd">
+                                <MudText Typo="Typo.h6" Style="color: #00ff88;">
+                                    Total Charge: @CalculateTotalCharge().ToString("C")
+                                </MudText>
+                            </MudStack>
+                        }
+                        else
+                        {
+                            <MudText Typo="Typo.body2" Style="color: #b0b0b0;" Class="pa-4 text-center">
+                                No procedures added yet. Click "Add Procedure" to get started.
+                            </MudText>
+                        }
+                    </MudPaper>
+                </MudItem>
+
+                <!-- Validation Messages -->
+                @if (!string.IsNullOrEmpty(_validationMessage))
+                {
+                    <MudItem xs="12">
+                        <MudAlert Severity="Severity.Warning">@_validationMessage</MudAlert>
+                    </MudItem>
+                }
+            </MudGrid>
+        </MudContainer>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel" Color="Color.Default">Cancel</MudButton>
+        <MudButton OnClick="Save" Color="Color.Primary" Variant="Variant.Filled" Disabled="@_saving">
+            @if (_saving)
+            {
+                <MudProgressCircular Size="Size.Small" Indeterminate="true" />
+            }
+            else
+            {
+                <text>@(IsEditMode ? "Update" : "Create") Claim</text>
+            }
+        </MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter]
+    MudDialogInstance MudDialog { get; set; } = null!;
+
+    [Parameter]
+    public Claim? ExistingClaim { get; set; }
+
+    private Claim _claim = new();
+    private Patient? _selectedPatient;
+    private List<Patient> _allPatients = new();
+    private List<PatientInsurance> _patientInsurances = new();
+    private List<Provider> _providers = new();
+    private List<ClaimProcedure> _procedures = new();
+    private int? _selectedProviderId;
+    private int? _selectedInsuranceId;
+    private DateTime? _serviceDateFrom;
+    private DateTime? _serviceDateTo;
+    private bool _saving = false;
+    private string? _validationMessage;
+
+    private bool IsEditMode => ExistingClaim != null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Load patients and providers
+        await Task.WhenAll(LoadPatients(), LoadProviders());
+
+        if (IsEditMode && ExistingClaim != null)
+        {
+            // Edit mode - load existing claim
+            _claim = new Claim
+            {
+                ClaimId = ExistingClaim.ClaimId,
+                TenantId = ExistingClaim.TenantId,
+                ClaimNumber = ExistingClaim.ClaimNumber,
+                PatientId = ExistingClaim.PatientId,
+                ProviderId = ExistingClaim.ProviderId,
+                PatientInsuranceId = ExistingClaim.PatientInsuranceId,
+                ServiceDateFrom = ExistingClaim.ServiceDateFrom,
+                ServiceDateTo = ExistingClaim.ServiceDateTo,
+                ClaimType = ExistingClaim.ClaimType,
+                Status = ExistingClaim.Status,
+                CreatedDate = ExistingClaim.CreatedDate
+            };
+
+            _selectedPatient = ExistingClaim.Patient;
+            _selectedProviderId = ExistingClaim.ProviderId;
+            _selectedInsuranceId = ExistingClaim.PatientInsuranceId;
+            _serviceDateFrom = ExistingClaim.ServiceDateFrom;
+            _serviceDateTo = ExistingClaim.ServiceDateTo;
+            _procedures = ExistingClaim.Procedures.ToList();
+
+            if (_selectedPatient != null)
+            {
+                await LoadPatientInsurances(_selectedPatient.PatientId);
+            }
+        }
+        else
+        {
+            // Create mode
+            _claim = new Claim
+            {
+                ClaimType = "Primary",
+                Status = "Draft",
+                ClaimNumber = GenerateClaimNumber()
+            };
+
+            _serviceDateFrom = DateTime.Today;
+        }
+    }
+
+    private async Task LoadPatients()
+    {
+        try
+        {
+            _allPatients = await PatientService.GetPatientsAsync();
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error loading patients: {ex.Message}", Severity.Error);
+        }
+    }
+
+    private async Task LoadProviders()
+    {
+        try
+        {
+            _providers = await ProviderService.GetProvidersAsync();
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error loading providers: {ex.Message}", Severity.Error);
+        }
+    }
+
+    private async Task LoadPatientInsurances(int patientId)
+    {
+        try
+        {
+            // This would need a service method to get patient insurances
+            // For now, we'll use a placeholder
+            _patientInsurances = new List<PatientInsurance>();
+            // TODO: _patientInsurances = await PatientService.GetPatientInsurancesAsync(patientId);
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error loading insurance: {ex.Message}", Severity.Error);
+        }
+    }
+
+    private async Task<IEnumerable<Patient>> SearchPatients(string searchString, CancellationToken token)
+    {
+        if (string.IsNullOrWhiteSpace(searchString))
+            return _allPatients.Take(10);
+
+        return _allPatients
+            .Where(p => p.FullName.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            .Take(10);
+    }
+
+    private async Task OnPatientSelected(Patient? patient)
+    {
+        _selectedPatient = patient;
+        _patientInsurances.Clear();
+        _selectedInsuranceId = null;
+
+        if (patient != null)
+        {
+            await LoadPatientInsurances(patient.PatientId);
+        }
+    }
+
+    private void AddProcedure()
+    {
+        _procedures.Add(new ClaimProcedure
+        {
+            ClaimId = _claim.ClaimId,
+            CDTCode = "",
+            Description = "",
+            ServiceDate = _serviceDateFrom ?? DateTime.Today,
+            ChargeAmount = 0,
+            LineNumber = _procedures.Count + 1
+        });
+    }
+
+    private void RemoveProcedure(ClaimProcedure procedure)
+    {
+        _procedures.Remove(procedure);
+        
+        // Renumber remaining procedures
+        for (int i = 0; i < _procedures.Count; i++)
+        {
+            _procedures[i].LineNumber = i + 1;
+        }
+    }
+
+    private DateTime? GetServiceDate(ClaimProcedure procedure)
+    {
+        return procedure.ServiceDate;
+    }
+
+    private decimal CalculateTotalCharge()
+    {
+        return _procedures.Sum(p => p.ChargeAmount);
+    }
+
+    private string GenerateClaimNumber()
+    {
+        return $"CLM-{DateTime.Now:yyyyMMdd}-{Guid.NewGuid().ToString("N").Substring(0, 8).ToUpper()}";
+    }
+
+    private async Task Save()
+    {
+        // Validation
+        if (_selectedPatient == null)
+        {
+            _validationMessage = "Please select a patient.";
+            return;
+        }
+
+        if (!_selectedProviderId.HasValue)
+        {
+            _validationMessage = "Please select a provider.";
+            return;
+        }
+
+        if (!_serviceDateFrom.HasValue)
+        {
+            _validationMessage = "Please select a service date.";
+            return;
+        }
+
+        if (_procedures.Count == 0)
+        {
+            _validationMessage = "Please add at least one procedure.";
+            return;
+        }
+
+        try
+        {
+            _saving = true;
+            _validationMessage = null;
+
+            // Update claim
+            _claim.PatientId = _selectedPatient.PatientId;
+            _claim.ProviderId = _selectedProviderId.Value;
+            _claim.PatientInsuranceId = _selectedInsuranceId;
+            _claim.ServiceDateFrom = _serviceDateFrom.Value;
+            _claim.ServiceDateTo = _serviceDateTo;
+            _claim.TotalChargeAmount = CalculateTotalCharge();
+            _claim.Procedures = _procedures;
+
+            if (IsEditMode)
+            {
+                await ClaimService.UpdateClaimStatusAsync(_claim.ClaimId.ToString(), _claim.Status);
+                Snackbar.Add("Claim updated successfully!", Severity.Success);
+            }
+            else
+            {
+                await ClaimService.CreateClaimAsync(_claim);
+                Snackbar.Add("Claim created successfully!", Severity.Success);
+            }
+
+            MudDialog.Close(DialogResult.Ok(true));
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error saving claim: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            _saving = false;
+        }
+    }
+
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+}

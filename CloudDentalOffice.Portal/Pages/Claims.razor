@@ -1,5 +1,6 @@
 @page "/claims"
 @using CloudDentalOffice.Portal.Models
+@using MudBlazor
 @inject IClaimService ClaimService
 @inject IDialogService DialogService
 @inject ISnackbar Snackbar
@@ -102,6 +103,9 @@
                         <MudIconButton Icon="@Icons.Material.Filled.Visibility" Color="Color.Primary" 
                                        Size="Size.Small" OnClick="@(() => ViewClaim(context))" 
                                        Title="View Details" />
+                        <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Info" 
+                                       Size="Size.Small" OnClick="@(() => EditClaim(context))" 
+                                       Title="Edit Claim" />
                         @if (context.Status == "Draft" || context.Status == "Ready")
                         {
                             <MudIconButton Icon="@Icons.Material.Filled.Send" Color="Color.Success" 
@@ -165,7 +169,7 @@
 
     private async Task OpenClaimWizard()
     {
-        var dialog = DialogService.Show<ClaimWizard>("Create New Claim",
+        var dialog = DialogService.Show<AddEditClaimDialog>("Create New Claim",
             new DialogOptions { MaxWidth = MaxWidth.Large, FullWidth = true });
 
         var result = await dialog.Result;
@@ -175,10 +179,41 @@
         }
     }
 
-    private void ViewClaim(Claim claim)
+    private async Task ViewClaim(Claim claim)
     {
-        Snackbar.Add($"Viewing claim {claim.ClaimNumber}", Severity.Info);
-        // TODO: Navigate to claim detail page or show detail dialog
+        var parameters = new DialogParameters<ViewClaimDialog>
+        {
+            { x => x.Claim, claim }
+        };
+
+        var dialog = DialogService.Show<ViewClaimDialog>($"Claim {claim.ClaimNumber}",
+            parameters,
+            new DialogOptions { MaxWidth = MaxWidth.Large, FullWidth = true });
+
+        var result = await dialog.Result;
+        if (!result.Canceled)
+        {
+            // Reload in case claim was submitted from the view dialog
+            await LoadClaims();
+        }
+    }
+
+    private async Task EditClaim(Claim claim)
+    {
+        var parameters = new DialogParameters<AddEditClaimDialog>
+        {
+            { x => x.ExistingClaim, claim }
+        };
+
+        var dialog = DialogService.Show<AddEditClaimDialog>("Edit Claim",
+            parameters,
+            new DialogOptions { MaxWidth = MaxWidth.Large, FullWidth = true });
+
+        var result = await dialog.Result;
+        if (!result.Canceled)
+        {
+            await LoadClaims();
+        }
     }
 
     private async Task SubmitClaim(Claim claim)
