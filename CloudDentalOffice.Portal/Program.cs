@@ -75,6 +75,7 @@ builder.Services.AddDbContext<CloudDentalDbContext>(options =>
     }
 });
 
+
 // Configure Azure Key Vault for secrets management (cloud-ready)
 if (!builder.Environment.IsDevelopment())
 {
