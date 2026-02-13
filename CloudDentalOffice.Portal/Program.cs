@@ -18,7 +18,29 @@ builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor(options =>
 {
     options.DetailedErrors = builder.Environment.IsDevelopment();
+    // Increase circuit timeout to prevent 1006 disconnections
+    options.DisconnectedCircuitRetentionPeriod = TimeSpan.FromMinutes(3);
+    options.DisconnectedCircuitMaxRetained = 100;
+    options.JSInteropDefaultCallTimeout = TimeSpan.FromMinutes(1);
+    options.MaxBufferedUnacknowledgedRenderBatches = 10;
+})
+.AddCircuitOptions(options =>
+{
+    if (builder.Environment.IsDevelopment())
+    {
+        options.DetailedErrors = true;
+    }
 });
+
+// Configure SignalR Hub options
+builder.Services.Configure<Microsoft.AspNetCore.SignalR.HubOptions>(options =>
+{
+    options.ClientTimeoutInterval = TimeSpan.FromMinutes(2);
+    options.HandshakeTimeout = TimeSpan.FromSeconds(30);
+    options.KeepAliveInterval = TimeSpan.FromSeconds(15);
+    options.MaximumReceiveMessageSize = 128 * 1024; // 128KB
+});
+
 builder.Services.AddMudServices();
 builder.Services.AddHttpContextAccessor();
 

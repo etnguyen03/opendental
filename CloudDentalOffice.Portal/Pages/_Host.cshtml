@@ -28,7 +28,45 @@
         <a class="dismiss">🗙</a>
     </div>
 
-    <script src="_framework/blazor.server.js"></script>
+    <div id="components-reconnect-modal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); z-index: 9999; align-items: center; justify-content: center;">
+        <div style="background: #0a0a0a; border: 2px solid #00ffff; padding: 2rem; border-radius: 8px; text-align: center; color: #00ffff;">
+            <h3>Connection Lost</h3>
+            <p>Attempting to reconnect...</p>
+            <div style="margin-top: 1rem;">
+                <div class="spinner"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="_framework/blazor.server.js" autostart="false"></script>
+    <script>
+        Blazor.start({
+            reconnectionOptions: {
+                maxRetries: 8,
+                retryIntervalMilliseconds: 2000
+            },
+            reconnectionHandler: {
+                onConnectionDown: () => document.getElementById("components-reconnect-modal").style.display = "flex",
+                onConnectionUp: () => document.getElementById("components-reconnect-modal").style.display = "none"
+            }
+        });
+    </script>
     <script src="_content/MudBlazor/MudBlazor.min.js"></script>
+    <style>
+        .spinner {
+            border: 3px solid rgba(0, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top: 3px solid #00ffff;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+
 </body>
 </html>
