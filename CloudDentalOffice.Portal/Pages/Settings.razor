@@ -28,13 +28,13 @@
                 </MudText>
                 <MudStack Spacing="3">
                     <MudTextField Label="Practice Name" Variant="Variant.Outlined" 
-                                  Value="Cloud Dental Office" ReadOnly="@true" />
+                                  Value="@("Cloud Dental Office")" ReadOnly="@true" />
                     <MudTextField Label="Address" Variant="Variant.Outlined" 
-                                  Value="123 Main St, Suite 100" ReadOnly="@true" />
+                                  Value="@("123 Main St, Suite 100")" ReadOnly="@true" />
                     <MudTextField Label="Phone" Variant="Variant.Outlined" 
-                                  Value="(555) 123-4567" ReadOnly="@true" />
+                                  Value="@("(555) 123-4567")" ReadOnly="@true" />
                     <MudTextField Label="Email" Variant="Variant.Outlined" 
-                                  Value="contact@clouddentaloffice.com" ReadOnly="@true" />
+                                  Value="@("contact@clouddentaloffice.com")" ReadOnly="@true" />
                     <MudButton Variant="Variant.Filled" Color="Color.Primary" 
                                OnClick="OnEditPracticeInfo">
                         Edit Practice Info
@@ -56,7 +56,7 @@
                     <MudTextField Label="Receiver ID" Variant="Variant.Outlined" 
                                   Value="EDI_CLEARINGHOUSE" ReadOnly="@true" />
                     <MudTextField Label="API Endpoint" Variant="Variant.Outlined" 
-                                  Value="https://edi.cloudhealthoffice.com/api" ReadOnly="@true" />
+                                  Value="@("https://edi.cloudhealthoffice.com/api")" ReadOnly="@true" />
                     <MudSwitch T="bool" Label="Enable Electronic Claims Submission" 
                                Color="Color.Primary" Checked="true" Disabled="@true" />
                     <MudButton Variant="Variant.Filled" Color="Color.Primary"
