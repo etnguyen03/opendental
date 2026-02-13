@@ -126,14 +126,12 @@
                                                          Value="@GetProcedureCodeForRow(context)"
                                                          ValueChanged="@(code => OnProcedureCodeSelected(context, code))"
                                                          SearchFunc="@SearchProcedureCodes"
-                                                         ToStringFunc="@(pc => pc?.Code ?? "")"
+                                                         ToStringFunc="@(pc => pc?.DisplayName ?? "")"
                                                          Variant="Variant.Text"
                                                          Margin="Margin.Dense"
                                                          Placeholder="Search code..."
                                                          Clearable="true"
-                                                         ResetValueOnEmptyText="true"
-                                                         CoerceText="false"
-                                                         CoerceValue="false" />
+                                                         AdornmentIcon="@Icons.Material.Filled.Search" />
                                     </MudTd>
                                     <MudTd DataLabel="Description">
                                         <MudTextField @bind-Value="context.Description" Variant="Variant.Text" 
