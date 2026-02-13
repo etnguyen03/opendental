@@ -1,0 +1,231 @@
+@page "/treatment-plans"
+@using CloudDentalOffice.Portal.Models
+@inject ITreatmentPlanService TreatmentPlanService
+@inject IPatientService PatientService
+@inject IDialogService DialogService
+@inject ISnackbar Snackbar
+
+<PageTitle>Treatment Plans - Cloud Dental Office</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-4">
+    <MudPaper Class="pa-4" Style="background: #0a0a0a; border: 1px solid #00ffff;">
+        <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
+            <div>
+                <MudText Typo="Typo.h4" Style="color: #00ffff; font-weight: bold;">
+                    <MudIcon Icon="@Icons.Material.Filled.Assignment" Class="mr-2" />
+                    Treatment Plans
+                </MudText>
+                <MudText Typo="Typo.body2" Style="color: #b0b0b0;">
+                    Create and manage patient treatment plans
+                </MudText>
+            </div>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="OpenAddTreatmentPlanDialog"
+                       StartIcon="@Icons.Material.Filled.Add">
+                New Treatment Plan
+            </MudButton>
+        </MudStack>
+    </MudPaper>
+
+    @if (!string.IsNullOrEmpty(_errorMessage))
+    {
+        <MudAlert Severity="Severity.Error" Class="mt-4">
+            <MudText Typo="Typo.body1" Style="font-family: monospace; white-space: pre-wrap;">@_errorMessage</MudText>
+        </MudAlert>
+    }
+
+    <MudPaper Class="pa-4 mt-4" Style="background: #0a0a0a; border: 1px solid rgba(0, 255, 255, 0.3);">
+        @if (_loading)
+        {
+            <MudProgressLinear Color="Color.Primary" Indeterminate="true" />
+        }
+        else if (_selectedPatient == null)
+        {
+            <MudStack Spacing="3" AlignItems="AlignItems.Center" Class="py-8">
+                <MudIcon Icon="@Icons.Material.Filled.Assignment" Size="Size.Large" Style="color: #00ffff;" />
+                <MudText Typo="Typo.h6" Style="color: #b0b0b0;">
+                    Select a patient to view treatment plans
+                </MudText>
+                <MudAutocomplete T="Patient" @bind-Value="_selectedPatient" Label="Search Patient"
+                                 SearchFunc="@SearchPatients" ToStringFunc="@(p => p?.FullName ?? "")"
+                                 Variant="Variant.Outlined" Color="Color.Primary"
+                                 AdornmentIcon="@Icons.Material.Filled.Search"
+                                 ValueChanged="@OnPatientSelected" />
+            </MudStack>
+        }
+        else
+        {
+            <MudTable Items="@_treatmentPlans" Hover="true" Striped="true" Dense="true">
+                <ToolBarContent>
+                    <MudText Typo="Typo.h6" Style="color: #00ffff;">
+                        Treatment Plans for @_selectedPatient.FullName
+                    </MudText>
+                    <MudSpacer />
+                    <MudButton Variant="Variant.Text" Color="Color.Default" OnClick="ClearPatientSelection"
+                               StartIcon="@Icons.Material.Filled.Clear">
+                        Change Patient
+                    </MudButton>
+                    <MudChip T="string" Color="Color.Info" Size="Size.Small">Total: @_treatmentPlans.Count</MudChip>
+                </ToolBarContent>
+                <HeaderContent>
+                    <MudTh Style="color: #00ffff;">Title</MudTh>
+                    <MudTh Style="color: #00ffff;">Provider</MudTh>
+                    <MudTh Style="color: #00ffff;">Status</MudTh>
+                    <MudTh Style="color: #00ffff;">Created Date</MudTh>
+                    <MudTh Style="color: #00ffff;">Presented Date</MudTh>
+                    <MudTh Style="color: #00ffff;">Accepted Date</MudTh>
+                    <MudTh Style="color: #00ffff;">Procedures</MudTh>
+                    <MudTh Style="color: #00ffff;">Est. Cost</MudTh>
+                    <MudTh Style="color: #00ffff;">Actions</MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd DataLabel="Title">
+                        <MudText Typo="Typo.body2" Style="font-weight: bold;">
+                            @(context.Title ?? "Untitled Plan")
+                        </MudText>
+                    </MudTd>
+                    <MudTd DataLabel="Provider">
+                        <MudText Typo="Typo.body2">@context.Provider?.FullName</MudText>
+                    </MudTd>
+                    <MudTd DataLabel="Status">
+                        @{
+                            var statusColor = context.Status switch
+                            {
+                                "Draft" => Color.Default,
+                                "Proposed" => Color.Info,
+                                "Accepted" => Color.Success,
+                                "InProgress" => Color.Warning,
+                                "Completed" => Color.Success,
+                                "Cancelled" => Color.Error,
+                                _ => Color.Default
+                            };
+                        }
+                        <MudChip T="string" Color="statusColor" Size="Size.Small">@context.Status</MudChip>
+                    </MudTd>
+                    <MudTd DataLabel="Created">
+                        <MudText Typo="Typo.body2">@context.CreatedDate.ToString("MM/dd/yyyy")</MudText>
+                    </MudTd>
+                    <MudTd DataLabel="Presented">
+                        <MudText Typo="Typo.body2">
+                            @(context.PresentedDate?.ToString("MM/dd/yyyy") ?? "-")
+                        </MudText>
+                    </MudTd>
+                    <MudTd DataLabel="Accepted">
+                        <MudText Typo="Typo.body2">
+                            @(context.AcceptedDate?.ToString("MM/dd/yyyy") ?? "-")
+                        </MudText>
+                    </MudTd>
+                    <MudTd DataLabel="Procedures">
+                        <MudText Typo="Typo.body2">@context.PlannedProcedures.Count</MudText>
+                    </MudTd>
+                    <MudTd DataLabel="Est. Cost">
+                        <MudText Typo="Typo.body2" Style="color: #00ff88;">
+                            @context.TotalEstimatedCost.ToString("C")
+                        </MudText>
+                    </MudTd>
+                    <MudTd DataLabel="Actions">
+                        <MudIconButton Icon="@Icons.Material.Filled.Visibility" Size="Size.Small" Color="Color.Info"
+                                       OnClick="@(() => ViewTreatmentPlan(context))" />
+                        <MudIconButton Icon="@Icons.Material.Filled.Edit" Size="Size.Small" Color="Color.Primary"
+                                       OnClick="@(() => EditTreatmentPlan(context))" />
+                    </MudTd>
+                </RowTemplate>
+                <NoRecordsContent>
+                    <MudText Style="color: #b0b0b0;">No treatment plans found for this patient</MudText>
+                </NoRecordsContent>
+            </MudTable>
+        }
+    </MudPaper>
+</MudContainer>
+
+@code {
+    private List<TreatmentPlan> _treatmentPlans = new();
+    private List<Patient> _allPatients = new();
+    private Patient? _selectedPatient = null;
+    private bool _loading = false;
+    private string? _errorMessage = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadPatients();
+    }
+
+    private async Task LoadPatients()
+    {
+        try
+        {
+            _allPatients = await PatientService.GetPatientsAsync();
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = $"Error loading patients: {ex.Message}";
+            Snackbar.Add(_errorMessage, Severity.Error);
+        }
+    }
+
+    private async Task<IEnumerable<Patient>> SearchPatients(string searchString)
+    {
+        if (string.IsNullOrWhiteSpace(searchString))
+            return _allPatients.Take(10);
+
+        return _allPatients
+            .Where(p => p.FullName.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            .Take(10);
+    }
+
+    private async Task OnPatientSelected(Patient? patient)
+    {
+        _selectedPatient = patient;
+        if (patient != null)
+        {
+            await LoadTreatmentPlans();
+        }
+    }
+
+    private async Task LoadTreatmentPlans()
+    {
+        if (_selectedPatient == null) return;
+
+        try
+        {
+            _loading = true;
+            _errorMessage = null;
+            _treatmentPlans = await TreatmentPlanService.GetTreatmentPlansAsync(_selectedPatient.PatientId.ToString());
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = $"Error loading treatment plans: {ex.Message}";
+            Snackbar.Add(_errorMessage, Severity.Error);
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+
+    private void ClearPatientSelection()
+    {
+        _selectedPatient = null;
+        _treatmentPlans.Clear();
+    }
+
+    private async Task OpenAddTreatmentPlanDialog()
+    {
+        if (_selectedPatient == null)
+        {
+            Snackbar.Add("Please select a patient first", Severity.Warning);
+            return;
+        }
+        
+        Snackbar.Add("Treatment plan creation coming soon!", Severity.Info);
+    }
+
+    private void ViewTreatmentPlan(TreatmentPlan plan)
+    {
+        Snackbar.Add($"View treatment plan: {plan.Title}", Severity.Info);
+    }
+
+    private void EditTreatmentPlan(TreatmentPlan plan)
+    {
+        Snackbar.Add($"Edit treatment plan: {plan.Title}", Severity.Info);
+    }
+}

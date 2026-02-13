@@ -1,0 +1,169 @@
+@page "/chart"
+@using CloudDentalOffice.Portal.Models
+@inject IPatientService PatientService
+@inject IDialogService DialogService
+@inject ISnackbar Snackbar
+
+<PageTitle>Clinical Chart - Cloud Dental Office</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-4">
+    <MudPaper Class="pa-4" Style="background: #0a0a0a; border: 1px solid #00ffff;">
+        <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
+            <div>
+                <MudText Typo="Typo.h4" Style="color: #00ffff; font-weight: bold;">
+                    <MudIcon Icon="@Icons.Material.Filled.Medication" Class="mr-2" />
+                    Clinical Chart
+                </MudText>
+                <MudText Typo="Typo.body2" Style="color: #b0b0b0;">
+                    Patient dental chart and treatment history
+                </MudText>
+            </div>
+        </MudStack>
+    </MudPaper>
+
+    @if (!string.IsNullOrEmpty(_errorMessage))
+    {
+        <MudAlert Severity="Severity.Error" Class="mt-4">
+            <MudText Typo="Typo.body1" Style="font-family: monospace; white-space: pre-wrap;">@_errorMessage</MudText>
+        </MudAlert>
+    }
+
+    <MudPaper Class="pa-4 mt-4" Style="background: #0a0a0a; border: 1px solid rgba(0, 255, 255, 0.3);">
+        @if (_selectedPatient == null)
+        {
+            <MudStack Spacing="3" AlignItems="AlignItems.Center" Class="py-8">
+                <MudIcon Icon="@Icons.Material.Filled.Medication" Size="Size.Large" Style="color: #00ffff;" />
+                <MudText Typo="Typo.h6" Style="color: #b0b0b0;">
+                    Select a patient to view clinical chart
+                </MudText>
+                <MudAutocomplete T="Patient" @bind-Value="_selectedPatient" Label="Search Patient"
+                                 SearchFunc="@SearchPatients" ToStringFunc="@(p => p?.FullName ?? "")"
+                                 Variant="Variant.Outlined" Color="Color.Primary"
+                                 AdornmentIcon="@Icons.Material.Filled.Search"
+                                 ValueChanged="@OnPatientSelected" />
+            </MudStack>
+        }
+        else
+        {
+            <MudStack Spacing="3">
+                <!-- Patient Header -->
+                <MudPaper Class="pa-3" Style="background: #1a1a1a; border: 1px solid rgba(0, 255, 255, 0.5);">
+                    <MudStack Row="true" Justify="Justify.SpaceBetween">
+                        <MudStack Spacing="1">
+                            <MudText Typo="Typo.h5" Style="color: #00ffff;">@_selectedPatient.FullName</MudText>
+                            <MudText Typo="Typo.body2" Style="color: #b0b0b0;">
+                                DOB: @_selectedPatient.DateOfBirth.ToString("MM/dd/yyyy") | Age: @_selectedPatient.Age
+                            </MudText>
+                        </MudStack>
+                        <MudButton Variant="Variant.Text" Color="Color.Default" OnClick="ClearPatientSelection"
+                                   StartIcon="@Icons.Material.Filled.Clear">
+                            Change Patient
+                        </MudButton>
+                    </MudStack>
+                </MudPaper>
+
+                <!-- Dental Chart Visualization -->
+                <MudPaper Class="pa-4" Style="background: #1a1a1a; border: 1px solid rgba(0, 255, 255, 0.3);">
+                    <MudText Typo="Typo.h6" Style="color: #00ffff;" Class="mb-4">Dental Chart</MudText>
+                    
+                    <!-- Placeholder for tooth chart -->
+                    <MudStack AlignItems="AlignItems.Center" Spacing="4" Class="py-4">
+                        <MudText Typo="Typo.body1" Style="color: #b0b0b0;">
+                            Interactive dental chart coming soon
+                        </MudText>
+                        
+                        <!-- Upper Arch Placeholder -->
+                        <MudPaper Class="pa-3" Style="background: #0a0a0a; border: 1px solid rgba(0, 255, 255, 0.2);">
+                            <MudText Typo="Typo.caption" Style="color: #808080;" Class="mb-2">Upper Arch</MudText>
+                            <MudStack Row="true" Spacing="2">
+                                @foreach (var tooth in Enumerable.Range(1, 16))
+                                {
+                                    <MudPaper Class="pa-2" Style="background: #1a1a1a; width: 40px; height: 60px; border: 1px solid #404040; display: flex; align-items: center; justify-content: center;">
+                                        <MudText Typo="Typo.caption" Style="color: #808080;">@tooth</MudText>
+                                    </MudPaper>
+                                }
+                            </MudStack>
+                        </MudPaper>
+
+                        <!-- Lower Arch Placeholder -->
+                        <MudPaper Class="pa-3" Style="background: #0a0a0a; border: 1px solid rgba(0, 255, 255, 0.2);">
+                            <MudText Typo="Typo.caption" Style="color: #808080;" Class="mb-2">Lower Arch</MudText>
+                            <MudStack Row="true" Spacing="2">
+                                @foreach (var tooth in Enumerable.Range(17, 16))
+                                {
+                                    <MudPaper Class="pa-2" Style="background: #1a1a1a; width: 40px; height: 60px; border: 1px solid #404040; display: flex; align-items: center; justify-content: center;">
+                                        <MudText Typo="Typo.caption" Style="color: #808080;">@tooth</MudText>
+                                    </MudPaper>
+                                }
+                            </MudStack>
+                        </MudPaper>
+                    </MudStack>
+                </MudPaper>
+
+                <!-- Treatment History -->
+                <MudPaper Class="pa-4" Style="background: #1a1a1a; border: 1px solid rgba(0, 255, 255, 0.3);">
+                    <MudText Typo="Typo.h6" Style="color: #00ffff;" Class="mb-3">Treatment History</MudText>
+                    <MudText Typo="Typo.body2" Style="color: #b0b0b0;">
+                        Treatment history functionality coming soon
+                    </MudText>
+                </MudPaper>
+
+                <!-- Notes and Observations -->
+                <MudPaper Class="pa-4" Style="background: #1a1a1a; border: 1px solid rgba(0, 255, 255, 0.3);">
+                    <MudText Typo="Typo.h6" Style="color: #00ffff;" Class="mb-3">Clinical Notes</MudText>
+                    <MudText Typo="Typo.body2" Style="color: #b0b0b0;">
+                        Clinical notes functionality coming soon
+                    </MudText>
+                </MudPaper>
+            </MudStack>
+        }
+    </MudPaper>
+</MudContainer>
+
+@code {
+    private List<Patient> _allPatients = new();
+    private Patient? _selectedPatient = null;
+    private string? _errorMessage = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadPatients();
+    }
+
+    private async Task LoadPatients()
+    {
+        try
+        {
+            _allPatients = await PatientService.GetPatientsAsync();
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = $"Error loading patients: {ex.Message}";
+            Snackbar.Add(_errorMessage, Severity.Error);
+        }
+    }
+
+    private async Task<IEnumerable<Patient>> SearchPatients(string searchString)
+    {
+        if (string.IsNullOrWhiteSpace(searchString))
+            return _allPatients.Take(10);
+
+        return _allPatients
+            .Where(p => p.FullName.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            .Take(10);
+    }
+
+    private async Task OnPatientSelected(Patient? patient)
+    {
+        _selectedPatient = patient;
+        if (patient != null)
+        {
+            Snackbar.Add($"Viewing chart for {patient.FullName}", Severity.Info);
+        }
+    }
+
+    private void ClearPatientSelection()
+    {
+        _selectedPatient = null;
+    }
+}
