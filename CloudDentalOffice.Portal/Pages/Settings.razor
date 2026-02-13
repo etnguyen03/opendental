@@ -52,9 +52,9 @@
                 </MudText>
                 <MudStack Spacing="3">
                     <MudTextField Label="Sender ID" Variant="Variant.Outlined" 
-                                  Value="CLOUDDENTAL001" ReadOnly="@true" />
+                                  Value="@("CLOUDDENTAL001")" ReadOnly="@true" />
                     <MudTextField Label="Receiver ID" Variant="Variant.Outlined" 
-                                  Value="EDI_CLEARINGHOUSE" ReadOnly="@true" />
+                                  Value="@("EDI_CLEARINGHOUSE")" ReadOnly="@true" />
                     <MudTextField Label="API Endpoint" Variant="Variant.Outlined" 
                                   Value="@("https://edi.cloudhealthoffice.com/api")" ReadOnly="@true" />
                     <MudSwitch T="bool" Label="Enable Electronic Claims Submission" 
@@ -75,12 +75,12 @@
                     User Preferences
                 </MudText>
                 <MudStack Spacing="3">
-                    <MudSelect T="string" Label="Date Format" Variant="Variant.Outlined" Value="MM/dd/yyyy">
+                    <MudSelect T="string" Label="Date Format" Variant="Variant.Outlined" Value="@("MM/dd/yyyy")">
                         <MudSelectItem Value='"MM/dd/yyyy"'>MM/DD/YYYY</MudSelectItem>
                         <MudSelectItem Value='"dd/MM/yyyy"'>DD/MM/YYYY</MudSelectItem>
                         <MudSelectItem Value='"yyyy-MM-dd"'>YYYY-MM-DD</MudSelectItem>
                     </MudSelect>
-                    <MudSelect T="string" Label="Time Zone" Variant="Variant.Outlined" Value="America/New_York">
+                    <MudSelect T="string" Label="Time Zone" Variant="Variant.Outlined" Value="@("America/New_York")">
                         <MudSelectItem Value='"America/New_York"'>Eastern Time</MudSelectItem>
                         <MudSelectItem Value='"America/Chicago"'>Central Time</MudSelectItem>
                         <MudSelectItem Value='"America/Denver"'>Mountain Time</MudSelectItem>
@@ -151,9 +151,9 @@
                 </MudText>
                 <MudStack Spacing="3">
                     <MudTextField Label="Tax ID (EIN)" Variant="Variant.Outlined" 
-                                  Value="12-3456789" ReadOnly="@true" />
+                                  Value="@("12-3456789")" ReadOnly="@true" />
                     <MudTextField Label="Default Payment Terms (days)" 
-                                  Variant="Variant.Outlined" Value="30" Type="number" />
+                                  Variant="Variant.Outlined" Value="@("30")" Type="number" />
                     <MudSwitch T="bool" Label="Accept Credit Cards" 
                                Color="Color.Primary" Checked="true" />
                     <MudSwitch T="bool" Label="Accept ACH Payments" 
