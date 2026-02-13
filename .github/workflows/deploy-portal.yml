@@ -65,7 +65,7 @@ jobs:
           sed -i "s|image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:.*|image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.TAG }}|" ${{ env.DEPLOYMENT_FILE }}
           
           # Apply the updated manifest to the cluster
-          kubectl apply -f ${{ env.DEPLOYMENT_FILE }}
+          kubectl apply -f ${{ env.DEPLOYMENT_FILE }} -n clouddental
           
           # Force a checkout of the rollout to ensure it completes successfully
-          kubectl rollout status deployment/clouddental-portal
+          kubectl rollout status deployment/clouddental-portal -n clouddental
