@@ -38,6 +38,22 @@
         </div>
     </div>
 
+    <style>
+        .spinner {
+            border: 3px solid rgba(0, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top: 3px solid #00ffff;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        @@keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+
     <script src="_framework/blazor.server.js" autostart="false"></script>
     <script>
         Blazor.start({
@@ -52,21 +68,6 @@
         });
     </script>
     <script src="_content/MudBlazor/MudBlazor.min.js"></script>
-    <style>
-        .spinner {
-            border: 3px solid rgba(0, 255, 255, 0.3);
-            border-radius: 50%;
-            border-top: 3px solid #00ffff;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-    </style>
 
 </body>
 </html>
