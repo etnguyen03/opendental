@@ -20,7 +20,7 @@
 
                 <!-- Patient Selection -->
                 <MudItem xs="12">
-                    <MudAutocomplete T="Patient" @bind-Value="_selectedPatient" 
+                    <MudAutocomplete T="Patient" Value="_selectedPatient" 
                                      Label="Search Patient" 
                                      SearchFunc="@SearchPatients"
                                      ToStringFunc="@(p => p?.FullName ?? "")"
