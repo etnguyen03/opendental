@@ -91,7 +91,7 @@ if (!builder.Environment.IsDevelopment())
 // Add application services
 builder.Services.AddScoped<IPatientService, PatientServiceImpl>();
 builder.Services.AddScoped<IClaimService, ClaimServiceImpl>();
-builder.Services.AddScoped<IAppointmentService, AppointmentService>();
+builder.Services.AddScoped<IAppointmentService, AppointmentServiceImpl>();
 builder.Services.AddScoped<ITreatmentPlanService, TreatmentPlanService>();
 builder.Services.AddScoped<IEdiService, EdiService>();
 builder.Services.AddScoped<IProviderService, ProviderServiceImpl>();

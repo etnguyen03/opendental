@@ -1,4 +1,9 @@
 @page "/"
+@using CloudDentalOffice.Portal.Services
+@using CloudDentalOffice.Portal.Models
+@inject IPatientService PatientService
+@inject IAppointmentService AppointmentService
+@inject IClaimService ClaimService
 
 <PageTitle>Dashboard - Cloud Dental Office</PageTitle>
 
@@ -29,7 +34,7 @@
                 <MudStack Row="true" Justify="Justify.SpaceBetween">
                     <div>
                         <MudText Typo="Typo.subtitle2" Style="color: #b0b0b0;">Patients</MudText>
-                        <MudText Typo="Typo.h4" Style="color: #00ffff; font-weight: bold;">2,453</MudText>
+                        <MudText Typo="Typo.h4" Style="color: #00ffff; font-weight: bold;">@_patientCount</MudText>
                     </div>
                     <MudIcon Icon="@Icons.Material.Filled.People" Size="Size.Large" Style="color: #00ffff;" />
                 </MudStack>
@@ -41,7 +46,7 @@
                 <MudStack Row="true" Justify="Justify.SpaceBetween">
                     <div>
                         <MudText Typo="Typo.subtitle2" Style="color: #b0b0b0;">Today's Appointments</MudText>
-                        <MudText Typo="Typo.h4" Style="color: #00ff88; font-weight: bold;">28</MudText>
+                        <MudText Typo="Typo.h4" Style="color: #00ff88; font-weight: bold;">@_appointmentCount</MudText>
                     </div>
                     <MudIcon Icon="@Icons.Material.Filled.Event" Size="Size.Large" Style="color: #00ff88;" />
                 </MudStack>
@@ -53,7 +58,7 @@
                 <MudStack Row="true" Justify="Justify.SpaceBetween">
                     <div>
                         <MudText Typo="Typo.subtitle2" Style="color: #b0b0b0;">Pending Claims</MudText>
-                        <MudText Typo="Typo.h4" Style="color: #00ffff; font-weight: bold;">142</MudText>
+                        <MudText Typo="Typo.h4" Style="color: #00ffff; font-weight: bold;">@_pendingClaimCount</MudText>
                     </div>
                     <MudIcon Icon="@Icons.Material.Filled.Assignment" Size="Size.Large" Style="color: #00ffff;" />
                 </MudStack>
@@ -65,7 +70,7 @@
                 <MudStack Row="true" Justify="Justify.SpaceBetween">
                     <div>
                         <MudText Typo="Typo.subtitle2" Style="color: #b0b0b0;">Monthly Revenue</MudText>
-                        <MudText Typo="Typo.h4" Style="color: #00ff88; font-weight: bold;">$184K</MudText>
+                        <MudText Typo="Typo.h4" Style="color: #00ff88; font-weight: bold;">@_monthlyRevenue.ToString("C0")</MudText>
                     </div>
                     <MudIcon Icon="@Icons.Material.Filled.AttachMoney" Size="Size.Large" Style="color: #00ff888;" />
                 </MudStack>
@@ -159,5 +164,39 @@
 </MudContainer>
 
 @code {
-    // Dashboard logic will go here
+    private int _patientCount = 0;
+    private int _appointmentCount = 0;
+    private int _pendingClaimCount = 0;
+    private decimal _monthlyRevenue = 0;
+    private bool _loading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            _loading = true;
+            
+            // Parallel execution for performance
+            var patientsTask = PatientService.GetPatientsAsync();
+            var appointmentsTask = AppointmentService.GetAppointmentsAsync(DateTime.UtcNow);
+            var claimsTask = ClaimService.GetClaimsAsync();
+
+            await Task.WhenAll(patientsTask, appointmentsTask, claimsTask);
+
+            _patientCount = (await patientsTask).Count;
+            _appointmentCount = (await appointmentsTask).Count;
+            _pendingClaimCount = (await claimsTask).Count(c => c.Status == "Submitted" || c.Status == "Pending"); // Assuming simple status filter
+            
+            // Revenue logic pending TreatmentPlanService implementation
+            _monthlyRevenue = 0;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading dashboard: {ex.Message}");
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
 }
