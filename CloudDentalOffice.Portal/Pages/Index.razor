@@ -1,6 +1,7 @@
 @page "/"
 @using CloudDentalOffice.Portal.Services
 @using CloudDentalOffice.Portal.Models
+@using Microsoft.AspNetCore.Components.Authorization
 @inject IPatientService PatientService
 @inject IAppointmentService AppointmentService
 @inject IClaimService ClaimService
@@ -8,6 +9,7 @@
 @inject IDialogService DialogService
 @inject NavigationManager NavigationManager
 @inject ISnackbar Snackbar
+@inject AuthenticationStateProvider AuthStateProvider
 
 <PageTitle>Dashboard - Cloud Dental Office</PageTitle>
 
@@ -371,6 +373,17 @@
         try
         {
             _loading = true;
+            
+            // Wait for authentication to be ready before accessing DbContext
+            var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+            if (authState?.User?.Identity?.IsAuthenticated != true)
+            {
+                _loading = false;
+                return;
+            }
+            
+            // Small delay to ensure TenantProvider is fully initialized
+            await Task.Delay(50);
             
             // Parallel execution for performance
             var patientsTask = PatientService.GetPatientsAsync();

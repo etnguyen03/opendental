@@ -129,8 +129,10 @@
                                                          ToStringFunc="@(pc => pc?.DisplayName ?? "")"
                                                          Variant="Variant.Text"
                                                          Margin="Margin.Dense"
-                                                         Placeholder="Search code..."
+                                                         Placeholder="Type to search..."
                                                          Clearable="true"
+                                                         DebounceInterval="300"
+                                                         MinCharacters="0"
                                                          AdornmentIcon="@Icons.Material.Filled.Search" />
                                     </MudTd>
                                     <MudTd DataLabel="Description">
