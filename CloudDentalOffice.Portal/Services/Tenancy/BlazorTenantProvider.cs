@@ -13,6 +13,7 @@ public class BlazorTenantProvider : ITenantProvider
     private string? _tenantId;
     private ClaimsPrincipal? _user;
     private bool _initialized;
+    private readonly object _lock = new object();
 
     public BlazorTenantProvider(IServiceProvider serviceProvider)
     {
@@ -23,53 +24,65 @@ public class BlazorTenantProvider : ITenantProvider
     {
         if (_initialized) return;
 
-        try
+        lock (_lock)
         {
-            // Get AuthenticationStateProvider from service provider to avoid circular dependency
-            var authStateProvider = _serviceProvider.GetService<AuthenticationStateProvider>();
-            if (authStateProvider != null)
+            if (_initialized) return;
+
+            try
             {
-                var authStateTask = authStateProvider.GetAuthenticationStateAsync();
-                if (authStateTask.IsCompleted || authStateTask.Wait(100))
+                // Get AuthenticationStateProvider from service provider to avoid circular dependency
+                var authStateProvider = _serviceProvider.GetService<AuthenticationStateProvider>();
+                if (authStateProvider != null)
                 {
-                    var authState = authStateTask.Result;
-                    _user = authState.User;
-
-                    if (_user?.Identity?.IsAuthenticated == true)
+                    // Try to get auth state synchronously if already available
+                    var authStateTask = authStateProvider.GetAuthenticationStateAsync();
+                    
+                    // Only wait if task is already completed to avoid deadlocks
+                    if (authStateTask.IsCompleted)
                     {
-                        var claimTenant = _user.FindFirst("tenant_id")?.Value
-                            ?? _user.FindFirst("tenantId")?.Value
-                            ?? _user.FindFirst("tid")?.Value
-                            ?? _user.FindFirst("tenant")?.Value;
+                        var authState = authStateTask.Result;
+                        _user = authState.User;
 
-                        _tenantId = !string.IsNullOrWhiteSpace(claimTenant)
-                            ? claimTenant.Trim()
-                            : TenantConstants.DefaultTenantId;
+                        if (_user?.Identity?.IsAuthenticated == true)
+                        {
+                            var claimTenant = _user.FindFirst("tenant_id")?.Value
+                                ?? _user.FindFirst("tenantId")?.Value
+                                ?? _user.FindFirst("tid")?.Value
+                                ?? _user.FindFirst("tenant")?.Value;
+
+                            _tenantId = !string.IsNullOrWhiteSpace(claimTenant)
+                                ? claimTenant.Trim()
+                                : TenantConstants.DefaultTenantId;
+                        }
+                        else
+                        {
+                            // User not authenticated - use default tenant
+                            _tenantId = TenantConstants.DefaultTenantId;
+                        }
                     }
                     else
                     {
+                        // Auth state not available yet (during login) - use default tenant
                         _tenantId = TenantConstants.DefaultTenantId;
+                        _user = new ClaimsPrincipal(new ClaimsIdentity());
                     }
                 }
                 else
                 {
+                    // No auth state provider - use default tenant
                     _tenantId = TenantConstants.DefaultTenantId;
                     _user = new ClaimsPrincipal(new ClaimsIdentity());
                 }
             }
-            else
+            catch (Exception)
             {
+                // Swallow exceptions and use default tenant
                 _tenantId = TenantConstants.DefaultTenantId;
                 _user = new ClaimsPrincipal(new ClaimsIdentity());
             }
-        }
-        catch
-        {
-            _tenantId = TenantConstants.DefaultTenantId;
-            _user = new ClaimsPrincipal(new ClaimsIdentity());
-        }
 
-        _initialized = true;
+            _initialized = true;
+        }
     }
 
     public ClaimsPrincipal? User
