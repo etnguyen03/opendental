@@ -149,7 +149,7 @@ public static class DbInitializer
         context.SaveChanges();
     }
 
-    public static void SeedClaims(CloudDentalDbContext context, string tenantId = "dev")
+    public static void SeedClaims(CloudDentalDbContext context, string tenantId = "demo")
     {
         // Check if claims already exist for this tenant
         if (context.Claims.IgnoreQueryFilters().Any(c => c.TenantId == tenantId))

@@ -145,8 +145,8 @@ using (var scope = app.Services.CreateScope())
         // Seed initial data
         CloudDentalOffice.Portal.Data.DbInitializer.Initialize(dbContext);
         
-        // Seed claims for dev tenant
-        CloudDentalOffice.Portal.Data.DbInitializer.SeedClaims(dbContext, "dev");
+        // Seed claims for demo tenant
+        CloudDentalOffice.Portal.Data.DbInitializer.SeedClaims(dbContext, TenantConstants.DefaultTenantId);
 
         var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
         logger.LogInformation("Database migrations applied successfully");
