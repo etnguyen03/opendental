@@ -1,0 +1,263 @@
+name: CI
+
+on:
+push:
+branches: [ “main”, “develop” ]
+pull_request:
+branches: [ “main”, “develop” ]
+
+env:
+DOTNET_VERSION: ‘8.0.x’
+PORTAL_PROJECT: ‘CloudDentalOffice.Portal/CloudDentalOffice.Portal.csproj’
+PORTAL_TESTS: ‘CloudDentalOffice.Portal.Tests/CloudDentalOffice.Portal.Tests.csproj’
+BUSINESS_TESTS: ‘OpenDentBusiness.Tests/OpenDentBusiness.Tests.csproj’
+DOCKER_IMAGE: ‘clouddentaloffice-portal’
+
+jobs:
+
+# ──────────────────────────────────────────────
+
+# Job 1: Build & Test
+
+# ──────────────────────────────────────────────
+
+build-and-test:
+name: Build & Test (.NET ${{ matrix.dotnet-version }})
+runs-on: ubuntu-latest
+
+```
+strategy:
+  matrix:
+    dotnet-version: ['8.0.x']
+
+steps:
+  - name: Checkout repository
+    uses: actions/checkout@v4
+
+  - name: Setup .NET
+    uses: actions/setup-dotnet@v4
+    with:
+      dotnet-version: ${{ matrix.dotnet-version }}
+
+  - name: Cache NuGet packages
+    uses: actions/cache@v4
+    with:
+      path: ~/.nuget/packages
+      key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
+      restore-keys: |
+        ${{ runner.os }}-nuget-
+
+  - name: Restore dependencies
+    run: dotnet restore OpenDental.sln
+
+  - name: Build portal
+    run: |
+      dotnet build ${{ env.PORTAL_PROJECT }} \
+        --configuration Release \
+        --no-restore \
+        --warnaserror
+
+  - name: Build business layer
+    run: |
+      dotnet build OpenDentBusiness/OpenDentBusiness.csproj \
+        --configuration Release \
+        --no-restore
+
+  - name: Run portal tests
+    run: |
+      dotnet test ${{ env.PORTAL_TESTS }} \
+        --configuration Release \
+        --no-build \
+        --verbosity normal \
+        --logger "trx;LogFileName=portal-test-results.trx" \
+        --collect:"XPlat Code Coverage" \
+        --results-directory ./test-results
+
+  - name: Run business layer tests
+    run: |
+      dotnet test ${{ env.BUSINESS_TESTS }} \
+        --configuration Release \
+        --no-build \
+        --verbosity normal \
+        --logger "trx;LogFileName=business-test-results.trx" \
+        --results-directory ./test-results
+    continue-on-error: true  # Remove once business tests are stabilized
+
+  - name: Upload test results
+    uses: actions/upload-artifact@v4
+    if: always()
+    with:
+      name: test-results
+      path: ./test-results/*.trx
+
+  - name: Upload coverage reports
+    uses: actions/upload-artifact@v4
+    if: always()
+    with:
+      name: coverage-reports
+      path: ./test-results/**/coverage.cobertura.xml
+```
+
+# ──────────────────────────────────────────────
+
+# Job 2: PHI / Secret Scan
+
+# Prevents accidental commit of credentials or PHI patterns
+
+# ──────────────────────────────────────────────
+
+secret-scan:
+name: Secret & PHI Scan
+runs-on: ubuntu-latest
+
+```
+steps:
+  - name: Checkout repository
+    uses: actions/checkout@v4
+    with:
+      fetch-depth: 0  # Full history needed for gitleaks
+
+  - name: Run Gitleaks
+    uses: gitleaks/gitleaks-action@v2
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE }}  # Optional: for team plan
+
+  - name: Scan for hardcoded connection strings
+    run: |
+      echo "Scanning for hardcoded connection strings..."
+      # Fail if any committed .xml config files contain real connection strings
+      if grep -r "Server=.*;Database=.*;User Id=.*;Password=" \
+           --include="*.xml" \
+           --include="*.json" \
+           --exclude-dir=".git" \
+           --exclude="*.Example.*" \
+           --exclude="*.Template.*" .; then
+        echo "❌ Possible hardcoded connection string detected. Use environment variables or Key Vault."
+        exit 1
+      fi
+      echo "✅ No hardcoded connection strings found."
+
+  - name: Check for PHI patterns in test data
+    run: |
+      echo "Checking for PHI patterns in committed test/seed files..."
+      # Warn (not fail) on patterns that look like real SSNs in SQL files
+      if grep -rE "\b[0-9]{3}-[0-9]{2}-[0-9]{4}\b" \
+           --include="*.sql" \
+           --include="*.cs" \
+           --exclude-dir=".git" .; then
+        echo "⚠️  SSN-like patterns found in source files. Verify these are synthetic test data."
+      else
+        echo "✅ No SSN patterns detected."
+      fi
+```
+
+# ──────────────────────────────────────────────
+
+# Job 3: Docker Build
+
+# Validates the portal image builds successfully
+
+# ──────────────────────────────────────────────
+
+docker-build:
+name: Docker Build
+runs-on: ubuntu-latest
+needs: build-and-test
+
+```
+steps:
+  - name: Checkout repository
+    uses: actions/checkout@v4
+
+  - name: Set up Docker Buildx
+    uses: docker/setup-buildx-action@v3
+
+  - name: Build Docker image (no push on PR)
+    uses: docker/build-push-action@v5
+    with:
+      context: .
+      file: CloudDentalOffice.Portal/Dockerfile
+      push: false
+      tags: ${{ env.DOCKER_IMAGE }}:ci-${{ github.sha }}
+      cache-from: type=gha
+      cache-to: type=gha,mode=max
+      build-args: |
+        BUILD_VERSION=${{ github.sha }}
+
+  - name: Scan image for vulnerabilities
+    uses: aquasecurity/trivy-action@master
+    with:
+      image-ref: ${{ env.DOCKER_IMAGE }}:ci-${{ github.sha }}
+      format: 'table'
+      exit-code: '1'
+      ignore-unfixed: true
+      severity: 'CRITICAL,HIGH'
+```
+
+# ──────────────────────────────────────────────
+
+# Job 4: Deploy to Azure (main branch only)
+
+# Requires AZURE_CREDENTIALS secret configured
+
+# ──────────────────────────────────────────────
+
+deploy-staging:
+name: Deploy to Staging (Azure)
+runs-on: ubuntu-latest
+needs: [ build-and-test, docker-build, secret-scan ]
+if: github.ref == ‘refs/heads/main’ && github.event_name == ‘push’
+environment:
+name: staging
+url: https://staging.clouddentaloffice.com
+
+```
+steps:
+  - name: Checkout repository
+    uses: actions/checkout@v4
+
+  - name: Azure Login
+    uses: azure/login@v2
+    with:
+      creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+  - name: Setup .NET
+    uses: actions/setup-dotnet@v4
+    with:
+      dotnet-version: ${{ env.DOTNET_VERSION }}
+
+  - name: Publish portal
+    run: |
+      dotnet publish ${{ env.PORTAL_PROJECT }} \
+        --configuration Release \
+        --output ./publish \
+        --no-restore
+
+  - name: Deploy to Azure App Service
+    uses: azure/webapps-deploy@v3
+    with:
+      app-name: ${{ secrets.AZURE_APP_SERVICE_NAME }}
+      slot-name: staging
+      package: ./publish
+
+  - name: Run smoke tests against staging
+    run: |
+      echo "Running smoke tests..."
+      # Wait for deployment to settle
+      sleep 30
+      # Basic health check
+      STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://staging.clouddentaloffice.com/health)
+      if [ "$STATUS" != "200" ]; then
+        echo "❌ Health check failed. HTTP status: $STATUS"
+        exit 1
+      fi
+      echo "✅ Staging deployment health check passed (HTTP $STATUS)"
+
+  - name: Notify deployment
+    if: always()
+    run: |
+      echo "Deployment to staging: ${{ job.status }}"
+      echo "Commit: ${{ github.sha }}"
+      echo "Deployed by: ${{ github.actor }}"
+```
