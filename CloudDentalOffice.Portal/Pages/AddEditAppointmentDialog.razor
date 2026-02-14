@@ -191,6 +191,8 @@
 
         if (IsEditMode && ExistingAppointment != null)
         {
+            var localAppointmentDateTime = ExistingAppointment.AppointmentDateTime.ToLocalTime();
+
             // Edit mode - load existing appointment
             _appointment = new Appointment
             {
@@ -209,8 +211,8 @@
 
             _selectedPatient = ExistingAppointment.Patient;
             _selectedProviderId = ExistingAppointment.ProviderId;
-            _appointmentDate = ExistingAppointment.AppointmentDateTime.Date;
-            _appointmentTime = ExistingAppointment.AppointmentDateTime.TimeOfDay;
+            _appointmentDate = localAppointmentDateTime.Date;
+            _appointmentTime = localAppointmentDateTime.TimeOfDay;
         }
         else
         {

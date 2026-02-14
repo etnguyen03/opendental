@@ -76,7 +76,7 @@
                 <RowTemplate>
                     <MudTd DataLabel="Time">
                         <MudText Typo="Typo.body2" Style="color: #00ff88; font-weight: bold;">
-                            @context.AppointmentDateTime.ToString("hh:mm tt")
+                            @context.AppointmentDateTime.ToLocalTime().ToString("hh:mm tt")
                         </MudText>
                     </MudTd>
                     <MudTd DataLabel="Patient">

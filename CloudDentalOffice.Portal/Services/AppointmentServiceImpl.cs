@@ -31,13 +31,14 @@ public class AppointmentServiceImpl : IAppointmentService
 
             // Get appointments for the specific date
             // Assuming appointments store full DateTime, we compare Date part
-            var targetDate = date.Date;
-            var nextDate = targetDate.AddDays(1);
+            var localStart = DateTime.SpecifyKind(date.Date, DateTimeKind.Local);
+            var utcStart = localStart.ToUniversalTime();
+            var utcEnd = localStart.AddDays(1).ToUniversalTime();
 
             return await _context.Appointments
                 .Include(a => a.Patient)
                 .Include(a => a.Provider)
-                .Where(a => a.TenantId == tenantId && a.AppointmentDateTime >= targetDate && a.AppointmentDateTime < nextDate)
+                .Where(a => a.TenantId == tenantId && a.AppointmentDateTime >= utcStart && a.AppointmentDateTime < utcEnd)
                 .OrderBy(a => a.AppointmentDateTime)
                 .ToListAsync();
         }
@@ -88,15 +89,7 @@ public class AppointmentServiceImpl : IAppointmentService
             appointment.TenantId = tenantId;
             appointment.CreatedDate = DateTime.UtcNow;
             
-            // PostgreSQL requires UTC for timestamp with time zone
-            if (appointment.AppointmentDateTime.Kind == DateTimeKind.Local)
-            {
-                appointment.AppointmentDateTime = appointment.AppointmentDateTime.ToUniversalTime();
-            }
-            else if (appointment.AppointmentDateTime.Kind == DateTimeKind.Unspecified)
-            {
-                appointment.AppointmentDateTime = DateTime.SpecifyKind(appointment.AppointmentDateTime, DateTimeKind.Utc);
-            }
+            appointment.AppointmentDateTime = NormalizeToUtc(appointment.AppointmentDateTime);
 
             _context.Appointments.Add(appointment);
             await _context.SaveChangesAsync();
@@ -142,17 +135,7 @@ public class AppointmentServiceImpl : IAppointmentService
             existingAppointment.PatientId = appointment.PatientId;
             existingAppointment.ProviderId = appointment.ProviderId;
             
-            // PostgreSQL requires UTC for timestamp with time zone
-            var appointmentDateTime = appointment.AppointmentDateTime;
-            if (appointmentDateTime.Kind == DateTimeKind.Local)
-            {
-                appointmentDateTime = appointmentDateTime.ToUniversalTime();
-            }
-            else if (appointmentDateTime.Kind == DateTimeKind.Unspecified)
-            {
-                appointmentDateTime = DateTime.SpecifyKind(appointmentDateTime, DateTimeKind.Utc);
-            }
-            existingAppointment.AppointmentDateTime = appointmentDateTime;
+            existingAppointment.AppointmentDateTime = NormalizeToUtc(appointment.AppointmentDateTime);
             
             existingAppointment.DurationMinutes = appointment.DurationMinutes;
             existingAppointment.AppointmentType = appointment.AppointmentType;
@@ -199,5 +182,17 @@ public class AppointmentServiceImpl : IAppointmentService
             _logger.LogError(ex, "Error deleting appointment {AppointmentId}", appointmentId);
             throw;
         }
+    }
+
+    private static DateTime NormalizeToUtc(DateTime value)
+    {
+        // UI inputs are local time with Kind=Unspecified, so treat as local then convert
+        if (value.Kind == DateTimeKind.Local)
+            return value.ToUniversalTime();
+
+        if (value.Kind == DateTimeKind.Unspecified)
+            return DateTime.SpecifyKind(value, DateTimeKind.Local).ToUniversalTime();
+
+        return value;
     }
 }
