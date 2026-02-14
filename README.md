@@ -225,4 +225,3 @@ This project is licensed under the [GNU General Public License v2.0](./LICENSE) 
 
 - **Cloud Dental Office** — SaaS practice management for dental providers (this repo)
 - **[Cloud Health Office](https://github.com/aurelianware/cloudhealthoffice)** — HIPAA-compliant EDI integration platform for health plans and payers
-
