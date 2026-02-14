@@ -87,6 +87,16 @@ public class AppointmentServiceImpl : IAppointmentService
 
             appointment.TenantId = tenantId;
             appointment.CreatedDate = DateTime.UtcNow;
+            
+            // PostgreSQL requires UTC for timestamp with time zone
+            if (appointment.AppointmentDateTime.Kind == DateTimeKind.Local)
+            {
+                appointment.AppointmentDateTime = appointment.AppointmentDateTime.ToUniversalTime();
+            }
+            else if (appointment.AppointmentDateTime.Kind == DateTimeKind.Unspecified)
+            {
+                appointment.AppointmentDateTime = DateTime.SpecifyKind(appointment.AppointmentDateTime, DateTimeKind.Utc);
+            }
 
             _context.Appointments.Add(appointment);
             await _context.SaveChangesAsync();
@@ -131,7 +141,19 @@ public class AppointmentServiceImpl : IAppointmentService
 
             existingAppointment.PatientId = appointment.PatientId;
             existingAppointment.ProviderId = appointment.ProviderId;
-            existingAppointment.AppointmentDateTime = appointment.AppointmentDateTime;
+            
+            // PostgreSQL requires UTC for timestamp with time zone
+            var appointmentDateTime = appointment.AppointmentDateTime;
+            if (appointmentDateTime.Kind == DateTimeKind.Local)
+            {
+                appointmentDateTime = appointmentDateTime.ToUniversalTime();
+            }
+            else if (appointmentDateTime.Kind == DateTimeKind.Unspecified)
+            {
+                appointmentDateTime = DateTime.SpecifyKind(appointmentDateTime, DateTimeKind.Utc);
+            }
+            existingAppointment.AppointmentDateTime = appointmentDateTime;
+            
             existingAppointment.DurationMinutes = appointment.DurationMinutes;
             existingAppointment.AppointmentType = appointment.AppointmentType;
             existingAppointment.Status = appointment.Status;
