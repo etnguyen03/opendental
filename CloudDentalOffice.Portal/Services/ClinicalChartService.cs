@@ -193,6 +193,7 @@ public class ClinicalChartService : IClinicalChartService
         var tenantId = _tenantProvider.TenantId;
         procedure.TenantId = tenantId;
         procedure.CreatedDate = DateTime.UtcNow;
+        procedure.ServiceDate = NormalizeToUtc(procedure.ServiceDate);
 
         _context.Procedures.Add(procedure);
         await _context.SaveChangesAsync();
@@ -208,5 +209,16 @@ public class ClinicalChartService : IClinicalChartService
             .Include(p => p.Patient)
             .Include(p => p.Provider)
             .FirstOrDefaultAsync(p => p.TenantId == tenantId && p.ProcedureId == procedureId);
+    }
+
+    private static DateTime NormalizeToUtc(DateTime value)
+    {
+        if (value.Kind == DateTimeKind.Local)
+            return value.ToUniversalTime();
+
+        if (value.Kind == DateTimeKind.Unspecified)
+            return DateTime.SpecifyKind(value, DateTimeKind.Local).ToUniversalTime();
+
+        return value;
     }
 }

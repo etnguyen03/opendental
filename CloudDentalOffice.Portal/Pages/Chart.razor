@@ -240,7 +240,7 @@
                                 <MudTh Style="color: #00ffff;">Fee</MudTh>
                             </HeaderContent>
                             <RowTemplate>
-                                <MudTd Style="color: #b0b0b0;">@context.Date.ToString("MM/dd/yyyy")</MudTd>
+                                <MudTd Style="color: #b0b0b0;">@context.Date.ToLocalTime().ToString("MM/dd/yyyy")</MudTd>
                                 <MudTd Style="color: #00ffff;">@context.Code</MudTd>
                                 <MudTd Style="color: #b0b0b0;">@context.Description</MudTd>
                                 <MudTd Style="color: #b0b0b0;">@(context.Tooth ?? "-")</MudTd>
