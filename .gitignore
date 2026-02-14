@@ -12,6 +12,7 @@ packages/
 *.suo
 *.user
 *.sln.docstates
+*.userprefs
 
 # Build results
 
@@ -153,6 +154,10 @@ appsettings.Development.json
 appsettings.Production.json
 appsettings.*.json
 !appsettings.json
+!appsettings.Example.json
+appsettings.Local.json
+FreeDentalConfig.xml
+OpenDentServerConfig.xml
 
 # Certificates and keys
 *.pfx
@@ -164,6 +169,9 @@ appsettings.*.json
 local.settings.json
 .env
 .env.*
+
+# Docker local overrides
+docker-compose.override.yml
 
 # VS Code
 .vscode/

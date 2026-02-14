@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<!-- Replace with your actual database connection details. Never commit real credentials. -->
+<ConnectionSettings>
+	<ServerPort>9390</ServerPort>
+	<DatabaseConnection>
+		<ComputerName>YOUR_DB_SERVER</ComputerName>
+		<Database>YOUR_DB_NAME</Database>
+		<User>YOUR_DB_USER</User>
+		<Password>USE_AZURE_KEY_VAULT_OR_ENV_VAR</Password>
+		<UserLow>YOUR_DB_USER</UserLow>
+		<PasswordLow>USE_AZURE_KEY_VAULT_OR_ENV_VAR</PasswordLow>
+	</DatabaseConnection>
+</ConnectionSettings>
