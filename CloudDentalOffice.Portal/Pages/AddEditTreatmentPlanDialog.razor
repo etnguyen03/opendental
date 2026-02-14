@@ -235,6 +235,9 @@
 
         if (IsEditMode && ExistingTreatmentPlan != null)
         {
+            var localPresentedDate = ExistingTreatmentPlan.PresentedDate?.ToLocalTime();
+            var localAcceptedDate = ExistingTreatmentPlan.AcceptedDate?.ToLocalTime();
+
             // Edit mode - load existing treatment plan
             _treatmentPlan = new TreatmentPlan
             {
@@ -251,8 +254,8 @@
             };
 
             _selectedProviderId = ExistingTreatmentPlan.ProviderId;
-            _presentedDate = ExistingTreatmentPlan.PresentedDate;
-            _acceptedDate = ExistingTreatmentPlan.AcceptedDate;
+            _presentedDate = localPresentedDate;
+            _acceptedDate = localAcceptedDate;
             _procedures = ExistingTreatmentPlan.PlannedProcedures.ToList();
         }
         else

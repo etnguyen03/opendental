@@ -75,12 +75,16 @@ public class TreatmentPlanService : ITreatmentPlanService
         // Set tenant ID and dates
         plan.TenantId = tenantId;
         plan.CreatedDate = DateTime.UtcNow;
+        plan.PresentedDate = NormalizeToUtc(plan.PresentedDate);
+        plan.AcceptedDate = NormalizeToUtc(plan.AcceptedDate);
+        plan.CompletedDate = NormalizeToUtc(plan.CompletedDate);
         
         // Ensure all planned procedures have the correct tenant ID
         foreach (var procedure in plan.PlannedProcedures)
         {
             procedure.TenantId = tenantId;
             procedure.CreatedDate = DateTime.UtcNow;
+            procedure.CompletedDate = NormalizeToUtc(procedure.CompletedDate);
         }
 
         _context.TreatmentPlans.Add(plan);
@@ -111,9 +115,9 @@ public class TreatmentPlanService : ITreatmentPlanService
         existingPlan.Status = plan.Status;
         existingPlan.Title = plan.Title;
         existingPlan.Description = plan.Description;
-        existingPlan.PresentedDate = plan.PresentedDate;
-        existingPlan.AcceptedDate = plan.AcceptedDate;
-        existingPlan.CompletedDate = plan.CompletedDate;
+        existingPlan.PresentedDate = NormalizeToUtc(plan.PresentedDate);
+        existingPlan.AcceptedDate = NormalizeToUtc(plan.AcceptedDate);
+        existingPlan.CompletedDate = NormalizeToUtc(plan.CompletedDate);
         existingPlan.ModifiedDate = DateTime.UtcNow;
 
         // Update planned procedures
@@ -152,6 +156,7 @@ public class TreatmentPlanService : ITreatmentPlanService
                     existingProc.Surface = procedure.Surface;
                     existingProc.EstimatedFee = procedure.EstimatedFee;
                     existingProc.Status = procedure.Status;
+                    existingProc.CompletedDate = NormalizeToUtc(procedure.CompletedDate);
                     existingProc.ModifiedDate = DateTime.UtcNow;
                 }
             }
@@ -162,5 +167,20 @@ public class TreatmentPlanService : ITreatmentPlanService
         // Reload with all navigation properties
         return await GetTreatmentPlanByIdAsync(plan.TreatmentPlanId.ToString()) 
                ?? throw new InvalidOperationException("Failed to retrieve updated treatment plan");
+    }
+
+    private static DateTime? NormalizeToUtc(DateTime? value)
+    {
+        if (!value.HasValue)
+            return null;
+
+        var dateValue = value.Value;
+        if (dateValue.Kind == DateTimeKind.Local)
+            return dateValue.ToUniversalTime();
+
+        if (dateValue.Kind == DateTimeKind.Unspecified)
+            return DateTime.SpecifyKind(dateValue, DateTimeKind.Local).ToUniversalTime();
+
+        return dateValue;
     }
 }
